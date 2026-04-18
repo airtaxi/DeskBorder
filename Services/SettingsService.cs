@@ -54,7 +54,10 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         if (_isInitialized)
             return;
 
-        var storedSettings = LoadStoredSettings();
+        var hasStoredSettings = TryLoadStoredSettings(out var storedSettings);
+        if (!hasStoredSettings && storedSettings.IsLaunchOnStartupEnabled)
+            await _startupRegistrationService.SetIsEnabledAsync(true);
+
         var isLaunchOnStartupEnabled = await _startupRegistrationService.GetIsEnabledAsync();
         _settings = NormalizeSettings(storedSettings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled });
         SaveSettings(_settings);
@@ -302,9 +305,17 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         }
     }
 
-    private static DeskBorderSettings LoadStoredSettings() => s_localSettings.Values[SettingsKey] is string serializedSettings
-        ? LoadDeserializedSettings(serializedSettings)
-        : DeskBorderSettings.CreateDefault();
+    private static bool TryLoadStoredSettings(out DeskBorderSettings settings)
+    {
+        if (s_localSettings.Values[SettingsKey] is not string serializedSettings)
+        {
+            settings = DeskBorderSettings.CreateDefault();
+            return false;
+        }
+
+        settings = LoadDeserializedSettings(serializedSettings);
+        return true;
+    }
 
     private static void SaveSettings(DeskBorderSettings settings) => s_localSettings.Values[SettingsKey] =
         JsonSerializer.Serialize(settings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings);

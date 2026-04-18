@@ -15,15 +15,21 @@ public sealed class TrayIconService : ITrayIconService, IDisposable
 
     public bool IsStoreUpdateCheckEnabled => _settingsService.Settings.IsStoreUpdateCheckEnabled;
 
-    public string LaunchOnStartupToggleText => LocalizedResourceAccessor.GetString("Tray.LaunchOnStartup");
+    public string LaunchOnStartupActionText => LocalizedResourceAccessor.GetString(IsLaunchOnStartupEnabled
+        ? "Tray.LaunchOnStartup.DisableAction"
+        : "Tray.LaunchOnStartup.EnableAction");
 
     public string RuntimeStatusText => _deskBorderRuntimeService.IsRunning && !_deskBorderRuntimeService.IsSuspended
         ? LocalizedResourceAccessor.GetString("Tray.RuntimeStatus.Running")
         : LocalizedResourceAccessor.GetString("Tray.RuntimeStatus.Paused");
 
-    public string RuntimeToggleText => LocalizedResourceAccessor.GetString("Tray.RuntimeToggle");
+    public string RuntimeActionText => LocalizedResourceAccessor.GetString(IsRuntimeEnabled
+        ? "Tray.Runtime.DisableAction"
+        : "Tray.Runtime.EnableAction");
 
-    public string StoreUpdateCheckToggleText => LocalizedResourceAccessor.GetString("Tray.StoreUpdateCheck");
+    public string StoreUpdateCheckActionText => LocalizedResourceAccessor.GetString(IsStoreUpdateCheckEnabled
+        ? "Tray.StoreUpdateCheck.DisableAction"
+        : "Tray.StoreUpdateCheck.EnableAction");
 
     public TrayIconService(IDeskBorderRuntimeService deskBorderRuntimeService, ISettingsService settingsService)
     {

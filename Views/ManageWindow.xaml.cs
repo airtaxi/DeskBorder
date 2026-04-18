@@ -98,12 +98,9 @@ public sealed partial class ManageWindow : WindowEx
     private void RefreshTrayMenu()
     {
         RuntimeStatusMenuFlyoutItem.Text = _trayIconService.RuntimeStatusText;
-        LaunchOnStartupToggleMenuFlyoutItem.IsChecked = _trayIconService.IsLaunchOnStartupEnabled;
-        LaunchOnStartupToggleMenuFlyoutItem.Text = _trayIconService.LaunchOnStartupToggleText;
-        StoreUpdateCheckToggleMenuFlyoutItem.IsChecked = _trayIconService.IsStoreUpdateCheckEnabled;
-        StoreUpdateCheckToggleMenuFlyoutItem.Text = _trayIconService.StoreUpdateCheckToggleText;
-        RuntimeToggleMenuFlyoutItem.IsChecked = _trayIconService.IsRuntimeEnabled;
-        RuntimeToggleMenuFlyoutItem.Text = _trayIconService.RuntimeToggleText;
+        LaunchOnStartupMenuFlyoutItem.Text = _trayIconService.LaunchOnStartupActionText;
+        StoreUpdateCheckMenuFlyoutItem.Text = _trayIconService.StoreUpdateCheckActionText;
+        RuntimeMenuFlyoutItem.Text = _trayIconService.RuntimeActionText;
     }
 
     private void OnApplicationTitleBarBackRequested(TitleBar sender, object eventArguments)
@@ -112,7 +109,7 @@ public sealed partial class ManageWindow : WindowEx
         UpdateNavigationChrome();
     }
 
-    private async void OnLaunchOnStartupToggleMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => await _settingsService.SetLaunchOnStartupEnabledAsync(LaunchOnStartupToggleMenuFlyoutItem.IsChecked);
+    private async void OnLaunchOnStartupMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => await _settingsService.SetLaunchOnStartupEnabledAsync(!_trayIconService.IsLaunchOnStartupEnabled);
 
     private void OnExitApplicationMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => Environment.Exit(0);
 
@@ -153,16 +150,16 @@ public sealed partial class ManageWindow : WindowEx
 
     private void OnOpenManageWindowMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => App.GetRequiredService<IManageWindowService>().Show();
 
-    private async void OnRuntimeToggleMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs)
-        => await _settingsService.UpdateSettingsAsync(_settingsService.Settings with { IsDeskBorderEnabled = RuntimeToggleMenuFlyoutItem.IsChecked });
+    private async void OnRuntimeMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs)
+        => await _settingsService.UpdateSettingsAsync(_settingsService.Settings with { IsDeskBorderEnabled = !_trayIconService.IsRuntimeEnabled });
 
     private void OnShowNavigatorMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => _navigatorService.ToggleOverlay();
 
-    private async void OnStoreUpdateCheckToggleMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs)
+    private async void OnStoreUpdateCheckMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs)
     {
         await _settingsService.UpdateSettingsAsync(_settingsService.Settings with
         {
-            IsStoreUpdateCheckEnabled = StoreUpdateCheckToggleMenuFlyoutItem.IsChecked
+            IsStoreUpdateCheckEnabled = !_trayIconService.IsStoreUpdateCheckEnabled
         });
     }
 
@@ -211,6 +208,7 @@ public sealed partial class ManageWindow : WindowEx
         var localizedWindowTitle = _localizationService.GetString("ManageWindow.WindowTitle");
         Title = localizedWindowTitle;
         ApplicationTitleBar.Title = localizedWindowTitle;
+        AuthorMenuFlyoutItem.Text = _localizationService.GetString("ManageWindow.AuthorInfo");
         OpenManageWindowMenuFlyoutItem.Text = _localizationService.GetString("ManageWindow.OpenManageWindow");
         ShowNavigatorMenuFlyoutItem.Text = _localizationService.GetString("ManageWindow.ShowNavigator");
         ExitApplicationMenuFlyoutItem.Text = _localizationService.GetString("ManageWindow.ExitApplication");

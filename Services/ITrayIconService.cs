@@ -10,13 +10,13 @@ public interface ITrayIconService
 
     bool IsStoreUpdateCheckEnabled { get; }
 
-    string LaunchOnStartupToggleText { get; }
+    string LaunchOnStartupActionText { get; }
 
     string RuntimeStatusText { get; }
 
-    string RuntimeToggleText { get; }
+    string RuntimeActionText { get; }
 
-    string StoreUpdateCheckToggleText { get; }
+    string StoreUpdateCheckActionText { get; }
 
     void RefreshState();
 }

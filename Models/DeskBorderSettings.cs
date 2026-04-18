@@ -51,37 +51,55 @@ public sealed record KeyboardShortcutSettings
 
 public sealed record ApplicationHotkeySettings
 {
-    public KeyboardShortcutSettings ToggleDeskBorderEnabledHotkey { get; init; } = new();
+    public KeyboardShortcutSettings ToggleDeskBorderEnabledHotkey { get; init; } = new()
+    {
+        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Shift | KeyboardModifierKeys.Alternate,
+        Key = VirtualKey.D
+    };
 }
 
 public sealed record TriggerRectangleSettings
 {
-    public double Left { get; init; } = 0.45;
+    public double Left { get; init; } = 0.99;
 
-    public double Top { get; init; }
+    public double Top { get; init; } = 0.99;
 
-    public double Width { get; init; } = 0.10;
+    public double Width { get; init; } = 0.01;
 
-    public double Height { get; init; } = 0.02;
+    public double Height { get; init; } = 0.01;
 }
 
 public sealed record DesktopEdgeIgnoreZoneSettings
 {
-    public double TopIgnorePercentage { get; init; }
+    public double TopIgnorePercentage { get; init; } = 20.0;
 
-    public double BottomIgnorePercentage { get; init; }
+    public double BottomIgnorePercentage { get; init; } = 20.0;
 }
 
 public sealed record FocusedWindowMoveHotkeySettings
 {
-    public KeyboardShortcutSettings MoveToPreviousDesktopHotkey { get; init; } = new();
+    public KeyboardShortcutSettings MoveToPreviousDesktopHotkey { get; init; } = new()
+    {
+        IsEnabled = true,
+        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Alternate | KeyboardModifierKeys.Windows,
+        Key = VirtualKey.Left
+    };
 
-    public KeyboardShortcutSettings MoveToNextDesktopHotkey { get; init; } = new();
+    public KeyboardShortcutSettings MoveToNextDesktopHotkey { get; init; } = new()
+    {
+        IsEnabled = true,
+        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Alternate | KeyboardModifierKeys.Windows,
+        Key = VirtualKey.Right
+    };
 }
 
 public sealed record NavigatorSettings
 {
-    public KeyboardShortcutSettings ToggleHotkey { get; init; } = new();
+    public KeyboardShortcutSettings ToggleHotkey { get; init; } = new()
+    {
+        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Shift | KeyboardModifierKeys.Windows,
+        Key = VirtualKey.N
+    };
 
     public bool IsTriggerAreaEnabled { get; init; }
 
@@ -98,16 +116,13 @@ public sealed record DeskBorderSettings
 
     public ModifierGateSettings SwitchDesktopModifierSettings { get; init; } = new();
 
-    public ModifierGateSettings CreateDesktopModifierSettings { get; init; } = new()
-    {
-        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Shift
-    };
+    public ModifierGateSettings CreateDesktopModifierSettings { get; init; } = new();
 
-    public bool IsDesktopCreationEnabled { get; init; } = true;
+    public bool IsDesktopCreationEnabled { get; init; }
 
-    public bool IsAutoDeleteEnabled { get; init; }
+    public bool IsAutoDeleteEnabled { get; init; } = true;
 
-    public bool IsAutoDeleteWarningEnabled { get; init; } = true;
+    public bool IsAutoDeleteWarningEnabled { get; init; }
 
     public double AutoDeleteWarningTimeoutSeconds { get; init; } = 3.0;
 
@@ -121,7 +136,7 @@ public sealed record DeskBorderSettings
 
     public string[] BlacklistedProcessNames { get; init; } = [];
 
-    public bool IsLaunchOnStartupEnabled { get; init; }
+    public bool IsLaunchOnStartupEnabled { get; init; } = true;
 
     public bool IsStoreUpdateCheckEnabled { get; init; } = true;
 

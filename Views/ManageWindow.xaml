@@ -30,9 +30,14 @@
             <tb:TaskbarIcon.ContextFlyout>
                 <MenuFlyout AreOpenCloseAnimationsEnabled="True">
                     <MenuFlyoutItem
+                        x:Name="AuthorMenuFlyoutItem"
+                        IsEnabled="False"
+                        Text="제작자: 이호원 (airtaxi)" />
+                    <MenuFlyoutItem
                         x:Name="RuntimeStatusMenuFlyoutItem"
                         IsEnabled="False"
                         Text="DeskBorder 서비스 준비 중" />
+                    <MenuFlyoutSeparator />
                     <MenuFlyoutItem
                         x:Name="OpenManageWindowMenuFlyoutItem"
                         Click="OnOpenManageWindowMenuFlyoutItemClicked"
@@ -41,17 +46,17 @@
                         x:Name="ShowNavigatorMenuFlyoutItem"
                         Click="OnShowNavigatorMenuFlyoutItemClicked"
                         Text="Navigator 오버레이 표시" />
-                    <ToggleMenuFlyoutItem
-                        x:Name="LaunchOnStartupToggleMenuFlyoutItem"
-                        Click="OnLaunchOnStartupToggleMenuFlyoutItemClicked"
-                        Text="시스템 시작 시 자동 실행" />
-                    <ToggleMenuFlyoutItem
-                        x:Name="StoreUpdateCheckToggleMenuFlyoutItem"
-                        Click="OnStoreUpdateCheckToggleMenuFlyoutItemClicked"
-                        Text="스토어 업데이트 자동 확인" />
-                    <ToggleMenuFlyoutItem
-                        x:Name="RuntimeToggleMenuFlyoutItem"
-                        Click="OnRuntimeToggleMenuFlyoutItemClicked"
+                    <MenuFlyoutItem
+                        x:Name="LaunchOnStartupMenuFlyoutItem"
+                        Click="OnLaunchOnStartupMenuFlyoutItemClicked"
+                        Text="시스템 시작 시 자동 실행 설정" />
+                    <MenuFlyoutItem
+                        x:Name="StoreUpdateCheckMenuFlyoutItem"
+                        Click="OnStoreUpdateCheckMenuFlyoutItemClicked"
+                        Text="스토어 업데이트 자동 확인 설정" />
+                    <MenuFlyoutItem
+                        x:Name="RuntimeMenuFlyoutItem"
+                        Click="OnRuntimeMenuFlyoutItemClicked"
                         Text="DeskBorder 사용" />
                     <MenuFlyoutSeparator />
                     <MenuFlyoutItem

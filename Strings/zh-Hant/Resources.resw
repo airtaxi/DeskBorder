@@ -854,20 +854,41 @@
   <data name="Toast.WindowTitle" xml:space="preserve">
     <value>通知</value>
   </data>
+  <data name="ManageWindow.AuthorInfo" xml:space="preserve">
+    <value>Howon Lee (airtaxi)</value>
+  </data>
   <data name="Tray.LaunchOnStartup" xml:space="preserve">
     <value>系統啟動時執行</value>
   </data>
+  <data name="Tray.LaunchOnStartup.DisableAction" xml:space="preserve">
+    <value>關閉系統啟動時執行</value>
+  </data>
+  <data name="Tray.LaunchOnStartup.EnableAction" xml:space="preserve">
+    <value>開啟系統啟動時執行</value>
+  </data>
   <data name="Tray.RuntimeStatus.Paused" xml:space="preserve">
-    <value>○ DeskBorder 服務已暫停</value>
+    <value>DeskBorder 服務已暫停</value>
   </data>
   <data name="Tray.RuntimeStatus.Running" xml:space="preserve">
-    <value>● DeskBorder 服務執行中</value>
+    <value>DeskBorder 服務執行中</value>
   </data>
   <data name="Tray.RuntimeToggle" xml:space="preserve">
     <value>啟用 DeskBorder</value>
   </data>
+  <data name="Tray.Runtime.DisableAction" xml:space="preserve">
+    <value>停用 DeskBorder</value>
+  </data>
+  <data name="Tray.Runtime.EnableAction" xml:space="preserve">
+    <value>啟用 DeskBorder</value>
+  </data>
   <data name="Tray.StoreUpdateCheck" xml:space="preserve">
     <value>自動檢查 Store 更新</value>
+  </data>
+  <data name="Tray.StoreUpdateCheck.DisableAction" xml:space="preserve">
+    <value>關閉自動檢查 Store 更新</value>
+  </data>
+  <data name="Tray.StoreUpdateCheck.EnableAction" xml:space="preserve">
+    <value>開啟自動檢查 Store 更新</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
     <value>左側 {0:P0}，頂部 {1:P0}，寬度 {2:P0}，高度 {3:P0}</value>
