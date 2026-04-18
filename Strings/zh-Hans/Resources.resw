@@ -444,6 +444,9 @@
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>自动删除空桌面</value>
   </data>
+  <data name="SettingsPage_AutoDeleteWarningToggleSwitch.Header" xml:space="preserve">
+    <value>显示删除警告</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>管理要从边缘处理中排除的正在运行的前台进程。</value>
   </data>
@@ -664,7 +667,8 @@
     <value>边缘与自动整理说明</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 自动删除空桌面：当你从最外侧桌面向内移动且该桌面已无窗口时，会安排删除。
+    <value>• 自动删除空桌面：当你从最外侧桌面向内移动且该桌面已无窗口时，会删除该桌面。
+• 显示删除警告：开启后会先短暂等待并允许撤销，关闭后则不显示警告并立即删除，以便连续整理。
 • 空桌面检测：切换删除判断方式，包括是否将托盘类应用视为仍有打开窗口。
 • 顶部/底部忽略区域：用百分比调整屏幕上下有多少区域不响应边缘切换和桌面创建。
 • 启用桌面创建：开启或关闭在最后一个桌面的右边缘创建新桌面的功能。

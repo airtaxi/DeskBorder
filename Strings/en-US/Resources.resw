@@ -444,6 +444,9 @@
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>Auto delete empty desktops</value>
   </data>
+  <data name="SettingsPage_AutoDeleteWarningToggleSwitch.Header" xml:space="preserve">
+    <value>Show deletion warning</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>Manage running foreground processes to exclude from edge handling.</value>
   </data>
@@ -664,7 +667,8 @@
     <value>Edges and auto cleanup guide</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• Auto delete empty desktops: schedules deletion when you move inward from an outer desktop that no longer has windows.
+    <value>• Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.
+• Show deletion warning: when enabled, deletion waits briefly so you can undo it; when disabled, empty desktops are deleted immediately for continuous cleanup.
 • Empty desktop detection: changes how deletion decides whether tray-style apps still count as open windows.
 • Top and bottom ignore zones: adjusts, in percentages, how much of the upper and lower screen area should ignore edge switching and desktop creation.
 • Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.

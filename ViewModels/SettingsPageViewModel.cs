@@ -138,6 +138,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial bool IsAutoDeleteEnabled { get; set; }
 
     [ObservableProperty]
+    public partial bool IsAutoDeleteWarningEnabled { get; set; }
+
+    [ObservableProperty]
     public partial bool IsDesktopCreationEnabled { get; set; }
 
     [ObservableProperty]
@@ -274,6 +277,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         },
         IsDesktopCreationEnabled = IsDesktopCreationEnabled,
         IsAutoDeleteEnabled = IsAutoDeleteEnabled,
+        IsAutoDeleteWarningEnabled = IsAutoDeleteWarningEnabled,
         EmptyDesktopDetectionMode = SelectedEmptyDesktopDetectionModeOption?.Value ?? EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications,
         DesktopEdgeIgnoreZoneSettings = new DesktopEdgeIgnoreZoneSettings
         {
@@ -314,6 +318,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsStoreUpdateCheckEnabled = deskBorderSettings.IsStoreUpdateCheckEnabled;
         IsDesktopCreationEnabled = deskBorderSettings.IsDesktopCreationEnabled;
         IsAutoDeleteEnabled = deskBorderSettings.IsAutoDeleteEnabled;
+        IsAutoDeleteWarningEnabled = deskBorderSettings.IsAutoDeleteWarningEnabled;
         TopDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.TopIgnorePercentage;
         BottomDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage;
         IsNavigatorTriggerAreaEnabled = deskBorderSettings.NavigatorSettings.IsTriggerAreaEnabled;

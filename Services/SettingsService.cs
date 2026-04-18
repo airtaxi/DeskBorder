@@ -133,6 +133,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             CreateDesktopModifierSettings = NormalizeModifierGateSettings(settings.CreateDesktopModifierSettings, KeyboardModifierKeys.Shift),
             IsDesktopCreationEnabled = settings.IsDesktopCreationEnabled,
             IsAutoDeleteEnabled = settings.IsAutoDeleteEnabled,
+            IsAutoDeleteWarningEnabled = settings.IsAutoDeleteWarningEnabled,
             EmptyDesktopDetectionMode = settings.EmptyDesktopDetectionMode,
             DesktopEdgeIgnoreZoneSettings = NormalizeDesktopEdgeIgnoreZoneSettings(settings.DesktopEdgeIgnoreZoneSettings),
             ApplicationHotkeySettings = NormalizeApplicationHotkeySettings(settings.ApplicationHotkeySettings),

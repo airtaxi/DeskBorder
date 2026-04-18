@@ -106,6 +106,8 @@ public sealed record DeskBorderSettings
 
     public bool IsAutoDeleteEnabled { get; init; }
 
+    public bool IsAutoDeleteWarningEnabled { get; init; } = true;
+
     public EmptyDesktopDetectionMode EmptyDesktopDetectionMode { get; init; } = EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications;
 
     public DesktopEdgeIgnoreZoneSettings DesktopEdgeIgnoreZoneSettings { get; init; } = new();

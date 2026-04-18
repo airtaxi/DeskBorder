@@ -444,6 +444,9 @@
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>空のデスクトップを自動削除</value>
   </data>
+  <data name="SettingsPage_AutoDeleteWarningToggleSwitch.Header" xml:space="preserve">
+    <value>削除前の警告を表示</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>エッジ処理から除外する実行中のフォアグラウンド プロセスを管理します。</value>
   </data>
@@ -664,7 +667,8 @@
     <value>エッジと自動整理ガイド</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 空のデスクトップを自動削除: 外側デスクトップから内側へ移動するとき、ウィンドウが無ければ削除予約を行います。
+    <value>• 空のデスクトップを自動削除: 外側デスクトップから内側へ移動するとき、ウィンドウが無ければ削除します。
+• 削除前の警告を表示: オンにすると取り消し可能な短い待機のあとで削除し、オフにすると警告なしで即座に削除して連続整理できます。
 • 空のデスクトップ検出: 通知領域アプリを開いているウィンドウとして数えるかどうかを含め、削除判定方法を切り替えます。
 • 上側/下側の無視領域: 画面の上下の一部ではエッジ切り替えとデスクトップ作成が反応しないよう、割合で調整します。
 • デスクトップ作成を有効化: 最後のデスクトップの右端から新しいデスクトップを作る機能自体をオンまたはオフにします。

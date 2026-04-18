@@ -193,7 +193,17 @@ public sealed class DesktopLifecycleService(
             FallbackDesktopIdentifier = desktopNavigationResult.TargetDesktopIdentifier,
             UndoDuration = s_autoDeleteUndoDuration
         };
-        SchedulePendingDesktopDeletion(pendingDesktopDeletion, cancellationToken);
+
+        if (!_settingsService.Settings.IsAutoDeleteWarningEnabled)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            await DeleteDesktopAsync(pendingDesktopDeletion);
+            return;
+        }
+
+        await SchedulePendingDesktopDeletionAsync(pendingDesktopDeletion, cancellationToken);
     }
 
     private async Task RefreshNavigatorAsync()
@@ -219,17 +229,21 @@ public sealed class DesktopLifecycleService(
         await _operationSemaphore.WaitAsync(cancellationToken);
         try
         {
-            var desktopDeletionResult = _virtualDesktopService.DeleteDesktop(pendingDesktopDeletion.DesktopIdentifier, pendingDesktopDeletion.FallbackDesktopIdentifier);
-            if (desktopDeletionResult.IsSuccessful)
-                await ApplyWorkspaceSnapshotAsync(desktopDeletionResult.CurrentWorkspaceSnapshot);
+            await DeleteDesktopAsync(pendingDesktopDeletion);
         }
         finally { _operationSemaphore.Release(); }
     }
 
-    private void SchedulePendingDesktopDeletion(PendingDesktopDeletion pendingDesktopDeletion, CancellationToken cancellationToken)
+    private async Task DeleteDesktopAsync(PendingDesktopDeletion pendingDesktopDeletion)
     {
-        _pendingDesktopDeletionCancellationTokenSource?.Cancel();
-        _pendingDesktopDeletionCancellationTokenSource?.Dispose();
+        var desktopDeletionResult = _virtualDesktopService.DeleteDesktop(pendingDesktopDeletion.DesktopIdentifier, pendingDesktopDeletion.FallbackDesktopIdentifier);
+        if (desktopDeletionResult.IsSuccessful)
+            await ApplyWorkspaceSnapshotAsync(desktopDeletionResult.CurrentWorkspaceSnapshot);
+    }
+
+    private async Task SchedulePendingDesktopDeletionAsync(PendingDesktopDeletion pendingDesktopDeletion, CancellationToken cancellationToken)
+    {
+        await CancelPendingDesktopDeletionAsync();
         _pendingDesktopDeletionCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _pendingDesktopDeletionTask = RunPendingDesktopDeletionAsync(pendingDesktopDeletion, _pendingDesktopDeletionCancellationTokenSource.Token);
     }
@@ -323,6 +337,10 @@ public sealed class DesktopLifecycleService(
         await _operationSemaphore.WaitAsync();
         try
         {
+            var currentSettings = _settingsService.Settings;
+            if (!currentSettings.IsAutoDeleteEnabled || !currentSettings.IsAutoDeleteWarningEnabled)
+                await CancelPendingDesktopDeletionAsync();
+
             await RefreshNavigatorAsync();
         }
         finally { _operationSemaphore.Release(); }

@@ -196,6 +196,14 @@
                             IsOn="{x:Bind ViewModel.IsAutoDeleteEnabled, Mode=TwoWay}"
                             Toggled="OnSettingToggleSwitchToggled" />
 
+                        <ToggleSwitch
+                            x:Name="AutoDeleteWarningToggleSwitch"
+                            x:Uid="SettingsPage_AutoDeleteWarningToggleSwitch"
+                            Header="삭제 경고 표시"
+                            IsEnabled="{x:Bind ViewModel.IsAutoDeleteEnabled, Mode=OneWay}"
+                            IsOn="{x:Bind ViewModel.IsAutoDeleteWarningEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
                         <ComboBox
                             x:Name="EmptyDesktopDetectionModeComboBox"
                             x:Uid="SettingsPage_EmptyDesktopDetectionModeComboBox"
@@ -281,7 +289,6 @@
                                 <ToggleSwitch
                                     x:Uid="SettingsPage_CreateDesktopEnabledToggleSwitch"
                                     MinWidth="0"
-                                    Margin="0,-10"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Top"
                                     IsOn="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=TwoWay}"
