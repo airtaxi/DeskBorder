@@ -118,6 +118,37 @@
                             IsOn="{x:Bind ViewModel.IsStoreUpdateCheckEnabled, Mode=TwoWay}"
                             Toggled="OnSettingToggleSwitchToggled" />
 
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="8">
+                                <TextBlock
+                                    x:Uid="SettingsPage_StoreUpdateStatusTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="업데이트 확인" />
+                                <TextBlock
+                                    x:Name="StoreUpdateStatusTextBlock"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    TextWrapping="WrapWholeWords" />
+                                <InfoBar
+                                    x:Name="StoreUpdateVersionInfoBar"
+                                    IsClosable="False"
+                                    IsOpen="True"
+                                    Severity="Informational" />
+                            </StackPanel>
+                            <Button
+                                x:Name="CheckStoreUpdateButton"
+                                x:Uid="SettingsPage_CheckStoreUpdateButton"
+                                Grid.Column="1"
+                                MinWidth="120"
+                                Margin="0,0,0,10"
+                                VerticalAlignment="Bottom"
+                                Click="OnCheckStoreUpdateButtonClicked"
+                                Content="확인하기" />
+                        </Grid>
+
                         <ComboBox
                             x:Name="MultiDisplayBehaviorComboBox"
                             x:Uid="SettingsPage_MultiDisplayBehaviorComboBox"

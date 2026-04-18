@@ -220,7 +220,7 @@
     <value>服务状态</value>
   </data>
   <data name="DashboardPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
-    <value>检查 Store 更新</value>
+    <value>自动检查 Store 更新</value>
   </data>
   <data name="DashboardPage_TitleTextBlock.Text" xml:space="preserve">
     <value>DeskBorder</value>
@@ -546,9 +546,79 @@
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 启用 DeskBorder：统一开启或关闭边缘切换、桌面创建、自动整理和全局热键。
 • 随系统启动运行：在 Windows 登录后立即以托盘方式启动应用。
-• 检查 Store 更新：为 Store 分发版本保留更新检查行为。
+• 自动检查 Store 更新：启用后每 8 小时检查一次 Microsoft Store 更新，有新版本时显示系统通知。
+• 立即检查更新：立即在 Microsoft Store 中检查新版本，并在有更新时打开产品页面。
 • 多显示器行为：在多显示器环境下禁用监控，或仅在最外侧显示器边缘生效。
 • 应用语言：将界面固定为指定语言，或跟随系统语言。</value>
+  </data>
+  <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
+    <value>无法从 Microsoft Store 检查更新。</value>
+  </data>
+  <data name="Settings.StoreUpdate.CheckFailedTitle" xml:space="preserve">
+    <value>检查更新失败</value>
+  </data>
+  <data name="Settings.StoreUpdate.CurrentVersionMessageFormat" xml:space="preserve">
+    <value>当前版本：{0}</value>
+  </data>
+  <data name="Settings.StoreUpdate.CurrentVersionTitle" xml:space="preserve">
+    <value>应用版本</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.CloseButtonText" xml:space="preserve">
+    <value>稍后</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.Content" xml:space="preserve">
+    <value>发现新版本。要打开 Microsoft Store 产品页面吗？</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>打开 Store</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.Title" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreProductPageFailedMessage" xml:space="preserve">
+    <value>无法打开 Microsoft Store 产品页面。</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreProductPageFailedTitle" xml:space="preserve">
+    <value>无法打开 Microsoft Store</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.CheckFailed" xml:space="preserve">
+    <value>检查更新失败。</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.Checking" xml:space="preserve">
+    <value>正在检查更新...</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.Default" xml:space="preserve">
+    <value>可以立即在 Microsoft Store 中检查新版本。</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.UpdateAvailable" xml:space="preserve">
+    <value>发现新更新。</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.UpToDate" xml:space="preserve">
+    <value>当前已是最新版本。</value>
+  </data>
+  <data name="SettingsPage_CheckStoreUpdateButton.Content" xml:space="preserve">
+    <value>立即检查</value>
+  </data>
+  <data name="SettingsPage_StoreUpdateStatusTitleTextBlock.Text" xml:space="preserve">
+    <value>立即检查更新</value>
+  </data>
+  <data name="Toast.StoreUpdate.Action" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Toast.StoreUpdate.Message" xml:space="preserve">
+    <value>发现新版本。你可以在 Microsoft Store 中更新 DeskBorder。</value>
+  </data>
+  <data name="Toast.StoreUpdate.Title" xml:space="preserve">
+    <value>DeskBorder 更新</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreDownloadsAndUpdatesFailedMessage" xml:space="preserve">
+    <value>无法打开 Microsoft Store 的下载和更新页面。</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreDownloadsAndUpdatesFailedTitle" xml:space="preserve">
+    <value>无法打开 Microsoft Store</value>
+  </data>
+  <data name="SettingsPage_OpenStoreDownloadsAndUpdatesButton.Content" xml:space="preserve">
+    <value>在 Microsoft Store 中检查更新</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>配置可直接控制 DeskBorder、窗口移动和 Navigator 的热键。</value>
@@ -698,7 +768,7 @@
     <value>移除</value>
   </data>
   <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
-    <value>检查 Store 更新</value>
+    <value>自动检查 Store 更新</value>
   </data>
   <data name="SettingsPage_BlacklistSectionTeachingTip.Title" xml:space="preserve">
     <value>黑名单说明</value>
@@ -794,7 +864,7 @@
     <value>启用 DeskBorder</value>
   </data>
   <data name="Tray.StoreUpdateCheck" xml:space="preserve">
-    <value>检查 Store 更新</value>
+    <value>自动检查 Store 更新</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
     <value>左侧 {0:P0}，顶部 {1:P0}，宽度 {2:P0}，高度 {3:P0}</value>

@@ -220,7 +220,7 @@
     <value>Service status</value>
   </data>
   <data name="DashboardPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
-    <value>Check for Store updates</value>
+    <value>Check for Store updates automatically</value>
   </data>
   <data name="DashboardPage_TitleTextBlock.Text" xml:space="preserve">
     <value>DeskBorder</value>
@@ -546,9 +546,79 @@
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Enable DeskBorder: turns edge switching, desktop creation, auto cleanup, and global hotkeys on or off together.
 • Run at system startup: starts the app in the tray right after Windows sign-in.
-• Check for Store updates: keeps update checks enabled for Store-distributed builds.
+• Check for Store updates automatically: when enabled, checks Microsoft Store every 8 hours and shows a system toast when a new version is available.
+• Check for updates now: checks Microsoft Store immediately and can open the app's product page when a new version is available.
 • Multi-display behavior: disables monitoring on multi-monitor setups, or limits it to the outermost display edges only.
 • App language: pins the UI to a specific language or follows the system language.</value>
+  </data>
+  <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
+    <value>Failed to check for updates from Microsoft Store.</value>
+  </data>
+  <data name="Settings.StoreUpdate.CheckFailedTitle" xml:space="preserve">
+    <value>Update check failed</value>
+  </data>
+  <data name="Settings.StoreUpdate.CurrentVersionMessageFormat" xml:space="preserve">
+    <value>Current version: {0}</value>
+  </data>
+  <data name="Settings.StoreUpdate.CurrentVersionTitle" xml:space="preserve">
+    <value>App version</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.CloseButtonText" xml:space="preserve">
+    <value>Later</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.Content" xml:space="preserve">
+    <value>A new version is available. Do you want to open the Microsoft Store product page?</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>Open Store</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.Title" xml:space="preserve">
+    <value>Update available</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreProductPageFailedMessage" xml:space="preserve">
+    <value>Failed to open the Microsoft Store product page.</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreProductPageFailedTitle" xml:space="preserve">
+    <value>Unable to open Microsoft Store</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.CheckFailed" xml:space="preserve">
+    <value>Failed to check for updates.</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.Checking" xml:space="preserve">
+    <value>Checking for updates...</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.Default" xml:space="preserve">
+    <value>Check Microsoft Store for updates right now.</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.UpdateAvailable" xml:space="preserve">
+    <value>A new update is available.</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.UpToDate" xml:space="preserve">
+    <value>You already have the latest version.</value>
+  </data>
+  <data name="SettingsPage_CheckStoreUpdateButton.Content" xml:space="preserve">
+    <value>Check now</value>
+  </data>
+  <data name="SettingsPage_StoreUpdateStatusTitleTextBlock.Text" xml:space="preserve">
+    <value>Check for updates now</value>
+  </data>
+  <data name="Toast.StoreUpdate.Action" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="Toast.StoreUpdate.Message" xml:space="preserve">
+    <value>A new version is available. You can update DeskBorder from Microsoft Store.</value>
+  </data>
+  <data name="Toast.StoreUpdate.Title" xml:space="preserve">
+    <value>DeskBorder update</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreDownloadsAndUpdatesFailedMessage" xml:space="preserve">
+    <value>Failed to open the Microsoft Store Downloads and Updates page.</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreDownloadsAndUpdatesFailedTitle" xml:space="preserve">
+    <value>Unable to open Microsoft Store</value>
+  </data>
+  <data name="SettingsPage_OpenStoreDownloadsAndUpdatesButton.Content" xml:space="preserve">
+    <value>Check for updates in Microsoft Store</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>Configure hotkeys that directly control DeskBorder, window movement, and Navigator.</value>
@@ -698,7 +768,7 @@
     <value>Remove</value>
   </data>
   <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
-    <value>Check for Store updates</value>
+    <value>Check for Store updates automatically</value>
   </data>
   <data name="SettingsPage_BlacklistSectionTeachingTip.Title" xml:space="preserve">
     <value>Blacklist guide</value>
@@ -794,7 +864,7 @@
     <value>Enable DeskBorder</value>
   </data>
   <data name="Tray.StoreUpdateCheck" xml:space="preserve">
-    <value>Check for Store updates</value>
+    <value>Check for Store updates automatically</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
     <value>Left {0:P0}, Top {1:P0}, Width {2:P0}, Height {3:P0}</value>

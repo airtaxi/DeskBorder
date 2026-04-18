@@ -1,20 +1,20 @@
 using DeskBorder.Dialogs;
 using DeskBorder.Helpers;
-using DeskBorder.Models;
 using DeskBorder.Services;
 using DeskBorder.ViewModels;
 using DeskBorder.Views;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.Storage.Pickers;
-using System.IO;
-using System.Threading;
-using Windows.Storage;
+using Windows.ApplicationModel;
 using WinRT.Interop;
+using DispatcherQueueTimer = Microsoft.UI.Dispatching.DispatcherQueueTimer;
+using DispatcherQueuePriority = Microsoft.UI.Dispatching.DispatcherQueuePriority;
 
 namespace DeskBorder.Pages;
 
@@ -31,6 +31,7 @@ public sealed partial class SettingsPage : Page
     private readonly ManageWindow _manageWindow;
     private readonly DispatcherQueueTimer _settingsStatusInfoBarAutoHideTimer;
     private readonly ISettingsService _settingsService;
+    private readonly IStoreUpdateService _storeUpdateService;
     private readonly IThemeService _themeService;
     private readonly SemaphoreSlim _settingsUpdateSemaphore = new(1, 1);
     private TeachingTip? _activeSectionTeachingTip;
@@ -38,6 +39,7 @@ public sealed partial class SettingsPage : Page
     private bool _isNavigatorTriggerAreaSelectionInProgress;
     private bool _isSynchronizingViewModel;
     private bool _isSettingsTransferInProgress;
+    private string _storeUpdateStatusResourceName = "Settings.StoreUpdate.Status.Default";
 
     public SettingsPageViewModel ViewModel { get; } = new();
 
@@ -52,9 +54,12 @@ public sealed partial class SettingsPage : Page
         _manageWindow = App.GetRequiredService<ManageWindow>();
         _settingsStatusInfoBarAutoHideTimer = CreateInfoBarAutoHideTimer(SettingsStatusInfoBar);
         _settingsService = App.GetRequiredService<ISettingsService>();
+        _storeUpdateService = App.GetRequiredService<IStoreUpdateService>();
         _themeService = App.GetRequiredService<IThemeService>();
         _hotkeyService.RegistrationStateChanged += OnHotkeyServiceRegistrationStateChanged;
+        _localizationService.LanguageChanged += OnLocalizationServiceLanguageChanged;
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
+        RefreshStoreUpdateVisualState();
         Unloaded += OnSettingsPageUnloaded;
         _ = LoadSettingsAsync();
     }
@@ -142,6 +147,10 @@ public sealed partial class SettingsPage : Page
         return [.. availableForegroundProcessNames.Order(StringComparer.OrdinalIgnoreCase)];
     }
 
+    private static string FormatCurrentApplicationVersion(PackageVersion packageVersion) => $"v{packageVersion.Major}.{packageVersion.Minor}.{packageVersion.Build}";
+
+    private static string GetCurrentApplicationVersion() => FormatCurrentApplicationVersion(Package.Current.Id.Version);
+
     private async Task ImportSettingsAsync()
     {
         if (_isSettingsTransferInProgress)
@@ -220,7 +229,24 @@ public sealed partial class SettingsPage : Page
         ApplyHotkeyRegistrationState();
     }
 
+    private void OnLocalizationServiceLanguageChanged(object? sender, EventArgs eventArguments)
+    {
+        _ = sender;
+        _ = eventArguments;
+        if (DispatcherQueue.TryEnqueue(RefreshStoreUpdateVisualState))
+            return;
+
+        RefreshStoreUpdateVisualState();
+    }
+
     private void OnModifierSelectionCheckBoxClicked(object sender, RoutedEventArgs routedEventArgs) => QueueSettingsSave();
+
+    private async void OnCheckStoreUpdateButtonClicked(object sender, RoutedEventArgs routedEventArgs)
+    {
+        _ = sender;
+        _ = routedEventArgs;
+        await CheckStoreUpdateAsync();
+    }
 
     private async void OnRemoveBlacklistedProcessNameButtonClicked(object sender, RoutedEventArgs routedEventArgs)
     {
@@ -260,6 +286,7 @@ public sealed partial class SettingsPage : Page
     {
         _settingsImportExportInfoBarAutoHideTimer.Stop();
         _hotkeyService.RegistrationStateChanged -= OnHotkeyServiceRegistrationStateChanged;
+        _localizationService.LanguageChanged -= OnLocalizationServiceLanguageChanged;
         _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
         _settingsStatusInfoBarAutoHideTimer.Stop();
         Unloaded -= OnSettingsPageUnloaded;
@@ -302,6 +329,96 @@ public sealed partial class SettingsPage : Page
         fileOpenPicker.FileTypeFilter.Add(SettingsFileExtension);
 
         return await fileOpenPicker.PickSingleFileAsync();
+    }
+
+    private async Task CheckStoreUpdateAsync()
+    {
+        CheckStoreUpdateButton.IsEnabled = false;
+        SetStoreUpdateStatus("Settings.StoreUpdate.Status.Checking");
+        try
+        {
+            if (await _storeUpdateService.GetAvailableUpdateCountAsync() > 0)
+            {
+                SetStoreUpdateStatus("Settings.StoreUpdate.Status.UpdateAvailable");
+                if (await ShowStoreUpdateAvailableDialogAsync() == ContentDialogResult.Primary)
+                    await OpenStoreProductPageAsync();
+
+                return;
+            }
+
+            SetStoreUpdateStatus("Settings.StoreUpdate.Status.UpToDate");
+        }
+        catch (COMException)
+        {
+            SetStoreUpdateStatus("Settings.StoreUpdate.Status.CheckFailed");
+            ShowSettingsStatus(
+                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedTitle"),
+                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedMessage"),
+                InfoBarSeverity.Error);
+        }
+        catch (InvalidOperationException)
+        {
+            SetStoreUpdateStatus("Settings.StoreUpdate.Status.CheckFailed");
+            ShowSettingsStatus(
+                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedTitle"),
+                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedMessage"),
+                InfoBarSeverity.Error);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            SetStoreUpdateStatus("Settings.StoreUpdate.Status.CheckFailed");
+            ShowSettingsStatus(
+                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedTitle"),
+                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedMessage"),
+                InfoBarSeverity.Error);
+        }
+        finally { CheckStoreUpdateButton.IsEnabled = true; }
+    }
+
+    private async Task OpenStoreProductPageAsync()
+    {
+        if (await _storeUpdateService.OpenStoreProductPageAsync())
+            return;
+
+        ShowSettingsStatus(
+            LocalizedResourceAccessor.GetString("Settings.StoreUpdate.OpenStoreProductPageFailedTitle"),
+            LocalizedResourceAccessor.GetString("Settings.StoreUpdate.OpenStoreProductPageFailedMessage"),
+            InfoBarSeverity.Error);
+    }
+
+    private void RefreshStoreUpdateStatusText() => StoreUpdateStatusTextBlock.Text = LocalizedResourceAccessor.GetString(_storeUpdateStatusResourceName);
+
+    private void RefreshStoreUpdateVersionInfoBar()
+    {
+        StoreUpdateVersionInfoBar.Title = LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CurrentVersionTitle");
+        StoreUpdateVersionInfoBar.Message = LocalizedResourceAccessor.GetFormattedString("Settings.StoreUpdate.CurrentVersionMessageFormat", GetCurrentApplicationVersion());
+    }
+
+    private void RefreshStoreUpdateVisualState()
+    {
+        RefreshStoreUpdateStatusText();
+        RefreshStoreUpdateVersionInfoBar();
+    }
+
+    private void SetStoreUpdateStatus(string resourceName)
+    {
+        _storeUpdateStatusResourceName = resourceName;
+        RefreshStoreUpdateStatusText();
+    }
+
+    private async Task<ContentDialogResult> ShowStoreUpdateAvailableDialogAsync()
+    {
+        var storeUpdateAvailableDialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = LocalizedResourceAccessor.GetString("Settings.StoreUpdate.Dialog.Title"),
+            Content = LocalizedResourceAccessor.GetString("Settings.StoreUpdate.Dialog.Content"),
+            PrimaryButtonText = LocalizedResourceAccessor.GetString("Settings.StoreUpdate.Dialog.PrimaryButtonText"),
+            CloseButtonText = LocalizedResourceAccessor.GetString("Settings.StoreUpdate.Dialog.CloseButtonText"),
+            DefaultButton = ContentDialogButton.Primary
+        };
+        _themeService.RegisterFrameworkElement(storeUpdateAvailableDialog);
+        return await storeUpdateAvailableDialog.ShowAsync();
     }
 
     private async Task ShowForegroundProcessSelectionDialogAsync()

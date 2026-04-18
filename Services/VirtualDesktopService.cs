@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace DeskBorder.Services;
 
-public sealed class VirtualDesktopService(ISettingsService settingsService) : IVirtualDesktopService
+public sealed partial class VirtualDesktopService(ISettingsService settingsService) : IVirtualDesktopService
 {
     private const int WindowActivationRetryCount = 10;
     private const int WindowActivationRetryDelayInMilliseconds = 50;
@@ -637,7 +637,7 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
             : null;
     }
 
-    private sealed class VirtualDesktopShellConnection(VirtualDesktopShell virtualDesktopShell) : IDisposable
+    private sealed partial class VirtualDesktopShellConnection(VirtualDesktopShell virtualDesktopShell) : IDisposable
     {
         public VirtualDesktopShell VirtualDesktopShell { get; } = virtualDesktopShell;
 

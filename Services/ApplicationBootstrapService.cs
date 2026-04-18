@@ -3,13 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DeskBorder.Services;
 
-public sealed class ApplicationBootstrapService(IServiceProvider serviceProvider, IHotkeyService hotkeyService, IManageWindowService manageWindowService, IDeskBorderRuntimeService deskBorderRuntimeService, ISettingsService settingsService) : IApplicationBootstrapService
+public sealed class ApplicationBootstrapService(IServiceProvider serviceProvider, IHotkeyService hotkeyService, IManageWindowService manageWindowService, IDeskBorderRuntimeService deskBorderRuntimeService, ISettingsService settingsService, IStoreUpdateService storeUpdateService) : IApplicationBootstrapService
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IHotkeyService _hotkeyService = hotkeyService;
     private readonly IManageWindowService _manageWindowService = manageWindowService;
     private readonly IDeskBorderRuntimeService _deskBorderRuntimeService = deskBorderRuntimeService;
     private readonly ISettingsService _settingsService = settingsService;
+    private readonly IStoreUpdateService _storeUpdateService = storeUpdateService;
     private bool _isInitialized;
 
     public async Task InitializeAsync(bool shouldActivateManageWindow)
@@ -22,6 +23,7 @@ public sealed class ApplicationBootstrapService(IServiceProvider serviceProvider
             if (!_hotkeyService.IsInitialized)
                 _hotkeyService.Initialize();
 
+            _storeUpdateService.Initialize();
             var manageWindow = _serviceProvider.GetRequiredService<ManageWindow>();
             _ = _serviceProvider.GetRequiredService<NavigatorWindow>();
             _manageWindowService.Initialize(manageWindow);

@@ -220,7 +220,7 @@
     <value>サービス状態</value>
   </data>
   <data name="DashboardPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
-    <value>Store 更新プログラムを確認</value>
+    <value>Store 更新を自動確認</value>
   </data>
   <data name="DashboardPage_TitleTextBlock.Text" xml:space="preserve">
     <value>DeskBorder</value>
@@ -546,9 +546,79 @@
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• DeskBorder を有効化: エッジ切り替え、デスクトップ作成、自動整理、グローバル ホットキーをまとめてオンまたはオフにします。
 • システム起動時に実行: Windows サインイン直後にアプリをトレイで起動します。
-• Store 更新プログラムを確認: Store 配布ビルドで更新確認動作を維持します。
+• Store 更新の自動確認: 有効にすると 8 時間ごとに Microsoft Store の更新を確認し、新しいバージョンがある場合はシステム トーストを表示します。
+• 今すぐ更新を確認: Microsoft Store で新しいバージョンをすぐに確認し、更新がある場合は製品ページを開けます。
 • マルチディスプレイ動作: マルチモニターでは監視を無効化するか、最も外側のディスプレイ端だけで動作させます。
 • アプリの言語: UI 言語を固定するか、システム言語に従わせます。</value>
+  </data>
+  <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
+    <value>Microsoft Store で更新を確認できませんでした。</value>
+  </data>
+  <data name="Settings.StoreUpdate.CheckFailedTitle" xml:space="preserve">
+    <value>更新確認に失敗しました</value>
+  </data>
+  <data name="Settings.StoreUpdate.CurrentVersionMessageFormat" xml:space="preserve">
+    <value>現在のバージョン: {0}</value>
+  </data>
+  <data name="Settings.StoreUpdate.CurrentVersionTitle" xml:space="preserve">
+    <value>アプリのバージョン</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.CloseButtonText" xml:space="preserve">
+    <value>後で</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.Content" xml:space="preserve">
+    <value>新しいバージョンが利用可能です。Microsoft Store の製品ページを開きますか？</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>Store を開く</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.Title" xml:space="preserve">
+    <value>更新を確認</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreProductPageFailedMessage" xml:space="preserve">
+    <value>Microsoft Store の製品ページを開けませんでした。</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreProductPageFailedTitle" xml:space="preserve">
+    <value>Microsoft Store を開けません</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.CheckFailed" xml:space="preserve">
+    <value>更新の確認に失敗しました。</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.Checking" xml:space="preserve">
+    <value>更新を確認しています...</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.Default" xml:space="preserve">
+    <value>Microsoft Store で今すぐ新しいバージョンを確認できます。</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.UpdateAvailable" xml:space="preserve">
+    <value>新しい更新があります。</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.UpToDate" xml:space="preserve">
+    <value>現在、最新バージョンです。</value>
+  </data>
+  <data name="SettingsPage_CheckStoreUpdateButton.Content" xml:space="preserve">
+    <value>確認する</value>
+  </data>
+  <data name="SettingsPage_StoreUpdateStatusTitleTextBlock.Text" xml:space="preserve">
+    <value>今すぐ更新を確認</value>
+  </data>
+  <data name="Toast.StoreUpdate.Action" xml:space="preserve">
+    <value>更新する</value>
+  </data>
+  <data name="Toast.StoreUpdate.Message" xml:space="preserve">
+    <value>新しいバージョンが利用可能です。Microsoft Store から DeskBorder を更新できます。</value>
+  </data>
+  <data name="Toast.StoreUpdate.Title" xml:space="preserve">
+    <value>DeskBorder の更新</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreDownloadsAndUpdatesFailedMessage" xml:space="preserve">
+    <value>Microsoft Store のダウンロードと更新ページを開けませんでした。</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreDownloadsAndUpdatesFailedTitle" xml:space="preserve">
+    <value>Microsoft Store を開けません</value>
+  </data>
+  <data name="SettingsPage_OpenStoreDownloadsAndUpdatesButton.Content" xml:space="preserve">
+    <value>Microsoft Store で更新を確認</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>DeskBorder、ウィンドウ移動、Navigator を直接制御するホットキーを設定します。</value>
@@ -698,7 +768,7 @@
     <value>削除</value>
   </data>
   <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
-    <value>Store 更新プログラムを確認</value>
+    <value>Store 更新を自動確認</value>
   </data>
   <data name="SettingsPage_BlacklistSectionTeachingTip.Title" xml:space="preserve">
     <value>ブラックリスト ガイド</value>
@@ -794,7 +864,7 @@
     <value>DeskBorder を有効化</value>
   </data>
   <data name="Tray.StoreUpdateCheck" xml:space="preserve">
-    <value>Store 更新プログラムを確認</value>
+    <value>Store 更新を自動確認</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
     <value>左 {0:P0}、上 {1:P0}、幅 {2:P0}、高さ {3:P0}</value>

@@ -48,7 +48,7 @@
                     <ToggleMenuFlyoutItem
                         x:Name="StoreUpdateCheckToggleMenuFlyoutItem"
                         Click="OnStoreUpdateCheckToggleMenuFlyoutItemClicked"
-                        Text="스토어 업데이트 확인" />
+                        Text="스토어 업데이트 자동 확인" />
                     <ToggleMenuFlyoutItem
                         x:Name="RuntimeToggleMenuFlyoutItem"
                         Click="OnRuntimeToggleMenuFlyoutItemClicked"

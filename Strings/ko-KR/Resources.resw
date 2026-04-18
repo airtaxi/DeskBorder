@@ -220,7 +220,7 @@
     <value>서비스 상태</value>
   </data>
   <data name="DashboardPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
-    <value>스토어 업데이트 확인</value>
+    <value>스토어 업데이트 자동 확인</value>
   </data>
   <data name="DashboardPage_TitleTextBlock.Text" xml:space="preserve">
     <value>DeskBorder</value>
@@ -546,9 +546,79 @@
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• DeskBorder 사용: 가장자리 전환, 데스크톱 생성, 자동 정리, 전역 단축키를 한 번에 켜거나 끕니다.
 • 시스템 시작 시 자동 실행: Windows 로그인 직후 앱을 트레이로 시작합니다.
-• 스토어 업데이트 확인: Store 배포 빌드에서 업데이트 확인 동작을 유지합니다.
+• 스토어 업데이트 자동 확인: 켜 두면 8시간마다 Microsoft Store 업데이트를 확인하고, 새 버전이 있으면 시스템 토스트를 표시합니다.
+• 업데이트 확인: 지금 바로 Microsoft Store에서 새 버전을 조회하고, 업데이트가 있으면 제품 페이지를 열 수 있습니다.
 • 다중 디스플레이 동작: 멀티 모니터에서 감시를 끄거나, 가장 바깥 모니터 경계에서만 동작하게 합니다.
 • 앱 언어: 설정 UI 언어를 고정하거나 시스템 언어를 따르게 합니다.</value>
+  </data>
+  <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
+    <value>Microsoft Store에서 업데이트를 확인하지 못했습니다.</value>
+  </data>
+  <data name="Settings.StoreUpdate.CheckFailedTitle" xml:space="preserve">
+    <value>업데이트 확인 실패</value>
+  </data>
+  <data name="Settings.StoreUpdate.CurrentVersionMessageFormat" xml:space="preserve">
+    <value>현재 버전: {0}</value>
+  </data>
+  <data name="Settings.StoreUpdate.CurrentVersionTitle" xml:space="preserve">
+    <value>앱 버전</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.CloseButtonText" xml:space="preserve">
+    <value>나중에</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.Content" xml:space="preserve">
+    <value>새로운 버전이 출시되었습니다. Microsoft Store 제품 페이지를 여시겠습니까?</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>스토어 열기</value>
+  </data>
+  <data name="Settings.StoreUpdate.Dialog.Title" xml:space="preserve">
+    <value>업데이트 확인</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreProductPageFailedMessage" xml:space="preserve">
+    <value>Microsoft Store 제품 페이지를 열지 못했습니다.</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreProductPageFailedTitle" xml:space="preserve">
+    <value>Microsoft Store를 열 수 없습니다</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.CheckFailed" xml:space="preserve">
+    <value>업데이트 확인에 실패했습니다.</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.Checking" xml:space="preserve">
+    <value>업데이트를 확인하는 중...</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.Default" xml:space="preserve">
+    <value>Microsoft Store에서 새 버전을 바로 확인할 수 있습니다.</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.UpdateAvailable" xml:space="preserve">
+    <value>새로운 업데이트가 있습니다.</value>
+  </data>
+  <data name="Settings.StoreUpdate.Status.UpToDate" xml:space="preserve">
+    <value>현재 최신 버전입니다.</value>
+  </data>
+  <data name="SettingsPage_CheckStoreUpdateButton.Content" xml:space="preserve">
+    <value>확인하기</value>
+  </data>
+  <data name="SettingsPage_StoreUpdateStatusTitleTextBlock.Text" xml:space="preserve">
+    <value>지금 업데이트 확인</value>
+  </data>
+  <data name="Toast.StoreUpdate.Action" xml:space="preserve">
+    <value>업데이트하기</value>
+  </data>
+  <data name="Toast.StoreUpdate.Message" xml:space="preserve">
+    <value>새로운 버전이 출시되었습니다. Microsoft Store에서 업데이트할 수 있습니다.</value>
+  </data>
+  <data name="Toast.StoreUpdate.Title" xml:space="preserve">
+    <value>DeskBorder 업데이트</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreDownloadsAndUpdatesFailedMessage" xml:space="preserve">
+    <value>Microsoft Store의 다운로드 및 업데이트 페이지를 열지 못했습니다.</value>
+  </data>
+  <data name="Settings.StoreUpdate.OpenStoreDownloadsAndUpdatesFailedTitle" xml:space="preserve">
+    <value>Microsoft Store를 열 수 없습니다</value>
+  </data>
+  <data name="SettingsPage_OpenStoreDownloadsAndUpdatesButton.Content" xml:space="preserve">
+    <value>스토어에서 업데이트 확인</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>DeskBorder, 창 이동, Navigator를 직접 제어하는 단축키를 설정합니다.</value>
@@ -698,7 +768,7 @@
     <value>제거</value>
   </data>
   <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
-    <value>스토어 업데이트 확인</value>
+    <value>스토어 업데이트 자동 확인</value>
   </data>
   <data name="SettingsPage_BlacklistSectionTeachingTip.Title" xml:space="preserve">
     <value>블랙리스트 안내</value>
@@ -794,7 +864,7 @@
     <value>DeskBorder 사용</value>
   </data>
   <data name="Tray.StoreUpdateCheck" xml:space="preserve">
-    <value>스토어 업데이트 확인</value>
+    <value>스토어 업데이트 자동 확인</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
     <value>왼쪽 {0:P0}, 위 {1:P0}, 너비 {2:P0}, 높이 {3:P0}</value>

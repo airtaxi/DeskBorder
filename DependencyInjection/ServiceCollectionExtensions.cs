@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<INavigatorService, NavigatorService>();
         serviceCollection.AddSingleton<IStartupRegistrationService, StartupRegistrationService>();
         serviceCollection.AddSingleton<ISettingsService, SettingsService>();
+        serviceCollection.AddSingleton<IStoreUpdateService, StoreUpdateService>();
         serviceCollection.AddSingleton<IThemeService, ThemeService>();
         serviceCollection.AddSingleton<IToastService, ToastService>();
         serviceCollection.AddSingleton<ITrayIconService, TrayIconService>();
