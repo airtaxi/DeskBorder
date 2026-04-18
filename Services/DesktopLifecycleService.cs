@@ -221,13 +221,15 @@ public sealed class DesktopLifecycleService(
 
     private async Task RunPendingDesktopDeletionAsync(PendingDesktopDeletion pendingDesktopDeletion, CancellationToken cancellationToken)
     {
-        var toastPresentationResult = await _toastService.ShowToastAsync(new ToastPresentationOptions
+        var toastPresentationResult = await _toastService.ShowToastAsync(new WarningToastPresentationOptions
         {
             Title = LocalizedResourceAccessor.GetString("Toast.AutoDelete.Title"),
             Message = LocalizedResourceAccessor.GetFormattedString("Toast.AutoDelete.MessageFormat", pendingDesktopDeletion.DesktopDisplayName),
             ActionCardTitle = LocalizedResourceAccessor.GetString("Toast.AutoDelete.ActionCardTitle"),
             ActionButtonText = LocalizedResourceAccessor.GetString("Toast.AutoDelete.Action"),
-            Duration = pendingDesktopDeletion.UndoDuration
+            Duration = pendingDesktopDeletion.UndoDuration,
+            WindowWidth = 420,
+            WindowHeight = 170
         }, cancellationToken);
         if (toastPresentationResult.ResultKind != ToastPresentationResultKind.TimedOut || cancellationToken.IsCancellationRequested)
             return;

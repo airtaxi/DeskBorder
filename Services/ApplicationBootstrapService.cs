@@ -1,9 +1,11 @@
+using DeskBorder.Helpers;
+using DeskBorder.Models;
 using DeskBorder.Views;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DeskBorder.Services;
 
-public sealed class ApplicationBootstrapService(IServiceProvider serviceProvider, IHotkeyService hotkeyService, IManageWindowService manageWindowService, IDeskBorderRuntimeService deskBorderRuntimeService, ISettingsService settingsService, IStoreUpdateService storeUpdateService) : IApplicationBootstrapService
+public sealed class ApplicationBootstrapService(IServiceProvider serviceProvider, IHotkeyService hotkeyService, IManageWindowService manageWindowService, IDeskBorderRuntimeService deskBorderRuntimeService, ISettingsService settingsService, IStoreUpdateService storeUpdateService, IToastService toastService) : IApplicationBootstrapService
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IHotkeyService _hotkeyService = hotkeyService;
@@ -11,6 +13,7 @@ public sealed class ApplicationBootstrapService(IServiceProvider serviceProvider
     private readonly IDeskBorderRuntimeService _deskBorderRuntimeService = deskBorderRuntimeService;
     private readonly ISettingsService _settingsService = settingsService;
     private readonly IStoreUpdateService _storeUpdateService = storeUpdateService;
+    private readonly IToastService _toastService = toastService;
     private bool _isInitialized;
 
     public async Task InitializeAsync(bool shouldActivateManageWindow)
@@ -41,7 +44,19 @@ public sealed class ApplicationBootstrapService(IServiceProvider serviceProvider
             return;
 
         var currentSettings = _settingsService.Settings;
-        await _settingsService.UpdateSettingsAsync(currentSettings with { IsDeskBorderEnabled = !currentSettings.IsDeskBorderEnabled });
+        var updatedSettings = currentSettings with { IsDeskBorderEnabled = !currentSettings.IsDeskBorderEnabled };
+        await _settingsService.UpdateSettingsAsync(updatedSettings);
+
+        await _toastService.ShowToastAsync(new HotkeyToastPresentationOptions
+        {
+            Title = LocalizedResourceAccessor.GetString("Toast.Hotkey.ToggleDeskBorder.Title"),
+            Message = LocalizedResourceAccessor.GetString(updatedSettings.IsDeskBorderEnabled
+                ? "Toast.Hotkey.ToggleDeskBorder.EnabledMessage"
+                : "Toast.Hotkey.ToggleDeskBorder.DisabledMessage"),
+            Duration = TimeSpan.FromSeconds(2),
+            WindowWidth = 360,
+            WindowHeight = 100
+        });
     }
 
     private void OnSettingsServiceSettingsChanged(object? sender, EventArgs eventArguments) => _ = SynchronizeDeskBorderRuntimeStateAsync();

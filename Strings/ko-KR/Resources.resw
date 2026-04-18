@@ -920,4 +920,13 @@
   <data name="VirtualKey.Up" xml:space="preserve">
     <value>위 방향키</value>
   </data>
+  <data name="Toast.Hotkey.ToggleDeskBorder.DisabledMessage" xml:space="preserve">
+    <value>DeskBorder 사용이 꺼졌습니다.</value>
+  </data>
+  <data name="Toast.Hotkey.ToggleDeskBorder.EnabledMessage" xml:space="preserve">
+    <value>DeskBorder 사용이 켜졌습니다.</value>
+  </data>
+  <data name="Toast.Hotkey.ToggleDeskBorder.Title" xml:space="preserve">
+    <value>DeskBorder 사용 변경</value>
+  </data>
 </root>

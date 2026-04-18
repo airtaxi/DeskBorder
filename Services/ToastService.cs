@@ -1,5 +1,6 @@
 using DeskBorder.Helpers;
 using DeskBorder.Models;
+using DeskBorder.Pages.Toast;
 using DeskBorder.Views;
 
 namespace DeskBorder.Services;
@@ -9,6 +10,7 @@ public sealed class ToastService : IToastService
     private readonly object _syncLock = new();
     private readonly IThemeService _themeService;
     private ActiveToastContext? _activeToastContext;
+    private ToastPageBase? _activeToastPage;
     private ToastWindow? _toastWindow;
 
     public ToastService(IThemeService themeService) => _themeService = themeService;
@@ -36,8 +38,8 @@ public sealed class ToastService : IToastService
         await UiThreadHelper.ExecuteAsync(() =>
         {
             EnsureToastWindow();
-            _toastWindow!.SetToastContent(toastPresentationOptions);
-            _toastWindow.ShowToast();
+            SetToastPage(toastPresentationOptions);
+            _toastWindow?.ShowToast();
             IsToastVisible = true;
         });
 
@@ -71,10 +73,18 @@ public sealed class ToastService : IToastService
 
         await UiThreadHelper.ExecuteAsync(() =>
         {
+            ResetToastPage();
             _toastWindow?.HideToast();
             IsToastVisible = false;
         });
     }
+
+    private static ToastPageBase CreateToastPage(ToastPresentationOptions toastPresentationOptions) => toastPresentationOptions switch
+    {
+        WarningToastPresentationOptions warningToastPresentationOptions => new WarningToastPage(warningToastPresentationOptions),
+        HotkeyToastPresentationOptions hotkeyToastPresentationOptions => new HotkeyToastPage(hotkeyToastPresentationOptions),
+        _ => throw new InvalidOperationException($"Unsupported toast presentation options type: {toastPresentationOptions.GetType().FullName}")
+    };
 
     private void EnsureToastWindow()
     {
@@ -82,7 +92,6 @@ public sealed class ToastService : IToastService
             return;
 
         _toastWindow = new ToastWindow(_themeService);
-        _toastWindow.ActionButtonClicked += OnToastWindowActionButtonClicked;
     }
 
     private ActiveToastContext? GetActiveToastContext()
@@ -91,7 +100,7 @@ public sealed class ToastService : IToastService
             return _activeToastContext;
     }
 
-    private void OnToastWindowActionButtonClicked(object? sender, EventArgs eventArguments)
+    private void OnToastPageActionInvoked(object? sender, EventArgs eventArguments)
     {
         _ = sender;
         _ = eventArguments;
@@ -107,12 +116,30 @@ public sealed class ToastService : IToastService
         ? CompleteToastAsync(activeToastContext, ToastPresentationResultKind.Replaced)
         : Task.CompletedTask;
 
+    private void ResetToastPage()
+    {
+        _activeToastPage?.ActionInvoked -= OnToastPageActionInvoked;
+
+        _activeToastPage = null;
+        _toastWindow?.ClearToastPage();
+    }
+
     private void SetActiveToastContext(ActiveToastContext activeToastContext)
     {
         lock (_syncLock)
         {
             _activeToastContext = activeToastContext;
         }
+    }
+
+    private void SetToastPage(ToastPresentationOptions toastPresentationOptions)
+    {
+        ResetToastPage();
+        var toastPage = CreateToastPage(toastPresentationOptions);
+
+        toastPage.ActionInvoked += OnToastPageActionInvoked;
+        _activeToastPage = toastPage;
+        _toastWindow!.SetToastPage(toastPage, toastPresentationOptions.WindowWidth, toastPresentationOptions.WindowHeight);
     }
 
     private sealed class ActiveToastContext

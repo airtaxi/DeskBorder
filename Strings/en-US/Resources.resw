@@ -920,4 +920,13 @@
   <data name="VirtualKey.Up" xml:space="preserve">
     <value>Up Arrow</value>
   </data>
+  <data name="Toast.Hotkey.ToggleDeskBorder.DisabledMessage" xml:space="preserve">
+    <value>DeskBorder is now turned off.</value>
+  </data>
+  <data name="Toast.Hotkey.ToggleDeskBorder.EnabledMessage" xml:space="preserve">
+    <value>DeskBorder is now enabled.</value>
+  </data>
+  <data name="Toast.Hotkey.ToggleDeskBorder.Title" xml:space="preserve">
+    <value>DeskBorder status changed</value>
+  </data>
 </root>

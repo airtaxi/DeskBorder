@@ -1,8 +1,7 @@
 using DeskBorder.Interop;
 using DeskBorder.Helpers;
-using DeskBorder.Models;
+using DeskBorder.Pages.Toast;
 using DeskBorder.Services;
-using DeskBorder.ViewModels;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
@@ -13,8 +12,9 @@ namespace DeskBorder.Views;
 public sealed partial class ToastWindow : WindowEx
 {
     private const int ToastMargin = 32;
-    private const int ToastHeight = 160;
-    private const int ToastWidth = 420;
+    private ToastPageBase? _toastPage;
+    public int ToastWidth { get; set; } = 420;
+    public int ToastHeight { get; set; } = 160;
 
     public ToastWindow(IThemeService themeService)
     {
@@ -24,21 +24,24 @@ public sealed partial class ToastWindow : WindowEx
         AppWindow.SetPresenter(AppWindowPresenterKind.Overlapped);
     }
 
-    public event EventHandler? ActionButtonClicked;
-
-    public ToastViewModel ViewModel { get; } = new();
-
     public void HideToast()
     {
         if (AppWindow.IsVisible)
             AppWindow.Hide();
     }
 
-    public void SetToastContent(ToastPresentationOptions toastPresentationOptions)
+    public void ClearToastPage()
     {
-        ViewModel.Title = toastPresentationOptions.Title;
-        ViewModel.Message = toastPresentationOptions.Message;
-        ViewModel.ActionButtonText = toastPresentationOptions.ActionButtonText;
+        _toastPage = null;
+        ToastContentPresenter.Content = null;
+    }
+
+    public void SetToastPage(ToastPageBase toastPage, int width, int height)
+    {
+        _toastPage = toastPage;
+        ToastContentPresenter.Content = toastPage;
+        ToastWidth = width;
+        ToastHeight = height;
         UpdateWindowBounds();
     }
 
@@ -51,8 +54,6 @@ public sealed partial class ToastWindow : WindowEx
         Activate();
         BringToFront();
     }
-
-    private void OnActionButtonClicked(object sender, RoutedEventArgs routedEventArgs) => ActionButtonClicked?.Invoke(this, EventArgs.Empty);
 
     private void RegisterCurrentWindowContentWithThemeService(IThemeService themeService)
     {
