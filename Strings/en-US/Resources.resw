@@ -1,0 +1,759 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppDescription" xml:space="preserve">
+    <value>DeskBorder service bootstrap application</value>
+  </data>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="Common.Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="Common.Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Common.Hidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="Common.None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Common.Visible" xml:space="preserve">
+    <value>Visible</value>
+  </data>
+  <data name="Dashboard.AutoDeleteSummary.Format" xml:space="preserve">
+    <value>Auto delete: {0}, blacklist entries: {1}</value>
+  </data>
+  <data name="Dashboard.CurrentEdge.Format" xml:space="preserve">
+    <value>Current edge: {0}</value>
+  </data>
+  <data name="Dashboard.DisplayCount.Format" xml:space="preserve">
+    <value>Display count: {0} / {1}</value>
+  </data>
+  <data name="Dashboard.EmptyDesktopDetection.Format" xml:space="preserve">
+    <value>Empty desktop detection: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.MoveNextFormat" xml:space="preserve">
+    <value>Move window to next desktop: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.MovePreviousFormat" xml:space="preserve">
+    <value>Move window to previous desktop: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.NavigatorToggleFormat" xml:space="preserve">
+    <value>Toggle Navigator: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.ToggleDeskBorderFormat" xml:space="preserve">
+    <value>Toggle DeskBorder: {0}</value>
+  </data>
+  <data name="Dashboard.HotkeyModifiers.Format" xml:space="preserve">
+    <value>Switch desktop: {0} / Create: {1}</value>
+  </data>
+  <data name="Dashboard.HotkeyService.Initializing" xml:space="preserve">
+    <value>The global hotkey service is still initializing.</value>
+  </data>
+  <data name="Dashboard.HotkeyService.Ready" xml:space="preserve">
+    <value>The global hotkey service is ready.</value>
+  </data>
+  <data name="Dashboard.Monitoring.Running" xml:space="preserve">
+    <value>The edge monitoring loop is running.</value>
+  </data>
+  <data name="Dashboard.Monitoring.Stopped" xml:space="preserve">
+    <value>The edge monitoring loop is currently stopped.</value>
+  </data>
+  <data name="Dashboard.NavigatorAreaPosition.Format" xml:space="preserve">
+    <value>Area position: {0}</value>
+  </data>
+  <data name="Dashboard.NavigatorOverlay.Format" xml:space="preserve">
+    <value>Navigator overlay: {0}</value>
+  </data>
+  <data name="Dashboard.NavigatorTriggerArea.Format" xml:space="preserve">
+    <value>Trigger area: {0}</value>
+  </data>
+  <data name="Dashboard.Status.ApplyFailedTitle" xml:space="preserve">
+    <value>Failed to apply settings</value>
+  </data>
+  <data name="Dashboard.ToggleRuntime.Disable" xml:space="preserve">
+    <value>Disable DeskBorder</value>
+  </data>
+  <data name="Dashboard.ToggleRuntime.Enable" xml:space="preserve">
+    <value>Enable DeskBorder</value>
+  </data>
+  <data name="DashboardPage_DescriptionTextBlock.Text" xml:space="preserve">
+    <value>View live status, quick toggles, Navigator, and monitoring details from one screen.</value>
+  </data>
+  <data name="DashboardPage_HotkeyTitleTextBlock.Text" xml:space="preserve">
+    <value>Hotkey configuration</value>
+  </data>
+  <data name="DashboardPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
+    <value>Run at system startup</value>
+  </data>
+  <data name="DashboardPage_NavigatorTitleTextBlock.Text" xml:space="preserve">
+    <value>Navigator and monitoring</value>
+  </data>
+  <data name="DashboardPage_OpenNavigatorSettingsButton.Content" xml:space="preserve">
+    <value>Navigator settings</value>
+  </data>
+  <data name="DashboardPage_OpenSettingsButton.Content" xml:space="preserve">
+    <value>Open detailed settings</value>
+  </data>
+  <data name="DashboardPage_QuickTogglesTitleTextBlock.Text" xml:space="preserve">
+    <value>Quick toggles</value>
+  </data>
+  <data name="DashboardPage_ServiceStatusTitleTextBlock.Text" xml:space="preserve">
+    <value>Service status</value>
+  </data>
+  <data name="DashboardPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
+    <value>Check for Store updates</value>
+  </data>
+  <data name="DashboardPage_TitleTextBlock.Text" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="DashboardPage_ToggleNavigatorButton.Content" xml:space="preserve">
+    <value>Show Navigator</value>
+  </data>
+  <data name="Desktop.DisplayNameFormat" xml:space="preserve">
+    <value>Desktop {0}</value>
+  </data>
+  <data name="DesktopEdgeAvailability.CursorOutsideDisplayEnvironment" xml:space="preserve">
+    <value>Cursor is outside the display environment</value>
+  </data>
+  <data name="DesktopEdgeAvailability.DisabledByDeskBorderSetting" xml:space="preserve">
+    <value>DeskBorder disabled</value>
+  </data>
+  <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
+    <value>Disabled in multi-display environments</value>
+  </data>
+  <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
+    <value>Edge monitoring available</value>
+  </data>
+  <data name="DesktopEdgeKind.LeftOuterDisplayEdge" xml:space="preserve">
+    <value>Left outer edge</value>
+  </data>
+  <data name="DesktopEdgeKind.None" xml:space="preserve">
+    <value>No outer edge detected</value>
+  </data>
+  <data name="DesktopEdgeKind.RightOuterDisplayEdge" xml:space="preserve">
+    <value>Right outer edge</value>
+  </data>
+  <data name="EmptyDesktopDetectionMode.CountAllTopLevelWindows" xml:space="preserve">
+    <value>Count all top-level windows</value>
+  </data>
+  <data name="EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications" xml:space="preserve">
+    <value>Ignore notification area apps</value>
+  </data>
+  <data name="KeyboardModifier.Alt" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="KeyboardModifier.Control" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="KeyboardModifier.Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="KeyboardModifier.Windows" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="KeyboardShortcut.KeyNotSpecified" xml:space="preserve">
+    <value>No key selected</value>
+  </data>
+  <data name="ManageWindow.ExitApplication" xml:space="preserve">
+    <value>Exit application</value>
+  </data>
+  <data name="ManageWindow.Navigation.Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="ManageWindow.Navigation.Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="ManageWindow.OpenManageWindow" xml:space="preserve">
+    <value>Open management window</value>
+  </data>
+  <data name="ManageWindow.ShowNavigator" xml:space="preserve">
+    <value>Show Navigator overlay</value>
+  </data>
+  <data name="ManageWindow.WindowTitle" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="MultiDisplayBehavior.DisableInMultiDisplayEnvironment" xml:space="preserve">
+    <value>Disable edge monitoring in multi-display environments</value>
+  </data>
+  <data name="MultiDisplayBehavior.UseOuterDisplayEdges" xml:space="preserve">
+    <value>Use only the outermost display edges</value>
+  </data>
+  <data name="Navigator.CurrentBadgeText" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="Navigator.DesktopDescription.Current" xml:space="preserve">
+    <value>Current desktop</value>
+  </data>
+  <data name="Navigator.DesktopDescription.Outer" xml:space="preserve">
+    <value>Outer desktop</value>
+  </data>
+  <data name="Navigator.DesktopDescription.PlaceholderCurrent" xml:space="preserve">
+    <value>Current desktop placeholder</value>
+  </data>
+  <data name="Navigator.DesktopDescription.PlaceholderPreview" xml:space="preserve">
+    <value>Desktop preview placeholder</value>
+  </data>
+  <data name="Navigator.DesktopDescription.Virtual" xml:space="preserve">
+    <value>Virtual desktop</value>
+  </data>
+  <data name="Navigator.Interaction.Active" xml:space="preserve">
+    <value>The Navigator overlay is active.</value>
+  </data>
+  <data name="Navigator.Interaction.Hidden" xml:space="preserve">
+    <value>The Navigator overlay is hidden.</value>
+  </data>
+  <data name="Navigator.Interaction.Visible" xml:space="preserve">
+    <value>The Navigator overlay is visible.</value>
+  </data>
+  <data name="Navigator.LastRequestedDesktop.None" xml:space="preserve">
+    <value>No desktop has been requested yet.</value>
+  </data>
+  <data name="Navigator.Title" xml:space="preserve">
+    <value>Navigator</value>
+  </data>
+  <data name="Navigator.TriggerAreaDisabled" xml:space="preserve">
+    <value>The trigger area is turned off.</value>
+  </data>
+  <data name="Navigator.TriggerAreaEnabledFormat" xml:space="preserve">
+    <value>Trigger area: {0}</value>
+  </data>
+  <data name="Navigator.TriggerAreaTitle" xml:space="preserve">
+    <value>Trigger area</value>
+  </data>
+  <data name="Navigator.WindowTitle" xml:space="preserve">
+    <value>DeskBorder Navigator</value>
+  </data>
+  <data name="PublisherDisplayName" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="Runtime.Status.Running" xml:space="preserve">
+    <value>The DeskBorder background service is running and the desktop lifecycle is ready.</value>
+  </data>
+  <data name="Runtime.Status.Stopped" xml:space="preserve">
+    <value>The DeskBorder background service is stopped, so only settings and the manual overlay are available.</value>
+  </data>
+  <data name="Settings.AppLanguage.ChineseSimplified" xml:space="preserve">
+    <value>Chinese (Simplified)</value>
+  </data>
+  <data name="Settings.AppLanguage.ChineseTraditional" xml:space="preserve">
+    <value>Chinese (Traditional)</value>
+  </data>
+  <data name="Settings.AppLanguage.English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Settings.AppLanguage.Japanese" xml:space="preserve">
+    <value>Japanese</value>
+  </data>
+  <data name="Settings.AppLanguage.Korean" xml:space="preserve">
+    <value>Korean</value>
+  </data>
+  <data name="Settings.AppLanguage.System" xml:space="preserve">
+    <value>System default</value>
+  </data>
+  <data name="Settings.Blacklist.AddFailedTitle" xml:space="preserve">
+    <value>Failed to add blacklist entry</value>
+  </data>
+  <data name="Settings.Blacklist.NoAvailableForegroundProcessesMessage" xml:space="preserve">
+    <value>There are no running foreground processes available to add to the blacklist.</value>
+  </data>
+  <data name="Settings.Blacklist.NoAvailableForegroundProcessesTitle" xml:space="preserve">
+    <value>No processes to add</value>
+  </data>
+  <data name="Settings.Export.CancelledMessage" xml:space="preserve">
+    <value>Settings export was cancelled.</value>
+  </data>
+  <data name="Settings.Export.CancelledTitle" xml:space="preserve">
+    <value>Export cancelled</value>
+  </data>
+  <data name="Settings.Export.FailedTitle" xml:space="preserve">
+    <value>Export failed</value>
+  </data>
+  <data name="Settings.Export.FileTypeDisplayName" xml:space="preserve">
+    <value>DeskBorder settings</value>
+  </data>
+  <data name="Settings.Export.SuccessMessageFormat" xml:space="preserve">
+    <value>Saved current settings to '{0}'.</value>
+  </data>
+  <data name="Settings.Export.SuccessTitle" xml:space="preserve">
+    <value>Export complete</value>
+  </data>
+  <data name="Settings.HotkeyValidation.Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="Settings.HotkeyValidation.Duplicate" xml:space="preserve">
+    <value>Duplicates another global hotkey</value>
+  </data>
+  <data name="Settings.HotkeyValidation.MissingKey" xml:space="preserve">
+    <value>Primary key required</value>
+  </data>
+  <data name="Settings.HotkeyValidation.RegistrationFailed" xml:space="preserve">
+    <value>Cannot register this hotkey right now</value>
+  </data>
+  <data name="Settings.HotkeyValidation.Valid" xml:space="preserve">
+    <value>Hotkey is valid</value>
+  </data>
+  <data name="Settings.Import.CancelledMessage" xml:space="preserve">
+    <value>Settings import was cancelled.</value>
+  </data>
+  <data name="Settings.Import.CancelledTitle" xml:space="preserve">
+    <value>Import cancelled</value>
+  </data>
+  <data name="Settings.Import.FailedTitle" xml:space="preserve">
+    <value>Import failed</value>
+  </data>
+  <data name="Settings.Import.SuccessMessageFormat" xml:space="preserve">
+    <value>Applied settings from '{0}'.</value>
+  </data>
+  <data name="Settings.Import.SuccessTitle" xml:space="preserve">
+    <value>Import complete</value>
+  </data>
+  <data name="Settings.Status.ApplyFailedTitle" xml:space="preserve">
+    <value>Failed to apply settings</value>
+  </data>
+  <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
+    <value>That process is already blacklisted.</value>
+  </data>
+  <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
+    <value>Enter a process name.</value>
+  </data>
+  <data name="SettingsPage_AddBlacklistedProcessNameButton.Content" xml:space="preserve">
+    <value>Add from running processes</value>
+  </data>
+  <data name="SettingsPage_AppLanguagePreferenceComboBox.Header" xml:space="preserve">
+    <value>App language</value>
+  </data>
+  <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
+    <value>Auto delete empty desktops</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Manage running foreground processes to exclude from edge handling.</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog.Title" xml:space="preserve">
+    <value>Add from running processes</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog_DescriptionTextBlock.Text" xml:space="preserve">
+    <value>Select running foreground processes that are not already in the blacklist.</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>Blacklist</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopModifierTitleTextBlock.Text" xml:space="preserve">
+    <value>Desktop creation modifiers</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>Enable desktop creation</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_DeskBorderEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>Enable DeskBorder</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Configure multi-display behavior, empty desktop detection, and auto deletion.</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>Edges and auto cleanup</value>
+  </data>
+  <data name="SettingsPage_EmptyDesktopDetectionModeComboBox.Header" xml:space="preserve">
+    <value>Empty desktop detection</value>
+  </data>
+  <data name="SettingsPage_BottomDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>Bottom ignore zone (%)</value>
+  </data>
+  <data name="SettingsPage_ExportSettingsButton.Content" xml:space="preserve">
+    <value>Export settings</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Configure overall behavior, startup options, and update checks.</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionTeachingTip.Title" xml:space="preserve">
+    <value>General settings guide</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• Enable DeskBorder: turns edge switching, desktop creation, auto cleanup, and global hotkeys on or off together.&#x0a;• Run at system startup: starts the app in the tray right after Windows sign-in.&#x0a;• Check for Store updates: keeps update checks enabled for Store-distributed builds.&#x0a;• Multi-display behavior: disables monitoring on multi-monitor setups, or limits it to the outermost display edges only.&#x0a;• App language: pins the UI to a specific language or follows the system language.</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Configure hotkeys that directly control DeskBorder, window movement, and Navigator.</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>Global hotkeys</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionTeachingTip.Title" xml:space="preserve">
+    <value>Global hotkey guide</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• Each global hotkey can be enabled or disabled independently.&#x0a;• Combine a primary key with modifiers to configure the DeskBorder toggle, move focused window to previous desktop, move focused window to next desktop, and Navigator overlay toggle actions.&#x0a;• The status indicator immediately shows whether the shortcut is valid, missing a key, duplicated, or failed to register.</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Save the current settings to a .dbs file, or apply a saved settings file to the current app state.</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>Import and export settings</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionTeachingTip.Title" xml:space="preserve">
+    <value>Import and export guide</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• Export settings: saves the current app configuration to a .dbs file for backup or transfer to another PC.&#x0a;• Import settings: loads a saved .dbs file and applies it to the current configuration in one step.&#x0a;• The info bar below briefly shows import and export results or errors.</value>
+  </data>
+  <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
+    <value>Import settings</value>
+  </data>
+  <data name="SettingsPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
+    <value>Run at system startup</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>Primary key</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>Modifiers</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>Move window to next desktop</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>Primary key</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>Modifiers</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>Move window to previous desktop</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_MultiDisplayBehaviorComboBox.Header" xml:space="preserve">
+    <value>Multi-display behavior</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Configure the overlay hotkey and mouse trigger area.</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>Navigator</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionTeachingTip.Title" xml:space="preserve">
+    <value>Navigator guide</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• Enable trigger area: shows the Navigator overlay when the pointer enters the configured screen region.&#x0a;• Left / Top / Width / Height: set the trigger area position and size as 0 to 1 ratio values.&#x0a;• If you also enable the Navigator overlay hotkey in the global hotkeys section, both the shortcut and mouse area triggers stay active together.</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>Primary key</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>Modifiers</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>Toggle Navigator overlay</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerAreaToggleSwitch.Header" xml:space="preserve">
+    <value>Enable trigger area</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerLeftNumberBox.Header" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerTopNumberBox.Header" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerWidthNumberBox.Header" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="SettingsPage_PendingBlacklistedProcessNameTextBox.Header" xml:space="preserve">
+    <value>Process name</value>
+  </data>
+  <data name="SettingsPage_PendingBlacklistedProcessNameTextBox.PlaceholderText" xml:space="preserve">
+    <value>Example: explorer.exe</value>
+  </data>
+  <data name="SettingsPage_RemoveBlacklistedProcessNameButtonToolTip.Content" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
+    <value>Check for Store updates</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionTeachingTip.Title" xml:space="preserve">
+    <value>Blacklist guide</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• Add from running processes: lets you pick only currently running processes that are not already registered.&#x0a;• Listed processes are excluded from edge switching, desktop creation, and auto deletion handling.&#x0a;• Keep games or full-screen apps here when DeskBorder should not interfere with them.</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
+    <value>Edges and auto cleanup guide</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• Auto delete empty desktops: schedules deletion when you move inward from an outer desktop that no longer has windows.&#x0a;• Empty desktop detection: changes how deletion decides whether tray-style apps still count as open windows.&#x0a;• Top and bottom ignore zones: adjusts, in percentages, how much of the upper and lower screen area should ignore edge switching and desktop creation.&#x0a;• Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.&#x0a;• Switch desktop modifiers: key combination that must be held before edge-based desktop switching triggers.&#x0a;• Create desktop modifiers: key combination required to create a new desktop from the right edge of the last desktop.</value>
+  </data>
+  <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>Top ignore zone (%)</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopModifierTitleTextBlock.Text" xml:space="preserve">
+    <value>Desktop switch modifiers</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_TitleTextBlock.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>Primary key</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>Modifiers</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>Toggle DeskBorder hotkey</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="StartupTaskDisplayName" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="Toast.AutoDelete.Action" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="Toast.AutoDelete.ActionCardTitle" xml:space="preserve">
+    <value>Keep this desktop</value>
+  </data>
+  <data name="Toast.AutoDelete.MessageFormat" xml:space="preserve">
+    <value>{0} will be deleted unless you undo this action.</value>
+  </data>
+  <data name="Toast.AutoDelete.Title" xml:space="preserve">
+    <value>Outer desktop scheduled for deletion</value>
+  </data>
+  <data name="Toast.WindowTitle" xml:space="preserve">
+    <value>Toast</value>
+  </data>
+  <data name="Tray.LaunchOnStartup" xml:space="preserve">
+    <value>Run at system startup</value>
+  </data>
+  <data name="Tray.RuntimeStatus.Paused" xml:space="preserve">
+    <value>○ DeskBorder service paused</value>
+  </data>
+  <data name="Tray.RuntimeStatus.Running" xml:space="preserve">
+    <value>● DeskBorder service running</value>
+  </data>
+  <data name="Tray.RuntimeToggle" xml:space="preserve">
+    <value>Enable DeskBorder</value>
+  </data>
+  <data name="Tray.StoreUpdateCheck" xml:space="preserve">
+    <value>Check for Store updates</value>
+  </data>
+  <data name="TriggerRectangle.Format" xml:space="preserve">
+    <value>Left {0:P0}, Top {1:P0}, Width {2:P0}, Height {3:P0}</value>
+  </data>
+  <data name="VirtualKey.CapitalLock" xml:space="preserve">
+    <value>Caps Lock</value>
+  </data>
+  <data name="VirtualKey.Down" xml:space="preserve">
+    <value>Down Arrow</value>
+  </data>
+  <data name="VirtualKey.Left" xml:space="preserve">
+    <value>Left Arrow</value>
+  </data>
+  <data name="VirtualKey.PageDown" xml:space="preserve">
+    <value>Page Down</value>
+  </data>
+  <data name="VirtualKey.PageUp" xml:space="preserve">
+    <value>Page Up</value>
+  </data>
+  <data name="VirtualKey.Right" xml:space="preserve">
+    <value>Right Arrow</value>
+  </data>
+  <data name="VirtualKey.Up" xml:space="preserve">
+    <value>Up Arrow</value>
+  </data>
+</root>

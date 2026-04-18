@@ -1,0 +1,985 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="DeskBorder.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:DeskBorder.ViewModels"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <DataTemplate x:Key="SelectionOptionTextTemplate" x:DataType="vm:SelectionOptionBase">
+            <TextBlock Text="{x:Bind DisplayText}" />
+        </DataTemplate>
+        <Style x:Key="SectionHelpButtonStyle" TargetType="Button">
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+        <Style x:Key="SectionTeachingTipContentTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="MaxWidth" Value="420" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
+        </Style>
+    </Page.Resources>
+    <Grid Padding="24" RowSpacing="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            x:Uid="SettingsPage_TitleTextBlock"
+            Grid.Row="0"
+            Style="{ThemeResource TitleTextBlockStyle}"
+            Text="설정" />
+
+        <InfoBar
+            x:Name="SettingsStatusInfoBar"
+            Grid.Row="1"
+            IsClosable="False"
+            IsOpen="False"
+            Severity="Error" />
+
+        <ScrollViewer Grid.Row="2">
+            <StackPanel Spacing="20">
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    x:Uid="SettingsPage_GeneralSectionTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="일반" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_GeneralSectionDescriptionTextBlock"
+                                    Text="앱 전반 동작, 시작 옵션, 업데이트 확인 정책을 설정합니다."
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                            <Grid
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                                <Button
+                                    x:Name="GeneralSectionHelpButton"
+                                    Click="OnSectionHelpButtonClicked"
+                                    Style="{StaticResource SectionHelpButtonStyle}"
+                                    Tag="{x:Bind GeneralSectionTeachingTip}">
+                                    <FontIcon Glyph="&#xE9CE;" />
+                                </Button>
+                                <TeachingTip
+                                    x:Name="GeneralSectionTeachingTip"
+                                    x:Uid="SettingsPage_GeneralSectionTeachingTip"
+                                    Title="일반 설정 안내"
+                                    Closed="OnSectionTeachingTipClosed"
+                                    IsLightDismissEnabled="True"
+                                    PreferredPlacement="Bottom"
+                                    Target="{x:Bind GeneralSectionHelpButton}">
+                                    <TeachingTip.Content>
+                                        <TextBlock
+                                            x:Uid="SettingsPage_GeneralSectionTeachingTipContentTextBlock"
+                                            Style="{StaticResource SectionTeachingTipContentTextBlockStyle}"
+                                            Text="일반 섹션의 각 설정 설명" />
+                                    </TeachingTip.Content>
+                                </TeachingTip>
+                            </Grid>
+                        </Grid>
+
+                        <ToggleSwitch
+                            x:Name="DeskBorderEnabledToggleSwitch"
+                            x:Uid="SettingsPage_DeskBorderEnabledToggleSwitch"
+                            Header="DeskBorder 사용"
+                            IsOn="{x:Bind ViewModel.IsDeskBorderEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <ToggleSwitch
+                            x:Name="LaunchOnStartupToggleSwitch"
+                            x:Uid="SettingsPage_LaunchOnStartupToggleSwitch"
+                            Header="시스템 시작 시 자동 실행"
+                            IsOn="{x:Bind ViewModel.IsLaunchOnStartupEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <ToggleSwitch
+                            x:Name="StoreUpdateCheckToggleSwitch"
+                            x:Uid="SettingsPage_StoreUpdateCheckToggleSwitch"
+                            Header="스토어 업데이트 확인"
+                            IsOn="{x:Bind ViewModel.IsStoreUpdateCheckEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <ComboBox
+                            x:Name="MultiDisplayBehaviorComboBox"
+                            x:Uid="SettingsPage_MultiDisplayBehaviorComboBox"
+                            Header="다중 디스플레이 동작"
+                            ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                            ItemsSource="{x:Bind ViewModel.MultiDisplayBehaviorOptions, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedMultiDisplayBehaviorOption, Mode=TwoWay}"
+                            SelectionChanged="OnSettingSelectionChanged" />
+
+                        <ComboBox
+                            x:Name="AppLanguagePreferenceComboBox"
+                            x:Uid="SettingsPage_AppLanguagePreferenceComboBox"
+                            Header="앱 언어"
+                            ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                            ItemsSource="{x:Bind ViewModel.AppLanguagePreferenceOptions, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedAppLanguagePreferenceOption, Mode=TwoWay}"
+                            SelectionChanged="OnSettingSelectionChanged" />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    x:Uid="SettingsPage_EdgeSectionTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="가장자리 및 자동 정리" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_EdgeSectionDescriptionTextBlock"
+                                    Text="다중 디스플레이 환경, 빈 데스크톱 판정, 자동 삭제 정책을 설정합니다."
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                            <Grid
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                                <Button
+                                    x:Name="EdgeSectionHelpButton"
+                                    Click="OnSectionHelpButtonClicked"
+                                    Style="{StaticResource SectionHelpButtonStyle}"
+                                    Tag="{x:Bind EdgeSectionTeachingTip}">
+                                    <FontIcon Glyph="&#xE9CE;" />
+                                </Button>
+                                <TeachingTip
+                                    x:Name="EdgeSectionTeachingTip"
+                                    x:Uid="SettingsPage_EdgeSectionTeachingTip"
+                                    Title="가장자리 및 자동 정리 안내"
+                                    Closed="OnSectionTeachingTipClosed"
+                                    IsLightDismissEnabled="True"
+                                    PreferredPlacement="Bottom"
+                                    Target="{x:Bind EdgeSectionHelpButton}">
+                                    <TeachingTip.Content>
+                                        <TextBlock
+                                            x:Uid="SettingsPage_EdgeSectionTeachingTipContentTextBlock"
+                                            Style="{StaticResource SectionTeachingTipContentTextBlockStyle}"
+                                            Text="가장자리 및 자동 정리 섹션의 각 설정 설명" />
+                                    </TeachingTip.Content>
+                                </TeachingTip>
+                            </Grid>
+                        </Grid>
+
+                        <ToggleSwitch
+                            x:Name="AutoDeleteToggleSwitch"
+                            x:Uid="SettingsPage_AutoDeleteToggleSwitch"
+                            Header="빈 데스크톱 자동 삭제"
+                            IsOn="{x:Bind ViewModel.IsAutoDeleteEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <ComboBox
+                            x:Name="EmptyDesktopDetectionModeComboBox"
+                            x:Uid="SettingsPage_EmptyDesktopDetectionModeComboBox"
+                            Header="빈 데스크톱 감지 기준"
+                            ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                            ItemsSource="{x:Bind ViewModel.EmptyDesktopDetectionModeOptions, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedEmptyDesktopDetectionModeOption, Mode=TwoWay}"
+                            SelectionChanged="OnSettingSelectionChanged" />
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <NumberBox
+                                x:Name="TopDesktopEdgeIgnorePercentageNumberBox"
+                                x:Uid="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox"
+                                Header="상단 무시 영역 (%)"
+                                Maximum="49"
+                                Minimum="0"
+                                SmallChange="1"
+                                SpinButtonPlacementMode="Inline"
+                                Value="{x:Bind ViewModel.TopDesktopEdgeIgnorePercentage, Mode=TwoWay}"
+                                ValueChanged="OnSettingNumberBoxValueChanged" />
+
+                            <NumberBox
+                                x:Name="BottomDesktopEdgeIgnorePercentageNumberBox"
+                                x:Uid="SettingsPage_BottomDesktopEdgeIgnorePercentageNumberBox"
+                                Grid.Column="1"
+                                Header="하단 무시 영역 (%)"
+                                Maximum="49"
+                                Minimum="0"
+                                SmallChange="1"
+                                SpinButtonPlacementMode="Inline"
+                                Value="{x:Bind ViewModel.BottomDesktopEdgeIgnorePercentage, Mode=TwoWay}"
+                                ValueChanged="OnSettingNumberBoxValueChanged" />
+                        </Grid>
+
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border
+                                Padding="12"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                CornerRadius="10">
+                                <StackPanel Spacing="10">
+                                    <TextBlock
+                                        x:Uid="SettingsPage_SwitchDesktopModifierTitleTextBlock"
+                                        FontWeight="SemiBold"
+                                        Text="데스크톱 전환 보조키" />
+                                    <CheckBox
+                                        x:Uid="SettingsPage_SwitchDesktopControlCheckBox"
+                                        Click="OnModifierSelectionCheckBoxClicked"
+                                        Content="Ctrl"
+                                        IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsControlEnabled, Mode=TwoWay}" />
+                                    <CheckBox
+                                        x:Uid="SettingsPage_SwitchDesktopShiftCheckBox"
+                                        Click="OnModifierSelectionCheckBoxClicked"
+                                        Content="Shift"
+                                        IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsShiftEnabled, Mode=TwoWay}" />
+                                    <CheckBox
+                                        x:Uid="SettingsPage_SwitchDesktopAltCheckBox"
+                                        Click="OnModifierSelectionCheckBoxClicked"
+                                        Content="Alt"
+                                        IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsAlternateEnabled, Mode=TwoWay}" />
+                                    <CheckBox
+                                        x:Uid="SettingsPage_SwitchDesktopWindowsCheckBox"
+                                        Click="OnModifierSelectionCheckBoxClicked"
+                                        Content="Windows"
+                                        IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsWindowsEnabled, Mode=TwoWay}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border
+                                Grid.Column="1"
+                                Padding="12"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                CornerRadius="10">
+                                <StackPanel Spacing="10">
+                                    <TextBlock
+                                        x:Uid="SettingsPage_CreateDesktopModifierTitleTextBlock"
+                                        FontWeight="SemiBold"
+                                        Text="데스크톱 생성 보조키" />
+                                    <ToggleSwitch
+                                        x:Uid="SettingsPage_CreateDesktopEnabledToggleSwitch"
+                                        Header="새 데스크톱 생성"
+                                        IsOn="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <StackPanel IsEnabled="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=OneWay}" Spacing="10">
+                                        <CheckBox
+                                            x:Uid="SettingsPage_CreateDesktopControlCheckBox"
+                                            Click="OnModifierSelectionCheckBoxClicked"
+                                            Content="Ctrl"
+                                            IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsControlEnabled, Mode=TwoWay}" />
+                                        <CheckBox
+                                            x:Uid="SettingsPage_CreateDesktopShiftCheckBox"
+                                            Click="OnModifierSelectionCheckBoxClicked"
+                                            Content="Shift"
+                                            IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsShiftEnabled, Mode=TwoWay}" />
+                                        <CheckBox
+                                            x:Uid="SettingsPage_CreateDesktopAltCheckBox"
+                                            Click="OnModifierSelectionCheckBoxClicked"
+                                            Content="Alt"
+                                            IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsAlternateEnabled, Mode=TwoWay}" />
+                                        <CheckBox
+                                            x:Uid="SettingsPage_CreateDesktopWindowsCheckBox"
+                                            Click="OnModifierSelectionCheckBoxClicked"
+                                            Content="Windows"
+                                            IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsWindowsEnabled, Mode=TwoWay}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    x:Uid="SettingsPage_HotkeysSectionTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="전역 단축키" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_HotkeysSectionDescriptionTextBlock"
+                                    Text="DeskBorder, 창 이동, Navigator를 직접 제어하는 단축키를 설정합니다."
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                            <Grid
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                                <Button
+                                    x:Name="HotkeysSectionHelpButton"
+                                    Click="OnSectionHelpButtonClicked"
+                                    Style="{StaticResource SectionHelpButtonStyle}"
+                                    Tag="{x:Bind HotkeysSectionTeachingTip}">
+                                    <FontIcon Glyph="&#xE9CE;" />
+                                </Button>
+                                <TeachingTip
+                                    x:Name="HotkeysSectionTeachingTip"
+                                    x:Uid="SettingsPage_HotkeysSectionTeachingTip"
+                                    Title="전역 단축키 안내"
+                                    Closed="OnSectionTeachingTipClosed"
+                                    IsLightDismissEnabled="True"
+                                    PreferredPlacement="Bottom"
+                                    Target="{x:Bind HotkeysSectionHelpButton}">
+                                    <TeachingTip.Content>
+                                        <TextBlock
+                                            x:Uid="SettingsPage_HotkeysSectionTeachingTipContentTextBlock"
+                                            Style="{StaticResource SectionTeachingTipContentTextBlockStyle}"
+                                            Text="전역 단축키 섹션의 각 설정 설명" />
+                                    </TeachingTip.Content>
+                                </TeachingTip>
+                            </Grid>
+                        </Grid>
+
+                        <Grid RowSpacing="12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" RowSpacing="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <StackPanel
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <Ellipse
+                                        Width="10"
+                                        Height="10"
+                                        VerticalAlignment="Center"
+                                        Fill="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.ToggleDeskBorderEnabledHotkeyValidationState), Mode=OneWay}" />
+                                    <TextBlock Foreground="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.ToggleDeskBorderEnabledHotkeyValidationState), Mode=OneWay}" Text="{x:Bind GetKeyboardShortcutValidationText(ViewModel.ToggleDeskBorderEnabledHotkeyValidationState), Mode=OneWay}" />
+                                </StackPanel>
+                                <Grid Grid.Row="1" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleSwitch
+                                        x:Uid="SettingsPage_ToggleDeskBorderHotkeyToggleSwitch"
+                                        Grid.Column="0"
+                                        Margin="0,-8"
+                                        VerticalAlignment="Center"
+                                        Header="DeskBorder 사용 토글 단축키"
+                                        IsOn="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <ComboBox
+                                        x:Uid="SettingsPage_ToggleDeskBorderHotkeyKeyComboBox"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Top"
+                                        Header="기본 키"
+                                        IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                        ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                                        ItemsSource="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.VirtualKeyOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.SelectedVirtualKeyOption, Mode=TwoWay}"
+                                        SelectionChanged="OnSettingSelectionChanged" />
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        VerticalAlignment="Top"
+                                        Spacing="10">
+                                        <TextBlock
+                                            x:Uid="SettingsPage_ToggleDeskBorderHotkeyModifierTextBlock"
+                                            Foreground="{x:Bind GetHotkeyLabelForegroundBrush(ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled), Mode=OneWay}"
+                                            Text="보조 키" />
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <CheckBox
+                                                x:Uid="SettingsPage_ToggleDeskBorderHotkeyControlCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Ctrl"
+                                                IsChecked="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_ToggleDeskBorderHotkeyShiftCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Shift"
+                                                IsChecked="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_ToggleDeskBorderHotkeyAltCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Alt"
+                                                IsChecked="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_ToggleDeskBorderHotkeyWindowsCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Windows"
+                                                IsChecked="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+
+                            <Grid Grid.Row="1" RowSpacing="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <StackPanel
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <Ellipse
+                                        Width="10"
+                                        Height="10"
+                                        VerticalAlignment="Center"
+                                        Fill="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyValidationState), Mode=OneWay}" />
+                                    <TextBlock Foreground="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyValidationState), Mode=OneWay}" Text="{x:Bind GetKeyboardShortcutValidationText(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyValidationState), Mode=OneWay}" />
+                                </StackPanel>
+                                <Grid Grid.Row="1" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleSwitch
+                                        x:Uid="SettingsPage_MovePreviousHotkeyToggleSwitch"
+                                        Grid.Column="0"
+                                        Margin="0,-8"
+                                        VerticalAlignment="Center"
+                                        Header="창을 이전 데스크톱으로 이동"
+                                        IsOn="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <ComboBox
+                                        x:Uid="SettingsPage_MovePreviousHotkeyKeyComboBox"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Top"
+                                        Header="기본 키"
+                                        IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                        ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                                        ItemsSource="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.VirtualKeyOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.SelectedVirtualKeyOption, Mode=TwoWay}"
+                                        SelectionChanged="OnSettingSelectionChanged" />
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        VerticalAlignment="Top"
+                                        Spacing="10">
+                                        <TextBlock
+                                            x:Uid="SettingsPage_MovePreviousHotkeyModifierTextBlock"
+                                            Foreground="{x:Bind GetHotkeyLabelForegroundBrush(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled), Mode=OneWay}"
+                                            Text="보조 키" />
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MovePreviousHotkeyControlCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Ctrl"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MovePreviousHotkeyShiftCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Shift"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MovePreviousHotkeyAltCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Alt"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MovePreviousHotkeyWindowsCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Windows"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+
+                            <Grid Grid.Row="2" RowSpacing="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <StackPanel
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <Ellipse
+                                        Width="10"
+                                        Height="10"
+                                        VerticalAlignment="Center"
+                                        Fill="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.MoveFocusedWindowToNextDesktopHotkeyValidationState), Mode=OneWay}" />
+                                    <TextBlock Foreground="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.MoveFocusedWindowToNextDesktopHotkeyValidationState), Mode=OneWay}" Text="{x:Bind GetKeyboardShortcutValidationText(ViewModel.MoveFocusedWindowToNextDesktopHotkeyValidationState), Mode=OneWay}" />
+                                </StackPanel>
+                                <Grid Grid.Row="1" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleSwitch
+                                        x:Uid="SettingsPage_MoveNextHotkeyToggleSwitch"
+                                        Grid.Column="0"
+                                        Margin="0,-8"
+                                        VerticalAlignment="Center"
+                                        Header="창을 다음 데스크톱으로 이동"
+                                        IsOn="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <ComboBox
+                                        x:Uid="SettingsPage_MoveNextHotkeyKeyComboBox"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Top"
+                                        Header="기본 키"
+                                        IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                        ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                                        ItemsSource="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.VirtualKeyOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.SelectedVirtualKeyOption, Mode=TwoWay}"
+                                        SelectionChanged="OnSettingSelectionChanged" />
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        VerticalAlignment="Top"
+                                        Spacing="10">
+                                        <TextBlock
+                                            x:Uid="SettingsPage_MoveNextHotkeyModifierTextBlock"
+                                            Foreground="{x:Bind GetHotkeyLabelForegroundBrush(ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled), Mode=OneWay}"
+                                            Text="보조 키" />
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MoveNextHotkeyControlCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Ctrl"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MoveNextHotkeyShiftCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Shift"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MoveNextHotkeyAltCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Alt"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MoveNextHotkeyWindowsCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Windows"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+
+                            <Grid Grid.Row="3" RowSpacing="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <StackPanel
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <Ellipse
+                                        Width="10"
+                                        Height="10"
+                                        VerticalAlignment="Center"
+                                        Fill="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.NavigatorToggleHotkeyValidationState), Mode=OneWay}" />
+                                    <TextBlock Foreground="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.NavigatorToggleHotkeyValidationState), Mode=OneWay}" Text="{x:Bind GetKeyboardShortcutValidationText(ViewModel.NavigatorToggleHotkeyValidationState), Mode=OneWay}" />
+                                </StackPanel>
+                                <Grid Grid.Row="1" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleSwitch
+                                        x:Uid="SettingsPage_NavigatorToggleHotkeyToggleSwitch"
+                                        Grid.Column="0"
+                                        Margin="0,-8"
+                                        VerticalAlignment="Center"
+                                        Header="Navigator 오버레이 토글"
+                                        IsOn="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <ComboBox
+                                        x:Uid="SettingsPage_NavigatorToggleHotkeyKeyComboBox"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Top"
+                                        Header="기본 키"
+                                        IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                        ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                                        ItemsSource="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.VirtualKeyOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.SelectedVirtualKeyOption, Mode=TwoWay}"
+                                        SelectionChanged="OnSettingSelectionChanged" />
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        VerticalAlignment="Top"
+                                        Spacing="10">
+                                        <TextBlock
+                                            x:Uid="SettingsPage_NavigatorToggleHotkeyModifierTextBlock"
+                                            Foreground="{x:Bind GetHotkeyLabelForegroundBrush(ViewModel.NavigatorToggleHotkeyEditor.IsEnabled), Mode=OneWay}"
+                                            Text="보조 키" />
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <CheckBox
+                                                x:Uid="SettingsPage_NavigatorToggleHotkeyControlCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Ctrl"
+                                                IsChecked="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_NavigatorToggleHotkeyShiftCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Shift"
+                                                IsChecked="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_NavigatorToggleHotkeyAltCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Alt"
+                                                IsChecked="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_NavigatorToggleHotkeyWindowsCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Windows"
+                                                IsChecked="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    x:Uid="SettingsPage_NavigatorSectionTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="Navigator" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_NavigatorSectionDescriptionTextBlock"
+                                    Text="오버레이 단축키와 마우스 트리거 영역을 구성합니다."
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                            <Grid
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                                <Button
+                                    x:Name="NavigatorSectionHelpButton"
+                                    Click="OnSectionHelpButtonClicked"
+                                    Style="{StaticResource SectionHelpButtonStyle}"
+                                    Tag="{x:Bind NavigatorSectionTeachingTip}">
+                                    <FontIcon Glyph="&#xE9CE;" />
+                                </Button>
+                                <TeachingTip
+                                    x:Name="NavigatorSectionTeachingTip"
+                                    x:Uid="SettingsPage_NavigatorSectionTeachingTip"
+                                    Title="Navigator 안내"
+                                    Closed="OnSectionTeachingTipClosed"
+                                    IsLightDismissEnabled="True"
+                                    PreferredPlacement="Bottom"
+                                    Target="{x:Bind NavigatorSectionHelpButton}">
+                                    <TeachingTip.Content>
+                                        <TextBlock
+                                            x:Uid="SettingsPage_NavigatorSectionTeachingTipContentTextBlock"
+                                            Style="{StaticResource SectionTeachingTipContentTextBlockStyle}"
+                                            Text="Navigator 섹션의 각 설정 설명" />
+                                    </TeachingTip.Content>
+                                </TeachingTip>
+                            </Grid>
+                        </Grid>
+
+                        <ToggleSwitch
+                            x:Uid="SettingsPage_NavigatorTriggerAreaToggleSwitch"
+                            Header="트리거 영역 사용"
+                            IsOn="{x:Bind ViewModel.IsNavigatorTriggerAreaEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <Grid ColumnSpacing="12" RowSpacing="12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <NumberBox
+                                x:Name="NavigatorTriggerLeftNumberBox"
+                                x:Uid="SettingsPage_NavigatorTriggerLeftNumberBox"
+                                Header="Left"
+                                Maximum="1"
+                                Minimum="0"
+                                SmallChange="0.01"
+                                SpinButtonPlacementMode="Inline"
+                                ValueChanged="OnSettingNumberBoxValueChanged"
+                                Value="{x:Bind ViewModel.NavigatorTriggerLeft, Mode=TwoWay}" />
+
+                            <NumberBox
+                                x:Name="NavigatorTriggerTopNumberBox"
+                                x:Uid="SettingsPage_NavigatorTriggerTopNumberBox"
+                                Grid.Column="1"
+                                Header="Top"
+                                Maximum="1"
+                                Minimum="0"
+                                SmallChange="0.01"
+                                SpinButtonPlacementMode="Inline"
+                                ValueChanged="OnSettingNumberBoxValueChanged"
+                                Value="{x:Bind ViewModel.NavigatorTriggerTop, Mode=TwoWay}" />
+
+                            <NumberBox
+                                x:Name="NavigatorTriggerWidthNumberBox"
+                                x:Uid="SettingsPage_NavigatorTriggerWidthNumberBox"
+                                Grid.Row="1"
+                                Header="Width"
+                                Maximum="1"
+                                Minimum="0.01"
+                                SmallChange="0.01"
+                                SpinButtonPlacementMode="Inline"
+                                ValueChanged="OnSettingNumberBoxValueChanged"
+                                Value="{x:Bind ViewModel.NavigatorTriggerWidth, Mode=TwoWay}" />
+
+                            <NumberBox
+                                x:Name="NavigatorTriggerHeightNumberBox"
+                                x:Uid="SettingsPage_NavigatorTriggerHeightNumberBox"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Header="Height"
+                                Maximum="1"
+                                Minimum="0.01"
+                                SmallChange="0.01"
+                                SpinButtonPlacementMode="Inline"
+                                ValueChanged="OnSettingNumberBoxValueChanged"
+                                Value="{x:Bind ViewModel.NavigatorTriggerHeight, Mode=TwoWay}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    x:Uid="SettingsPage_BlacklistSectionTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="블랙리스트" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_BlacklistSectionDescriptionTextBlock"
+                                    Text="가장자리 처리에서 제외할 프로세스 이름을 관리합니다."
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                            <Grid
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                                <Button
+                                    x:Name="BlacklistSectionHelpButton"
+                                    Click="OnSectionHelpButtonClicked"
+                                    Style="{StaticResource SectionHelpButtonStyle}"
+                                    Tag="{x:Bind BlacklistSectionTeachingTip}">
+                                    <FontIcon Glyph="&#xE9CE;" />
+                                </Button>
+                                <TeachingTip
+                                    x:Name="BlacklistSectionTeachingTip"
+                                    x:Uid="SettingsPage_BlacklistSectionTeachingTip"
+                                    Title="블랙리스트 안내"
+                                    Closed="OnSectionTeachingTipClosed"
+                                    IsLightDismissEnabled="True"
+                                    PreferredPlacement="Bottom"
+                                    Target="{x:Bind BlacklistSectionHelpButton}">
+                                    <TeachingTip.Content>
+                                        <TextBlock
+                                            x:Uid="SettingsPage_BlacklistSectionTeachingTipContentTextBlock"
+                                            Style="{StaticResource SectionTeachingTipContentTextBlockStyle}"
+                                            Text="블랙리스트 섹션의 각 설정 설명" />
+                                    </TeachingTip.Content>
+                                </TeachingTip>
+                            </Grid>
+                        </Grid>
+
+                        <Button
+                            x:Uid="SettingsPage_AddBlacklistedProcessNameButton"
+                            HorizontalAlignment="Left"
+                            Click="OnAddBlacklistedProcessNameButtonClicked"
+                            Content="실행된 프로세스에서 추가" />
+
+                        <ListView
+                            x:Name="BlacklistedProcessNamesListView"
+                            ItemsSource="{x:Bind ViewModel.BlacklistedProcessNames, Mode=OneWay}"
+                            SelectionMode="None">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnSpacing="12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock VerticalAlignment="Center" Text="{Binding}" />
+                                        <Button
+                                            Grid.Column="1"
+                                            MinWidth="0"
+                                            Padding="8"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent"
+                                            Click="OnRemoveBlacklistedProcessNameButtonClicked"
+                                            Tag="{Binding}">
+                                            <Button.Content>
+                                                <SymbolIcon Symbol="Delete" />
+                                            </Button.Content>
+                                            <ToolTipService.ToolTip>
+                                                <ToolTip x:Uid="SettingsPage_RemoveBlacklistedProcessNameButtonToolTip" Content="제거" />
+                                            </ToolTipService.ToolTip>
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    x:Uid="SettingsPage_ImportExportSectionTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="설정 불러오기 및 내보내기" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_ImportExportSectionDescriptionTextBlock"
+                                    Text=".dbs 파일로 현재 설정을 저장하거나, 저장된 설정 파일을 현재 앱 상태에 반영할 수 있습니다."
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                            <Grid
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                                <Button
+                                    x:Name="ImportExportSectionHelpButton"
+                                    Click="OnSectionHelpButtonClicked"
+                                    Style="{StaticResource SectionHelpButtonStyle}"
+                                    Tag="{x:Bind ImportExportSectionTeachingTip}">
+                                    <FontIcon Glyph="&#xE9CE;" />
+                                </Button>
+                                <TeachingTip
+                                    x:Name="ImportExportSectionTeachingTip"
+                                    x:Uid="SettingsPage_ImportExportSectionTeachingTip"
+                                    Title="설정 불러오기 및 내보내기 안내"
+                                    Closed="OnSectionTeachingTipClosed"
+                                    IsLightDismissEnabled="True"
+                                    PreferredPlacement="Bottom"
+                                    Target="{x:Bind ImportExportSectionHelpButton}">
+                                    <TeachingTip.Content>
+                                        <TextBlock
+                                            x:Uid="SettingsPage_ImportExportSectionTeachingTipContentTextBlock"
+                                            Style="{StaticResource SectionTeachingTipContentTextBlockStyle}"
+                                            Text="설정 불러오기 및 내보내기 섹션의 각 설정 설명" />
+                                    </TeachingTip.Content>
+                                </TeachingTip>
+                            </Grid>
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button
+                                x:Name="ExportSettingsButton"
+                                x:Uid="SettingsPage_ExportSettingsButton"
+                                Click="OnExportSettingsButtonClicked"
+                                Content="설정 내보내기" />
+                            <Button
+                                x:Name="ImportSettingsButton"
+                                x:Uid="SettingsPage_ImportSettingsButton"
+                                Click="OnImportSettingsButtonClicked"
+                                Content="설정 불러오기" />
+                        </StackPanel>
+
+                        <InfoBar
+                            x:Name="SettingsImportExportInfoBar"
+                            IsClosable="False"
+                            IsOpen="False"
+                            Severity="Informational" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

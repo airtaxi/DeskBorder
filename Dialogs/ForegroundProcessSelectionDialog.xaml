@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentDialog
+    x:Class="DeskBorder.Dialogs.ForegroundProcessSelectionDialog"
+    x:Uid="ForegroundProcessSelectionDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Style="{StaticResource DefaultContentDialogStyle}"
+    Title="실행된 프로세스에서 추가"
+    PrimaryButtonText="추가"
+    CloseButtonText="취소"
+    DefaultButton="Primary"
+    mc:Ignorable="d">
+    <StackPanel Spacing="12">
+        <TextBlock
+            x:Uid="ForegroundProcessSelectionDialog_DescriptionTextBlock"
+            Text="현재 실행 중인 포그라운드 프로세스 중 블랙리스트에 없는 항목을 선택하세요."
+            TextWrapping="WrapWholeWords" />
+        <ListView
+            x:Name="AvailableProcessNamesListView"
+            MaxHeight="360"
+            ItemsSource="{x:Bind AvailableProcessNames, Mode=OneWay}"
+            SelectionChanged="OnAvailableProcessNamesListViewSelectionChanged"
+            SelectionMode="Multiple" />
+    </StackPanel>
+</ContentDialog>

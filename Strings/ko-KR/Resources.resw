@@ -1,0 +1,759 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppDescription" xml:space="preserve">
+    <value>DeskBorder 서비스 부트스트랩 애플리케이션</value>
+  </data>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="Common.Disabled" xml:space="preserve">
+    <value>사용 안 함</value>
+  </data>
+  <data name="Common.Enabled" xml:space="preserve">
+    <value>사용</value>
+  </data>
+  <data name="Common.Hidden" xml:space="preserve">
+    <value>숨김</value>
+  </data>
+  <data name="Common.None" xml:space="preserve">
+    <value>없음</value>
+  </data>
+  <data name="Common.Visible" xml:space="preserve">
+    <value>표시 중</value>
+  </data>
+  <data name="Dashboard.AutoDeleteSummary.Format" xml:space="preserve">
+    <value>자동 삭제: {0}, 블랙리스트 {1}개</value>
+  </data>
+  <data name="Dashboard.CurrentEdge.Format" xml:space="preserve">
+    <value>현재 가장자리: {0}</value>
+  </data>
+  <data name="Dashboard.DisplayCount.Format" xml:space="preserve">
+    <value>디스플레이 수: {0} / {1}</value>
+  </data>
+  <data name="Dashboard.EmptyDesktopDetection.Format" xml:space="preserve">
+    <value>빈 데스크톱 감지: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.MoveNextFormat" xml:space="preserve">
+    <value>창을 다음 데스크톱으로 이동: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.MovePreviousFormat" xml:space="preserve">
+    <value>창을 이전 데스크톱으로 이동: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.NavigatorToggleFormat" xml:space="preserve">
+    <value>Navigator 토글: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.ToggleDeskBorderFormat" xml:space="preserve">
+    <value>DeskBorder 토글: {0}</value>
+  </data>
+  <data name="Dashboard.HotkeyModifiers.Format" xml:space="preserve">
+    <value>데스크톱 전환: {0} / 생성: {1}</value>
+  </data>
+  <data name="Dashboard.HotkeyService.Initializing" xml:space="preserve">
+    <value>전역 단축키 서비스 초기화 전입니다.</value>
+  </data>
+  <data name="Dashboard.HotkeyService.Ready" xml:space="preserve">
+    <value>전역 단축키 서비스가 준비되었습니다.</value>
+  </data>
+  <data name="Dashboard.Monitoring.Running" xml:space="preserve">
+    <value>가장자리 감시 루프가 실행 중입니다.</value>
+  </data>
+  <data name="Dashboard.Monitoring.Stopped" xml:space="preserve">
+    <value>가장자리 감시 루프가 현재 중지되어 있습니다.</value>
+  </data>
+  <data name="Dashboard.NavigatorAreaPosition.Format" xml:space="preserve">
+    <value>영역 위치: {0}</value>
+  </data>
+  <data name="Dashboard.NavigatorOverlay.Format" xml:space="preserve">
+    <value>Navigator 오버레이: {0}</value>
+  </data>
+  <data name="Dashboard.NavigatorTriggerArea.Format" xml:space="preserve">
+    <value>트리거 영역: {0}</value>
+  </data>
+  <data name="Dashboard.Status.ApplyFailedTitle" xml:space="preserve">
+    <value>설정 적용 실패</value>
+  </data>
+  <data name="Dashboard.ToggleRuntime.Disable" xml:space="preserve">
+    <value>DeskBorder 사용 안 함</value>
+  </data>
+  <data name="Dashboard.ToggleRuntime.Enable" xml:space="preserve">
+    <value>DeskBorder 사용</value>
+  </data>
+  <data name="DashboardPage_DescriptionTextBlock.Text" xml:space="preserve">
+    <value>실시간 상태, 빠른 토글, Navigator 및 감시 기반을 한 화면에서 확인할 수 있습니다.</value>
+  </data>
+  <data name="DashboardPage_HotkeyTitleTextBlock.Text" xml:space="preserve">
+    <value>단축키 구성</value>
+  </data>
+  <data name="DashboardPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
+    <value>시스템 시작 시 자동 실행</value>
+  </data>
+  <data name="DashboardPage_NavigatorTitleTextBlock.Text" xml:space="preserve">
+    <value>Navigator 및 감시</value>
+  </data>
+  <data name="DashboardPage_OpenNavigatorSettingsButton.Content" xml:space="preserve">
+    <value>Navigator 설정</value>
+  </data>
+  <data name="DashboardPage_OpenSettingsButton.Content" xml:space="preserve">
+    <value>세부 설정 열기</value>
+  </data>
+  <data name="DashboardPage_QuickTogglesTitleTextBlock.Text" xml:space="preserve">
+    <value>빠른 토글</value>
+  </data>
+  <data name="DashboardPage_ServiceStatusTitleTextBlock.Text" xml:space="preserve">
+    <value>서비스 상태</value>
+  </data>
+  <data name="DashboardPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
+    <value>스토어 업데이트 확인</value>
+  </data>
+  <data name="DashboardPage_TitleTextBlock.Text" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="DashboardPage_ToggleNavigatorButton.Content" xml:space="preserve">
+    <value>Navigator 표시</value>
+  </data>
+  <data name="Desktop.DisplayNameFormat" xml:space="preserve">
+    <value>데스크톱 {0}</value>
+  </data>
+  <data name="DesktopEdgeAvailability.CursorOutsideDisplayEnvironment" xml:space="preserve">
+    <value>커서가 디스플레이 밖에 있습니다</value>
+  </data>
+  <data name="DesktopEdgeAvailability.DisabledByDeskBorderSetting" xml:space="preserve">
+    <value>DeskBorder 사용 안 함</value>
+  </data>
+  <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
+    <value>다중 디스플레이에서 비활성화됨</value>
+  </data>
+  <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
+    <value>가장자리 감시 가능</value>
+  </data>
+  <data name="DesktopEdgeKind.LeftOuterDisplayEdge" xml:space="preserve">
+    <value>왼쪽 바깥쪽 가장자리</value>
+  </data>
+  <data name="DesktopEdgeKind.None" xml:space="preserve">
+    <value>감지된 바깥쪽 가장자리 없음</value>
+  </data>
+  <data name="DesktopEdgeKind.RightOuterDisplayEdge" xml:space="preserve">
+    <value>오른쪽 바깥쪽 가장자리</value>
+  </data>
+  <data name="EmptyDesktopDetectionMode.CountAllTopLevelWindows" xml:space="preserve">
+    <value>모든 최상위 창 포함</value>
+  </data>
+  <data name="EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications" xml:space="preserve">
+    <value>알림 영역 앱 제외</value>
+  </data>
+  <data name="KeyboardModifier.Alt" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="KeyboardModifier.Control" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="KeyboardModifier.Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="KeyboardModifier.Windows" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="KeyboardShortcut.KeyNotSpecified" xml:space="preserve">
+    <value>키 미지정</value>
+  </data>
+  <data name="ManageWindow.ExitApplication" xml:space="preserve">
+    <value>프로그램 종료</value>
+  </data>
+  <data name="ManageWindow.Navigation.Dashboard" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="ManageWindow.Navigation.Settings" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="ManageWindow.OpenManageWindow" xml:space="preserve">
+    <value>관리 창 열기</value>
+  </data>
+  <data name="ManageWindow.ShowNavigator" xml:space="preserve">
+    <value>Navigator 오버레이 표시</value>
+  </data>
+  <data name="ManageWindow.WindowTitle" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="MultiDisplayBehavior.DisableInMultiDisplayEnvironment" xml:space="preserve">
+    <value>다중 디스플레이에서는 가장자리 감시 비활성화</value>
+  </data>
+  <data name="MultiDisplayBehavior.UseOuterDisplayEdges" xml:space="preserve">
+    <value>가장 바깥 디스플레이 가장자리만 사용</value>
+  </data>
+  <data name="Navigator.CurrentBadgeText" xml:space="preserve">
+    <value>현재</value>
+  </data>
+  <data name="Navigator.DesktopDescription.Current" xml:space="preserve">
+    <value>현재 데스크톱</value>
+  </data>
+  <data name="Navigator.DesktopDescription.Outer" xml:space="preserve">
+    <value>바깥쪽 데스크톱</value>
+  </data>
+  <data name="Navigator.DesktopDescription.PlaceholderCurrent" xml:space="preserve">
+    <value>현재 데스크톱 자리표시자</value>
+  </data>
+  <data name="Navigator.DesktopDescription.PlaceholderPreview" xml:space="preserve">
+    <value>데스크톱 미리보기 자리표시자</value>
+  </data>
+  <data name="Navigator.DesktopDescription.Virtual" xml:space="preserve">
+    <value>가상 데스크톱</value>
+  </data>
+  <data name="Navigator.Interaction.Active" xml:space="preserve">
+    <value>Navigator 오버레이가 활성화되어 있습니다.</value>
+  </data>
+  <data name="Navigator.Interaction.Hidden" xml:space="preserve">
+    <value>Navigator 오버레이가 숨겨져 있습니다.</value>
+  </data>
+  <data name="Navigator.Interaction.Visible" xml:space="preserve">
+    <value>Navigator 오버레이가 표시되어 있습니다.</value>
+  </data>
+  <data name="Navigator.LastRequestedDesktop.None" xml:space="preserve">
+    <value>아직 선택 요청된 데스크톱이 없습니다.</value>
+  </data>
+  <data name="Navigator.Title" xml:space="preserve">
+    <value>Navigator</value>
+  </data>
+  <data name="Navigator.TriggerAreaDisabled" xml:space="preserve">
+    <value>트리거 영역이 꺼져 있습니다.</value>
+  </data>
+  <data name="Navigator.TriggerAreaEnabledFormat" xml:space="preserve">
+    <value>트리거 영역: {0}</value>
+  </data>
+  <data name="Navigator.TriggerAreaTitle" xml:space="preserve">
+    <value>트리거 영역</value>
+  </data>
+  <data name="Navigator.WindowTitle" xml:space="preserve">
+    <value>DeskBorder Navigator</value>
+  </data>
+  <data name="PublisherDisplayName" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="Runtime.Status.Running" xml:space="preserve">
+    <value>DeskBorder 백그라운드 서비스가 실행 중이며 데스크톱 수명 주기가 준비되었습니다.</value>
+  </data>
+  <data name="Runtime.Status.Stopped" xml:space="preserve">
+    <value>DeskBorder 백그라운드 서비스가 중지되어 있으며 설정과 수동 오버레이만 사용할 수 있습니다.</value>
+  </data>
+  <data name="Settings.AppLanguage.ChineseSimplified" xml:space="preserve">
+    <value>중국어(간체)</value>
+  </data>
+  <data name="Settings.AppLanguage.ChineseTraditional" xml:space="preserve">
+    <value>중국어(번체)</value>
+  </data>
+  <data name="Settings.AppLanguage.English" xml:space="preserve">
+    <value>영어</value>
+  </data>
+  <data name="Settings.AppLanguage.Japanese" xml:space="preserve">
+    <value>일본어</value>
+  </data>
+  <data name="Settings.AppLanguage.Korean" xml:space="preserve">
+    <value>한국어</value>
+  </data>
+  <data name="Settings.AppLanguage.System" xml:space="preserve">
+    <value>시스템 기본값</value>
+  </data>
+  <data name="Settings.Blacklist.AddFailedTitle" xml:space="preserve">
+    <value>블랙리스트 추가 실패</value>
+  </data>
+  <data name="Settings.Blacklist.NoAvailableForegroundProcessesMessage" xml:space="preserve">
+    <value>블랙리스트에 추가할 실행 중 포그라운드 프로세스가 없습니다.</value>
+  </data>
+  <data name="Settings.Blacklist.NoAvailableForegroundProcessesTitle" xml:space="preserve">
+    <value>추가 가능한 프로세스 없음</value>
+  </data>
+  <data name="Settings.Export.CancelledMessage" xml:space="preserve">
+    <value>설정 내보내기가 취소되었습니다.</value>
+  </data>
+  <data name="Settings.Export.CancelledTitle" xml:space="preserve">
+    <value>내보내기를 취소했습니다.</value>
+  </data>
+  <data name="Settings.Export.FailedTitle" xml:space="preserve">
+    <value>내보내기 실패</value>
+  </data>
+  <data name="Settings.Export.FileTypeDisplayName" xml:space="preserve">
+    <value>DeskBorder 설정</value>
+  </data>
+  <data name="Settings.Export.SuccessMessageFormat" xml:space="preserve">
+    <value>현재 설정을 '{0}' 파일에 저장했습니다.</value>
+  </data>
+  <data name="Settings.Export.SuccessTitle" xml:space="preserve">
+    <value>내보내기 완료</value>
+  </data>
+  <data name="Settings.HotkeyValidation.Disabled" xml:space="preserve">
+    <value>사용 안 함</value>
+  </data>
+  <data name="Settings.HotkeyValidation.Duplicate" xml:space="preserve">
+    <value>다른 전역 단축키와 중복됨</value>
+  </data>
+  <data name="Settings.HotkeyValidation.MissingKey" xml:space="preserve">
+    <value>기본 키를 선택해야 함</value>
+  </data>
+  <data name="Settings.HotkeyValidation.RegistrationFailed" xml:space="preserve">
+    <value>현재 등록할 수 없는 단축키</value>
+  </data>
+  <data name="Settings.HotkeyValidation.Valid" xml:space="preserve">
+    <value>유효한 단축키</value>
+  </data>
+  <data name="Settings.Import.CancelledMessage" xml:space="preserve">
+    <value>설정 불러오기가 취소되었습니다.</value>
+  </data>
+  <data name="Settings.Import.CancelledTitle" xml:space="preserve">
+    <value>불러오기를 취소했습니다.</value>
+  </data>
+  <data name="Settings.Import.FailedTitle" xml:space="preserve">
+    <value>불러오기 실패</value>
+  </data>
+  <data name="Settings.Import.SuccessMessageFormat" xml:space="preserve">
+    <value>'{0}' 파일의 설정을 적용했습니다.</value>
+  </data>
+  <data name="Settings.Import.SuccessTitle" xml:space="preserve">
+    <value>불러오기 완료</value>
+  </data>
+  <data name="Settings.Status.ApplyFailedTitle" xml:space="preserve">
+    <value>설정 적용 실패</value>
+  </data>
+  <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
+    <value>이미 블랙리스트에 포함된 프로세스입니다.</value>
+  </data>
+  <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
+    <value>프로세스 이름을 입력하세요.</value>
+  </data>
+  <data name="SettingsPage_AddBlacklistedProcessNameButton.Content" xml:space="preserve">
+    <value>실행된 프로세스에서 추가</value>
+  </data>
+  <data name="SettingsPage_AppLanguagePreferenceComboBox.Header" xml:space="preserve">
+    <value>앱 언어</value>
+  </data>
+  <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
+    <value>빈 데스크톱 자동 삭제</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>가장자리 처리에서 제외할 실행 중 포그라운드 프로세스를 관리합니다.</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog.CloseButtonText" xml:space="preserve">
+    <value>취소</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog.PrimaryButtonText" xml:space="preserve">
+    <value>추가</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog.Title" xml:space="preserve">
+    <value>실행된 프로세스에서 추가</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog_DescriptionTextBlock.Text" xml:space="preserve">
+    <value>현재 실행 중인 포그라운드 프로세스 중 블랙리스트에 없는 항목을 선택하세요.</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>블랙리스트</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopModifierTitleTextBlock.Text" xml:space="preserve">
+    <value>데스크톱 생성 보조키</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>새 데스크톱 생성</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_DeskBorderEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>DeskBorder 사용</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>다중 디스플레이 환경, 빈 데스크톱 판정, 자동 삭제 정책을 설정합니다.</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>가장자리 및 자동 정리</value>
+  </data>
+  <data name="SettingsPage_EmptyDesktopDetectionModeComboBox.Header" xml:space="preserve">
+    <value>빈 데스크톱 감지 기준</value>
+  </data>
+  <data name="SettingsPage_BottomDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>하단 무시 영역 (%)</value>
+  </data>
+  <data name="SettingsPage_ExportSettingsButton.Content" xml:space="preserve">
+    <value>설정 내보내기</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>앱 전반 동작, 시작 옵션, 업데이트 확인 정책을 설정합니다.</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>일반</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionTeachingTip.Title" xml:space="preserve">
+    <value>일반 설정 안내</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• DeskBorder 사용: 가장자리 전환, 데스크톱 생성, 자동 정리, 전역 단축키를 한 번에 켜거나 끕니다.&#x0a;• 시스템 시작 시 자동 실행: Windows 로그인 직후 앱을 트레이로 시작합니다.&#x0a;• 스토어 업데이트 확인: Store 배포 빌드에서 업데이트 확인 동작을 유지합니다.&#x0a;• 다중 디스플레이 동작: 멀티 모니터에서 감시를 끄거나, 가장 바깥 모니터 경계에서만 동작하게 합니다.&#x0a;• 앱 언어: 설정 UI 언어를 고정하거나 시스템 언어를 따르게 합니다.</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>DeskBorder, 창 이동, Navigator를 직접 제어하는 단축키를 설정합니다.</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>전역 단축키</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionTeachingTip.Title" xml:space="preserve">
+    <value>전역 단축키 안내</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 각 전역 단축키는 기능별로 따로 켜고 끌 수 있습니다.&#x0a;• 기본 키와 보조 키를 조합해 DeskBorder 전체 토글, 포커스 창 이전 이동, 포커스 창 다음 이동, Navigator 오버레이 토글을 지정합니다.&#x0a;• 상태 점은 현재 조합이 유효한지, 키 미지정인지, 중복인지, 등록 실패인지 바로 보여줍니다.</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>.dbs 파일로 현재 설정을 저장하거나, 저장된 설정 파일을 현재 앱 상태에 반영할 수 있습니다.</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>설정 불러오기 및 내보내기</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionTeachingTip.Title" xml:space="preserve">
+    <value>설정 불러오기 및 내보내기 안내</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 설정 내보내기: 현재 앱 설정을 .dbs 파일로 저장해 백업하거나 다른 PC로 옮길 수 있습니다.&#x0a;• 설정 불러오기: 저장한 .dbs 파일을 읽어 현재 설정을 한 번에 반영합니다.&#x0a;• 아래 안내 바는 가져오기/내보내기 결과와 오류를 잠깐 표시합니다.</value>
+  </data>
+  <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
+    <value>설정 불러오기</value>
+  </data>
+  <data name="SettingsPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
+    <value>시스템 시작 시 자동 실행</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>기본 키</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>보조 키</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>창을 다음 데스크톱으로 이동</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>기본 키</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>보조 키</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>창을 이전 데스크톱으로 이동</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_MultiDisplayBehaviorComboBox.Header" xml:space="preserve">
+    <value>다중 디스플레이 동작</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>오버레이 단축키와 마우스 트리거 영역을 구성합니다.</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>Navigator</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionTeachingTip.Title" xml:space="preserve">
+    <value>Navigator 안내</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 트리거 영역 사용: 지정한 화면 비율 영역에 마우스가 들어오면 Navigator 오버레이를 표시합니다.&#x0a;• Left / Top / Width / Height: 0~1 비율값으로 트리거 영역의 위치와 크기를 정합니다.&#x0a;• 전역 단축키 섹션의 Navigator 오버레이 토글과 함께 켜 두면 단축키와 마우스 영역 두 방식이 동시에 동작합니다.</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>기본 키</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>보조 키</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>Navigator 오버레이 토글</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerAreaToggleSwitch.Header" xml:space="preserve">
+    <value>트리거 영역 사용</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerLeftNumberBox.Header" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerTopNumberBox.Header" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerWidthNumberBox.Header" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="SettingsPage_PendingBlacklistedProcessNameTextBox.Header" xml:space="preserve">
+    <value>프로세스 이름</value>
+  </data>
+  <data name="SettingsPage_PendingBlacklistedProcessNameTextBox.PlaceholderText" xml:space="preserve">
+    <value>예: explorer.exe</value>
+  </data>
+  <data name="SettingsPage_RemoveBlacklistedProcessNameButtonToolTip.Content" xml:space="preserve">
+    <value>제거</value>
+  </data>
+  <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
+    <value>스토어 업데이트 확인</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionTeachingTip.Title" xml:space="preserve">
+    <value>블랙리스트 안내</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 실행된 프로세스에서 추가: 현재 실행 중이고 아직 등록되지 않은 프로세스만 골라 블랙리스트에 넣습니다.&#x0a;• 등록된 프로세스는 가장자리 전환, 생성, 자동 삭제 처리에서 제외됩니다.&#x0a;• 게임이나 전체 화면 앱처럼 DeskBorder가 개입하면 안 되는 프로세스를 여기에 보관하면 됩니다.</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
+    <value>가장자리 및 자동 정리 안내</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 빈 데스크톱 자동 삭제: 양 끝 데스크톱에서 안쪽으로 이동할 때 비어 있으면 삭제 예약을 실행합니다.&#x0a;• 빈 데스크톱 감지 기준: 트레이 앱을 비어 있는 것으로 볼지까지 포함해 삭제 판단 방식을 바꿉니다.&#x0a;• 상단/하단 무시 영역: 화면 위아래 일부 구간에서는 가장자리 전환과 생성이 반응하지 않게 퍼센트로 조절합니다.&#x0a;• 새 데스크톱 생성: 마지막 데스크톱 오른쪽 끝에서 새 데스크톱을 만들 기능 자체를 켜거나 끕니다.&#x0a;• 데스크톱 전환 보조키: 화면 좌우 끝에서 데스크톱 전환이 일어나기 전에 눌러야 하는 키 조합입니다.&#x0a;• 데스크톱 생성 보조키: 마지막 데스크톱 오른쪽 끝에서 새 데스크톱을 만들 때 필요한 키 조합입니다.</value>
+  </data>
+  <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>상단 무시 영역 (%)</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopModifierTitleTextBlock.Text" xml:space="preserve">
+    <value>데스크톱 전환 보조키</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_TitleTextBlock.Text" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>기본 키</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>보조 키</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>DeskBorder 사용 토글 단축키</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="StartupTaskDisplayName" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="Toast.AutoDelete.Action" xml:space="preserve">
+    <value>실행 취소</value>
+  </data>
+  <data name="Toast.AutoDelete.ActionCardTitle" xml:space="preserve">
+    <value>이 데스크톱 유지</value>
+  </data>
+  <data name="Toast.AutoDelete.MessageFormat" xml:space="preserve">
+    <value>{0}은(는) 실행 취소하지 않으면 삭제됩니다.</value>
+  </data>
+  <data name="Toast.AutoDelete.Title" xml:space="preserve">
+    <value>바깥쪽 데스크톱 삭제 예정</value>
+  </data>
+  <data name="Toast.WindowTitle" xml:space="preserve">
+    <value>토스트</value>
+  </data>
+  <data name="Tray.LaunchOnStartup" xml:space="preserve">
+    <value>시스템 시작 시 자동 실행</value>
+  </data>
+  <data name="Tray.RuntimeStatus.Paused" xml:space="preserve">
+    <value>○ DeskBorder 서비스 일시 중지됨</value>
+  </data>
+  <data name="Tray.RuntimeStatus.Running" xml:space="preserve">
+    <value>● DeskBorder 서비스 실행 중</value>
+  </data>
+  <data name="Tray.RuntimeToggle" xml:space="preserve">
+    <value>DeskBorder 사용</value>
+  </data>
+  <data name="Tray.StoreUpdateCheck" xml:space="preserve">
+    <value>스토어 업데이트 확인</value>
+  </data>
+  <data name="TriggerRectangle.Format" xml:space="preserve">
+    <value>Left {0:P0}, Top {1:P0}, Width {2:P0}, Height {3:P0}</value>
+  </data>
+  <data name="VirtualKey.CapitalLock" xml:space="preserve">
+    <value>Caps Lock</value>
+  </data>
+  <data name="VirtualKey.Down" xml:space="preserve">
+    <value>Down Arrow</value>
+  </data>
+  <data name="VirtualKey.Left" xml:space="preserve">
+    <value>Left Arrow</value>
+  </data>
+  <data name="VirtualKey.PageDown" xml:space="preserve">
+    <value>Page Down</value>
+  </data>
+  <data name="VirtualKey.PageUp" xml:space="preserve">
+    <value>Page Up</value>
+  </data>
+  <data name="VirtualKey.Right" xml:space="preserve">
+    <value>Right Arrow</value>
+  </data>
+  <data name="VirtualKey.Up" xml:space="preserve">
+    <value>Up Arrow</value>
+  </data>
+</root>

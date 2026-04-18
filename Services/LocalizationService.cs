@@ -1,0 +1,82 @@
+using DeskBorder.Models;
+using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Globalization;
+using System.Globalization;
+using System.Runtime.InteropServices;
+
+namespace DeskBorder.Services;
+
+public sealed class LocalizationService : ILocalizationService
+{
+    private readonly static List<string> InstalledLanguages = ["en-US", "ko-KR", "ja-JP", "zh-Hans", "zh-Hant"];
+
+    public event EventHandler? LanguageChanged;
+
+    public AppLanguagePreference CurrentLanguagePreference { get; set; } = AppLanguagePreference.System;
+
+    public void ApplyLanguagePreference(AppLanguagePreference appLanguagePreference)
+    {
+        if (CurrentLanguagePreference == appLanguagePreference && string.Equals(ApplicationLanguages.PrimaryLanguageOverride, GetLanguageTag(appLanguagePreference), StringComparison.Ordinal)) return;
+
+        ApplyLanguagePreferenceOverride(appLanguagePreference);
+        App.ResourceLoader = new ResourceLoader();
+        CurrentLanguagePreference = appLanguagePreference;
+        LanguageChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public static void ApplyLanguagePreferenceOverride(AppLanguagePreference appLanguagePreference)
+    {
+        var languageTag = GetLanguageTag(appLanguagePreference);
+        ApplicationLanguages.PrimaryLanguageOverride = languageTag;
+        ApplyCurrentThreadCultures(languageTag);
+    }
+
+    public string GetFormattedString(string resourceName, params object[] arguments) => string.Format(CultureInfo.CurrentCulture, GetString(resourceName), arguments);
+
+    public string GetString(string resourceName)
+    {
+        var normalizedResourceName = resourceName.Replace('.', '/');
+        string localizedString;
+        try { localizedString = App.ResourceLoader.GetString(normalizedResourceName); }
+        catch (COMException)
+        {
+            localizedString = resourceName;
+        }
+
+        return string.IsNullOrWhiteSpace(localizedString) ? resourceName : localizedString;
+    }
+
+    private static void ApplyCurrentThreadCultures(string languageTag)
+    {
+        var resolvedLanguageTag = string.IsNullOrWhiteSpace(languageTag)
+            ? ApplicationLanguages.Languages[0]
+            : languageTag;
+        if (string.IsNullOrWhiteSpace(resolvedLanguageTag))
+            return;
+
+        try
+        {
+            var cultureInfo = CultureInfo.GetCultureInfo(resolvedLanguageTag);
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+        }
+        catch (CultureNotFoundException) { }
+    }
+
+    private static string GetLanguageTag(AppLanguagePreference appLanguagePreference) => appLanguagePreference switch
+    {
+        AppLanguagePreference.System => GetDefaultLanguageTag(),
+        AppLanguagePreference.Korean => "ko-KR",
+        AppLanguagePreference.English => "en-US",
+        AppLanguagePreference.Japanese => "ja-JP",
+        AppLanguagePreference.ChineseSimplified => "zh-Hans",
+        AppLanguagePreference.ChineseTraditional => "zh-Hant",
+        _ => throw new ArgumentException($"Unsupported language preference: {appLanguagePreference}", nameof(appLanguagePreference)),
+    };
+
+    private static string GetDefaultLanguageTag()
+    {
+        var name = CultureInfo.InstalledUICulture.Name;
+        return InstalledLanguages.Contains(name) ? name : InstalledLanguages.First();
+    }
+}

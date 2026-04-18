@@ -1,0 +1,22 @@
+using DeskBorder.Models;
+
+namespace DeskBorder.Services;
+
+public interface ISettingsService
+{
+    event EventHandler? SettingsChanged;
+
+    DeskBorderSettings Settings { get; }
+
+    Task ExportAsync(string destinationFilePath);
+
+    Task ImportAsync(string sourceFilePath);
+
+    Task InitializeAsync();
+
+    Task<bool> RefreshLaunchOnStartupEnabledAsync();
+
+    Task SetLaunchOnStartupEnabledAsync(bool isEnabled);
+
+    Task UpdateSettingsAsync(DeskBorderSettings settings);
+}

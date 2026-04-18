@@ -1,0 +1,291 @@
+using DeskBorder.Models;
+using System.IO;
+using System.Text.Json;
+using Windows.System;
+using Windows.Storage;
+
+namespace DeskBorder.Services;
+
+public sealed class SettingsService(IStartupRegistrationService startupRegistrationService, ILocalizationService localizationService) : ISettingsService
+{
+    private const string SettingsFileExtension = ".dbs";
+    private const string SettingsKey = "DeskBorderSettings";
+    private const int CurrentSchemaVersion = 1;
+    private const double MaximumDesktopEdgeIgnorePercentage = 49.0;
+
+    private static readonly ApplicationDataContainer s_localSettings =
+        ApplicationData.Current.LocalSettings;
+
+    private readonly IStartupRegistrationService _startupRegistrationService = startupRegistrationService;
+    private readonly ILocalizationService _localizationService = localizationService;
+    private DeskBorderSettings _settings = DeskBorderSettings.CreateDefault();
+    private bool _isInitialized;
+
+    public event EventHandler? SettingsChanged;
+
+    public DeskBorderSettings Settings => CloneSettings(_settings);
+
+    public async Task ExportAsync(string destinationFilePath)
+    {
+        if (!_isInitialized)
+            await InitializeAsync();
+
+        ValidateSettingsFilePath(destinationFilePath, nameof(destinationFilePath));
+        await File.WriteAllTextAsync(destinationFilePath, JsonSerializer.Serialize(_settings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings));
+    }
+
+    public async Task ImportAsync(string sourceFilePath)
+    {
+        if (!_isInitialized)
+            await InitializeAsync();
+
+        ValidateSettingsFilePath(sourceFilePath, nameof(sourceFilePath));
+        var serializedSettings = await File.ReadAllTextAsync(sourceFilePath);
+        await UpdateSettingsAsync(LoadDeserializedSettings(serializedSettings));
+    }
+
+    public async Task InitializeAsync()
+    {
+        if (_isInitialized)
+            return;
+
+        var storedSettings = LoadStoredSettings();
+        var isLaunchOnStartupEnabled = await _startupRegistrationService.GetIsEnabledAsync();
+        _settings = NormalizeSettings(storedSettings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled });
+        SaveSettings(_settings);
+        _localizationService.ApplyLanguagePreference(_settings.AppLanguagePreference);
+        _isInitialized = true;
+        SettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public async Task<bool> RefreshLaunchOnStartupEnabledAsync()
+    {
+        if (!_isInitialized)
+            await InitializeAsync();
+
+        var isLaunchOnStartupEnabled = await _startupRegistrationService.GetIsEnabledAsync();
+        if (_settings.IsLaunchOnStartupEnabled == isLaunchOnStartupEnabled)
+            return isLaunchOnStartupEnabled;
+
+        _settings = _settings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled };
+        SaveSettings(_settings);
+        SettingsChanged?.Invoke(this, EventArgs.Empty);
+        return isLaunchOnStartupEnabled;
+    }
+
+    public async Task SetLaunchOnStartupEnabledAsync(bool isEnabled)
+    {
+        if (!_isInitialized)
+            await InitializeAsync();
+
+        await UpdateSettingsAsync(_settings with { IsLaunchOnStartupEnabled = isEnabled });
+    }
+
+    public async Task UpdateSettingsAsync(DeskBorderSettings settings)
+    {
+        if (!_isInitialized)
+            await InitializeAsync();
+
+        var normalizedSettings = NormalizeSettings(settings);
+        if (normalizedSettings.IsLaunchOnStartupEnabled != _settings.IsLaunchOnStartupEnabled)
+            await _startupRegistrationService.SetIsEnabledAsync(normalizedSettings.IsLaunchOnStartupEnabled);
+
+        var isLaunchOnStartupEnabled = await _startupRegistrationService.GetIsEnabledAsync();
+        _settings = normalizedSettings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled };
+        SaveSettings(_settings);
+        _localizationService.ApplyLanguagePreference(_settings.AppLanguagePreference);
+        SettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private static DeskBorderSettings CloneSettings(DeskBorderSettings settings) => NormalizeSettings(settings);
+
+    private static string[] NormalizeBlacklistedProcessNames(string[]? blacklistedProcessNames) => (blacklistedProcessNames ?? [])
+        .Where(processName => !string.IsNullOrWhiteSpace(processName))
+        .Select(processName => processName.Trim())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .Order(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+
+    private static TriggerRectangleSettings NormalizeTriggerRectangleSettings(TriggerRectangleSettings? triggerRectangleSettings)
+    {
+        var actualTriggerRectangleSettings = triggerRectangleSettings ?? new();
+        var width = ClampNormalizedLength(actualTriggerRectangleSettings.Width);
+        var height = ClampNormalizedLength(actualTriggerRectangleSettings.Height);
+        var left = ClampNormalizedOffset(actualTriggerRectangleSettings.Left, width);
+        var top = ClampNormalizedOffset(actualTriggerRectangleSettings.Top, height);
+        return actualTriggerRectangleSettings with
+        {
+            Left = left,
+            Top = top,
+            Width = width,
+            Height = height
+        };
+    }
+
+    private static DeskBorderSettings NormalizeSettings(DeskBorderSettings settings)
+    {
+        var normalizedSettings = new DeskBorderSettings
+        {
+            SchemaVersion = CurrentSchemaVersion,
+            IsDeskBorderEnabled = settings.IsDeskBorderEnabled,
+            MultiDisplayBehavior = settings.MultiDisplayBehavior,
+            SwitchDesktopModifierSettings = NormalizeModifierGateSettings(settings.SwitchDesktopModifierSettings),
+            CreateDesktopModifierSettings = NormalizeModifierGateSettings(settings.CreateDesktopModifierSettings, KeyboardModifierKeys.Shift),
+            IsDesktopCreationEnabled = settings.IsDesktopCreationEnabled,
+            IsAutoDeleteEnabled = settings.IsAutoDeleteEnabled,
+            EmptyDesktopDetectionMode = settings.EmptyDesktopDetectionMode,
+            DesktopEdgeIgnoreZoneSettings = NormalizeDesktopEdgeIgnoreZoneSettings(settings.DesktopEdgeIgnoreZoneSettings),
+            ApplicationHotkeySettings = NormalizeApplicationHotkeySettings(settings.ApplicationHotkeySettings),
+            FocusedWindowMoveHotkeySettings = NormalizeFocusedWindowMoveHotkeySettings(settings.FocusedWindowMoveHotkeySettings),
+            NavigatorSettings = NormalizeNavigatorSettings(settings.NavigatorSettings),
+            BlacklistedProcessNames = NormalizeBlacklistedProcessNames(settings.BlacklistedProcessNames),
+            IsLaunchOnStartupEnabled = settings.IsLaunchOnStartupEnabled,
+            IsStoreUpdateCheckEnabled = settings.IsStoreUpdateCheckEnabled,
+            AppLanguagePreference = settings.AppLanguagePreference
+        };
+        ValidateSettings(normalizedSettings);
+        return normalizedSettings;
+    }
+
+    private static DesktopEdgeIgnoreZoneSettings NormalizeDesktopEdgeIgnoreZoneSettings(DesktopEdgeIgnoreZoneSettings? desktopEdgeIgnoreZoneSettings)
+    {
+        var actualDesktopEdgeIgnoreZoneSettings = desktopEdgeIgnoreZoneSettings ?? new();
+        return actualDesktopEdgeIgnoreZoneSettings with
+        {
+            TopIgnorePercentage = ClampDesktopEdgeIgnorePercentage(actualDesktopEdgeIgnoreZoneSettings.TopIgnorePercentage),
+            BottomIgnorePercentage = ClampDesktopEdgeIgnorePercentage(actualDesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage)
+        };
+    }
+
+    private static ApplicationHotkeySettings NormalizeApplicationHotkeySettings(ApplicationHotkeySettings? applicationHotkeySettings)
+    {
+        var actualApplicationHotkeySettings = applicationHotkeySettings ?? new();
+        return actualApplicationHotkeySettings with
+        {
+            ToggleDeskBorderEnabledHotkey = NormalizeKeyboardShortcutSettings(actualApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey)
+        };
+    }
+
+    private static FocusedWindowMoveHotkeySettings NormalizeFocusedWindowMoveHotkeySettings(FocusedWindowMoveHotkeySettings? focusedWindowMoveHotkeySettings)
+    {
+        var actualFocusedWindowMoveHotkeySettings = focusedWindowMoveHotkeySettings ?? new();
+        return actualFocusedWindowMoveHotkeySettings with
+        {
+            MoveToPreviousDesktopHotkey = NormalizeKeyboardShortcutSettings(actualFocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey),
+            MoveToNextDesktopHotkey = NormalizeKeyboardShortcutSettings(actualFocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey)
+        };
+    }
+
+    private static KeyboardShortcutSettings NormalizeKeyboardShortcutSettings(KeyboardShortcutSettings? keyboardShortcutSettings)
+    {
+        var actualKeyboardShortcutSettings = keyboardShortcutSettings ?? new();
+        return actualKeyboardShortcutSettings with
+        {
+            RequiredKeyboardModifierKeys = actualKeyboardShortcutSettings.RequiredKeyboardModifierKeys
+        };
+    }
+
+    private static ModifierGateSettings NormalizeModifierGateSettings(ModifierGateSettings? modifierGateSettings, KeyboardModifierKeys defaultKeyboardModifierKeys = KeyboardModifierKeys.None)
+    {
+        var actualModifierGateSettings = modifierGateSettings ?? new()
+        {
+            RequiredKeyboardModifierKeys = defaultKeyboardModifierKeys
+        };
+        return actualModifierGateSettings with
+        {
+            RequiredKeyboardModifierKeys = actualModifierGateSettings.RequiredKeyboardModifierKeys
+        };
+    }
+
+    private static NavigatorSettings NormalizeNavigatorSettings(NavigatorSettings? navigatorSettings)
+    {
+        var actualNavigatorSettings = navigatorSettings ?? new();
+        return actualNavigatorSettings with
+        {
+            ToggleHotkey = NormalizeKeyboardShortcutSettings(actualNavigatorSettings.ToggleHotkey),
+            TriggerRectangle = NormalizeTriggerRectangleSettings(actualNavigatorSettings.TriggerRectangle)
+        };
+    }
+
+    private static double ClampNormalizedLength(double value) => double.IsFinite(value) ? Math.Clamp(value, 0.01, 1.0) : 0.01;
+
+    private static double ClampNormalizedOffset(double value, double length) => double.IsFinite(value) ? Math.Clamp(value, 0.0, 1.0 - length) : 0.0;
+
+    private static double ClampDesktopEdgeIgnorePercentage(double value) => double.IsFinite(value) ? Math.Clamp(value, 0.0, MaximumDesktopEdgeIgnorePercentage) : 0.0;
+
+    private static void ValidateKeyboardShortcutSettings(KeyboardShortcutSettings keyboardShortcutSettings, string keyboardShortcutDisplayName)
+    {
+        if (!keyboardShortcutSettings.IsEnabled)
+            return;
+
+        if (keyboardShortcutSettings.Key == VirtualKey.None)
+            throw new InvalidOperationException($"The {keyboardShortcutDisplayName} hotkey must specify a key when enabled.");
+    }
+
+    private static void ValidateSettings(DeskBorderSettings settings)
+    {
+        ValidateKeyboardShortcutSettings(settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey, "toggle DeskBorder");
+        ValidateKeyboardShortcutSettings(settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey, "move focused window to previous desktop");
+        ValidateKeyboardShortcutSettings(settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey, "move focused window to next desktop");
+        ValidateKeyboardShortcutSettings(settings.NavigatorSettings.ToggleHotkey, "toggle navigator");
+        ValidateUniqueKeyboardShortcutSettings(
+        [
+            new("toggle DeskBorder", settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey),
+            new("move focused window to previous desktop", settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey),
+            new("move focused window to next desktop", settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey),
+            new("toggle navigator", settings.NavigatorSettings.ToggleHotkey)
+        ]);
+    }
+
+    private static void ValidateUniqueKeyboardShortcutSettings(
+        IReadOnlyList<(string KeyboardShortcutDisplayName, KeyboardShortcutSettings KeyboardShortcutSettings)> keyboardShortcutEntries)
+    {
+        var registeredKeyboardShortcuts = new Dictionary<(KeyboardModifierKeys RequiredKeyboardModifierKeys, VirtualKey Key), string>();
+        foreach (var keyboardShortcutEntry in keyboardShortcutEntries)
+        {
+            if (!keyboardShortcutEntry.KeyboardShortcutSettings.IsEnabled || keyboardShortcutEntry.KeyboardShortcutSettings.Key == VirtualKey.None)
+                continue;
+
+            var keyboardShortcutIdentity = (
+                keyboardShortcutEntry.KeyboardShortcutSettings.RequiredKeyboardModifierKeys,
+                keyboardShortcutEntry.KeyboardShortcutSettings.Key);
+            if (registeredKeyboardShortcuts.TryGetValue(keyboardShortcutIdentity, out var existingKeyboardShortcutDisplayName))
+                throw new InvalidOperationException($"The {keyboardShortcutEntry.KeyboardShortcutDisplayName} hotkey duplicates the {existingKeyboardShortcutDisplayName} hotkey.");
+
+            registeredKeyboardShortcuts.Add(keyboardShortcutIdentity, keyboardShortcutEntry.KeyboardShortcutDisplayName);
+        }
+    }
+
+    private static void ValidateSettingsFilePath(string filePath, string parameterName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(filePath, parameterName);
+        if (!string.Equals(Path.GetExtension(filePath), SettingsFileExtension, StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Settings files must use the .dbs extension.", parameterName);
+    }
+
+    private static DeskBorderSettings LoadDeserializedSettings(string serializedSettings)
+    {
+        try
+        {
+            var deserializedSettings = JsonSerializer.Deserialize(serializedSettings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings);
+            return deserializedSettings is null
+                ? throw new InvalidOperationException("Stored settings payload was empty.")
+                : NormalizeSettings(deserializedSettings);
+        }
+        catch (JsonException exception)
+        {
+            throw new InvalidOperationException("Stored settings payload is invalid.", exception);
+        }
+        catch (NotSupportedException exception)
+        {
+            throw new InvalidOperationException("Stored settings payload contains unsupported values.", exception);
+        }
+    }
+
+    private static DeskBorderSettings LoadStoredSettings() => s_localSettings.Values[SettingsKey] is string serializedSettings
+        ? LoadDeserializedSettings(serializedSettings)
+        : DeskBorderSettings.CreateDefault();
+
+    private static void SaveSettings(DeskBorderSettings settings) => s_localSettings.Values[SettingsKey] =
+        JsonSerializer.Serialize(settings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings);
+}

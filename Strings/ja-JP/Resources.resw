@@ -1,0 +1,759 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppDescription" xml:space="preserve">
+    <value>DeskBorder サービス ブートストラップ アプリケーション</value>
+  </data>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="Common.Disabled" xml:space="preserve">
+    <value>無効</value>
+  </data>
+  <data name="Common.Enabled" xml:space="preserve">
+    <value>有効</value>
+  </data>
+  <data name="Common.Hidden" xml:space="preserve">
+    <value>非表示</value>
+  </data>
+  <data name="Common.None" xml:space="preserve">
+    <value>なし</value>
+  </data>
+  <data name="Common.Visible" xml:space="preserve">
+    <value>表示中</value>
+  </data>
+  <data name="Dashboard.AutoDeleteSummary.Format" xml:space="preserve">
+    <value>自動削除: {0}、ブラックリスト項目: {1}</value>
+  </data>
+  <data name="Dashboard.CurrentEdge.Format" xml:space="preserve">
+    <value>現在のエッジ: {0}</value>
+  </data>
+  <data name="Dashboard.DisplayCount.Format" xml:space="preserve">
+    <value>ディスプレイ数: {0} / {1}</value>
+  </data>
+  <data name="Dashboard.EmptyDesktopDetection.Format" xml:space="preserve">
+    <value>空のデスクトップ検出: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.MoveNextFormat" xml:space="preserve">
+    <value>ウィンドウを次のデスクトップへ移動: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.MovePreviousFormat" xml:space="preserve">
+    <value>ウィンドウを前のデスクトップへ移動: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.NavigatorToggleFormat" xml:space="preserve">
+    <value>Navigator の切り替え: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.ToggleDeskBorderFormat" xml:space="preserve">
+    <value>DeskBorder の切り替え: {0}</value>
+  </data>
+  <data name="Dashboard.HotkeyModifiers.Format" xml:space="preserve">
+    <value>デスクトップ切り替え: {0} / 作成: {1}</value>
+  </data>
+  <data name="Dashboard.HotkeyService.Initializing" xml:space="preserve">
+    <value>グローバル ホットキー サービスは初期化中です。</value>
+  </data>
+  <data name="Dashboard.HotkeyService.Ready" xml:space="preserve">
+    <value>グローバル ホットキー サービスの準備ができました。</value>
+  </data>
+  <data name="Dashboard.Monitoring.Running" xml:space="preserve">
+    <value>エッジ監視ループは実行中です。</value>
+  </data>
+  <data name="Dashboard.Monitoring.Stopped" xml:space="preserve">
+    <value>エッジ監視ループは現在停止しています。</value>
+  </data>
+  <data name="Dashboard.NavigatorAreaPosition.Format" xml:space="preserve">
+    <value>領域の位置: {0}</value>
+  </data>
+  <data name="Dashboard.NavigatorOverlay.Format" xml:space="preserve">
+    <value>Navigator オーバーレイ: {0}</value>
+  </data>
+  <data name="Dashboard.NavigatorTriggerArea.Format" xml:space="preserve">
+    <value>トリガー領域: {0}</value>
+  </data>
+  <data name="Dashboard.Status.ApplyFailedTitle" xml:space="preserve">
+    <value>設定の適用に失敗しました</value>
+  </data>
+  <data name="Dashboard.ToggleRuntime.Disable" xml:space="preserve">
+    <value>DeskBorder を無効化</value>
+  </data>
+  <data name="Dashboard.ToggleRuntime.Enable" xml:space="preserve">
+    <value>DeskBorder を有効化</value>
+  </data>
+  <data name="DashboardPage_DescriptionTextBlock.Text" xml:space="preserve">
+    <value>ライブ状態、クイック切り替え、Navigator、監視の詳細を 1 つの画面で確認できます。</value>
+  </data>
+  <data name="DashboardPage_HotkeyTitleTextBlock.Text" xml:space="preserve">
+    <value>ホットキー構成</value>
+  </data>
+  <data name="DashboardPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
+    <value>システム起動時に実行</value>
+  </data>
+  <data name="DashboardPage_NavigatorTitleTextBlock.Text" xml:space="preserve">
+    <value>Navigator と監視</value>
+  </data>
+  <data name="DashboardPage_OpenNavigatorSettingsButton.Content" xml:space="preserve">
+    <value>Navigator 設定</value>
+  </data>
+  <data name="DashboardPage_OpenSettingsButton.Content" xml:space="preserve">
+    <value>詳細設定を開く</value>
+  </data>
+  <data name="DashboardPage_QuickTogglesTitleTextBlock.Text" xml:space="preserve">
+    <value>クイック切り替え</value>
+  </data>
+  <data name="DashboardPage_ServiceStatusTitleTextBlock.Text" xml:space="preserve">
+    <value>サービス状態</value>
+  </data>
+  <data name="DashboardPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
+    <value>Store 更新プログラムを確認</value>
+  </data>
+  <data name="DashboardPage_TitleTextBlock.Text" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="DashboardPage_ToggleNavigatorButton.Content" xml:space="preserve">
+    <value>Navigator を表示</value>
+  </data>
+  <data name="Desktop.DisplayNameFormat" xml:space="preserve">
+    <value>デスクトップ {0}</value>
+  </data>
+  <data name="DesktopEdgeAvailability.CursorOutsideDisplayEnvironment" xml:space="preserve">
+    <value>カーソルがディスプレイ領域の外にあります</value>
+  </data>
+  <data name="DesktopEdgeAvailability.DisabledByDeskBorderSetting" xml:space="preserve">
+    <value>DeskBorder は無効です</value>
+  </data>
+  <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
+    <value>マルチディスプレイ環境では無効です</value>
+  </data>
+  <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
+    <value>エッジ監視が利用可能です</value>
+  </data>
+  <data name="DesktopEdgeKind.LeftOuterDisplayEdge" xml:space="preserve">
+    <value>左側の外側エッジ</value>
+  </data>
+  <data name="DesktopEdgeKind.None" xml:space="preserve">
+    <value>外側のエッジは検出されていません</value>
+  </data>
+  <data name="DesktopEdgeKind.RightOuterDisplayEdge" xml:space="preserve">
+    <value>右側の外側エッジ</value>
+  </data>
+  <data name="EmptyDesktopDetectionMode.CountAllTopLevelWindows" xml:space="preserve">
+    <value>すべてのトップレベル ウィンドウを含める</value>
+  </data>
+  <data name="EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications" xml:space="preserve">
+    <value>通知領域アプリを除外</value>
+  </data>
+  <data name="KeyboardModifier.Alt" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="KeyboardModifier.Control" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="KeyboardModifier.Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="KeyboardModifier.Windows" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="KeyboardShortcut.KeyNotSpecified" xml:space="preserve">
+    <value>キーが未指定です</value>
+  </data>
+  <data name="ManageWindow.ExitApplication" xml:space="preserve">
+    <value>アプリケーションを終了</value>
+  </data>
+  <data name="ManageWindow.Navigation.Dashboard" xml:space="preserve">
+    <value>ダッシュボード</value>
+  </data>
+  <data name="ManageWindow.Navigation.Settings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="ManageWindow.OpenManageWindow" xml:space="preserve">
+    <value>管理ウィンドウを開く</value>
+  </data>
+  <data name="ManageWindow.ShowNavigator" xml:space="preserve">
+    <value>Navigator オーバーレイを表示</value>
+  </data>
+  <data name="ManageWindow.WindowTitle" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="MultiDisplayBehavior.DisableInMultiDisplayEnvironment" xml:space="preserve">
+    <value>マルチディスプレイ環境ではエッジ監視を無効化</value>
+  </data>
+  <data name="MultiDisplayBehavior.UseOuterDisplayEdges" xml:space="preserve">
+    <value>最も外側のディスプレイ エッジのみを使用</value>
+  </data>
+  <data name="Navigator.CurrentBadgeText" xml:space="preserve">
+    <value>現在</value>
+  </data>
+  <data name="Navigator.DesktopDescription.Current" xml:space="preserve">
+    <value>現在のデスクトップ</value>
+  </data>
+  <data name="Navigator.DesktopDescription.Outer" xml:space="preserve">
+    <value>外側のデスクトップ</value>
+  </data>
+  <data name="Navigator.DesktopDescription.PlaceholderCurrent" xml:space="preserve">
+    <value>現在のデスクトップ プレースホルダー</value>
+  </data>
+  <data name="Navigator.DesktopDescription.PlaceholderPreview" xml:space="preserve">
+    <value>デスクトップ プレビュー プレースホルダー</value>
+  </data>
+  <data name="Navigator.DesktopDescription.Virtual" xml:space="preserve">
+    <value>仮想デスクトップ</value>
+  </data>
+  <data name="Navigator.Interaction.Active" xml:space="preserve">
+    <value>Navigator オーバーレイがアクティブです。</value>
+  </data>
+  <data name="Navigator.Interaction.Hidden" xml:space="preserve">
+    <value>Navigator オーバーレイは非表示です。</value>
+  </data>
+  <data name="Navigator.Interaction.Visible" xml:space="preserve">
+    <value>Navigator オーバーレイが表示されています。</value>
+  </data>
+  <data name="Navigator.LastRequestedDesktop.None" xml:space="preserve">
+    <value>まだデスクトップの選択要求はありません。</value>
+  </data>
+  <data name="Navigator.Title" xml:space="preserve">
+    <value>Navigator</value>
+  </data>
+  <data name="Navigator.TriggerAreaDisabled" xml:space="preserve">
+    <value>トリガー領域はオフです。</value>
+  </data>
+  <data name="Navigator.TriggerAreaEnabledFormat" xml:space="preserve">
+    <value>トリガー領域: {0}</value>
+  </data>
+  <data name="Navigator.TriggerAreaTitle" xml:space="preserve">
+    <value>トリガー領域</value>
+  </data>
+  <data name="Navigator.WindowTitle" xml:space="preserve">
+    <value>DeskBorder Navigator</value>
+  </data>
+  <data name="PublisherDisplayName" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="Runtime.Status.Running" xml:space="preserve">
+    <value>DeskBorder バックグラウンド サービスは実行中で、デスクトップ ライフサイクルの準備ができています。</value>
+  </data>
+  <data name="Runtime.Status.Stopped" xml:space="preserve">
+    <value>DeskBorder バックグラウンド サービスは停止中のため、設定と手動オーバーレイのみ利用できます。</value>
+  </data>
+  <data name="Settings.AppLanguage.ChineseSimplified" xml:space="preserve">
+    <value>中国語 (簡体字)</value>
+  </data>
+  <data name="Settings.AppLanguage.ChineseTraditional" xml:space="preserve">
+    <value>中国語 (繁体字)</value>
+  </data>
+  <data name="Settings.AppLanguage.English" xml:space="preserve">
+    <value>英語</value>
+  </data>
+  <data name="Settings.AppLanguage.Japanese" xml:space="preserve">
+    <value>日本語</value>
+  </data>
+  <data name="Settings.AppLanguage.Korean" xml:space="preserve">
+    <value>韓国語</value>
+  </data>
+  <data name="Settings.AppLanguage.System" xml:space="preserve">
+    <value>システム既定</value>
+  </data>
+  <data name="Settings.Blacklist.AddFailedTitle" xml:space="preserve">
+    <value>ブラックリストへの追加に失敗しました</value>
+  </data>
+  <data name="Settings.Blacklist.NoAvailableForegroundProcessesMessage" xml:space="preserve">
+    <value>ブラックリストに追加できる実行中のフォアグラウンド プロセスはありません。</value>
+  </data>
+  <data name="Settings.Blacklist.NoAvailableForegroundProcessesTitle" xml:space="preserve">
+    <value>追加できるプロセスがありません</value>
+  </data>
+  <data name="Settings.Export.CancelledMessage" xml:space="preserve">
+    <value>設定のエクスポートはキャンセルされました。</value>
+  </data>
+  <data name="Settings.Export.CancelledTitle" xml:space="preserve">
+    <value>エクスポートをキャンセルしました</value>
+  </data>
+  <data name="Settings.Export.FailedTitle" xml:space="preserve">
+    <value>エクスポートに失敗しました</value>
+  </data>
+  <data name="Settings.Export.FileTypeDisplayName" xml:space="preserve">
+    <value>DeskBorder 設定</value>
+  </data>
+  <data name="Settings.Export.SuccessMessageFormat" xml:space="preserve">
+    <value>現在の設定を '{0}' に保存しました。</value>
+  </data>
+  <data name="Settings.Export.SuccessTitle" xml:space="preserve">
+    <value>エクスポート完了</value>
+  </data>
+  <data name="Settings.HotkeyValidation.Disabled" xml:space="preserve">
+    <value>無効</value>
+  </data>
+  <data name="Settings.HotkeyValidation.Duplicate" xml:space="preserve">
+    <value>他のグローバル ホットキーと重複しています</value>
+  </data>
+  <data name="Settings.HotkeyValidation.MissingKey" xml:space="preserve">
+    <value>メイン キーを選択してください</value>
+  </data>
+  <data name="Settings.HotkeyValidation.RegistrationFailed" xml:space="preserve">
+    <value>現在は登録できないホットキーです</value>
+  </data>
+  <data name="Settings.HotkeyValidation.Valid" xml:space="preserve">
+    <value>有効なホットキーです</value>
+  </data>
+  <data name="Settings.Import.CancelledMessage" xml:space="preserve">
+    <value>設定のインポートはキャンセルされました。</value>
+  </data>
+  <data name="Settings.Import.CancelledTitle" xml:space="preserve">
+    <value>インポートをキャンセルしました</value>
+  </data>
+  <data name="Settings.Import.FailedTitle" xml:space="preserve">
+    <value>インポートに失敗しました</value>
+  </data>
+  <data name="Settings.Import.SuccessMessageFormat" xml:space="preserve">
+    <value>'{0}' の設定を適用しました。</value>
+  </data>
+  <data name="Settings.Import.SuccessTitle" xml:space="preserve">
+    <value>インポート完了</value>
+  </data>
+  <data name="Settings.Status.ApplyFailedTitle" xml:space="preserve">
+    <value>設定の適用に失敗しました</value>
+  </data>
+  <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
+    <value>そのプロセスは既にブラックリストに含まれています。</value>
+  </data>
+  <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
+    <value>プロセス名を入力してください。</value>
+  </data>
+  <data name="SettingsPage_AddBlacklistedProcessNameButton.Content" xml:space="preserve">
+    <value>実行中のプロセスから追加</value>
+  </data>
+  <data name="SettingsPage_AppLanguagePreferenceComboBox.Header" xml:space="preserve">
+    <value>アプリの言語</value>
+  </data>
+  <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
+    <value>空のデスクトップを自動削除</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>エッジ処理から除外する実行中のフォアグラウンド プロセスを管理します。</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog.CloseButtonText" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog.PrimaryButtonText" xml:space="preserve">
+    <value>追加</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog.Title" xml:space="preserve">
+    <value>実行中のプロセスから追加</value>
+  </data>
+  <data name="ForegroundProcessSelectionDialog_DescriptionTextBlock.Text" xml:space="preserve">
+    <value>現在実行中のフォアグラウンド プロセスのうち、まだブラックリストにない項目を選択してください。</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>ブラックリスト</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopModifierTitleTextBlock.Text" xml:space="preserve">
+    <value>デスクトップ作成修飾キー</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>デスクトップ作成を有効化</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_DeskBorderEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>DeskBorder を有効化</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>マルチディスプレイ動作、空のデスクトップ検出、自動削除を設定します。</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>エッジと自動整理</value>
+  </data>
+  <data name="SettingsPage_EmptyDesktopDetectionModeComboBox.Header" xml:space="preserve">
+    <value>空のデスクトップ検出</value>
+  </data>
+  <data name="SettingsPage_BottomDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>下側の無視領域 (%)</value>
+  </data>
+  <data name="SettingsPage_ExportSettingsButton.Content" xml:space="preserve">
+    <value>設定をエクスポート</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>全体の動作、起動オプション、更新確認を設定します。</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>全般</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionTeachingTip.Title" xml:space="preserve">
+    <value>全般設定ガイド</value>
+  </data>
+  <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• DeskBorder を有効化: エッジ切り替え、デスクトップ作成、自動整理、グローバル ホットキーをまとめてオンまたはオフにします。&#x0a;• システム起動時に実行: Windows サインイン直後にアプリをトレイで起動します。&#x0a;• Store 更新プログラムを確認: Store 配布ビルドで更新確認動作を維持します。&#x0a;• マルチディスプレイ動作: マルチモニターでは監視を無効化するか、最も外側のディスプレイ端だけで動作させます。&#x0a;• アプリの言語: UI 言語を固定するか、システム言語に従わせます。</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>DeskBorder、ウィンドウ移動、Navigator を直接制御するホットキーを設定します。</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>グローバル ホットキー</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionTeachingTip.Title" xml:space="preserve">
+    <value>グローバル ホットキー ガイド</value>
+  </data>
+  <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 各グローバル ホットキーは機能ごとに個別に有効化または無効化できます。&#x0a;• メイン キーと修飾キーを組み合わせて、DeskBorder の切り替え、フォーカス中ウィンドウの前後デスクトップ移動、Navigator オーバーレイ切り替えを設定します。&#x0a;• 状態インジケーターは、その組み合わせが有効か、キー未指定か、重複か、登録失敗かをすぐに示します。</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>.dbs ファイルに現在の設定を保存したり、保存済みファイルを現在のアプリ状態へ適用したりできます。</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>設定のインポートとエクスポート</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionTeachingTip.Title" xml:space="preserve">
+    <value>インポートとエクスポートのガイド</value>
+  </data>
+  <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 設定をエクスポート: 現在のアプリ設定を .dbs ファイルとして保存し、バックアップや別 PC への移行に使えます。&#x0a;• 設定をインポート: 保存済みの .dbs ファイルを読み込み、現在の設定へ一度に適用します。&#x0a;• 下の情報バーは、インポートやエクスポートの結果やエラーを短時間表示します。</value>
+  </data>
+  <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
+    <value>設定をインポート</value>
+  </data>
+  <data name="SettingsPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
+    <value>システム起動時に実行</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>メイン キー</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>修飾キー</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>ウィンドウを次のデスクトップへ移動</value>
+  </data>
+  <data name="SettingsPage_MoveNextHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>メイン キー</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>修飾キー</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>ウィンドウを前のデスクトップへ移動</value>
+  </data>
+  <data name="SettingsPage_MovePreviousHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_MultiDisplayBehaviorComboBox.Header" xml:space="preserve">
+    <value>マルチディスプレイ動作</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>オーバーレイのホットキーとマウス トリガー領域を設定します。</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>Navigator</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionTeachingTip.Title" xml:space="preserve">
+    <value>Navigator ガイド</value>
+  </data>
+  <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• トリガー領域を有効化: ポインターが指定した画面領域に入ると Navigator オーバーレイを表示します。&#x0a;• Left / Top / Width / Height: 0 から 1 の比率でトリガー領域の位置とサイズを設定します。&#x0a;• グローバル ホットキー セクションの Navigator オーバーレイ切り替えも有効にすると、ショートカットとマウス領域の両方で動作します。</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>メイン キー</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>修飾キー</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>Navigator オーバーレイを切り替え</value>
+  </data>
+  <data name="SettingsPage_NavigatorToggleHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerAreaToggleSwitch.Header" xml:space="preserve">
+    <value>トリガー領域を有効化</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerLeftNumberBox.Header" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerTopNumberBox.Header" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerWidthNumberBox.Header" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="SettingsPage_PendingBlacklistedProcessNameTextBox.Header" xml:space="preserve">
+    <value>プロセス名</value>
+  </data>
+  <data name="SettingsPage_PendingBlacklistedProcessNameTextBox.PlaceholderText" xml:space="preserve">
+    <value>例: explorer.exe</value>
+  </data>
+  <data name="SettingsPage_RemoveBlacklistedProcessNameButtonToolTip.Content" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
+    <value>Store 更新プログラムを確認</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionTeachingTip.Title" xml:space="preserve">
+    <value>ブラックリスト ガイド</value>
+  </data>
+  <data name="SettingsPage_BlacklistSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 実行中のプロセスから追加: 現在実行中で、まだ登録されていないプロセスだけを選んで追加できます。&#x0a;• 登録済みプロセスは、エッジ切り替え、デスクトップ作成、自動削除の処理対象から除外されます。&#x0a;• DeskBorder が干渉してほしくないゲームや全画面アプリをここに登録してください。</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
+    <value>エッジと自動整理ガイド</value>
+  </data>
+  <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 空のデスクトップを自動削除: 外側デスクトップから内側へ移動するとき、ウィンドウが無ければ削除予約を行います。&#x0a;• 空のデスクトップ検出: 通知領域アプリを開いているウィンドウとして数えるかどうかを含め、削除判定方法を切り替えます。&#x0a;• 上側/下側の無視領域: 画面の上下の一部ではエッジ切り替えとデスクトップ作成が反応しないよう、割合で調整します。&#x0a;• デスクトップ作成を有効化: 最後のデスクトップの右端から新しいデスクトップを作る機能自体をオンまたはオフにします。&#x0a;• デスクトップ切り替えの修飾キー: 画面端でデスクトップ切り替えを発動する前に押しておくキーの組み合わせです。&#x0a;• デスクトップ作成の修飾キー: 最後のデスクトップの右端から新しいデスクトップを作るときに必要なキーの組み合わせです。</value>
+  </data>
+  <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>上側の無視領域 (%)</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopModifierTitleTextBlock.Text" xml:space="preserve">
+    <value>デスクトップ切り替え修飾キー</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_TitleTextBlock.Text" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>メイン キー</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>修飾キー</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>DeskBorder 切り替えホットキー</value>
+  </data>
+  <data name="SettingsPage_ToggleDeskBorderHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="StartupTaskDisplayName" xml:space="preserve">
+    <value>DeskBorder</value>
+  </data>
+  <data name="Toast.AutoDelete.Action" xml:space="preserve">
+    <value>元に戻す</value>
+  </data>
+  <data name="Toast.AutoDelete.ActionCardTitle" xml:space="preserve">
+    <value>このデスクトップを維持</value>
+  </data>
+  <data name="Toast.AutoDelete.MessageFormat" xml:space="preserve">
+    <value>{0} は、この操作を元に戻さない限り削除されます。</value>
+  </data>
+  <data name="Toast.AutoDelete.Title" xml:space="preserve">
+    <value>外側のデスクトップは削除予定です</value>
+  </data>
+  <data name="Toast.WindowTitle" xml:space="preserve">
+    <value>トースト</value>
+  </data>
+  <data name="Tray.LaunchOnStartup" xml:space="preserve">
+    <value>システム起動時に実行</value>
+  </data>
+  <data name="Tray.RuntimeStatus.Paused" xml:space="preserve">
+    <value>○ DeskBorder サービス一時停止中</value>
+  </data>
+  <data name="Tray.RuntimeStatus.Running" xml:space="preserve">
+    <value>● DeskBorder サービス実行中</value>
+  </data>
+  <data name="Tray.RuntimeToggle" xml:space="preserve">
+    <value>DeskBorder を有効化</value>
+  </data>
+  <data name="Tray.StoreUpdateCheck" xml:space="preserve">
+    <value>Store 更新プログラムを確認</value>
+  </data>
+  <data name="TriggerRectangle.Format" xml:space="preserve">
+    <value>Left {0:P0}, Top {1:P0}, Width {2:P0}, Height {3:P0}</value>
+  </data>
+  <data name="VirtualKey.CapitalLock" xml:space="preserve">
+    <value>Caps Lock</value>
+  </data>
+  <data name="VirtualKey.Down" xml:space="preserve">
+    <value>下矢印</value>
+  </data>
+  <data name="VirtualKey.Left" xml:space="preserve">
+    <value>左矢印</value>
+  </data>
+  <data name="VirtualKey.PageDown" xml:space="preserve">
+    <value>Page Down</value>
+  </data>
+  <data name="VirtualKey.PageUp" xml:space="preserve">
+    <value>Page Up</value>
+  </data>
+  <data name="VirtualKey.Right" xml:space="preserve">
+    <value>右矢印</value>
+  </data>
+  <data name="VirtualKey.Up" xml:space="preserve">
+    <value>上矢印</value>
+  </data>
+</root>

@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "DeskBorder (Packaged)": {
+      "commandName": "MsixPackage"
+    }
+  }
+}
