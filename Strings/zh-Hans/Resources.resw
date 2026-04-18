@@ -243,6 +243,9 @@
   <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
     <value>在多显示器环境中已禁用</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByBlacklistedProcess" xml:space="preserve">
+    <value>由于当前焦点窗口进程在黑名单中，已禁用</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>可进行边缘监视</value>
   </data>

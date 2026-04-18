@@ -243,6 +243,9 @@
   <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
     <value>다중 디스플레이에서 비활성화됨</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByBlacklistedProcess" xml:space="preserve">
+    <value>현재 포커스된 창의 프로세스가 블랙리스트에 있어 비활성화됨</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>가장자리 감시 가능</value>
   </data>

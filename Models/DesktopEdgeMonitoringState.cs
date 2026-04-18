@@ -14,6 +14,7 @@ public enum DesktopEdgeAvailabilityStatus
     DisabledByCursorClipping,
     DisabledInMultiDisplayEnvironment,
     CursorOutsideDisplayEnvironment,
+    DisabledByBlacklistedProcess,
 }
 
 public readonly record struct ScreenPoint(int X, int Y);

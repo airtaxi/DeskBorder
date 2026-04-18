@@ -1,5 +1,7 @@
 using DeskBorder.Interop;
 using DeskBorder.Models;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace DeskBorder.Helpers;
@@ -125,6 +127,28 @@ public static class MouseHelper
             IsAlternatePressed = pressedKeyboardModifierKeys.HasFlag(KeyboardModifierKeys.Alternate),
             IsWindowsPressed = pressedKeyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows)
         };
+    }
+
+    public static string? TryGetForegroundProcessName()
+    {
+        var foregroundWindowHandle = Win32.GetForegroundWindow();
+        if (foregroundWindowHandle == 0)
+            return null;
+
+        _ = Win32.GetWindowThreadProcessId(foregroundWindowHandle, out var processIdentifier);
+        if (processIdentifier == 0)
+            return null;
+
+        try
+        {
+            using var foregroundProcess = Process.GetProcessById((int)processIdentifier);
+            var processName = foregroundProcess.ProcessName.Trim();
+            return string.IsNullOrWhiteSpace(processName) ? null : processName;
+        }
+        catch (ArgumentException) { return null; }
+        catch (InvalidOperationException) { return null; }
+        catch (NotSupportedException) { return null; }
+        catch (Win32Exception) { return null; }
     }
 
     public static ScreenRectangle GetVirtualScreenBounds()

@@ -243,6 +243,9 @@
   <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
     <value>Disabled in multi-display environments</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByBlacklistedProcess" xml:space="preserve">
+    <value>Disabled because the focused window process is blacklisted</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>Edge monitoring available</value>
   </data>

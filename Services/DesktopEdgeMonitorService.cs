@@ -23,10 +23,16 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
         var currentSettings = _settingsService.Settings;
         var currentCursorPosition = MouseHelper.GetCurrentCursorPosition();
         var cursorClippingState = MouseHelper.GetCursorClippingState();
+        var currentForegroundProcessName = MouseHelper.TryGetForegroundProcessName();
         var modifierKeySnapshot = MouseHelper.GetModifierKeySnapshot();
         var displayMonitors = MouseHelper.GetDisplayMonitors();
         var currentDisplayMonitor = FindCurrentDisplayMonitor(displayMonitors, currentCursorPosition);
-        var desktopEdgeAvailabilityStatus = GetDesktopEdgeAvailabilityStatus(currentSettings, displayMonitors.Length, currentDisplayMonitor is not null, cursorClippingState.IsCursorClipped);
+        var desktopEdgeAvailabilityStatus = GetDesktopEdgeAvailabilityStatus(
+            currentSettings,
+            displayMonitors.Length,
+            currentDisplayMonitor is not null,
+            cursorClippingState.IsCursorClipped,
+            currentForegroundProcessName);
         var activeDesktopEdge = desktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.Enabled
             ? GetActiveDesktopEdge(displayMonitors, currentDisplayMonitor, currentCursorPosition, currentSettings.DesktopEdgeIgnoreZoneSettings)
             : DesktopEdgeKind.None;
@@ -195,7 +201,8 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
         DeskBorderSettings settings,
         int displayMonitorCount,
         bool hasCurrentDisplayMonitor,
-        bool isCursorClipped)
+        bool isCursorClipped,
+        string? currentForegroundProcessName)
     {
         if (!settings.IsDeskBorderEnabled)
             return DesktopEdgeAvailabilityStatus.DisabledByDeskBorderSetting;
@@ -208,6 +215,12 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
 
         if (displayMonitorCount > 1 && settings.MultiDisplayBehavior == MultiDisplayBehavior.DisableInMultiDisplayEnvironment)
             return DesktopEdgeAvailabilityStatus.DisabledInMultiDisplayEnvironment;
+
+        if (!string.IsNullOrWhiteSpace(currentForegroundProcessName)
+            && settings.BlacklistedProcessNames.Contains(currentForegroundProcessName, StringComparer.OrdinalIgnoreCase))
+        {
+            return DesktopEdgeAvailabilityStatus.DisabledByBlacklistedProcess;
+        }
 
         return DesktopEdgeAvailabilityStatus.Enabled;
     }

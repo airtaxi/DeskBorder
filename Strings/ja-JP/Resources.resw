@@ -243,6 +243,9 @@
   <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
     <value>マルチディスプレイ環境では無効です</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByBlacklistedProcess" xml:space="preserve">
+    <value>現在フォーカス中のウィンドウ プロセスがブラックリストのため無効です</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>エッジ監視が利用可能です</value>
   </data>
