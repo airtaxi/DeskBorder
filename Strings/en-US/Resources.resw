@@ -499,7 +499,7 @@
     <value>Enable DeskBorder</value>
   </data>
   <data name="SettingsPage_EdgeSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>Configure multi-display behavior, empty desktop detection, and auto deletion.</value>
+    <value>Configure multi-display behavior, auto deletion, and edge ignore zones.</value>
   </data>
   <data name="SettingsPage_EdgeSectionTitleTextBlock.Text" xml:space="preserve">
     <value>Edges and auto cleanup</value>
@@ -694,7 +694,7 @@
     <value>• Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.
 • Show deletion warning: when enabled, deletion waits briefly so you can undo it; when disabled, empty desktops are deleted immediately for continuous cleanup.
 • Deletion warning timeout: adjusts how long the undo wait lasts while the deletion warning is shown.
-• Empty desktop detection: changes how deletion decides whether tray-style apps still count as open windows.
+• Empty desktop detection: a desktop counts as empty only when the wallpaper is actually visible. Minimized windows do not block auto deletion.
 • Top and bottom ignore zones: adjusts, in percentages, how much of the upper and lower screen area should ignore edge switching and desktop creation.
 • Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.
 • Switch desktop modifiers: key combination that must be held before edge-based desktop switching triggers.

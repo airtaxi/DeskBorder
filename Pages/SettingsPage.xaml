@@ -157,7 +157,7 @@
                                     Text="가장자리 및 자동 정리" />
                                 <TextBlock
                                     x:Uid="SettingsPage_EdgeSectionDescriptionTextBlock"
-                                    Text="다중 디스플레이 환경, 빈 데스크톱 판정, 자동 삭제 정책을 설정합니다."
+                                    Text="다중 디스플레이 환경, 자동 삭제 정책, 가장자리 무시 영역을 설정합니다."
                                     TextWrapping="WrapWholeWords" />
                             </StackPanel>
                             <Grid
@@ -227,15 +227,6 @@
                                     Value="{x:Bind ViewModel.AutoDeleteWarningTimeoutSeconds, Mode=TwoWay}" />
                             </StackPanel>
                         </Border>
-
-                        <ComboBox
-                            x:Name="EmptyDesktopDetectionModeComboBox"
-                            x:Uid="SettingsPage_EmptyDesktopDetectionModeComboBox"
-                            Header="빈 데스크톱 감지 기준"
-                            ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                            ItemsSource="{x:Bind ViewModel.EmptyDesktopDetectionModeOptions, Mode=OneWay}"
-                            SelectedItem="{x:Bind ViewModel.SelectedEmptyDesktopDetectionModeOption, Mode=TwoWay}"
-                            SelectionChanged="OnSettingSelectionChanged" />
 
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>

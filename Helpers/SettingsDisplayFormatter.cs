@@ -34,13 +34,6 @@ public static class SettingsDisplayFormatter
         _ => desktopEdgeKind.ToString()
     };
 
-    public static string FormatEmptyDesktopDetectionMode(EmptyDesktopDetectionMode emptyDesktopDetectionMode) => emptyDesktopDetectionMode switch
-    {
-        EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications => LocalizedResourceAccessor.GetString("EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications"),
-        EmptyDesktopDetectionMode.CountAllTopLevelWindows => LocalizedResourceAccessor.GetString("EmptyDesktopDetectionMode.CountAllTopLevelWindows"),
-        _ => emptyDesktopDetectionMode.ToString()
-    };
-
     public static string FormatKeyboardModifierKeys(KeyboardModifierKeys keyboardModifierKeys)
     {
         if (keyboardModifierKeys == KeyboardModifierKeys.None)

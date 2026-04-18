@@ -8,12 +8,6 @@ public enum MultiDisplayBehavior
     UseOuterDisplayEdges,
 }
 
-public enum EmptyDesktopDetectionMode
-{
-    IgnoreNotificationAreaApplications,
-    CountAllTopLevelWindows,
-}
-
 public enum AppLanguagePreference
 {
     System,
@@ -109,8 +103,6 @@ public sealed record DeskBorderSettings
     public bool IsAutoDeleteWarningEnabled { get; init; } = true;
 
     public double AutoDeleteWarningTimeoutSeconds { get; init; } = 3.0;
-
-    public EmptyDesktopDetectionMode EmptyDesktopDetectionMode { get; init; } = EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications;
 
     public DesktopEdgeIgnoreZoneSettings DesktopEdgeIgnoreZoneSettings { get; init; } = new();
 

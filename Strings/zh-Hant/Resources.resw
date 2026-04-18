@@ -499,7 +499,7 @@
     <value>啟用 DeskBorder</value>
   </data>
   <data name="SettingsPage_EdgeSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>設定多顯示器行為、空桌面偵測與自動刪除。</value>
+    <value>設定多顯示器行為、自動刪除與邊緣忽略區域。</value>
   </data>
   <data name="SettingsPage_EdgeSectionTitleTextBlock.Text" xml:space="preserve">
     <value>邊緣與自動整理</value>
@@ -694,7 +694,7 @@
     <value>• 自動刪除空桌面：當你從最外側桌面往內移動且該桌面已無視窗時，會刪除該桌面。
 • 顯示刪除警告：開啟後會先短暫等待並允許復原，關閉後則不顯示警告並立即刪除，以便連續整理。
 • 刪除警告逾時：調整顯示刪除警告時等待復原的時間。
-• 空桌面偵測：切換刪除判斷方式，包括是否將通知區域類應用程式視為仍有開啟視窗。
+• 空桌面判定：只有在桌布實際可見時才視為空桌面。已最小化的視窗不會阻止自動刪除。
 • 頂部/底部忽略區域：以百分比調整螢幕上下有多少區域不回應邊緣切換與桌面建立。
 • 啟用桌面建立：開啟或關閉在最後一個桌面的右邊緣建立新桌面的功能。
 • 桌面切換修飾鍵：在螢幕左右邊緣觸發桌面切換前必須按住的組合鍵。

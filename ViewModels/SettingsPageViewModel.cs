@@ -29,12 +29,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         AppLanguagePreference.ChineseTraditional
     ];
 
-    private static readonly EmptyDesktopDetectionMode[] s_emptyDesktopDetectionModes =
-    [
-        EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications,
-        EmptyDesktopDetectionMode.CountAllTopLevelWindows
-    ];
-
     private static readonly MultiDisplayBehavior[] s_multiDisplayBehaviors =
     [
         MultiDisplayBehavior.DisableInMultiDisplayEnvironment,
@@ -111,7 +105,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     {
         var virtualKeyOptions = CreateSelectionOptions(s_virtualKeys, SettingsDisplayFormatter.FormatVirtualKey);
         AppLanguagePreferenceOptions = CreateSelectionOptions(s_appLanguagePreferences, SettingsDisplayFormatter.FormatAppLanguagePreference);
-        EmptyDesktopDetectionModeOptions = CreateSelectionOptions(s_emptyDesktopDetectionModes, SettingsDisplayFormatter.FormatEmptyDesktopDetectionMode);
         MultiDisplayBehaviorOptions = CreateSelectionOptions(s_multiDisplayBehaviors, SettingsDisplayFormatter.FormatMultiDisplayBehavior);
         ToggleDeskBorderEnabledHotkeyEditor = new KeyboardShortcutEditorViewModel(virtualKeyOptions);
         MoveFocusedWindowToPreviousDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(virtualKeyOptions);
@@ -128,8 +121,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public ObservableCollection<string> BlacklistedProcessNames { get; } = [];
 
     public ModifierKeySelectionViewModel CreateDesktopModifierSelection { get; } = new();
-
-    public List<SelectionOption<EmptyDesktopDetectionMode>> EmptyDesktopDetectionModeOptions { get; }
 
     [ObservableProperty]
     public partial double BottomDesktopEdgeIgnorePercentage { get; set; }
@@ -228,9 +219,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial SelectionOption<AppLanguagePreference>? SelectedAppLanguagePreferenceOption { get; set; }
 
     [ObservableProperty]
-    public partial SelectionOption<EmptyDesktopDetectionMode>? SelectedEmptyDesktopDetectionModeOption { get; set; }
-
-    [ObservableProperty]
     public partial SelectionOption<MultiDisplayBehavior>? SelectedMultiDisplayBehaviorOption { get; set; }
 
     public ModifierKeySelectionViewModel SwitchDesktopModifierSelection { get; } = new();
@@ -288,7 +276,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsAutoDeleteEnabled = IsAutoDeleteEnabled,
         IsAutoDeleteWarningEnabled = IsAutoDeleteWarningEnabled,
         AutoDeleteWarningTimeoutSeconds = AutoDeleteWarningTimeoutSeconds,
-        EmptyDesktopDetectionMode = SelectedEmptyDesktopDetectionModeOption?.Value ?? EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications,
         DesktopEdgeIgnoreZoneSettings = new DesktopEdgeIgnoreZoneSettings
         {
             TopIgnorePercentage = TopDesktopEdgeIgnorePercentage,
@@ -331,9 +318,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         SelectedMultiDisplayBehaviorOption = FindSelectionOption(
             MultiDisplayBehaviorOptions,
             deskBorderSettings.MultiDisplayBehavior);
-        SelectedEmptyDesktopDetectionModeOption = FindSelectionOption(
-            EmptyDesktopDetectionModeOptions,
-            deskBorderSettings.EmptyDesktopDetectionMode);
         SelectedAppLanguagePreferenceOption = FindSelectionOption(
             AppLanguagePreferenceOptions,
             deskBorderSettings.AppLanguagePreference);

@@ -139,7 +139,6 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             IsAutoDeleteEnabled = settings.IsAutoDeleteEnabled,
             IsAutoDeleteWarningEnabled = settings.IsAutoDeleteWarningEnabled,
             AutoDeleteWarningTimeoutSeconds = ClampAutoDeleteWarningTimeoutSeconds(settings.AutoDeleteWarningTimeoutSeconds),
-            EmptyDesktopDetectionMode = settings.EmptyDesktopDetectionMode,
             DesktopEdgeIgnoreZoneSettings = NormalizeDesktopEdgeIgnoreZoneSettings(settings.DesktopEdgeIgnoreZoneSettings),
             ApplicationHotkeySettings = NormalizeApplicationHotkeySettings(settings.ApplicationHotkeySettings),
             FocusedWindowMoveHotkeySettings = NormalizeFocusedWindowMoveHotkeySettings(settings.FocusedWindowMoveHotkeySettings),

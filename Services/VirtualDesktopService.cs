@@ -137,7 +137,7 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
             };
         }
 
-        var desktopWindowInventory = GetDesktopWindowInventory(virtualDesktopShellConnection.VirtualDesktopShell, sourceDesktopIdentifier, currentSettings.EmptyDesktopDetectionMode, currentSettings.BlacklistedProcessNames);
+        var desktopWindowInventory = GetDesktopWindowInventory(virtualDesktopShellConnection.VirtualDesktopShell, sourceDesktopIdentifier);
         if (desktopWindowInventory.VisibleWindowCount > 0)
         {
             return new()
@@ -367,19 +367,18 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
         }
     }
 
-    private static DesktopWindowInventory GetDesktopWindowInventory(VirtualDesktopShell virtualDesktopShell, string desktopIdentifier, EmptyDesktopDetectionMode emptyDesktopDetectionMode, string[] blacklistedProcessNames)
+    private static DesktopWindowInventory GetDesktopWindowInventory(VirtualDesktopShell virtualDesktopShell, string desktopIdentifier)
     {
         if (!TryParseDesktopIdentifier(desktopIdentifier, out var parsedDesktopIdentifier))
             return new(0, []);
 
         var shellWindowHandle = Win32.GetShellWindow();
         var blockedProcessNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var blacklistedProcessNameSet = blacklistedProcessNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
         var visibleWindowCount = 0;
         _ = Win32.EnumWindows((windowHandle, applicationData) =>
         {
             _ = applicationData;
-            if (windowHandle == 0 || windowHandle == shellWindowHandle || !Win32.IsWindowVisible(windowHandle))
+            if (windowHandle == 0 || windowHandle == shellWindowHandle || !Win32.IsWindowVisible(windowHandle) || Win32.IsIconic(windowHandle))
                 return true;
 
             if (!TryGetWindowDesktopIdentifier(virtualDesktopShell, windowHandle, out var windowDesktopIdentifier))
@@ -390,10 +389,6 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
 
             var processName = TryGetProcessName(windowHandle);
             if (string.IsNullOrWhiteSpace(processName))
-                return true;
-
-            if (emptyDesktopDetectionMode == EmptyDesktopDetectionMode.IgnoreNotificationAreaApplications
-                && blacklistedProcessNameSet.Contains(processName))
                 return true;
 
             visibleWindowCount++;

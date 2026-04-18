@@ -200,7 +200,6 @@ public sealed partial class DashboardPage : Page
         GeneralSettingsSummaryTextBlock.Text = string.Join(Environment.NewLine,
         [
             SettingsDisplayFormatter.FormatMultiDisplayBehavior(currentSettings.MultiDisplayBehavior),
-            LocalizedResourceAccessor.GetFormattedString("Dashboard.EmptyDesktopDetection.Format", SettingsDisplayFormatter.FormatEmptyDesktopDetectionMode(currentSettings.EmptyDesktopDetectionMode)),
             LocalizedResourceAccessor.GetFormattedString("Dashboard.AutoDeleteSummary.Format", LocalizedResourceAccessor.GetString(currentSettings.IsAutoDeleteEnabled ? "Common.Enabled" : "Common.Disabled"), currentSettings.BlacklistedProcessNames.Length)
         ]);
     }
