@@ -152,6 +152,9 @@ public sealed class DesktopLifecycleService(
             return;
 
         await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
+        if (desktopNavigationResult.NavigationActionKind == DesktopNavigationActionKind.CreatedAndSwitched)
+            return;
+
         if (!IsInwardSwitch(desktopNavigationResult)
             || string.IsNullOrWhiteSpace(desktopNavigationResult.SourceDesktopIdentifier)
             || string.IsNullOrWhiteSpace(desktopNavigationResult.TargetDesktopIdentifier))
