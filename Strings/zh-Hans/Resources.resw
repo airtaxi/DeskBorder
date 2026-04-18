@@ -471,9 +471,6 @@
   <data name="SettingsPage_CreateDesktopModifierTitleTextBlock.Text" xml:space="preserve">
     <value>创建桌面修饰键</value>
   </data>
-  <data name="SettingsPage_CreateDesktopEnabledToggleSwitch.Header" xml:space="preserve">
-    <value>启用桌面创建</value>
-  </data>
   <data name="SettingsPage_CreateDesktopShiftCheckBox.Content" xml:space="preserve">
     <value>Shift</value>
   </data>
@@ -508,7 +505,11 @@
     <value>常规设置说明</value>
   </data>
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 启用 DeskBorder：统一开启或关闭边缘切换、桌面创建、自动整理和全局热键。&#x0a;• 随系统启动运行：在 Windows 登录后立即以托盘方式启动应用。&#x0a;• 检查 Store 更新：为 Store 分发版本保留更新检查行为。&#x0a;• 多显示器行为：在多显示器环境下禁用监控，或仅在最外侧显示器边缘生效。&#x0a;• 应用语言：将界面固定为指定语言，或跟随系统语言。</value>
+    <value>• 启用 DeskBorder：统一开启或关闭边缘切换、桌面创建、自动整理和全局热键。
+• 随系统启动运行：在 Windows 登录后立即以托盘方式启动应用。
+• 检查 Store 更新：为 Store 分发版本保留更新检查行为。
+• 多显示器行为：在多显示器环境下禁用监控，或仅在最外侧显示器边缘生效。
+• 应用语言：将界面固定为指定语言，或跟随系统语言。</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>配置可直接控制 DeskBorder、窗口移动和 Navigator 的热键。</value>
@@ -520,7 +521,9 @@
     <value>全局热键说明</value>
   </data>
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 每个全局热键都可以单独启用或关闭。&#x0a;• 通过主按键与修饰键的组合，可设置 DeskBorder 总开关、将焦点窗口移到上一个桌面、移到下一个桌面，以及切换 Navigator 叠加层。&#x0a;• 状态指示会立即显示当前组合是否有效、是否缺少按键、是否重复，或是否注册失败。</value>
+    <value>• 每个全局热键都可以单独启用或关闭。
+• 通过主按键与修饰键的组合，可设置 DeskBorder 总开关、将焦点窗口移到上一个桌面、移到下一个桌面，以及切换 Navigator 叠加层。
+• 状态指示会立即显示当前组合是否有效、是否缺少按键、是否重复，或是否注册失败。</value>
   </data>
   <data name="SettingsPage_ImportExportSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>可将当前设置保存为 .dbs 文件，或将已保存的设置文件应用到当前应用状态。</value>
@@ -532,7 +535,9 @@
     <value>导入和导出说明</value>
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 导出设置：将当前应用配置保存为 .dbs 文件，便于备份或迁移到另一台电脑。&#x0a;• 导入设置：读取已保存的 .dbs 文件，并一次性应用到当前配置。&#x0a;• 下方信息栏会短暂显示导入导出的结果或错误。</value>
+    <value>• 导出设置：将当前应用配置保存为 .dbs 文件，便于备份或迁移到另一台电脑。
+• 导入设置：读取已保存的 .dbs 文件，并一次性应用到当前配置。
+• 下方信息栏会短暂显示导入导出的结果或错误。</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
     <value>导入设置</value>
@@ -595,7 +600,9 @@
     <value>Navigator 说明</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 启用触发区域：当指针进入指定屏幕区域时显示 Navigator 叠加层。&#x0a;• Left / Top / Width / Height：用 0 到 1 的比例值设置触发区域的位置和大小。&#x0a;• 如果同时启用全局热键中的 Navigator 叠加层切换，则快捷键和鼠标区域触发会一起生效。</value>
+    <value>• 启用触发区域：当指针进入指定屏幕区域时显示 Navigator 叠加层。
+• Left / Top / Width / Height：用 0 到 1 的比例值设置触发区域的位置和大小。
+• 如果同时启用全局热键中的 Navigator 叠加层切换，则快捷键和鼠标区域触发会一起生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -649,13 +656,20 @@
     <value>黑名单说明</value>
   </data>
   <data name="SettingsPage_BlacklistSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 从运行中的进程添加：只显示当前正在运行且尚未注册的进程供选择。&#x0a;• 已列出的进程会从边缘切换、桌面创建和自动删除处理中排除。&#x0a;• 可将不希望 DeskBorder 干预的游戏或全屏应用保存在这里。</value>
+    <value>• 从运行中的进程添加：只显示当前正在运行且尚未注册的进程供选择。
+• 已列出的进程会从边缘切换、桌面创建和自动删除处理中排除。
+• 可将不希望 DeskBorder 干预的游戏或全屏应用保存在这里。</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>边缘与自动整理说明</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 自动删除空桌面：当你从最外侧桌面向内移动且该桌面已无窗口时，会安排删除。&#x0a;• 空桌面检测：切换删除判断方式，包括是否将托盘类应用视为仍有打开窗口。&#x0a;• 顶部/底部忽略区域：用百分比调整屏幕上下有多少区域不响应边缘切换和桌面创建。&#x0a;• 启用桌面创建：开启或关闭在最后一个桌面的右边缘创建新桌面的功能。&#x0a;• 切换桌面修饰键：在屏幕左右边缘触发桌面切换前必须按住的组合键。&#x0a;• 创建桌面修饰键：在最后一个桌面的右边缘创建新桌面时所需的组合键。</value>
+    <value>• 自动删除空桌面：当你从最外侧桌面向内移动且该桌面已无窗口时，会安排删除。
+• 空桌面检测：切换删除判断方式，包括是否将托盘类应用视为仍有打开窗口。
+• 顶部/底部忽略区域：用百分比调整屏幕上下有多少区域不响应边缘切换和桌面创建。
+• 启用桌面创建：开启或关闭在最后一个桌面的右边缘创建新桌面的功能。
+• 切换桌面修饰键：在屏幕左右边缘触发桌面切换前必须按住的组合键。
+• 创建桌面修饰键：在最后一个桌面的右边缘创建新桌面时所需的组合键。</value>
   </data>
   <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>顶部忽略区域 (%)</value>

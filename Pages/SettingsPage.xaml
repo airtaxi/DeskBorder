@@ -219,8 +219,8 @@
                                 Minimum="0"
                                 SmallChange="1"
                                 SpinButtonPlacementMode="Inline"
-                                Value="{x:Bind ViewModel.TopDesktopEdgeIgnorePercentage, Mode=TwoWay}"
-                                ValueChanged="OnSettingNumberBoxValueChanged" />
+                                ValueChanged="OnSettingNumberBoxValueChanged"
+                                Value="{x:Bind ViewModel.TopDesktopEdgeIgnorePercentage, Mode=TwoWay}" />
 
                             <NumberBox
                                 x:Name="BottomDesktopEdgeIgnorePercentageNumberBox"
@@ -231,8 +231,8 @@
                                 Minimum="0"
                                 SmallChange="1"
                                 SpinButtonPlacementMode="Inline"
-                                Value="{x:Bind ViewModel.BottomDesktopEdgeIgnorePercentage, Mode=TwoWay}"
-                                ValueChanged="OnSettingNumberBoxValueChanged" />
+                                ValueChanged="OnSettingNumberBoxValueChanged"
+                                Value="{x:Bind ViewModel.BottomDesktopEdgeIgnorePercentage, Mode=TwoWay}" />
                         </Grid>
 
                         <Grid ColumnSpacing="16">
@@ -273,45 +273,50 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border
+                            <Grid
                                 Grid.Column="1"
                                 Padding="12"
                                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                                 CornerRadius="10">
+                                <ToggleSwitch
+                                    x:Uid="SettingsPage_CreateDesktopEnabledToggleSwitch"
+                                    MinWidth="0"
+                                    Margin="0,-10"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    IsOn="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=TwoWay}"
+                                    Toggled="OnSettingToggleSwitchToggled" />
                                 <StackPanel Spacing="10">
                                     <TextBlock
                                         x:Uid="SettingsPage_CreateDesktopModifierTitleTextBlock"
                                         FontWeight="SemiBold"
                                         Text="데스크톱 생성 보조키" />
-                                    <ToggleSwitch
-                                        x:Uid="SettingsPage_CreateDesktopEnabledToggleSwitch"
-                                        Header="새 데스크톱 생성"
-                                        IsOn="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=TwoWay}"
-                                        Toggled="OnSettingToggleSwitchToggled" />
-                                    <StackPanel IsEnabled="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=OneWay}" Spacing="10">
-                                        <CheckBox
-                                            x:Uid="SettingsPage_CreateDesktopControlCheckBox"
-                                            Click="OnModifierSelectionCheckBoxClicked"
-                                            Content="Ctrl"
-                                            IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsControlEnabled, Mode=TwoWay}" />
-                                        <CheckBox
-                                            x:Uid="SettingsPage_CreateDesktopShiftCheckBox"
-                                            Click="OnModifierSelectionCheckBoxClicked"
-                                            Content="Shift"
-                                            IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsShiftEnabled, Mode=TwoWay}" />
-                                        <CheckBox
-                                            x:Uid="SettingsPage_CreateDesktopAltCheckBox"
-                                            Click="OnModifierSelectionCheckBoxClicked"
-                                            Content="Alt"
-                                            IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsAlternateEnabled, Mode=TwoWay}" />
-                                        <CheckBox
-                                            x:Uid="SettingsPage_CreateDesktopWindowsCheckBox"
-                                            Click="OnModifierSelectionCheckBoxClicked"
-                                            Content="Windows"
-                                            IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsWindowsEnabled, Mode=TwoWay}" />
-                                    </StackPanel>
+                                    <Frame IsEnabled="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=OneWay}">
+                                        <StackPanel Spacing="10">
+                                            <CheckBox
+                                                x:Uid="SettingsPage_CreateDesktopControlCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Ctrl"
+                                                IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsControlEnabled, Mode=TwoWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_CreateDesktopShiftCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Shift"
+                                                IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsShiftEnabled, Mode=TwoWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_CreateDesktopAltCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Alt"
+                                                IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsAlternateEnabled, Mode=TwoWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_CreateDesktopWindowsCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Windows"
+                                                IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsWindowsEnabled, Mode=TwoWay}" />
+                                        </StackPanel>
+                                    </Frame>
                                 </StackPanel>
-                            </Border>
+                            </Grid>
 
                         </Grid>
                     </StackPanel>

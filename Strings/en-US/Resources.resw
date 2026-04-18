@@ -471,9 +471,6 @@
   <data name="SettingsPage_CreateDesktopModifierTitleTextBlock.Text" xml:space="preserve">
     <value>Desktop creation modifiers</value>
   </data>
-  <data name="SettingsPage_CreateDesktopEnabledToggleSwitch.Header" xml:space="preserve">
-    <value>Enable desktop creation</value>
-  </data>
   <data name="SettingsPage_CreateDesktopShiftCheckBox.Content" xml:space="preserve">
     <value>Shift</value>
   </data>
@@ -508,7 +505,11 @@
     <value>General settings guide</value>
   </data>
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• Enable DeskBorder: turns edge switching, desktop creation, auto cleanup, and global hotkeys on or off together.&#x0a;• Run at system startup: starts the app in the tray right after Windows sign-in.&#x0a;• Check for Store updates: keeps update checks enabled for Store-distributed builds.&#x0a;• Multi-display behavior: disables monitoring on multi-monitor setups, or limits it to the outermost display edges only.&#x0a;• App language: pins the UI to a specific language or follows the system language.</value>
+    <value>• Enable DeskBorder: turns edge switching, desktop creation, auto cleanup, and global hotkeys on or off together.
+• Run at system startup: starts the app in the tray right after Windows sign-in.
+• Check for Store updates: keeps update checks enabled for Store-distributed builds.
+• Multi-display behavior: disables monitoring on multi-monitor setups, or limits it to the outermost display edges only.
+• App language: pins the UI to a specific language or follows the system language.</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>Configure hotkeys that directly control DeskBorder, window movement, and Navigator.</value>
@@ -520,7 +521,9 @@
     <value>Global hotkey guide</value>
   </data>
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• Each global hotkey can be enabled or disabled independently.&#x0a;• Combine a primary key with modifiers to configure the DeskBorder toggle, move focused window to previous desktop, move focused window to next desktop, and Navigator overlay toggle actions.&#x0a;• The status indicator immediately shows whether the shortcut is valid, missing a key, duplicated, or failed to register.</value>
+    <value>• Each global hotkey can be enabled or disabled independently.
+• Combine a primary key with modifiers to configure the DeskBorder toggle, move focused window to previous desktop, move focused window to next desktop, and Navigator overlay toggle actions.
+• The status indicator immediately shows whether the shortcut is valid, missing a key, duplicated, or failed to register.</value>
   </data>
   <data name="SettingsPage_ImportExportSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>Save the current settings to a .dbs file, or apply a saved settings file to the current app state.</value>
@@ -532,7 +535,9 @@
     <value>Import and export guide</value>
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• Export settings: saves the current app configuration to a .dbs file for backup or transfer to another PC.&#x0a;• Import settings: loads a saved .dbs file and applies it to the current configuration in one step.&#x0a;• The info bar below briefly shows import and export results or errors.</value>
+    <value>• Export settings: saves the current app configuration to a .dbs file for backup or transfer to another PC.
+• Import settings: loads a saved .dbs file and applies it to the current configuration in one step.
+• The info bar below briefly shows import and export results or errors.</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
     <value>Import settings</value>
@@ -595,7 +600,9 @@
     <value>Navigator guide</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• Enable trigger area: shows the Navigator overlay when the pointer enters the configured screen region.&#x0a;• Left / Top / Width / Height: set the trigger area position and size as 0 to 1 ratio values.&#x0a;• If you also enable the Navigator overlay hotkey in the global hotkeys section, both the shortcut and mouse area triggers stay active together.</value>
+    <value>• Enable trigger area: shows the Navigator overlay when the pointer enters the configured screen region.
+• Left / Top / Width / Height: set the trigger area position and size as 0 to 1 ratio values.
+• If you also enable the Navigator overlay hotkey in the global hotkeys section, both the shortcut and mouse area triggers stay active together.</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -649,13 +656,20 @@
     <value>Blacklist guide</value>
   </data>
   <data name="SettingsPage_BlacklistSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• Add from running processes: lets you pick only currently running processes that are not already registered.&#x0a;• Listed processes are excluded from edge switching, desktop creation, and auto deletion handling.&#x0a;• Keep games or full-screen apps here when DeskBorder should not interfere with them.</value>
+    <value>• Add from running processes: lets you pick only currently running processes that are not already registered.
+• Listed processes are excluded from edge switching, desktop creation, and auto deletion handling.
+• Keep games or full-screen apps here when DeskBorder should not interfere with them.</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>Edges and auto cleanup guide</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• Auto delete empty desktops: schedules deletion when you move inward from an outer desktop that no longer has windows.&#x0a;• Empty desktop detection: changes how deletion decides whether tray-style apps still count as open windows.&#x0a;• Top and bottom ignore zones: adjusts, in percentages, how much of the upper and lower screen area should ignore edge switching and desktop creation.&#x0a;• Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.&#x0a;• Switch desktop modifiers: key combination that must be held before edge-based desktop switching triggers.&#x0a;• Create desktop modifiers: key combination required to create a new desktop from the right edge of the last desktop.</value>
+    <value>• Auto delete empty desktops: schedules deletion when you move inward from an outer desktop that no longer has windows.
+• Empty desktop detection: changes how deletion decides whether tray-style apps still count as open windows.
+• Top and bottom ignore zones: adjusts, in percentages, how much of the upper and lower screen area should ignore edge switching and desktop creation.
+• Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.
+• Switch desktop modifiers: key combination that must be held before edge-based desktop switching triggers.
+• Create desktop modifiers: key combination required to create a new desktop from the right edge of the last desktop.</value>
   </data>
   <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>Top ignore zone (%)</value>

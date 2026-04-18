@@ -471,9 +471,6 @@
   <data name="SettingsPage_CreateDesktopModifierTitleTextBlock.Text" xml:space="preserve">
     <value>建立桌面修飾鍵</value>
   </data>
-  <data name="SettingsPage_CreateDesktopEnabledToggleSwitch.Header" xml:space="preserve">
-    <value>啟用桌面建立</value>
-  </data>
   <data name="SettingsPage_CreateDesktopShiftCheckBox.Content" xml:space="preserve">
     <value>Shift</value>
   </data>
@@ -508,7 +505,11 @@
     <value>一般設定說明</value>
   </data>
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 啟用 DeskBorder：統一開啟或關閉邊緣切換、桌面建立、自動整理與全域熱鍵。&#x0a;• 系統啟動時執行：在 Windows 登入後立即以系統匣方式啟動應用程式。&#x0a;• 檢查 Store 更新：為 Store 發佈版本保留更新檢查行為。&#x0a;• 多顯示器行為：在多螢幕環境中停用監視，或只在最外側顯示器邊緣啟用。&#x0a;• 應用程式語言：將介面固定為指定語言，或跟隨系統語言。</value>
+    <value>• 啟用 DeskBorder：統一開啟或關閉邊緣切換、桌面建立、自動整理與全域熱鍵。
+• 系統啟動時執行：在 Windows 登入後立即以系統匣方式啟動應用程式。
+• 檢查 Store 更新：為 Store 發佈版本保留更新檢查行為。
+• 多顯示器行為：在多螢幕環境中停用監視，或只在最外側顯示器邊緣啟用。
+• 應用程式語言：將介面固定為指定語言，或跟隨系統語言。</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>設定可直接控制 DeskBorder、視窗移動與 Navigator 的熱鍵。</value>
@@ -520,7 +521,9 @@
     <value>全域熱鍵說明</value>
   </data>
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 每個全域熱鍵都可以獨立啟用或停用。&#x0a;• 透過主要按鍵與修飾鍵的組合，可設定 DeskBorder 總開關、將焦點視窗移到上一個桌面、移到下一個桌面，以及切換 Navigator 覆疊層。&#x0a;• 狀態指示會立即顯示目前組合是否有效、是否缺少按鍵、是否重複，或是否註冊失敗。</value>
+    <value>• 每個全域熱鍵都可以獨立啟用或停用。
+• 透過主要按鍵與修飾鍵的組合，可設定 DeskBorder 總開關、將焦點視窗移到上一個桌面、移到下一個桌面，以及切換 Navigator 覆疊層。
+• 狀態指示會立即顯示目前組合是否有效、是否缺少按鍵、是否重複，或是否註冊失敗。</value>
   </data>
   <data name="SettingsPage_ImportExportSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>可將目前設定儲存為 .dbs 檔案，或將已儲存的設定檔套用到目前應用程式狀態。</value>
@@ -532,7 +535,9 @@
     <value>匯入與匯出說明</value>
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 匯出設定：將目前應用程式設定儲存為 .dbs 檔案，方便備份或移到另一台電腦。&#x0a;• 匯入設定：讀取已儲存的 .dbs 檔案，並一次套用到目前設定。&#x0a;• 下方資訊列會短暫顯示匯入匯出的結果或錯誤。</value>
+    <value>• 匯出設定：將目前應用程式設定儲存為 .dbs 檔案，方便備份或移到另一台電腦。
+• 匯入設定：讀取已儲存的 .dbs 檔案，並一次套用到目前設定。
+• 下方資訊列會短暫顯示匯入匯出的結果或錯誤。</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
     <value>匯入設定</value>
@@ -595,7 +600,9 @@
     <value>Navigator 說明</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 啟用觸發區域：當指標進入指定的螢幕區域時顯示 Navigator 覆疊層。&#x0a;• Left / Top / Width / Height：以 0 到 1 的比例值設定觸發區域的位置與大小。&#x0a;• 若同時啟用全域熱鍵區段中的 Navigator 覆疊層切換，快捷鍵與滑鼠區域兩種觸發方式會同時生效。</value>
+    <value>• 啟用觸發區域：當指標進入指定的螢幕區域時顯示 Navigator 覆疊層。
+• Left / Top / Width / Height：以 0 到 1 的比例值設定觸發區域的位置與大小。
+• 若同時啟用全域熱鍵區段中的 Navigator 覆疊層切換，快捷鍵與滑鼠區域兩種觸發方式會同時生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -649,13 +656,20 @@
     <value>黑名單說明</value>
   </data>
   <data name="SettingsPage_BlacklistSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 從執行中的處理程序新增：只會顯示目前正在執行且尚未註冊的處理程序供你挑選。&#x0a;• 已列出的處理程序會從邊緣切換、桌面建立與自動刪除處理中排除。&#x0a;• 可將不希望 DeskBorder 干預的遊戲或全螢幕應用程式放在這裡。</value>
+    <value>• 從執行中的處理程序新增：只會顯示目前正在執行且尚未註冊的處理程序供你挑選。
+• 已列出的處理程序會從邊緣切換、桌面建立與自動刪除處理中排除。
+• 可將不希望 DeskBorder 干預的遊戲或全螢幕應用程式放在這裡。</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>邊緣與自動整理說明</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 自動刪除空桌面：當你從最外側桌面往內移動且該桌面已無視窗時，會排程刪除。&#x0a;• 空桌面偵測：切換刪除判斷方式，包括是否將通知區域類應用程式視為仍有開啟視窗。&#x0a;• 頂部/底部忽略區域：以百分比調整螢幕上下有多少區域不回應邊緣切換與桌面建立。&#x0a;• 啟用桌面建立：開啟或關閉在最後一個桌面的右邊緣建立新桌面的功能。&#x0a;• 桌面切換修飾鍵：在螢幕左右邊緣觸發桌面切換前必須按住的組合鍵。&#x0a;• 桌面建立修飾鍵：在最後一個桌面的右邊緣建立新桌面時所需的組合鍵。</value>
+    <value>• 自動刪除空桌面：當你從最外側桌面往內移動且該桌面已無視窗時，會排程刪除。
+• 空桌面偵測：切換刪除判斷方式，包括是否將通知區域類應用程式視為仍有開啟視窗。
+• 頂部/底部忽略區域：以百分比調整螢幕上下有多少區域不回應邊緣切換與桌面建立。
+• 啟用桌面建立：開啟或關閉在最後一個桌面的右邊緣建立新桌面的功能。
+• 桌面切換修飾鍵：在螢幕左右邊緣觸發桌面切換前必須按住的組合鍵。
+• 桌面建立修飾鍵：在最後一個桌面的右邊緣建立新桌面時所需的組合鍵。</value>
   </data>
   <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>頂部忽略區域 (%)</value>

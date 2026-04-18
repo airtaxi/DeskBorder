@@ -471,9 +471,6 @@
   <data name="SettingsPage_CreateDesktopModifierTitleTextBlock.Text" xml:space="preserve">
     <value>デスクトップ作成修飾キー</value>
   </data>
-  <data name="SettingsPage_CreateDesktopEnabledToggleSwitch.Header" xml:space="preserve">
-    <value>デスクトップ作成を有効化</value>
-  </data>
   <data name="SettingsPage_CreateDesktopShiftCheckBox.Content" xml:space="preserve">
     <value>Shift</value>
   </data>
@@ -508,7 +505,11 @@
     <value>全般設定ガイド</value>
   </data>
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• DeskBorder を有効化: エッジ切り替え、デスクトップ作成、自動整理、グローバル ホットキーをまとめてオンまたはオフにします。&#x0a;• システム起動時に実行: Windows サインイン直後にアプリをトレイで起動します。&#x0a;• Store 更新プログラムを確認: Store 配布ビルドで更新確認動作を維持します。&#x0a;• マルチディスプレイ動作: マルチモニターでは監視を無効化するか、最も外側のディスプレイ端だけで動作させます。&#x0a;• アプリの言語: UI 言語を固定するか、システム言語に従わせます。</value>
+    <value>• DeskBorder を有効化: エッジ切り替え、デスクトップ作成、自動整理、グローバル ホットキーをまとめてオンまたはオフにします。
+• システム起動時に実行: Windows サインイン直後にアプリをトレイで起動します。
+• Store 更新プログラムを確認: Store 配布ビルドで更新確認動作を維持します。
+• マルチディスプレイ動作: マルチモニターでは監視を無効化するか、最も外側のディスプレイ端だけで動作させます。
+• アプリの言語: UI 言語を固定するか、システム言語に従わせます。</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>DeskBorder、ウィンドウ移動、Navigator を直接制御するホットキーを設定します。</value>
@@ -520,7 +521,9 @@
     <value>グローバル ホットキー ガイド</value>
   </data>
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 各グローバル ホットキーは機能ごとに個別に有効化または無効化できます。&#x0a;• メイン キーと修飾キーを組み合わせて、DeskBorder の切り替え、フォーカス中ウィンドウの前後デスクトップ移動、Navigator オーバーレイ切り替えを設定します。&#x0a;• 状態インジケーターは、その組み合わせが有効か、キー未指定か、重複か、登録失敗かをすぐに示します。</value>
+    <value>• 各グローバル ホットキーは機能ごとに個別に有効化または無効化できます。
+• メイン キーと修飾キーを組み合わせて、DeskBorder の切り替え、フォーカス中ウィンドウの前後デスクトップ移動、Navigator オーバーレイ切り替えを設定します。
+• 状態インジケーターは、その組み合わせが有効か、キー未指定か、重複か、登録失敗かをすぐに示します。</value>
   </data>
   <data name="SettingsPage_ImportExportSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>.dbs ファイルに現在の設定を保存したり、保存済みファイルを現在のアプリ状態へ適用したりできます。</value>
@@ -532,7 +535,9 @@
     <value>インポートとエクスポートのガイド</value>
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 設定をエクスポート: 現在のアプリ設定を .dbs ファイルとして保存し、バックアップや別 PC への移行に使えます。&#x0a;• 設定をインポート: 保存済みの .dbs ファイルを読み込み、現在の設定へ一度に適用します。&#x0a;• 下の情報バーは、インポートやエクスポートの結果やエラーを短時間表示します。</value>
+    <value>• 設定をエクスポート: 現在のアプリ設定を .dbs ファイルとして保存し、バックアップや別 PC への移行に使えます。
+• 設定をインポート: 保存済みの .dbs ファイルを読み込み、現在の設定へ一度に適用します。
+• 下の情報バーは、インポートやエクスポートの結果やエラーを短時間表示します。</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
     <value>設定をインポート</value>
@@ -595,7 +600,9 @@
     <value>Navigator ガイド</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• トリガー領域を有効化: ポインターが指定した画面領域に入ると Navigator オーバーレイを表示します。&#x0a;• Left / Top / Width / Height: 0 から 1 の比率でトリガー領域の位置とサイズを設定します。&#x0a;• グローバル ホットキー セクションの Navigator オーバーレイ切り替えも有効にすると、ショートカットとマウス領域の両方で動作します。</value>
+    <value>• トリガー領域を有効化: ポインターが指定した画面領域に入ると Navigator オーバーレイを表示します。
+• Left / Top / Width / Height: 0 から 1 の比率でトリガー領域の位置とサイズを設定します。
+• グローバル ホットキー セクションの Navigator オーバーレイ切り替えも有効にすると、ショートカットとマウス領域の両方で動作します。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -649,13 +656,20 @@
     <value>ブラックリスト ガイド</value>
   </data>
   <data name="SettingsPage_BlacklistSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 実行中のプロセスから追加: 現在実行中で、まだ登録されていないプロセスだけを選んで追加できます。&#x0a;• 登録済みプロセスは、エッジ切り替え、デスクトップ作成、自動削除の処理対象から除外されます。&#x0a;• DeskBorder が干渉してほしくないゲームや全画面アプリをここに登録してください。</value>
+    <value>• 実行中のプロセスから追加: 現在実行中で、まだ登録されていないプロセスだけを選んで追加できます。
+• 登録済みプロセスは、エッジ切り替え、デスクトップ作成、自動削除の処理対象から除外されます。
+• DeskBorder が干渉してほしくないゲームや全画面アプリをここに登録してください。</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>エッジと自動整理ガイド</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 空のデスクトップを自動削除: 外側デスクトップから内側へ移動するとき、ウィンドウが無ければ削除予約を行います。&#x0a;• 空のデスクトップ検出: 通知領域アプリを開いているウィンドウとして数えるかどうかを含め、削除判定方法を切り替えます。&#x0a;• 上側/下側の無視領域: 画面の上下の一部ではエッジ切り替えとデスクトップ作成が反応しないよう、割合で調整します。&#x0a;• デスクトップ作成を有効化: 最後のデスクトップの右端から新しいデスクトップを作る機能自体をオンまたはオフにします。&#x0a;• デスクトップ切り替えの修飾キー: 画面端でデスクトップ切り替えを発動する前に押しておくキーの組み合わせです。&#x0a;• デスクトップ作成の修飾キー: 最後のデスクトップの右端から新しいデスクトップを作るときに必要なキーの組み合わせです。</value>
+    <value>• 空のデスクトップを自動削除: 外側デスクトップから内側へ移動するとき、ウィンドウが無ければ削除予約を行います。
+• 空のデスクトップ検出: 通知領域アプリを開いているウィンドウとして数えるかどうかを含め、削除判定方法を切り替えます。
+• 上側/下側の無視領域: 画面の上下の一部ではエッジ切り替えとデスクトップ作成が反応しないよう、割合で調整します。
+• デスクトップ作成を有効化: 最後のデスクトップの右端から新しいデスクトップを作る機能自体をオンまたはオフにします。
+• デスクトップ切り替えの修飾キー: 画面端でデスクトップ切り替えを発動する前に押しておくキーの組み合わせです。
+• デスクトップ作成の修飾キー: 最後のデスクトップの右端から新しいデスクトップを作るときに必要なキーの組み合わせです。</value>
   </data>
   <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>上側の無視領域 (%)</value>
