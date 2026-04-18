@@ -13,6 +13,7 @@ internal static partial class Win32
     public const uint WindowGetIconMessage = 0x007F;
     public const uint DesktopWindowManagerCloakedAttribute = 14;
     public const uint DesktopWindowManagerExtendedFrameBoundsAttribute = 9;
+    public const uint DesktopWindowManagerWindowCornerPreferenceAttribute = 33;
     public const uint GetAncestorRootOwnerFlag = 3;
     public const uint HotkeyModifierAlternate = 0x0001;
     public const uint HotkeyModifierControl = 0x0002;
@@ -25,9 +26,14 @@ internal static partial class Win32
     public const int WindowIconSmallSecondary = 2;
     public const int ClassLongPointerIcon = -14;
     public const int ClassLongPointerSmallIcon = -34;
+    public const uint SetWindowPositionDoNotResizeFlag = 0x0001;
+    public const uint SetWindowPositionDoNotMoveFlag = 0x0002;
+    public const uint SetWindowPositionShowWindowFlag = 0x0040;
+    public const int DesktopWindowManagerWindowCornerPreferenceDoNotRound = 1;
     public const nint ExtendedWindowStyleApplicationWindow = 0x00040000;
     public const nint ExtendedWindowStyleNoActivate = 0x08000000;
     public const nint ExtendedWindowStyleToolWindow = 0x00000080;
+    public static readonly nint TopMostWindowInsertAfterHandle = -1;
 
     public delegate bool MonitorEnumerationProcedure(nint monitorHandle, nint deviceContextHandle, nint monitorRectanglePointer, nint applicationData);
     public delegate bool WindowEnumerationProcedure(nint windowHandle, nint applicationData);
@@ -57,6 +63,10 @@ internal static partial class Win32
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool BringWindowToTop(nint windowHandle);
+
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowPos", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool SetWindowPosition(nint windowHandle, nint insertAfterWindowHandle, int x, int y, int width, int height, uint flags);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -150,6 +160,9 @@ internal static partial class Win32
 
     [LibraryImport("dwmapi.dll", EntryPoint = "DwmGetWindowAttribute")]
     public static partial int DwmGetWindowInt32Attribute(nint windowHandle, uint attribute, out int attributeValue, uint attributeSize);
+
+    [LibraryImport("dwmapi.dll", EntryPoint = "DwmSetWindowAttribute")]
+    public static partial int DwmSetWindowInt32Attribute(nint windowHandle, uint attribute, in int attributeValue, uint attributeSize);
 
     [StructLayout(LayoutKind.Sequential)]
     public struct NativePoint

@@ -11,6 +11,7 @@ public enum DesktopEdgeAvailabilityStatus
 {
     Enabled,
     DisabledByDeskBorderSetting,
+    DisabledByCursorClipping,
     DisabledInMultiDisplayEnvironment,
     CursorOutsideDisplayEnvironment,
 }

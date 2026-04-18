@@ -237,6 +237,9 @@
   <data name="DesktopEdgeAvailability.DisabledByDeskBorderSetting" xml:space="preserve">
     <value>DeskBorder 已停用</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByCursorClipping" xml:space="preserve">
+    <value>由於其他應用限制了游標範圍，已停用</value>
+  </data>
   <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
     <value>在多顯示器環境中已停用</value>
   </data>

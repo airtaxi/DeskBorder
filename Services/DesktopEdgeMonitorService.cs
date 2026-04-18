@@ -26,13 +26,14 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
         var modifierKeySnapshot = MouseHelper.GetModifierKeySnapshot();
         var displayMonitors = MouseHelper.GetDisplayMonitors();
         var currentDisplayMonitor = FindCurrentDisplayMonitor(displayMonitors, currentCursorPosition);
-        var desktopEdgeAvailabilityStatus = GetDesktopEdgeAvailabilityStatus(currentSettings, displayMonitors.Length, currentDisplayMonitor is not null);
+        var desktopEdgeAvailabilityStatus = GetDesktopEdgeAvailabilityStatus(currentSettings, displayMonitors.Length, currentDisplayMonitor is not null, cursorClippingState.IsCursorClipped);
         var activeDesktopEdge = desktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.Enabled
             ? GetActiveDesktopEdge(displayMonitors, currentDisplayMonitor, currentCursorPosition, currentSettings.DesktopEdgeIgnoreZoneSettings)
             : DesktopEdgeKind.None;
         var previousState = CurrentState;
         var navigatorTriggerState = CreateNavigatorTriggerState(
             currentSettings.NavigatorSettings,
+            desktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.Enabled,
             currentDisplayMonitor,
             currentCursorPosition,
             previousState.NavigatorTriggerState.IsCursorInsideTriggerRectangle);
@@ -111,11 +112,12 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
 
     private static NavigatorTriggerState CreateNavigatorTriggerState(
         NavigatorSettings navigatorSettings,
+        bool isNavigatorTriggerAvailable,
         DisplayMonitorInfo? currentDisplayMonitor,
         ScreenPoint currentCursorPosition,
         bool wasCursorInsideTriggerRectangle)
     {
-        if (!navigatorSettings.IsTriggerAreaEnabled || currentDisplayMonitor is null)
+        if (!navigatorSettings.IsTriggerAreaEnabled || !isNavigatorTriggerAvailable || currentDisplayMonitor is null)
             return new()
             {
                 HasCursorLeftTriggerRectangle = wasCursorInsideTriggerRectangle
@@ -192,10 +194,14 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
     private static DesktopEdgeAvailabilityStatus GetDesktopEdgeAvailabilityStatus(
         DeskBorderSettings settings,
         int displayMonitorCount,
-        bool hasCurrentDisplayMonitor)
+        bool hasCurrentDisplayMonitor,
+        bool isCursorClipped)
     {
         if (!settings.IsDeskBorderEnabled)
             return DesktopEdgeAvailabilityStatus.DisabledByDeskBorderSetting;
+
+        if (isCursorClipped)
+            return DesktopEdgeAvailabilityStatus.DisabledByCursorClipping;
 
         if (!hasCurrentDisplayMonitor)
             return DesktopEdgeAvailabilityStatus.CursorOutsideDisplayEnvironment;

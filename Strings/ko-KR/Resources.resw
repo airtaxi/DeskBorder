@@ -237,6 +237,9 @@
   <data name="DesktopEdgeAvailability.DisabledByDeskBorderSetting" xml:space="preserve">
     <value>DeskBorder 사용 안 함</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByCursorClipping" xml:space="preserve">
+    <value>다른 앱이 커서를 고정하고 있어 비활성화됨</value>
+  </data>
   <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
     <value>다중 디스플레이에서 비활성화됨</value>
   </data>

@@ -21,6 +21,7 @@ public static class SettingsDisplayFormatter
     {
         DesktopEdgeAvailabilityStatus.Enabled => LocalizedResourceAccessor.GetString("DesktopEdgeAvailability.Enabled"),
         DesktopEdgeAvailabilityStatus.DisabledByDeskBorderSetting => LocalizedResourceAccessor.GetString("DesktopEdgeAvailability.DisabledByDeskBorderSetting"),
+        DesktopEdgeAvailabilityStatus.DisabledByCursorClipping => LocalizedResourceAccessor.GetString("DesktopEdgeAvailability.DisabledByCursorClipping"),
         DesktopEdgeAvailabilityStatus.DisabledInMultiDisplayEnvironment => LocalizedResourceAccessor.GetString("DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment"),
         DesktopEdgeAvailabilityStatus.CursorOutsideDisplayEnvironment => LocalizedResourceAccessor.GetString("DesktopEdgeAvailability.CursorOutsideDisplayEnvironment"),
         _ => desktopEdgeAvailabilityStatus.ToString()

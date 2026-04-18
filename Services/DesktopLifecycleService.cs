@@ -100,6 +100,23 @@ public sealed class DesktopLifecycleService(
             && currentState.CursorPosition.X <= rightmostDisplayEdge - DesktopEdgeTriggerRearmDistanceInPixels;
     }
 
+    private static bool HaveDisplayMonitorsChanged(DisplayMonitorInfo[] previousDisplayMonitors, DisplayMonitorInfo[] currentDisplayMonitors)
+    {
+        if (ReferenceEquals(previousDisplayMonitors, currentDisplayMonitors))
+            return false;
+
+        if (previousDisplayMonitors.Length != currentDisplayMonitors.Length)
+            return true;
+
+        for (var index = 0; index < previousDisplayMonitors.Length; index++)
+        {
+            if (previousDisplayMonitors[index] != currentDisplayMonitors[index])
+                return true;
+        }
+
+        return false;
+    }
+
     private static bool IsCurrentDesktopRightOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.DesktopEntries.Length > 0
         && workspaceSnapshot.CurrentDesktopNumber == workspaceSnapshot.DesktopEntries.Length;
 
@@ -239,12 +256,19 @@ public sealed class DesktopLifecycleService(
 
     private void OnLocalizationServiceLanguageChanged(object? sender, EventArgs eventArguments) => _ = RefreshNavigatorAsync();
 
-    private void OnDesktopEdgeMonitorServiceMonitoringStateChanged(object? sender, DesktopEdgeMonitoringStateChangedEventArgs desktopEdgeMonitoringStateChangedEventArgs) => _ = HandleDesktopEdgeMonitorServiceMonitoringStateChangedAsync(desktopEdgeMonitoringStateChangedEventArgs.CurrentState);
+    private void OnDesktopEdgeMonitorServiceMonitoringStateChanged(object? sender, DesktopEdgeMonitoringStateChangedEventArgs desktopEdgeMonitoringStateChangedEventArgs) => _ = HandleDesktopEdgeMonitorServiceMonitoringStateChangedAsync(desktopEdgeMonitoringStateChangedEventArgs);
 
-    private async Task HandleDesktopEdgeMonitorServiceMonitoringStateChangedAsync(DesktopEdgeMonitoringState currentState)
+    private async Task HandleDesktopEdgeMonitorServiceMonitoringStateChangedAsync(DesktopEdgeMonitoringStateChangedEventArgs desktopEdgeMonitoringStateChangedEventArgs)
     {
         if (!IsRunning)
             return;
+
+        var currentState = desktopEdgeMonitoringStateChangedEventArgs.CurrentState;
+        if (_navigatorService.IsVisible
+            && HaveDisplayMonitorsChanged(desktopEdgeMonitoringStateChangedEventArgs.PreviousState.DisplayMonitors, currentState.DisplayMonitors))
+        {
+            await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
+        }
 
         await UiThreadHelper.ExecuteAsync(() => _navigatorService.UpdateTriggerAreaPointerState(currentState.NavigatorTriggerState.IsCursorInsideTriggerRectangle));
         if (!_isDesktopEdgeActivationArmed && HasPointerMovedAwayFromDesktopEdge(currentState))

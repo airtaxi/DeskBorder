@@ -20,10 +20,22 @@ public sealed partial class NavigatorDesktopWindowItemViewModel : ObservableObje
     private const double IconSizeScaleFactor = 1.25d;
     private const double MaximumIconContainerSize = 240d;
     private const double MinimumIconContainerSize = 90d;
+    private const double PreviewWindowBorderThicknessAtReferenceResolution = 8d;
+    private const double PreviewWindowBorderThicknessScaleFactor = PreviewWindowBorderThicknessAtReferenceResolution / 1080d;
+    private const double PreviewWindowCornerRadiusAtReferenceResolution = 48d;
+    private const double PreviewWindowCornerRadiusScaleFactor = PreviewWindowCornerRadiusAtReferenceResolution / 1080d;
+    private const double MaximumPreviewWindowBorderThickness = 12d;
+    private const double MaximumPreviewWindowCornerRadius = 16d;
+    private const double MinimumPreviewWindowBorderThickness = 3d;
+    private const double MinimumPreviewWindowCornerRadius = 4d;
     private static readonly ConcurrentDictionary<string, Task<ImageSource?>> s_executableIconImageSourceCache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly int _previewCanvasHeight;
+    private readonly int _previewCanvasWidth;
 
-    public NavigatorDesktopWindowItemViewModel(NavigatorDesktopWindowItemModel navigatorDesktopWindowItemModel)
+    public NavigatorDesktopWindowItemViewModel(NavigatorDesktopWindowItemModel navigatorDesktopWindowItemModel, int previewCanvasWidth, int previewCanvasHeight)
     {
+        _previewCanvasWidth = Math.Max(1, previewCanvasWidth);
+        _previewCanvasHeight = Math.Max(1, previewCanvasHeight);
         PreviewBounds = navigatorDesktopWindowItemModel.PreviewBounds;
         _ = LoadApplicationIconImageSourceAsync(navigatorDesktopWindowItemModel.WindowHandle, navigatorDesktopWindowItemModel.ExecutablePath);
     }
@@ -42,6 +54,10 @@ public sealed partial class NavigatorDesktopWindowItemViewModel : ObservableObje
 
     public double PreviewWidth => PreviewBounds.Width;
 
+    public Thickness PreviewWindowBorderThickness => new(GetPreviewWindowBorderThicknessValue());
+
+    public CornerRadius PreviewWindowCornerRadius => new(GetPreviewWindowCornerRadiusValue());
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ApplicationIconVisibility))]
     [NotifyPropertyChangedFor(nameof(FallbackIconVisibility))]
@@ -53,7 +69,15 @@ public sealed partial class NavigatorDesktopWindowItemViewModel : ObservableObje
     [NotifyPropertyChangedFor(nameof(PreviewLeft))]
     [NotifyPropertyChangedFor(nameof(PreviewTop))]
     [NotifyPropertyChangedFor(nameof(PreviewWidth))]
+    [NotifyPropertyChangedFor(nameof(PreviewWindowBorderThickness))]
+    [NotifyPropertyChangedFor(nameof(PreviewWindowCornerRadius))]
     public partial ScreenRectangle PreviewBounds { get; private set; }
+
+    private double GetPreviewCanvasReferenceLength() => Math.Min(_previewCanvasWidth, _previewCanvasHeight);
+
+    private double GetPreviewWindowBorderThicknessValue() => GetPreviewCanvasReferenceLength() * PreviewWindowBorderThicknessScaleFactor;
+
+    private double GetPreviewWindowCornerRadiusValue() => GetPreviewCanvasReferenceLength() * PreviewWindowCornerRadiusScaleFactor;
 
     private static async Task<ImageSource?> CreateApplicationIconImageSourceFromIconAsync(Icon applicationIcon)
     {

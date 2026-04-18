@@ -45,6 +45,8 @@ public sealed class NavigatorService(
             previewSnapshot.DesktopItems,
             previewSnapshot.TargetDisplayMonitor.WorkAreaBounds.Width,
             previewSnapshot.TargetDisplayMonitor.WorkAreaBounds.Height);
+        if (IsVisible)
+            _navigatorWindow?.ShowOverlay(previewSnapshot.TargetDisplayMonitor);
     }
 
     public bool ShowFromTriggerArea()

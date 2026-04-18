@@ -1,3 +1,5 @@
+using DeskBorder.Interop;
+using DeskBorder.Helpers;
 using DeskBorder.Models;
 using DeskBorder.Services;
 using Microsoft.UI.Windowing;
@@ -16,7 +18,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     private readonly ILocalizationService _localizationService;
     private readonly DisplayMonitorInfo _targetDisplayMonitor;
     private readonly TaskCompletionSource<TriggerRectangleSettings?> _selectionTaskCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-    private Point _selectionStartPoint;
+    private ScreenPoint _selectionStartScreenPoint;
     private bool _isCompletingSelection;
     private bool _isPointerPressed;
 
@@ -30,29 +32,30 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
 
     public Task<TriggerRectangleSettings?> ShowSelectionAsync()
     {
-        PositionToTargetDisplayMonitor();
+        PrepareBorderlessOverlayPresentation();
         if (!AppWindow.IsVisible)
             AppWindow.Show();
 
         Activate();
         BringToFront();
+        EnsureNonRoundedCorners();
+        EnsureTopMostWindowState();
         _ = RootGrid.Focus(FocusState.Programmatic);
         return _selectionTaskCompletionSource.Task;
     }
 
-    private TriggerRectangleSettings CreateTriggerRectangleSettings(Rect selectionBounds)
+    private TriggerRectangleSettings CreateTriggerRectangleSettings(ScreenRectangle selectionBounds)
     {
-        var actualCanvasWidth = SelectionCanvas.ActualWidth;
-        var actualCanvasHeight = SelectionCanvas.ActualHeight;
-        if (actualCanvasWidth <= 0 || actualCanvasHeight <= 0)
-            throw new InvalidOperationException("Unable to resolve the selection canvas bounds.");
+        var monitorBounds = _targetDisplayMonitor.MonitorBounds;
+        if (monitorBounds.Width <= 0 || monitorBounds.Height <= 0)
+            throw new InvalidOperationException("Unable to resolve the target display monitor bounds.");
 
         return new()
         {
-            Left = Math.Clamp(selectionBounds.Left / actualCanvasWidth, 0.0, 1.0),
-            Top = Math.Clamp(selectionBounds.Top / actualCanvasHeight, 0.0, 1.0),
-            Width = Math.Clamp(selectionBounds.Width / actualCanvasWidth, 0.0, 1.0),
-            Height = Math.Clamp(selectionBounds.Height / actualCanvasHeight, 0.0, 1.0)
+            Left = Math.Clamp((double)(selectionBounds.Left - monitorBounds.Left) / monitorBounds.Width, 0.0, 1.0),
+            Top = Math.Clamp((double)(selectionBounds.Top - monitorBounds.Top) / monitorBounds.Height, 0.0, 1.0),
+            Width = Math.Clamp((double)selectionBounds.Width / monitorBounds.Width, 0.0, 1.0),
+            Height = Math.Clamp((double)selectionBounds.Height / monitorBounds.Height, 0.0, 1.0)
         };
     }
 
@@ -66,13 +69,13 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
         Close();
     }
 
-    private Rect GetSelectionBounds(Point currentPoint)
+    private ScreenRectangle GetSelectionBounds(ScreenPoint currentScreenPoint)
     {
-        var left = Math.Min(_selectionStartPoint.X, currentPoint.X);
-        var top = Math.Min(_selectionStartPoint.Y, currentPoint.Y);
-        var right = Math.Max(_selectionStartPoint.X, currentPoint.X);
-        var bottom = Math.Max(_selectionStartPoint.Y, currentPoint.Y);
-        return new(left, top, right - left, bottom - top);
+        var left = Math.Min(_selectionStartScreenPoint.X, currentScreenPoint.X);
+        var top = Math.Min(_selectionStartScreenPoint.Y, currentScreenPoint.Y);
+        var right = Math.Max(_selectionStartScreenPoint.X, currentScreenPoint.X) + 1;
+        var bottom = Math.Max(_selectionStartScreenPoint.Y, currentScreenPoint.Y) + 1;
+        return new(left, top, right, bottom);
     }
 
     private void InitializeSelectionWindow()
@@ -80,8 +83,45 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
         _localizationService.LanguageChanged += OnLocalizationServiceLanguageChanged;
         Activated += OnNavigatorTriggerAreaSelectionWindowActivated;
         Closed += OnNavigatorTriggerAreaSelectionWindowClosed;
-        AppWindow.SetPresenter(AppWindowPresenterKind.Overlapped);
+        ConfigureBorderlessOverlayPresenter();
         RefreshLocalizedText();
+    }
+
+    private void ConfigureBorderlessOverlayPresenter()
+    {
+        AppWindow.SetPresenter(AppWindowPresenterKind.Overlapped);
+        if (AppWindow.Presenter is not OverlappedPresenter overlappedPresenter)
+            throw new InvalidOperationException("Unable to configure the navigator trigger area selection window presenter.");
+
+        overlappedPresenter.SetBorderAndTitleBar(false, false);
+    }
+
+    private void EnsureTopMostWindowState()
+    {
+        if (Win32.SetWindowPosition(
+            this.GetWindowHandle(),
+            Win32.TopMostWindowInsertAfterHandle,
+            0,
+            0,
+            0,
+            0,
+            Win32.SetWindowPositionDoNotResizeFlag | Win32.SetWindowPositionDoNotMoveFlag | Win32.SetWindowPositionShowWindowFlag))
+            return;
+
+        throw new InvalidOperationException("Unable to place the navigator trigger area selection window above other windows.");
+    }
+
+    private void EnsureNonRoundedCorners()
+    {
+        var cornerPreference = Win32.DesktopWindowManagerWindowCornerPreferenceDoNotRound;
+        if (Win32.DwmSetWindowInt32Attribute(
+            this.GetWindowHandle(),
+            Win32.DesktopWindowManagerWindowCornerPreferenceAttribute,
+            cornerPreference,
+            sizeof(int)) >= 0)
+            return;
+
+        throw new InvalidOperationException("Unable to disable rounded corners for the navigator trigger area selection window.");
     }
 
     private void OnEscapeKeyboardAcceleratorInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs keyboardAcceleratorInvokedEventArgs)
@@ -134,16 +174,16 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
         if (!_isPointerPressed)
             return;
 
-        UpdateSelectionVisual(pointerRoutedEventArgs.GetCurrentPoint(SelectionCanvas).Position);
+        UpdateSelectionVisual(GetClampedCurrentScreenPoint());
     }
 
     private void OnRootGridPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
     {
         _ = sender;
-        _selectionStartPoint = pointerRoutedEventArgs.GetCurrentPoint(SelectionCanvas).Position;
+        _selectionStartScreenPoint = GetClampedCurrentScreenPoint();
         _isPointerPressed = true;
         _ = RootGrid.CapturePointer(pointerRoutedEventArgs.Pointer);
-        UpdateSelectionVisual(_selectionStartPoint);
+        UpdateSelectionVisual(_selectionStartScreenPoint);
     }
 
     private void OnRootGridPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
@@ -152,7 +192,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
         if (!_isPointerPressed)
             return;
 
-        var selectionBounds = GetSelectionBounds(pointerRoutedEventArgs.GetCurrentPoint(SelectionCanvas).Position);
+        var selectionBounds = GetSelectionBounds(GetClampedCurrentScreenPoint());
         ResetPointerSelection();
         if (selectionBounds.Width < MinimumSelectionLength || selectionBounds.Height < MinimumSelectionLength)
             return;
@@ -166,11 +206,26 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
         _targetDisplayMonitor.MonitorBounds.Width,
         _targetDisplayMonitor.MonitorBounds.Height));
 
+    private void PrepareBorderlessOverlayPresentation()
+    {
+        ConfigureBorderlessOverlayPresenter();
+        PositionToTargetDisplayMonitor();
+    }
+
     private void RefreshLocalizedText()
     {
         Title = _localizationService.GetString("NavigatorTriggerAreaSelectionWindow.WindowTitle");
         SelectionTitleTextBlock.Text = _localizationService.GetString("NavigatorTriggerAreaSelectionWindow.Title");
         SelectionDescriptionTextBlock.Text = _localizationService.GetString("NavigatorTriggerAreaSelectionWindow.Description");
+    }
+
+    private ScreenPoint GetClampedCurrentScreenPoint()
+    {
+        var currentScreenPoint = MouseHelper.GetCurrentCursorPosition();
+        var monitorBounds = _targetDisplayMonitor.MonitorBounds;
+        return new(
+            Math.Clamp(currentScreenPoint.X, monitorBounds.Left, monitorBounds.Right - 1),
+            Math.Clamp(currentScreenPoint.Y, monitorBounds.Top, monitorBounds.Bottom - 1));
     }
 
     private void ResetPointerSelection()
@@ -180,13 +235,23 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
         RootGrid.ReleasePointerCaptures();
     }
 
-    private void UpdateSelectionVisual(Point currentPoint)
+    private void UpdateSelectionVisual(ScreenPoint currentScreenPoint)
     {
-        var selectionBounds = GetSelectionBounds(currentPoint);
-        Canvas.SetLeft(SelectionBorder, selectionBounds.Left);
-        Canvas.SetTop(SelectionBorder, selectionBounds.Top);
-        SelectionBorder.Width = selectionBounds.Width;
-        SelectionBorder.Height = selectionBounds.Height;
+        var actualCanvasWidth = SelectionCanvas.ActualWidth;
+        var actualCanvasHeight = SelectionCanvas.ActualHeight;
+        if (actualCanvasWidth <= 0 || actualCanvasHeight <= 0)
+            return;
+
+        var monitorBounds = _targetDisplayMonitor.MonitorBounds;
+        var selectionBounds = GetSelectionBounds(currentScreenPoint);
+        var left = actualCanvasWidth * (selectionBounds.Left - monitorBounds.Left) / monitorBounds.Width;
+        var top = actualCanvasHeight * (selectionBounds.Top - monitorBounds.Top) / monitorBounds.Height;
+        var width = actualCanvasWidth * selectionBounds.Width / monitorBounds.Width;
+        var height = actualCanvasHeight * selectionBounds.Height / monitorBounds.Height;
+        Canvas.SetLeft(SelectionBorder, left);
+        Canvas.SetTop(SelectionBorder, top);
+        SelectionBorder.Width = width;
+        SelectionBorder.Height = height;
         SelectionBorder.Visibility = Visibility.Visible;
     }
 }

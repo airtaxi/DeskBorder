@@ -237,6 +237,9 @@
   <data name="DesktopEdgeAvailability.DisabledByDeskBorderSetting" xml:space="preserve">
     <value>DeskBorder disabled</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByCursorClipping" xml:space="preserve">
+    <value>Disabled because another app is clipping the cursor</value>
+  </data>
   <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
     <value>Disabled in multi-display environments</value>
   </data>

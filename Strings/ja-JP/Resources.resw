@@ -237,6 +237,9 @@
   <data name="DesktopEdgeAvailability.DisabledByDeskBorderSetting" xml:space="preserve">
     <value>DeskBorder は無効です</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByCursorClipping" xml:space="preserve">
+    <value>別のアプリがカーソルをクリップしているため無効です</value>
+  </data>
   <data name="DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment" xml:space="preserve">
     <value>マルチディスプレイ環境では無効です</value>
   </data>
