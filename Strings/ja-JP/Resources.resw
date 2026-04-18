@@ -432,6 +432,12 @@
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>そのプロセスは既にブラックリストに含まれています。</value>
   </data>
+  <data name="Settings.Validation.HotkeyDuplicateFormat" xml:space="preserve">
+    <value>{0} が {1} と重複しています。</value>
+  </data>
+  <data name="Settings.Validation.HotkeyMissingKeyFormat" xml:space="preserve">
+    <value>{0} を使うにはメイン キーを指定する必要があります。</value>
+  </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>プロセス名を入力してください。</value>
   </data>

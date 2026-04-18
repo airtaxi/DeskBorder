@@ -432,6 +432,12 @@
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>이미 블랙리스트에 포함된 프로세스입니다.</value>
   </data>
+  <data name="Settings.Validation.HotkeyDuplicateFormat" xml:space="preserve">
+    <value>{0}이(가) {1}와(과) 중복됩니다.</value>
+  </data>
+  <data name="Settings.Validation.HotkeyMissingKeyFormat" xml:space="preserve">
+    <value>{0}을(를) 사용할 때는 기본 키를 지정해야 합니다.</value>
+  </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>프로세스 이름을 입력하세요.</value>
   </data>

@@ -432,6 +432,12 @@
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>該處理程序已在黑名單中。</value>
   </data>
+  <data name="Settings.Validation.HotkeyDuplicateFormat" xml:space="preserve">
+    <value>{0} 與 {1} 重複。</value>
+  </data>
+  <data name="Settings.Validation.HotkeyMissingKeyFormat" xml:space="preserve">
+    <value>啟用 {0} 時必須指定主要按鍵。</value>
+  </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>請輸入處理程序名稱。</value>
   </data>

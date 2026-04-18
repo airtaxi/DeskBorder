@@ -432,6 +432,12 @@
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>That process is already blacklisted.</value>
   </data>
+  <data name="Settings.Validation.HotkeyDuplicateFormat" xml:space="preserve">
+    <value>{0} duplicates {1}.</value>
+  </data>
+  <data name="Settings.Validation.HotkeyMissingKeyFormat" xml:space="preserve">
+    <value>{0} must specify a primary key when enabled.</value>
+  </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>Enter a process name.</value>
   </data>

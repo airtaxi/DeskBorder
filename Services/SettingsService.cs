@@ -222,32 +222,36 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     private static double ClampDesktopEdgeIgnorePercentage(double value) => double.IsFinite(value) ? Math.Clamp(value, 0.0, MaximumDesktopEdgeIgnorePercentage) : 0.0;
 
-    private static void ValidateKeyboardShortcutSettings(KeyboardShortcutSettings keyboardShortcutSettings, string keyboardShortcutDisplayName)
+    private static string GetKeyboardShortcutDisplayName(string keyboardShortcutDisplayNameResourceKey) => LocalizedResourceAccessor.GetString(keyboardShortcutDisplayNameResourceKey);
+
+    private static void ValidateKeyboardShortcutSettings(KeyboardShortcutSettings keyboardShortcutSettings, string keyboardShortcutDisplayNameResourceKey)
     {
         if (!keyboardShortcutSettings.IsEnabled)
             return;
 
         if (keyboardShortcutSettings.Key == VirtualKey.None)
-            throw new InvalidOperationException($"The {keyboardShortcutDisplayName} hotkey must specify a key when enabled.");
+            throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString(
+                "Settings.Validation.HotkeyMissingKeyFormat",
+                GetKeyboardShortcutDisplayName(keyboardShortcutDisplayNameResourceKey)));
     }
 
     private static void ValidateSettings(DeskBorderSettings settings)
     {
-        ValidateKeyboardShortcutSettings(settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey, "toggle DeskBorder");
-        ValidateKeyboardShortcutSettings(settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey, "move focused window to previous desktop");
-        ValidateKeyboardShortcutSettings(settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey, "move focused window to next desktop");
-        ValidateKeyboardShortcutSettings(settings.NavigatorSettings.ToggleHotkey, "toggle navigator");
+        ValidateKeyboardShortcutSettings(settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey, "SettingsPage_ToggleDeskBorderHotkeyToggleSwitch.Header");
+        ValidateKeyboardShortcutSettings(settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey, "SettingsPage_MovePreviousHotkeyToggleSwitch.Header");
+        ValidateKeyboardShortcutSettings(settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey, "SettingsPage_MoveNextHotkeyToggleSwitch.Header");
+        ValidateKeyboardShortcutSettings(settings.NavigatorSettings.ToggleHotkey, "SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header");
         ValidateUniqueKeyboardShortcutSettings(
         [
-            new("toggle DeskBorder", settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey),
-            new("move focused window to previous desktop", settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey),
-            new("move focused window to next desktop", settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey),
-            new("toggle navigator", settings.NavigatorSettings.ToggleHotkey)
+            new("SettingsPage_ToggleDeskBorderHotkeyToggleSwitch.Header", settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey),
+            new("SettingsPage_MovePreviousHotkeyToggleSwitch.Header", settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey),
+            new("SettingsPage_MoveNextHotkeyToggleSwitch.Header", settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey),
+            new("SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header", settings.NavigatorSettings.ToggleHotkey)
         ]);
     }
 
     private static void ValidateUniqueKeyboardShortcutSettings(
-        IReadOnlyList<(string KeyboardShortcutDisplayName, KeyboardShortcutSettings KeyboardShortcutSettings)> keyboardShortcutEntries)
+        IReadOnlyList<(string KeyboardShortcutDisplayNameResourceKey, KeyboardShortcutSettings KeyboardShortcutSettings)> keyboardShortcutEntries)
     {
         var registeredKeyboardShortcuts = new Dictionary<(KeyboardModifierKeys RequiredKeyboardModifierKeys, VirtualKey Key), string>();
         foreach (var keyboardShortcutEntry in keyboardShortcutEntries)
@@ -258,10 +262,13 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             var keyboardShortcutIdentity = (
                 keyboardShortcutEntry.KeyboardShortcutSettings.RequiredKeyboardModifierKeys,
                 keyboardShortcutEntry.KeyboardShortcutSettings.Key);
-            if (registeredKeyboardShortcuts.TryGetValue(keyboardShortcutIdentity, out var existingKeyboardShortcutDisplayName))
-                throw new InvalidOperationException($"The {keyboardShortcutEntry.KeyboardShortcutDisplayName} hotkey duplicates the {existingKeyboardShortcutDisplayName} hotkey.");
+            if (registeredKeyboardShortcuts.TryGetValue(keyboardShortcutIdentity, out var existingKeyboardShortcutDisplayNameResourceKey))
+                throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString(
+                    "Settings.Validation.HotkeyDuplicateFormat",
+                    GetKeyboardShortcutDisplayName(keyboardShortcutEntry.KeyboardShortcutDisplayNameResourceKey),
+                    GetKeyboardShortcutDisplayName(existingKeyboardShortcutDisplayNameResourceKey)));
 
-            registeredKeyboardShortcuts.Add(keyboardShortcutIdentity, keyboardShortcutEntry.KeyboardShortcutDisplayName);
+            registeredKeyboardShortcuts.Add(keyboardShortcutIdentity, keyboardShortcutEntry.KeyboardShortcutDisplayNameResourceKey);
         }
     }
 

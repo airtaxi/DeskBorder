@@ -432,6 +432,12 @@
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>该进程已在黑名单中。</value>
   </data>
+  <data name="Settings.Validation.HotkeyDuplicateFormat" xml:space="preserve">
+    <value>{0} 与 {1} 重复。</value>
+  </data>
+  <data name="Settings.Validation.HotkeyMissingKeyFormat" xml:space="preserve">
+    <value>启用 {0} 时必须指定主按键。</value>
+  </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>请输入进程名称。</value>
   </data>
