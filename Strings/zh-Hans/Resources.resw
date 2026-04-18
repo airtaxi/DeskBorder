@@ -929,4 +929,10 @@
   <data name="Toast.Hotkey.ToggleDeskBorder.Title" xml:space="preserve">
     <value>DeskBorder 状态已更改</value>
   </data>
+  <data name="Settings.Status.LanguageRestartRecommendedTitle" xml:space="preserve">
+    <value>建议重启</value>
+  </data>
+  <data name="Settings.Status.LanguageRestartRecommendedMessage" xml:space="preserve">
+    <value>建议重启应用，以便将新语言完整应用到所有窗口和通知。</value>
+  </data>
 </root>

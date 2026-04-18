@@ -984,7 +984,7 @@
                                     Title="설정 불러오기 및 내보내기 안내"
                                     Closed="OnSectionTeachingTipClosed"
                                     IsLightDismissEnabled="True"
-                                    PreferredPlacement="BottomLeft"
+                                    PreferredPlacement="TopLeft"
                                     ShouldConstrainToRootBounds="False"
                                     Target="{x:Bind ImportExportSectionHelpButton}">
                                     <TeachingTip.Content>

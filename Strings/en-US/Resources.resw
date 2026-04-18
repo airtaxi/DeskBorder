@@ -929,4 +929,10 @@
   <data name="Toast.Hotkey.ToggleDeskBorder.Title" xml:space="preserve">
     <value>DeskBorder status changed</value>
   </data>
+  <data name="Settings.Status.LanguageRestartRecommendedTitle" xml:space="preserve">
+    <value>Restart recommended</value>
+  </data>
+  <data name="Settings.Status.LanguageRestartRecommendedMessage" xml:space="preserve">
+    <value>Restarting the app is recommended to fully apply the new language to all windows and notifications.</value>
+  </data>
 </root>

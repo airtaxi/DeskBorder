@@ -514,11 +514,18 @@ public sealed partial class SettingsPage : Page
         {
             var currentSettings = _settingsService.Settings;
             var updatedSettings = ViewModel.CreateSettings();
+            var isLanguagePreferenceChanged = currentSettings.AppLanguagePreference != updatedSettings.AppLanguagePreference;
+            var isThemePreferenceChanged = currentSettings.ApplicationThemePreference != updatedSettings.ApplicationThemePreference;
             await _settingsService.UpdateSettingsAsync(updatedSettings);
-            if (currentSettings.ApplicationThemePreference != updatedSettings.ApplicationThemePreference)
+            if (isThemePreferenceChanged)
                 ShowSettingsStatus(
                     LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedTitle"),
                     LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedMessage"),
+                    InfoBarSeverity.Informational);
+            else if (isLanguagePreferenceChanged)
+                ShowSettingsStatus(
+                    LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedTitle"),
+                    LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedMessage"),
                     InfoBarSeverity.Informational);
             else
                 ClearSettingsStatus();
