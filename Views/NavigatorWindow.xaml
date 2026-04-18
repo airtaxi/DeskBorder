@@ -16,110 +16,121 @@
     IsVisibleInTray="False"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
-        <DesktopAcrylicBackdrop />
+        <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid x:Name="RootGrid" Background="Transparent">
-        <Grid.KeyboardAccelerators>
-            <KeyboardAccelerator Key="Escape" Invoked="OnEscapeKeyboardAcceleratorInvoked" />
-        </Grid.KeyboardAccelerators>
+    <Grid Background="Transparent" IsHitTestVisible="False">
+        <Grid Padding="16,12,16,12" VerticalAlignment="Bottom">
+            <Border
+                MaxWidth="1600"
+                Padding="18,14"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Background="#CC1E1E22"
+                BorderBrush="#26FFFFFF"
+                BorderThickness="1"
+                CornerRadius="18">
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Hidden"
+                    HorizontalScrollMode="Enabled"
+                    VerticalScrollBarVisibility="Disabled"
+                    VerticalScrollMode="Disabled"
+                    ZoomMode="Disabled">
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.DesktopItems, Mode=OneWay}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="12" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:NavigatorDesktopItemViewModel">
+                                <StackPanel Width="164" Spacing="8">
+                                    <Grid Opacity="{x:Bind DesktopCardOpacity, Mode=OneWay}">
+                                        <Border
+                                            Height="92"
+                                            Background="#12FFFFFF"
+                                            BorderBrush="#26FFFFFF"
+                                            BorderThickness="1"
+                                            CornerRadius="12" />
+                                        <Border
+                                            Height="92"
+                                            BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                                            BorderThickness="2"
+                                            CornerRadius="12"
+                                            Opacity="{x:Bind CurrentDesktopHighlightOpacity, Mode=OneWay}" />
+                                            <Grid Padding="6">
+                                                <Border
+                                                    Background="#FF111114"
+                                                    BorderBrush="#30FFFFFF"
+                                                    BorderThickness="1"
+                                                    CornerRadius="8">
+                                                    <Border Margin="1" Background="#FF111114" CornerRadius="7">
+                                                        <Viewbox Stretch="Uniform">
+                                                            <Grid
+                                                                Width="{x:Bind PreviewCanvasWidth, Mode=OneWay}"
+                                                                Height="{x:Bind PreviewCanvasHeight, Mode=OneWay}"
+                                                                FlowDirection="LeftToRight">
+                                                                <ItemsControl ItemsSource="{x:Bind PreviewWindowItems, Mode=OneWay}">
+                                                                    <ItemsControl.ItemsPanel>
+                                                                        <ItemsPanelTemplate>
+                                                                            <Canvas FlowDirection="LeftToRight" />
+                                                                        </ItemsPanelTemplate>
+                                                                    </ItemsControl.ItemsPanel>
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate x:DataType="viewModels:NavigatorDesktopWindowItemViewModel">
+                                                                            <Border
+                                                                                Canvas.Left="{x:Bind PreviewLeft, Mode=OneWay}"
+                                                                                Canvas.Top="{x:Bind PreviewTop, Mode=OneWay}"
+                                                                                Width="{x:Bind PreviewWidth, Mode=OneWay}"
+                                                                                Height="{x:Bind PreviewHeight, Mode=OneWay}"
+                                                                                Background="#08000000"
+                                                                                BorderBrush="#88FFFFFF"
+                                                                                BorderThickness="3"
+                                                                                CornerRadius="8">
+                                                                                <Grid>
+                                                                                    <Border
+                                                                                        Width="{x:Bind IconContainerSize, Mode=OneWay}"
+                                                                                        Height="{x:Bind IconContainerSize, Mode=OneWay}"
+                                                                                        HorizontalAlignment="Center"
+                                                                                        VerticalAlignment="Center"
+                                                                                        Background="#F2F2F2"
+                                                                                        CornerRadius="8">
+                                                                                        <Grid>
+                                                                                            <Image
+                                                                                                Margin="4"
+                                                                                                Source="{x:Bind ApplicationIconImageSource, Mode=OneWay}"
+                                                                                                Stretch="Uniform"
+                                                                                                Visibility="{x:Bind ApplicationIconVisibility, Mode=OneWay}" />
+                                                                                            <Viewbox Margin="4" Visibility="{x:Bind FallbackIconVisibility, Mode=OneWay}">
+                                                                                                <SymbolIcon Symbol="AllApps" />
+                                                                                            </Viewbox>
+                                                                                        </Grid>
+                                                                                    </Border>
+                                                                                </Grid>
+                                                                            </Border>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </Grid>
+                                                        </Viewbox>
+                                                    </Border>
+                                                </Border>
+                                            </Grid>
+                                        </Grid>
 
-        <Border
-            Width="420"
-            Padding="24"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
-            CornerRadius="24">
-            <StackPanel Spacing="20">
-                <StackPanel Spacing="8">
-                    <TextBlock
-                        x:Name="NavigatorTitleTextBlock"
-                        Style="{ThemeResource TitleTextBlockStyle}"
-                        Text="Navigator" />
-                    <TextBlock Text="{x:Bind ViewModel.InteractionStatusText, Mode=OneWay}" TextWrapping="WrapWholeWords" />
-                </StackPanel>
-
-                <Border
-                    Padding="12"
-                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                    CornerRadius="16">
-                    <StackPanel Spacing="6">
-                        <TextBlock
-                            x:Name="TriggerAreaTitleTextBlock"
-                            FontWeight="SemiBold"
-                            Text="트리거 영역" />
-                        <TextBlock Text="{x:Bind ViewModel.TriggerAreaDescription, Mode=OneWay}" TextWrapping="WrapWholeWords" />
-                    </StackPanel>
-                </Border>
-
-                <ListView
-                    x:Name="DesktopListView"
-                    IsItemClickEnabled="True"
-                    ItemClick="OnDesktopListViewItemClick"
-                    ItemsSource="{x:Bind ViewModel.DesktopItems, Mode=OneWay}"
-                    SelectionMode="None">
-                    <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:NavigatorDesktopItemViewModel">
-                            <Grid Height="84">
-                                <Border
-                                    Width="4"
-                                    HorizontalAlignment="Left"
-                                    Background="{ThemeResource AccentFillColorDefaultBrush}"
-                                    CornerRadius="999"
-                                    Opacity="{x:Bind CurrentDesktopHighlightOpacity, Mode=OneWay}" />
-
-                                <Grid Padding="16,0,12,0" ColumnSpacing="16">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <Border
-                                        Width="48"
-                                        Height="48"
-                                        VerticalAlignment="Center"
-                                        Background="{ThemeResource AccentFillColorSecondaryBrush}"
-                                        CornerRadius="16">
-                                        <Viewbox>
-                                            <SymbolIcon Symbol="{x:Bind IconSymbol, Mode=OneWay}" />
-                                        </Viewbox>
-                                    </Border>
-
-                                    <StackPanel
-                                        Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Spacing="4">
-                                        <TextBlock FontWeight="SemiBold" Text="{x:Bind DisplayName, Mode=OneWay}" />
-                                        <TextBlock
-                                            Opacity="0.72"
-                                            Text="{x:Bind Description, Mode=OneWay}"
-                                            TextWrapping="WrapWholeWords" />
-                                    </StackPanel>
-
-                                    <Border
-                                        Grid.Column="2"
-                                        Padding="10,4"
-                                        VerticalAlignment="Center"
-                                        Background="{ThemeResource AccentFillColorSecondaryBrush}"
-                                        CornerRadius="999"
-                                        Visibility="{x:Bind CurrentDesktopBadgeVisibility, Mode=OneWay}">
-                                        <TextBlock Text="{x:Bind CurrentDesktopBadgeText, Mode=OneWay}" />
-                                    </Border>
-                                </Grid>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-
-                <TextBlock
-                    Opacity="0.72"
-                    Text="{x:Bind ViewModel.LastRequestedDesktopDisplayText, Mode=OneWay}"
-                    TextWrapping="WrapWholeWords" />
-            </StackPanel>
-        </Border>
+                                    <TextBlock
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                                        Text="{x:Bind DisplayName, Mode=OneWay}"
+                                        TextAlignment="Center"
+                                        TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+        </Grid>
     </Grid>
 </winuiex:WindowEx>

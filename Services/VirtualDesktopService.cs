@@ -2,6 +2,7 @@ using DeskBorder.Interop;
 using DeskBorder.Helpers;
 using DeskBorder.Interop.VirtualDesktop;
 using DeskBorder.Models;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -164,6 +165,26 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
     {
         using var virtualDesktopShellConnection = CreateVirtualDesktopShellConnection();
         return CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
+    }
+
+    public NavigatorPreviewSnapshot GetNavigatorPreviewSnapshot(DisplayMonitorInfo targetDisplayMonitor)
+    {
+        using var virtualDesktopShellConnection = CreateVirtualDesktopShellConnection();
+        var workspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
+        var navigatorWindowItemsByDesktopIdentifier = GetNavigatorWindowItemsByDesktopIdentifier(virtualDesktopShellConnection.VirtualDesktopShell, targetDisplayMonitor);
+        return new()
+        {
+            TargetDisplayMonitor = targetDisplayMonitor,
+            DesktopItems = [.. workspaceSnapshot.DesktopEntries.Select(desktopEntry => new NavigatorDesktopItemModel
+            {
+                DesktopIdentifier = desktopEntry.DesktopIdentifier,
+                DisplayName = desktopEntry.DisplayName,
+                IsCurrentDesktop = desktopEntry.IsCurrentDesktop,
+                WindowItems = navigatorWindowItemsByDesktopIdentifier.TryGetValue(desktopEntry.DesktopIdentifier, out var navigatorDesktopWindowItems)
+                    ? [.. navigatorDesktopWindowItems]
+                    : []
+            })]
+        };
     }
 
     public DesktopNavigationResult MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection desktopSwitchDirection)
@@ -400,6 +421,115 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
 
     private static VirtualDesktopShellConnection CreateVirtualDesktopShellConnection() => new(VirtualDesktopFoundation.Connect());
 
+    private static ScreenRectangle CreateNavigatorPreviewBounds(ScreenRectangle windowBounds, ScreenRectangle monitorBounds)
+    {
+        var left = Math.Max(windowBounds.Left, monitorBounds.Left);
+        var top = Math.Max(windowBounds.Top, monitorBounds.Top);
+        var right = Math.Min(windowBounds.Right, monitorBounds.Right);
+        var bottom = Math.Min(windowBounds.Bottom, monitorBounds.Bottom);
+        return right <= left || bottom <= top
+            ? new()
+            : new(left - monitorBounds.Left, top - monitorBounds.Top, right - monitorBounds.Left, bottom - monitorBounds.Top);
+    }
+
+    private static ScreenRectangle CreateScreenRectangle(Win32.NativeRectangle nativeRectangle) => new(nativeRectangle.Left, nativeRectangle.Top, nativeRectangle.Right, nativeRectangle.Bottom);
+
+    private static Dictionary<string, List<NavigatorDesktopWindowItemModel>> GetNavigatorWindowItemsByDesktopIdentifier(
+        VirtualDesktopShell virtualDesktopShell,
+        DisplayMonitorInfo targetDisplayMonitor)
+    {
+        var navigatorWindowItemsByDesktopIdentifier = new Dictionary<string, List<NavigatorDesktopWindowItemModel>>(StringComparer.Ordinal);
+        var shellWindowHandle = Win32.GetShellWindow();
+        _ = Win32.EnumWindows((windowHandle, applicationData) =>
+        {
+            _ = applicationData;
+            if (!ShouldIncludeNavigatorWindow(virtualDesktopShell, windowHandle, shellWindowHandle))
+                return true;
+
+            if (!TryGetWindowDesktopIdentifier(virtualDesktopShell, windowHandle, out var windowDesktopIdentifier))
+                return true;
+
+            if (!TryGetNavigatorWindowBounds(windowHandle, out var windowBounds))
+                return true;
+
+            var previewBounds = CreateNavigatorPreviewBounds(windowBounds, targetDisplayMonitor.MonitorBounds);
+            if (previewBounds.IsEmpty)
+                return true;
+
+            var desktopIdentifier = windowDesktopIdentifier.ToString();
+            if (!navigatorWindowItemsByDesktopIdentifier.TryGetValue(desktopIdentifier, out var navigatorDesktopWindowItems))
+            {
+                navigatorDesktopWindowItems = [];
+                navigatorWindowItemsByDesktopIdentifier.Add(desktopIdentifier, navigatorDesktopWindowItems);
+            }
+
+            navigatorDesktopWindowItems.Add(new()
+            {
+                PreviewBounds = previewBounds,
+                WindowHandle = windowHandle,
+                ExecutablePath = TryGetProcessExecutablePath(windowHandle)
+            });
+            return true;
+        }, 0);
+
+        foreach (var navigatorWindowItems in navigatorWindowItemsByDesktopIdentifier.Values)
+            navigatorWindowItems.Reverse();
+
+        return navigatorWindowItemsByDesktopIdentifier;
+    }
+
+    private static bool ShouldIncludeNavigatorWindow(VirtualDesktopShell virtualDesktopShell, nint windowHandle, nint shellWindowHandle)
+    {
+        if (windowHandle == 0 || windowHandle == shellWindowHandle || !Win32.IsWindowVisible(windowHandle) || Win32.IsIconic(windowHandle))
+            return false;
+
+        if (IsNavigatorToolWindow(windowHandle) || IsNavigatorWindowCloaked(windowHandle) || !IsAltTabWindow(windowHandle))
+            return false;
+
+        return VirtualDesktopFoundation.TryGetApplicationView(virtualDesktopShell.ApplicationViewCollection, windowHandle, out _);
+    }
+
+    private static bool IsAltTabWindow(nint windowHandle)
+    {
+        var rootOwnerWindowHandle = Win32.GetAncestor(windowHandle, Win32.GetAncestorRootOwnerFlag);
+        if (rootOwnerWindowHandle == 0)
+            rootOwnerWindowHandle = windowHandle;
+
+        var lastActivePopupWindowHandle = rootOwnerWindowHandle;
+        while (true)
+        {
+            var nextLastActivePopupWindowHandle = Win32.GetLastActivePopup(lastActivePopupWindowHandle);
+            if (nextLastActivePopupWindowHandle == 0 || nextLastActivePopupWindowHandle == lastActivePopupWindowHandle)
+                break;
+
+            lastActivePopupWindowHandle = nextLastActivePopupWindowHandle;
+            if (Win32.IsWindowVisible(lastActivePopupWindowHandle))
+                break;
+        }
+
+        return lastActivePopupWindowHandle == windowHandle;
+    }
+
+    private static bool IsNavigatorToolWindow(nint windowHandle)
+    {
+        var extendedWindowStyle = Win32.GetWindowLongPointer(windowHandle, Win32.ExtendedWindowStyleIndex);
+        if ((extendedWindowStyle & Win32.ExtendedWindowStyleNoActivate) != 0)
+            return true;
+
+        return (extendedWindowStyle & Win32.ExtendedWindowStyleToolWindow) != 0
+            && (extendedWindowStyle & Win32.ExtendedWindowStyleApplicationWindow) == 0;
+    }
+
+    private static bool IsNavigatorWindowCloaked(nint windowHandle)
+    {
+        return Win32.DwmGetWindowInt32Attribute(
+            windowHandle,
+            Win32.DesktopWindowManagerCloakedAttribute,
+            out var isCloaked,
+            (uint)Marshal.SizeOf<int>()) >= 0
+            && isCloaked != 0;
+    }
+
     private static string? TryGetProcessName(nint windowHandle)
     {
         _ = Win32.GetWindowThreadProcessId(windowHandle, out var processIdentifier);
@@ -413,6 +543,46 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
         }
         catch (ArgumentException) { return null; }
         catch (InvalidOperationException) { return null; }
+    }
+
+    private static string? TryGetProcessExecutablePath(nint windowHandle)
+    {
+        _ = Win32.GetWindowThreadProcessId(windowHandle, out var processIdentifier);
+        if (processIdentifier == 0)
+            return null;
+
+        try
+        {
+            using var process = Process.GetProcessById((int)processIdentifier);
+            return process.MainModule?.FileName;
+        }
+        catch (ArgumentException) { return null; }
+        catch (InvalidOperationException) { return null; }
+        catch (NotSupportedException) { return null; }
+        catch (Win32Exception) { return null; }
+    }
+
+    private static bool TryGetNavigatorWindowBounds(nint windowHandle, out ScreenRectangle windowBounds)
+    {
+        if (Win32.DwmGetWindowRectangleAttribute(
+            windowHandle,
+            Win32.DesktopWindowManagerExtendedFrameBoundsAttribute,
+            out var nativeWindowRectangle,
+            (uint)Marshal.SizeOf<Win32.NativeRectangle>()) >= 0
+            && !nativeWindowRectangle.IsEmpty)
+        {
+            windowBounds = CreateScreenRectangle(nativeWindowRectangle);
+            return true;
+        }
+
+        if (Win32.GetWindowRect(windowHandle, out nativeWindowRectangle) && !nativeWindowRectangle.IsEmpty)
+        {
+            windowBounds = CreateScreenRectangle(nativeWindowRectangle);
+            return true;
+        }
+
+        windowBounds = new();
+        return false;
     }
 
     private static void TryActivateWindow(nint windowHandle)

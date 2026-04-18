@@ -181,7 +181,7 @@
     <value>영역 위치: {0}</value>
   </data>
   <data name="Dashboard.NavigatorOverlay.Format" xml:space="preserve">
-    <value>Navigator 오버레이: {0}</value>
+    <value>Navigator 미니맵: {0}</value>
   </data>
   <data name="Dashboard.NavigatorTriggerArea.Format" xml:space="preserve">
     <value>트리거 영역: {0}</value>
@@ -205,7 +205,7 @@
     <value>시스템 시작 시 자동 실행</value>
   </data>
   <data name="DashboardPage_NavigatorTitleTextBlock.Text" xml:space="preserve">
-    <value>Navigator 및 감시</value>
+    <value>Navigator 미니맵 및 감시</value>
   </data>
   <data name="DashboardPage_OpenNavigatorSettingsButton.Content" xml:space="preserve">
     <value>Navigator 설정</value>
@@ -226,7 +226,7 @@
     <value>DeskBorder</value>
   </data>
   <data name="DashboardPage_ToggleNavigatorButton.Content" xml:space="preserve">
-    <value>Navigator 표시</value>
+    <value>Navigator 미니맵 표시</value>
   </data>
   <data name="Desktop.DisplayNameFormat" xml:space="preserve">
     <value>데스크톱 {0}</value>
@@ -286,7 +286,7 @@
     <value>관리 창 열기</value>
   </data>
   <data name="ManageWindow.ShowNavigator" xml:space="preserve">
-    <value>Navigator 오버레이 표시</value>
+    <value>Navigator 미니맵 표시</value>
   </data>
   <data name="ManageWindow.WindowTitle" xml:space="preserve">
     <value>DeskBorder</value>
@@ -609,7 +609,7 @@
     <value>다중 디스플레이 동작</value>
   </data>
   <data name="SettingsPage_NavigatorSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>오버레이 단축키와 마우스 트리거 영역을 구성합니다.</value>
+    <value>표시 전용 Navigator 미니맵의 단축키와 마우스 트리거 영역을 구성합니다.</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTitleTextBlock.Text" xml:space="preserve">
     <value>Navigator</value>
@@ -618,9 +618,9 @@
     <value>Navigator 안내</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 트리거 영역 사용: 지정한 화면 비율 영역에 마우스가 들어오면 Navigator 오버레이를 표시합니다.
+    <value>• 트리거 영역 사용: 지정한 화면 영역에 포인터가 들어오면 현재 포인터가 있는 모니터 하단에 표시 전용 Navigator 미니맵을 표시합니다.
 • 영역 선택: 버튼을 누르면 현재 설정 창이 있는 모니터에 선택 오버레이가 열리고, 드래그한 사각형이 그대로 트리거 영역으로 저장됩니다. 선택하는 동안 DeskBorder 서비스는 잠시 멈춥니다.
-• 전역 단축키 섹션의 Navigator 오버레이 토글과 함께 켜 두면 단축키와 마우스 영역 두 방식이 동시에 동작합니다.</value>
+• 전역 단축키 섹션의 Navigator 미니맵 토글을 함께 켜 두면 단축키와 마우스 영역 두 방식이 동시에 동작합니다.</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -638,7 +638,7 @@
     <value>Shift</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header" xml:space="preserve">
-    <value>Navigator 오버레이 토글</value>
+    <value>Navigator 미니맵 토글</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>

@@ -1,5 +1,3 @@
-using Microsoft.UI.Xaml.Controls;
-
 namespace DeskBorder.Models;
 
 public sealed record NavigatorDesktopItemModel
@@ -8,7 +6,7 @@ public sealed record NavigatorDesktopItemModel
 
     public required string DisplayName { get; init; }
 
-    public string Description { get; init; } = string.Empty;
+    public bool IsCurrentDesktop { get; init; }
 
-    public Symbol IconSymbol { get; init; } = Symbol.AllApps;
+    public NavigatorDesktopWindowItemModel[] WindowItems { get; init; } = [];
 }

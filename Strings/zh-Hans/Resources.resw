@@ -181,7 +181,7 @@
     <value>区域位置：{0}</value>
   </data>
   <data name="Dashboard.NavigatorOverlay.Format" xml:space="preserve">
-    <value>Navigator 叠加层：{0}</value>
+    <value>Navigator 缩略图：{0}</value>
   </data>
   <data name="Dashboard.NavigatorTriggerArea.Format" xml:space="preserve">
     <value>触发区域：{0}</value>
@@ -205,7 +205,7 @@
     <value>随系统启动运行</value>
   </data>
   <data name="DashboardPage_NavigatorTitleTextBlock.Text" xml:space="preserve">
-    <value>Navigator 与监视</value>
+    <value>Navigator 缩略图与监视</value>
   </data>
   <data name="DashboardPage_OpenNavigatorSettingsButton.Content" xml:space="preserve">
     <value>Navigator 设置</value>
@@ -226,7 +226,7 @@
     <value>DeskBorder</value>
   </data>
   <data name="DashboardPage_ToggleNavigatorButton.Content" xml:space="preserve">
-    <value>显示 Navigator</value>
+    <value>显示 Navigator 缩略图</value>
   </data>
   <data name="Desktop.DisplayNameFormat" xml:space="preserve">
     <value>桌面 {0}</value>
@@ -286,7 +286,7 @@
     <value>打开管理窗口</value>
   </data>
   <data name="ManageWindow.ShowNavigator" xml:space="preserve">
-    <value>显示 Navigator 叠加层</value>
+    <value>显示 Navigator 缩略图</value>
   </data>
   <data name="ManageWindow.WindowTitle" xml:space="preserve">
     <value>DeskBorder</value>
@@ -609,7 +609,7 @@
     <value>多显示器行为</value>
   </data>
   <data name="SettingsPage_NavigatorSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>配置叠加层热键和鼠标触发区域。</value>
+    <value>配置仅用于显示的 Navigator 缩略图热键和鼠标触发区域。</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTitleTextBlock.Text" xml:space="preserve">
     <value>Navigator</value>
@@ -618,9 +618,9 @@
     <value>Navigator 说明</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 启用触发区域：当指针进入指定屏幕区域时显示 Navigator 叠加层。
+    <value>• 启用触发区域：当指针进入指定屏幕区域时，会在当前指针所在显示器的底部显示仅用于展示的 Navigator 缩略图。
 • 选择区域：点击按钮后，会在当前显示设置窗口的显示器上打开选择叠加层。拖拽出的矩形会原样保存为触发区域，选择期间 DeskBorder 服务会暂时暂停。
-• 如果同时启用全局热键中的 Navigator 叠加层切换，则快捷键和鼠标区域触发会一起生效。</value>
+• 如果同时启用全局热键中的 Navigator 缩略图切换，则快捷键和鼠标区域触发会一起生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -638,7 +638,7 @@
     <value>Shift</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header" xml:space="preserve">
-    <value>切换 Navigator 叠加层</value>
+    <value>切换 Navigator 缩略图</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>

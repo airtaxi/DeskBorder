@@ -6,6 +6,8 @@ public interface IVirtualDesktopService
 {
     VirtualDesktopWorkspaceSnapshot GetWorkspaceSnapshot();
 
+    NavigatorPreviewSnapshot GetNavigatorPreviewSnapshot(DisplayMonitorInfo targetDisplayMonitor);
+
     DesktopNavigationResult SwitchDesktop(DesktopSwitchDirection desktopSwitchDirection);
 
     DesktopNavigationResult MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection desktopSwitchDirection);

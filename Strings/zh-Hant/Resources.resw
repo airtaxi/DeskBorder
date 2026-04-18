@@ -181,7 +181,7 @@
     <value>區域位置：{0}</value>
   </data>
   <data name="Dashboard.NavigatorOverlay.Format" xml:space="preserve">
-    <value>Navigator 覆疊層：{0}</value>
+    <value>Navigator 縮圖：{0}</value>
   </data>
   <data name="Dashboard.NavigatorTriggerArea.Format" xml:space="preserve">
     <value>觸發區域：{0}</value>
@@ -205,7 +205,7 @@
     <value>系統啟動時執行</value>
   </data>
   <data name="DashboardPage_NavigatorTitleTextBlock.Text" xml:space="preserve">
-    <value>Navigator 與監視</value>
+    <value>Navigator 縮圖與監視</value>
   </data>
   <data name="DashboardPage_OpenNavigatorSettingsButton.Content" xml:space="preserve">
     <value>Navigator 設定</value>
@@ -226,7 +226,7 @@
     <value>DeskBorder</value>
   </data>
   <data name="DashboardPage_ToggleNavigatorButton.Content" xml:space="preserve">
-    <value>顯示 Navigator</value>
+    <value>顯示 Navigator 縮圖</value>
   </data>
   <data name="Desktop.DisplayNameFormat" xml:space="preserve">
     <value>桌面 {0}</value>
@@ -286,7 +286,7 @@
     <value>開啟管理視窗</value>
   </data>
   <data name="ManageWindow.ShowNavigator" xml:space="preserve">
-    <value>顯示 Navigator 覆疊層</value>
+    <value>顯示 Navigator 縮圖</value>
   </data>
   <data name="ManageWindow.WindowTitle" xml:space="preserve">
     <value>DeskBorder</value>
@@ -609,7 +609,7 @@
     <value>多顯示器行為</value>
   </data>
   <data name="SettingsPage_NavigatorSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>設定覆疊層熱鍵與滑鼠觸發區域。</value>
+    <value>設定僅供顯示的 Navigator 縮圖熱鍵與滑鼠觸發區域。</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTitleTextBlock.Text" xml:space="preserve">
     <value>Navigator</value>
@@ -618,9 +618,9 @@
     <value>Navigator 說明</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 啟用觸發區域：當指標進入指定的螢幕區域時顯示 Navigator 覆疊層。
+    <value>• 啟用觸發區域：當指標進入指定的螢幕區域時，會在目前指標所在螢幕的底部顯示僅供展示的 Navigator 縮圖。
 • 選取區域：按下按鈕後，會在目前顯示設定視窗的螢幕上開啟選取覆疊層。拖曳出的矩形會原樣儲存為觸發區域，選取期間 DeskBorder 服務會暫時暫停。
-• 若同時啟用全域熱鍵區段中的 Navigator 覆疊層切換，快捷鍵與滑鼠區域兩種觸發方式會同時生效。</value>
+• 若同時啟用全域熱鍵區段中的 Navigator 縮圖切換，快捷鍵與滑鼠區域兩種觸發方式會同時生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -638,7 +638,7 @@
     <value>Shift</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header" xml:space="preserve">
-    <value>切換 Navigator 覆疊層</value>
+    <value>切換 Navigator 縮圖</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>

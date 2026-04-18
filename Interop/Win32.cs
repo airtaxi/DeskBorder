@@ -10,11 +10,24 @@ internal static partial class Win32
     public const uint PeekMessageNoRemove = 0x0000;
     public const uint WindowApplicationMessage = 0x8000;
     public const uint WindowHotkeyMessage = 0x0312;
+    public const uint WindowGetIconMessage = 0x007F;
+    public const uint DesktopWindowManagerCloakedAttribute = 14;
+    public const uint DesktopWindowManagerExtendedFrameBoundsAttribute = 9;
+    public const uint GetAncestorRootOwnerFlag = 3;
     public const uint HotkeyModifierAlternate = 0x0001;
     public const uint HotkeyModifierControl = 0x0002;
     public const uint HotkeyModifierShift = 0x0004;
     public const uint HotkeyModifierWindows = 0x0008;
     public const uint HotkeyModifierNoRepeat = 0x4000;
+    public const int ExtendedWindowStyleIndex = -20;
+    public const int WindowIconSmall = 0;
+    public const int WindowIconBig = 1;
+    public const int WindowIconSmallSecondary = 2;
+    public const int ClassLongPointerIcon = -14;
+    public const int ClassLongPointerSmallIcon = -34;
+    public const nint ExtendedWindowStyleApplicationWindow = 0x00040000;
+    public const nint ExtendedWindowStyleNoActivate = 0x08000000;
+    public const nint ExtendedWindowStyleToolWindow = 0x00000080;
 
     public delegate bool MonitorEnumerationProcedure(nint monitorHandle, nint deviceContextHandle, nint monitorRectanglePointer, nint applicationData);
     public delegate bool WindowEnumerationProcedure(nint windowHandle, nint applicationData);
@@ -50,6 +63,21 @@ internal static partial class Win32
     public static partial bool IsIconic(nint windowHandle);
 
     [LibraryImport("user32.dll")]
+    public static partial nint GetAncestor(nint windowHandle, uint flags);
+
+    [LibraryImport("user32.dll")]
+    public static partial nint GetLastActivePopup(nint windowHandle);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW", SetLastError = true)]
+    public static partial nint GetWindowLongPointer(nint windowHandle, int index);
+
+    [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
+    public static partial nint SendMessage(nint windowHandle, uint message, nint wParam, nint lParam);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetClassLongPtrW", SetLastError = true)]
+    public static partial nint GetClassLongPointer(nint windowHandle, int index);
+
+    [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool ShowWindowAsync(nint windowHandle, int showWindowCommand);
 
@@ -65,6 +93,13 @@ internal static partial class Win32
 
     [LibraryImport("user32.dll")]
     public static partial uint GetDpiForWindow(nint windowHandle);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    public static partial nint CopyIcon(nint iconHandle);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool DestroyIcon(nint iconHandle);
 
     [LibraryImport("kernel32.dll")]
     public static partial uint GetCurrentThreadId();
@@ -109,6 +144,12 @@ internal static partial class Win32
     [LibraryImport("user32.dll", EntryPoint = "GetMonitorInfoW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool GetMonitorInfo(nint monitorHandle, ref MonitorInfoExtended monitorInfo);
+
+    [LibraryImport("dwmapi.dll", EntryPoint = "DwmGetWindowAttribute")]
+    public static partial int DwmGetWindowRectangleAttribute(nint windowHandle, uint attribute, out NativeRectangle attributeValue, uint attributeSize);
+
+    [LibraryImport("dwmapi.dll", EntryPoint = "DwmGetWindowAttribute")]
+    public static partial int DwmGetWindowInt32Attribute(nint windowHandle, uint attribute, out int attributeValue, uint attributeSize);
 
     [StructLayout(LayoutKind.Sequential)]
     public struct NativePoint

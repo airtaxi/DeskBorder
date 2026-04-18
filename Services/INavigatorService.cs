@@ -6,8 +6,6 @@ namespace DeskBorder.Services;
 
 public interface INavigatorService
 {
-    event EventHandler<NavigatorDesktopSelectionRequestedEventArgs>? DesktopSelectionRequested;
-
     bool IsInitialized { get; }
 
     bool IsVisible { get; }
@@ -20,21 +18,9 @@ public interface INavigatorService
 
     void Initialize(NavigatorWindow navigatorWindow);
 
-    void NotifyWindowActivated();
-
-    void NotifyWindowDeactivated();
-
-    void RequestDesktopSelection(string desktopIdentifier);
-
-    void SetCurrentDesktop(string desktopIdentifier);
-
-    void SetDesktopItems(IReadOnlyList<NavigatorDesktopItemModel> desktopItems, string? currentDesktopIdentifier = null);
-
-    void SetDesktopPlaceholders(int desktopCount, int currentDesktopNumber);
+    void RefreshPreview();
 
     bool ShowFromTriggerArea();
-
-    void ShowOverlay();
 
     void ToggleOverlay();
 

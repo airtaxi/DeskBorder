@@ -1,31 +1,29 @@
-using DeskBorder.Helpers;
 using DeskBorder.Models;
 using DeskBorder.ViewModels;
 using DeskBorder.Views;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DeskBorder.Services;
 
-public sealed class NavigatorService(ILocalizationService localizationService) : INavigatorService
+public sealed class NavigatorService(
+    IDesktopEdgeMonitorService desktopEdgeMonitorService,
+    IVirtualDesktopService virtualDesktopService) : INavigatorService
 {
-    private readonly ILocalizationService _localizationService = localizationService;
+    private readonly IDesktopEdgeMonitorService _desktopEdgeMonitorService = desktopEdgeMonitorService;
     private NavigatorWindow? _navigatorWindow;
-
-    public event EventHandler<NavigatorDesktopSelectionRequestedEventArgs>? DesktopSelectionRequested;
+    private DisplayMonitorInfo? _targetDisplayMonitor;
+    private readonly IVirtualDesktopService _virtualDesktopService = virtualDesktopService;
 
     public bool IsInitialized => _navigatorWindow is not null;
 
     public bool IsVisible => ViewModel.IsVisible;
 
-    public NavigatorViewModel ViewModel { get; } = new(localizationService);
+    public NavigatorViewModel ViewModel { get; } = new();
 
     public void CloseFromKeyboard() => Hide();
 
     public void Hide()
     {
         ViewModel.IsVisible = false;
-        ViewModel.IsWindowActive = false;
-
         if (_navigatorWindow?.AppWindow.IsVisible == true)
             _navigatorWindow.AppWindow.Hide();
     }
@@ -36,57 +34,17 @@ public sealed class NavigatorService(ILocalizationService localizationService) :
             return;
 
         _navigatorWindow = navigatorWindow;
-        SetDesktopPlaceholders(4, 1);
+        RefreshPreview();
     }
 
-    public void NotifyWindowActivated() => ViewModel.IsWindowActive = true;
-
-    public void NotifyWindowDeactivated()
+    public void RefreshPreview()
     {
-        ViewModel.IsWindowActive = false;
-        if (!ViewModel.IsPointerInsideTriggerArea)
-            Hide();
-    }
-
-    public void RequestDesktopSelection(string desktopIdentifier)
-    {
-        if (!ViewModel.DesktopItems.Any(desktopItem => string.Equals(desktopItem.DesktopIdentifier, desktopIdentifier, StringComparison.Ordinal)))
-            return;
-
-        ViewModel.LastRequestedDesktopIdentifier = desktopIdentifier;
-        DesktopSelectionRequested?.Invoke(this, new NavigatorDesktopSelectionRequestedEventArgs(desktopIdentifier));
-        Hide();
-    }
-
-    public void SetCurrentDesktop(string desktopIdentifier)
-    {
-        foreach (var desktopItem in ViewModel.DesktopItems)
-            desktopItem.IsCurrentDesktop = string.Equals(desktopItem.DesktopIdentifier, desktopIdentifier, StringComparison.Ordinal);
-    }
-
-    public void SetDesktopItems(IReadOnlyList<NavigatorDesktopItemModel> desktopItems, string? currentDesktopIdentifier = null)
-    {
-        var resolvedCurrentDesktopIdentifier = currentDesktopIdentifier ?? desktopItems.FirstOrDefault()?.DesktopIdentifier;
-        ViewModel.ReplaceDesktopItems(desktopItems, resolvedCurrentDesktopIdentifier);
-    }
-
-    public void SetDesktopPlaceholders(int desktopCount, int currentDesktopNumber)
-    {
-        var sanitizedDesktopCount = Math.Max(1, desktopCount);
-        var sanitizedCurrentDesktopNumber = Math.Clamp(currentDesktopNumber, 1, sanitizedDesktopCount);
-        var desktopItems = Enumerable.Range(1, sanitizedDesktopCount)
-            .Select(desktopNumber => new NavigatorDesktopItemModel
-            {
-                DesktopIdentifier = $"desktop-{desktopNumber}",
-                DisplayName = SettingsDisplayFormatter.FormatDesktopDisplayName(desktopNumber),
-                Description = desktopNumber == sanitizedCurrentDesktopNumber
-                    ? LocalizedResourceAccessor.GetString("Navigator.DesktopDescription.PlaceholderCurrent")
-                    : LocalizedResourceAccessor.GetString("Navigator.DesktopDescription.PlaceholderPreview"),
-                IconSymbol = desktopNumber == sanitizedCurrentDesktopNumber ? Symbol.Switch : Symbol.AllApps
-            })
-            .ToArray();
-
-        SetDesktopItems(desktopItems, $"desktop-{sanitizedCurrentDesktopNumber}");
+        var previewSnapshot = _virtualDesktopService.GetNavigatorPreviewSnapshot(ResolveTargetDisplayMonitor());
+        _targetDisplayMonitor = previewSnapshot.TargetDisplayMonitor;
+        ViewModel.ReplaceDesktopItems(
+            previewSnapshot.DesktopItems,
+            previewSnapshot.TargetDisplayMonitor.MonitorBounds.Width,
+            previewSnapshot.TargetDisplayMonitor.MonitorBounds.Height);
     }
 
     public bool ShowFromTriggerArea()
@@ -96,12 +54,6 @@ public sealed class NavigatorService(ILocalizationService localizationService) :
 
         ShowOverlay();
         return true;
-    }
-
-    public void ShowOverlay()
-    {
-        ViewModel.IsVisible = true;
-        _navigatorWindow?.ShowOverlay();
     }
 
     public void ToggleOverlay()
@@ -114,10 +66,8 @@ public sealed class NavigatorService(ILocalizationService localizationService) :
 
     public void UpdateTriggerAreaState(bool isEnabled, TriggerRectangleSettings triggerRectangleSettings)
     {
+        _ = triggerRectangleSettings;
         ViewModel.IsTriggerAreaEnabled = isEnabled;
-        ViewModel.TriggerAreaDescription = isEnabled
-            ? LocalizedResourceAccessor.GetFormattedString("Navigator.TriggerAreaEnabledFormat", SettingsDisplayFormatter.FormatTriggerRectangle(triggerRectangleSettings))
-            : LocalizedResourceAccessor.GetString("Navigator.TriggerAreaDisabled");
     }
 
     public bool UpdateTriggerAreaPointerState(bool isPointerInsideTriggerArea)
@@ -126,13 +76,26 @@ public sealed class NavigatorService(ILocalizationService localizationService) :
             return false;
 
         ViewModel.IsPointerInsideTriggerArea = isPointerInsideTriggerArea;
-
         if (isPointerInsideTriggerArea)
             return ShowFromTriggerArea();
 
-        if (!ViewModel.IsWindowActive)
-            Hide();
-
+        Hide();
         return true;
+    }
+
+    private DisplayMonitorInfo ResolveTargetDisplayMonitor()
+    {
+        var currentMonitoringState = _desktopEdgeMonitorService.CaptureCurrentState();
+        return currentMonitoringState.CurrentDisplayMonitor
+            ?? currentMonitoringState.DisplayMonitors.FirstOrDefault(displayMonitor => displayMonitor.IsPrimaryDisplay)
+            ?? currentMonitoringState.DisplayMonitors.FirstOrDefault()
+            ?? throw new InvalidOperationException("No display monitor is available for the navigator.");
+    }
+
+    private void ShowOverlay()
+    {
+        RefreshPreview();
+        ViewModel.IsVisible = true;
+        _navigatorWindow?.ShowOverlay(_targetDisplayMonitor ?? ResolveTargetDisplayMonitor());
     }
 }

@@ -181,7 +181,7 @@
     <value>Area position: {0}</value>
   </data>
   <data name="Dashboard.NavigatorOverlay.Format" xml:space="preserve">
-    <value>Navigator overlay: {0}</value>
+    <value>Navigator mini map: {0}</value>
   </data>
   <data name="Dashboard.NavigatorTriggerArea.Format" xml:space="preserve">
     <value>Trigger area: {0}</value>
@@ -205,7 +205,7 @@
     <value>Run at system startup</value>
   </data>
   <data name="DashboardPage_NavigatorTitleTextBlock.Text" xml:space="preserve">
-    <value>Navigator and monitoring</value>
+    <value>Navigator mini map and monitoring</value>
   </data>
   <data name="DashboardPage_OpenNavigatorSettingsButton.Content" xml:space="preserve">
     <value>Navigator settings</value>
@@ -226,7 +226,7 @@
     <value>DeskBorder</value>
   </data>
   <data name="DashboardPage_ToggleNavigatorButton.Content" xml:space="preserve">
-    <value>Show Navigator</value>
+    <value>Show Navigator mini map</value>
   </data>
   <data name="Desktop.DisplayNameFormat" xml:space="preserve">
     <value>Desktop {0}</value>
@@ -286,7 +286,7 @@
     <value>Open management window</value>
   </data>
   <data name="ManageWindow.ShowNavigator" xml:space="preserve">
-    <value>Show Navigator overlay</value>
+    <value>Show Navigator mini map</value>
   </data>
   <data name="ManageWindow.WindowTitle" xml:space="preserve">
     <value>DeskBorder</value>
@@ -609,7 +609,7 @@
     <value>Multi-display behavior</value>
   </data>
   <data name="SettingsPage_NavigatorSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>Configure the overlay hotkey and mouse trigger area.</value>
+    <value>Configure the hotkey and mouse trigger area for the display-only Navigator mini map.</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTitleTextBlock.Text" xml:space="preserve">
     <value>Navigator</value>
@@ -618,9 +618,9 @@
     <value>Navigator guide</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• Enable trigger area: shows the Navigator overlay when the pointer enters the configured screen region.
+    <value>• Enable trigger area: when the pointer enters the configured screen region, the display-only Navigator mini map appears at the bottom of the monitor that currently contains the pointer.
 • Select area: opens a selection overlay on the monitor that currently shows the settings window. The dragged rectangle is saved as-is, and the DeskBorder service pauses while you are selecting.
-• If you also enable the Navigator overlay hotkey in the global hotkeys section, both the shortcut and mouse area triggers stay active together.</value>
+• If you also enable the Navigator mini map hotkey in the global hotkeys section, both the shortcut and mouse area triggers stay active together.</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -638,7 +638,7 @@
     <value>Shift</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header" xml:space="preserve">
-    <value>Toggle Navigator overlay</value>
+    <value>Toggle Navigator mini map</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>

@@ -181,7 +181,7 @@
     <value>領域の位置: {0}</value>
   </data>
   <data name="Dashboard.NavigatorOverlay.Format" xml:space="preserve">
-    <value>Navigator オーバーレイ: {0}</value>
+    <value>Navigator ミニマップ: {0}</value>
   </data>
   <data name="Dashboard.NavigatorTriggerArea.Format" xml:space="preserve">
     <value>トリガー領域: {0}</value>
@@ -205,7 +205,7 @@
     <value>システム起動時に実行</value>
   </data>
   <data name="DashboardPage_NavigatorTitleTextBlock.Text" xml:space="preserve">
-    <value>Navigator と監視</value>
+    <value>Navigator ミニマップと監視</value>
   </data>
   <data name="DashboardPage_OpenNavigatorSettingsButton.Content" xml:space="preserve">
     <value>Navigator 設定</value>
@@ -226,7 +226,7 @@
     <value>DeskBorder</value>
   </data>
   <data name="DashboardPage_ToggleNavigatorButton.Content" xml:space="preserve">
-    <value>Navigator を表示</value>
+    <value>Navigator ミニマップを表示</value>
   </data>
   <data name="Desktop.DisplayNameFormat" xml:space="preserve">
     <value>デスクトップ {0}</value>
@@ -286,7 +286,7 @@
     <value>管理ウィンドウを開く</value>
   </data>
   <data name="ManageWindow.ShowNavigator" xml:space="preserve">
-    <value>Navigator オーバーレイを表示</value>
+    <value>Navigator ミニマップを表示</value>
   </data>
   <data name="ManageWindow.WindowTitle" xml:space="preserve">
     <value>DeskBorder</value>
@@ -609,7 +609,7 @@
     <value>マルチディスプレイ動作</value>
   </data>
   <data name="SettingsPage_NavigatorSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>オーバーレイのホットキーとマウス トリガー領域を設定します。</value>
+    <value>表示専用の Navigator ミニマップ用ホットキーとマウス トリガー領域を設定します。</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTitleTextBlock.Text" xml:space="preserve">
     <value>Navigator</value>
@@ -618,9 +618,9 @@
     <value>Navigator ガイド</value>
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• トリガー領域を有効化: ポインターが指定した画面領域に入ると Navigator オーバーレイを表示します。
+    <value>• トリガー領域を有効化: ポインターが指定した画面領域に入ると、ポインターがあるモニターの下部に表示専用の Navigator ミニマップを表示します。
 • 領域を選択: ボタンを押すと、現在設定ウィンドウが表示されているモニターに選択オーバーレイが開きます。ドラッグした矩形がそのままトリガー領域として保存され、選択中は DeskBorder サービスが一時停止します。
-• グローバル ホットキー セクションの Navigator オーバーレイ切り替えも有効にすると、ショートカットとマウス領域の両方で動作します。</value>
+• グローバル ホットキー セクションの Navigator ミニマップ切り替えも有効にすると、ショートカットとマウス領域の両方で動作します。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -638,7 +638,7 @@
     <value>Shift</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header" xml:space="preserve">
-    <value>Navigator オーバーレイを切り替え</value>
+    <value>Navigator ミニマップを切り替え</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>

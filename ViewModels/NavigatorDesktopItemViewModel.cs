@@ -1,38 +1,34 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using DeskBorder.Helpers;
-using DeskBorder.Services;
+using DeskBorder.Models;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
+using System.Collections.ObjectModel;
 
 namespace DeskBorder.ViewModels;
 
 public sealed partial class NavigatorDesktopItemViewModel : ObservableObject
 {
-    private readonly ILocalizationService _localizationService;
-
-    public NavigatorDesktopItemViewModel(
-        string desktopIdentifier,
-        string displayName,
-        string description,
-        Symbol iconSymbol,
-        ILocalizationService localizationService)
+    public NavigatorDesktopItemViewModel(NavigatorDesktopItemModel navigatorDesktopItemModel, int previewCanvasWidth, int previewCanvasHeight)
     {
-        DesktopIdentifier = desktopIdentifier;
-        DisplayName = displayName;
-        Description = description;
-        IconSymbol = iconSymbol;
-        _localizationService = localizationService;
-        _localizationService.LanguageChanged += OnLocalizationServiceLanguageChanged;
+        DesktopIdentifier = navigatorDesktopItemModel.DesktopIdentifier;
+        DisplayName = navigatorDesktopItemModel.DisplayName;
+        IsCurrentDesktop = navigatorDesktopItemModel.IsCurrentDesktop;
+        PreviewCanvasWidth = previewCanvasWidth;
+        PreviewCanvasHeight = previewCanvasHeight;
+        foreach (var navigatorDesktopWindowItemModel in navigatorDesktopItemModel.WindowItems)
+            PreviewWindowItems.Add(new NavigatorDesktopWindowItemViewModel(navigatorDesktopWindowItemModel));
     }
-
-    public double CurrentDesktopHighlightOpacity => IsCurrentDesktop ? 1.0 : 0.0;
 
     public Visibility CurrentDesktopBadgeVisibility => IsCurrentDesktop ? Visibility.Visible : Visibility.Collapsed;
 
-    public string CurrentDesktopBadgeText => _localizationService.GetString("Navigator.CurrentBadgeText");
+    public double CurrentDesktopHighlightOpacity => IsCurrentDesktop ? 1.0 : 0.0;
 
-    [ObservableProperty]
-    public partial string Description { get; set; } = string.Empty;
+    public double DesktopCardOpacity => IsCurrentDesktop || PreviewWindowItems.Count > 0 ? 1.0 : 0.65;
+
+    public ObservableCollection<NavigatorDesktopWindowItemViewModel> PreviewWindowItems { get; } = [];
+
+    public int PreviewCanvasHeight { get; }
+
+    public int PreviewCanvasWidth { get; }
 
     [ObservableProperty]
     public partial string DesktopIdentifier { get; set; } = string.Empty;
@@ -41,17 +37,8 @@ public sealed partial class NavigatorDesktopItemViewModel : ObservableObject
     public partial string DisplayName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial Symbol IconSymbol { get; set; }
-
-    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CurrentDesktopBadgeVisibility))]
     [NotifyPropertyChangedFor(nameof(CurrentDesktopHighlightOpacity))]
+    [NotifyPropertyChangedFor(nameof(DesktopCardOpacity))]
     public partial bool IsCurrentDesktop { get; set; }
-
-    private void OnLocalizationServiceLanguageChanged(object? sender, EventArgs eventArguments)
-    {
-        _ = sender;
-        _ = eventArguments;
-        OnPropertyChanged(nameof(CurrentDesktopBadgeText));
-    }
 }

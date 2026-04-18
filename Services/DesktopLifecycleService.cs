@@ -1,6 +1,5 @@
 using DeskBorder.Helpers;
 using DeskBorder.Models;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DeskBorder.Services;
 
@@ -41,7 +40,6 @@ public sealed class DesktopLifecycleService(
         _desktopEdgeMonitorService.MonitoringStateChanged += OnDesktopEdgeMonitorServiceMonitoringStateChanged;
         _hotkeyService.HotkeyInvoked += OnHotkeyServiceHotkeyInvoked;
         _localizationService.LanguageChanged += OnLocalizationServiceLanguageChanged;
-        _navigatorService.DesktopSelectionRequested += OnNavigatorServiceDesktopSelectionRequested;
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
 
         await RefreshNavigatorAsync();
@@ -59,7 +57,6 @@ public sealed class DesktopLifecycleService(
         _desktopEdgeMonitorService.MonitoringStateChanged -= OnDesktopEdgeMonitorServiceMonitoringStateChanged;
         _hotkeyService.HotkeyInvoked -= OnHotkeyServiceHotkeyInvoked;
         _localizationService.LanguageChanged -= OnLocalizationServiceLanguageChanged;
-        _navigatorService.DesktopSelectionRequested -= OnNavigatorServiceDesktopSelectionRequested;
         _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
 
         await CancelPendingDesktopDeletionAsync();
@@ -105,29 +102,6 @@ public sealed class DesktopLifecycleService(
 
     private static bool IsCurrentDesktopRightOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.DesktopEntries.Length > 0
         && workspaceSnapshot.CurrentDesktopNumber == workspaceSnapshot.DesktopEntries.Length;
-
-    private async Task ApplyWorkspaceSnapshotAsync(VirtualDesktopWorkspaceSnapshot workspaceSnapshot)
-    {
-        var navigatorDesktopItems = workspaceSnapshot.DesktopEntries
-            .Select(desktopEntry => new NavigatorDesktopItemModel
-            {
-                DesktopIdentifier = desktopEntry.DesktopIdentifier,
-                DisplayName = desktopEntry.DisplayName,
-                Description = desktopEntry.IsCurrentDesktop
-                    ? LocalizedResourceAccessor.GetString("Navigator.DesktopDescription.Current")
-                    : desktopEntry.IsLeftOuterDesktop || desktopEntry.IsRightOuterDesktop
-                        ? LocalizedResourceAccessor.GetString("Navigator.DesktopDescription.Outer")
-                        : LocalizedResourceAccessor.GetString("Navigator.DesktopDescription.Virtual"),
-                IconSymbol = desktopEntry.IsCurrentDesktop ? Symbol.Switch : Symbol.AllApps
-            })
-            .ToArray();
-        await UiThreadHelper.ExecuteAsync(() =>
-        {
-            var navigatorSettings = _settingsService.Settings.NavigatorSettings;
-            _navigatorService.SetDesktopItems(navigatorDesktopItems, workspaceSnapshot.CurrentDesktopIdentifier);
-            _navigatorService.UpdateTriggerAreaState(navigatorSettings.IsTriggerAreaEnabled, navigatorSettings.TriggerRectangle);
-        });
-    }
 
     private async Task CancelPendingDesktopDeletionAsync()
     {
@@ -177,7 +151,7 @@ public sealed class DesktopLifecycleService(
         if (!desktopNavigationResult.IsSuccessful)
             return;
 
-        await ApplyWorkspaceSnapshotAsync(desktopNavigationResult.CurrentWorkspaceSnapshot);
+        await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
         if (!IsInwardSwitch(desktopNavigationResult)
             || string.IsNullOrWhiteSpace(desktopNavigationResult.SourceDesktopIdentifier)
             || string.IsNullOrWhiteSpace(desktopNavigationResult.TargetDesktopIdentifier))
@@ -215,9 +189,14 @@ public sealed class DesktopLifecycleService(
 
     private async Task RefreshNavigatorAsync()
     {
-        await ApplyWorkspaceSnapshotAsync(_virtualDesktopService.GetWorkspaceSnapshot());
         var currentMonitoringState = _desktopEdgeMonitorService.CurrentState;
-        await UiThreadHelper.ExecuteAsync(() => _navigatorService.UpdateTriggerAreaPointerState(currentMonitoringState.NavigatorTriggerState.IsCursorInsideTriggerRectangle));
+        await UiThreadHelper.ExecuteAsync(() =>
+        {
+            var navigatorSettings = _settingsService.Settings.NavigatorSettings;
+            _navigatorService.RefreshPreview();
+            _navigatorService.UpdateTriggerAreaState(navigatorSettings.IsTriggerAreaEnabled, navigatorSettings.TriggerRectangle);
+            _navigatorService.UpdateTriggerAreaPointerState(currentMonitoringState.NavigatorTriggerState.IsCursorInsideTriggerRectangle);
+        });
     }
 
     private async Task RunPendingDesktopDeletionAsync(PendingDesktopDeletion pendingDesktopDeletion, CancellationToken cancellationToken)
@@ -245,7 +224,7 @@ public sealed class DesktopLifecycleService(
     {
         var desktopDeletionResult = _virtualDesktopService.DeleteDesktop(pendingDesktopDeletion.DesktopIdentifier, pendingDesktopDeletion.FallbackDesktopIdentifier);
         if (desktopDeletionResult.IsSuccessful)
-            await ApplyWorkspaceSnapshotAsync(desktopDeletionResult.CurrentWorkspaceSnapshot);
+            await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
     }
 
     private async Task SchedulePendingDesktopDeletionAsync(PendingDesktopDeletion pendingDesktopDeletion, CancellationToken cancellationToken)
@@ -305,31 +284,12 @@ public sealed class DesktopLifecycleService(
                     return;
 
                 case HotkeyActionType.ToggleNavigator:
-                    await RefreshNavigatorAsync();
                     await UiThreadHelper.ExecuteAsync(_navigatorService.ToggleOverlay);
                     return;
 
                 default:
                     return;
             }
-        }
-        finally { _operationSemaphore.Release(); }
-    }
-
-    private void OnNavigatorServiceDesktopSelectionRequested(object? sender, NavigatorDesktopSelectionRequestedEventArgs navigatorDesktopSelectionRequestedEventArgs) => _ = HandleNavigatorServiceDesktopSelectionRequestedAsync(navigatorDesktopSelectionRequestedEventArgs);
-
-    private async Task HandleNavigatorServiceDesktopSelectionRequestedAsync(NavigatorDesktopSelectionRequestedEventArgs navigatorDesktopSelectionRequestedEventArgs)
-    {
-        if (!IsRunning)
-            return;
-
-        await _operationSemaphore.WaitAsync();
-        try
-        {
-            await CancelPendingDesktopDeletionAsync();
-            var desktopNavigationResult = _virtualDesktopService.SwitchToDesktop(navigatorDesktopSelectionRequestedEventArgs.DesktopIdentifier);
-            if (desktopNavigationResult.IsSuccessful)
-                await ApplyWorkspaceSnapshotAsync(desktopNavigationResult.CurrentWorkspaceSnapshot);
         }
         finally { _operationSemaphore.Release(); }
     }
