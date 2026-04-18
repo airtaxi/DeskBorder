@@ -616,7 +616,7 @@
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 트리거 영역 사용: 지정한 화면 비율 영역에 마우스가 들어오면 Navigator 오버레이를 표시합니다.
-• Left / Top / Width / Height: 0~1 비율값으로 트리거 영역의 위치와 크기를 정합니다.
+• 왼쪽 / 위 / 너비 / 높이: 퍼센트 값으로 트리거 영역의 위치와 크기를 정합니다.
 • 전역 단축키 섹션의 Navigator 오버레이 토글과 함께 켜 두면 단축키와 마우스 영역 두 방식이 동시에 동작합니다.</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -644,16 +644,16 @@
     <value>트리거 영역 사용</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
-    <value>Height</value>
+    <value>높이 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerLeftNumberBox.Header" xml:space="preserve">
-    <value>Left</value>
+    <value>왼쪽 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerTopNumberBox.Header" xml:space="preserve">
-    <value>Top</value>
+    <value>위 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerWidthNumberBox.Header" xml:space="preserve">
-    <value>Width</value>
+    <value>너비 (%)</value>
   </data>
   <data name="SettingsPage_PendingBlacklistedProcessNameTextBox.Header" xml:space="preserve">
     <value>프로세스 이름</value>
@@ -764,7 +764,7 @@
     <value>스토어 업데이트 확인</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
-    <value>Left {0:P0}, Top {1:P0}, Width {2:P0}, Height {3:P0}</value>
+    <value>왼쪽 {0:P0}, 위 {1:P0}, 너비 {2:P0}, 높이 {3:P0}</value>
   </data>
   <data name="VirtualKey.CapitalLock" xml:space="preserve">
     <value>Caps Lock</value>

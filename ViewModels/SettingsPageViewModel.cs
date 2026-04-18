@@ -206,16 +206,16 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         NavigatorToggleHotkeyRegistrationFailureMessage);
 
     [ObservableProperty]
-    public partial double NavigatorTriggerHeight { get; set; }
+    public partial double NavigatorTriggerHeightPercentage { get; set; }
 
     [ObservableProperty]
-    public partial double NavigatorTriggerLeft { get; set; }
+    public partial double NavigatorTriggerLeftPercentage { get; set; }
 
     [ObservableProperty]
-    public partial double NavigatorTriggerTop { get; set; }
+    public partial double NavigatorTriggerTopPercentage { get; set; }
 
     [ObservableProperty]
-    public partial double NavigatorTriggerWidth { get; set; }
+    public partial double NavigatorTriggerWidthPercentage { get; set; }
 
     [ObservableProperty]
     public partial double TopDesktopEdgeIgnorePercentage { get; set; }
@@ -303,10 +303,10 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             IsTriggerAreaEnabled = IsNavigatorTriggerAreaEnabled,
             TriggerRectangle = new TriggerRectangleSettings
             {
-                Left = NavigatorTriggerLeft,
-                Top = NavigatorTriggerTop,
-                Width = NavigatorTriggerWidth,
-                Height = NavigatorTriggerHeight
+                Left = ConvertPercentageToNormalizedTriggerRectangleValue(NavigatorTriggerLeftPercentage),
+                Top = ConvertPercentageToNormalizedTriggerRectangleValue(NavigatorTriggerTopPercentage),
+                Width = ConvertPercentageToNormalizedTriggerRectangleValue(NavigatorTriggerWidthPercentage),
+                Height = ConvertPercentageToNormalizedTriggerRectangleValue(NavigatorTriggerHeightPercentage)
             }
         },
         BlacklistedProcessNames = [.. BlacklistedProcessNames],
@@ -327,10 +327,10 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         TopDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.TopIgnorePercentage;
         BottomDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage;
         IsNavigatorTriggerAreaEnabled = deskBorderSettings.NavigatorSettings.IsTriggerAreaEnabled;
-        NavigatorTriggerLeft = deskBorderSettings.NavigatorSettings.TriggerRectangle.Left;
-        NavigatorTriggerTop = deskBorderSettings.NavigatorSettings.TriggerRectangle.Top;
-        NavigatorTriggerWidth = deskBorderSettings.NavigatorSettings.TriggerRectangle.Width;
-        NavigatorTriggerHeight = deskBorderSettings.NavigatorSettings.TriggerRectangle.Height;
+        NavigatorTriggerLeftPercentage = ConvertNormalizedTriggerRectangleValueToPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Left);
+        NavigatorTriggerTopPercentage = ConvertNormalizedTriggerRectangleValueToPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Top);
+        NavigatorTriggerWidthPercentage = ConvertNormalizedTriggerRectangleValueToPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Width);
+        NavigatorTriggerHeightPercentage = ConvertNormalizedTriggerRectangleValueToPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Height);
         SelectedMultiDisplayBehaviorOption = FindSelectionOption(
             MultiDisplayBehaviorOptions,
             deskBorderSettings.MultiDisplayBehavior);
@@ -381,6 +381,10 @@ public sealed partial class SettingsPageViewModel : ObservableObject
                 throw new InvalidOperationException("The requested hotkey action type is not supported.");
         }
     }
+
+    private static double ConvertNormalizedTriggerRectangleValueToPercentage(double normalizedValue) => normalizedValue * 100.0;
+
+    private static double ConvertPercentageToNormalizedTriggerRectangleValue(double percentageValue) => percentageValue / 100.0;
 
     private static List<SelectionOption<TValue>> CreateSelectionOptions<TValue>(IReadOnlyList<TValue> values, Func<TValue, string> displayTextSelector) where TValue : notnull => [.. values.Select(value => new SelectionOption<TValue>(value, displayTextSelector(value)))];
 

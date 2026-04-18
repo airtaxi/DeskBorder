@@ -51,12 +51,6 @@ public partial class App : Application
         currentApplication.OnRedirectedActivation(appActivationArguments);
     }
 
-    public static void ShutdownApplication()
-    {
-        if (Current is App currentApplication)
-            currentApplication.ShutdownApplicationCore();
-    }
-
     protected override async void OnLaunched(LaunchActivatedEventArgs launchActivatedEventArgs)
     {
         var appActivationArguments = AppInstance.GetCurrent().GetActivatedEventArgs();
@@ -95,14 +89,6 @@ public partial class App : Application
         {
             return AppLanguagePreference.System;
         }
-    }
-
-    private void ShutdownApplicationCore()
-    {
-        GetRequiredService<IDeskBorderRuntimeService>().StopAsync().GetAwaiter().GetResult();
-        GetRequiredService<IHotkeyService>().Dispose();
-        GetRequiredService<IManageWindowService>().ForceClose();
-        Exit();
     }
 
     private static void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs unhandledExceptionEventArgs)

@@ -805,50 +805,50 @@
                             <NumberBox
                                 x:Name="NavigatorTriggerLeftNumberBox"
                                 x:Uid="SettingsPage_NavigatorTriggerLeftNumberBox"
-                                Header="Left"
-                                Maximum="1"
+                                Header="왼쪽 (%)"
+                                Maximum="99"
                                 Minimum="0"
-                                SmallChange="0.01"
+                                SmallChange="1"
                                 SpinButtonPlacementMode="Inline"
                                 ValueChanged="OnSettingNumberBoxValueChanged"
-                                Value="{x:Bind ViewModel.NavigatorTriggerLeft, Mode=TwoWay}" />
+                                Value="{x:Bind ViewModel.NavigatorTriggerLeftPercentage, Mode=TwoWay}" />
 
                             <NumberBox
                                 x:Name="NavigatorTriggerTopNumberBox"
                                 x:Uid="SettingsPage_NavigatorTriggerTopNumberBox"
                                 Grid.Column="1"
-                                Header="Top"
-                                Maximum="1"
+                                Header="위 (%)"
+                                Maximum="99"
                                 Minimum="0"
-                                SmallChange="0.01"
+                                SmallChange="1"
                                 SpinButtonPlacementMode="Inline"
                                 ValueChanged="OnSettingNumberBoxValueChanged"
-                                Value="{x:Bind ViewModel.NavigatorTriggerTop, Mode=TwoWay}" />
+                                Value="{x:Bind ViewModel.NavigatorTriggerTopPercentage, Mode=TwoWay}" />
 
                             <NumberBox
                                 x:Name="NavigatorTriggerWidthNumberBox"
                                 x:Uid="SettingsPage_NavigatorTriggerWidthNumberBox"
                                 Grid.Row="1"
-                                Header="Width"
-                                Maximum="1"
-                                Minimum="0.01"
-                                SmallChange="0.01"
+                                Header="너비 (%)"
+                                Maximum="100"
+                                Minimum="1"
+                                SmallChange="1"
                                 SpinButtonPlacementMode="Inline"
                                 ValueChanged="OnSettingNumberBoxValueChanged"
-                                Value="{x:Bind ViewModel.NavigatorTriggerWidth, Mode=TwoWay}" />
+                                Value="{x:Bind ViewModel.NavigatorTriggerWidthPercentage, Mode=TwoWay}" />
 
                             <NumberBox
                                 x:Name="NavigatorTriggerHeightNumberBox"
                                 x:Uid="SettingsPage_NavigatorTriggerHeightNumberBox"
                                 Grid.Row="1"
                                 Grid.Column="1"
-                                Header="Height"
-                                Maximum="1"
-                                Minimum="0.01"
-                                SmallChange="0.01"
+                                Header="높이 (%)"
+                                Maximum="100"
+                                Minimum="1"
+                                SmallChange="1"
                                 SpinButtonPlacementMode="Inline"
                                 ValueChanged="OnSettingNumberBoxValueChanged"
-                                Value="{x:Bind ViewModel.NavigatorTriggerHeight, Mode=TwoWay}" />
+                                Value="{x:Bind ViewModel.NavigatorTriggerHeightPercentage, Mode=TwoWay}" />
                         </Grid>
                     </StackPanel>
                 </Border>

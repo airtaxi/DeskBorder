@@ -616,7 +616,7 @@
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 启用触发区域：当指针进入指定屏幕区域时显示 Navigator 叠加层。
-• Left / Top / Width / Height：用 0 到 1 的比例值设置触发区域的位置和大小。
+• 左侧 / 上侧 / 宽度 / 高度：用百分比设置触发区域的位置和大小。
 • 如果同时启用全局热键中的 Navigator 叠加层切换，则快捷键和鼠标区域触发会一起生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -644,16 +644,16 @@
     <value>启用触发区域</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
-    <value>Height</value>
+    <value>高度 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerLeftNumberBox.Header" xml:space="preserve">
-    <value>Left</value>
+    <value>左侧 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerTopNumberBox.Header" xml:space="preserve">
-    <value>Top</value>
+    <value>上侧 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerWidthNumberBox.Header" xml:space="preserve">
-    <value>Width</value>
+    <value>宽度 (%)</value>
   </data>
   <data name="SettingsPage_PendingBlacklistedProcessNameTextBox.Header" xml:space="preserve">
     <value>进程名称</value>
@@ -764,7 +764,7 @@
     <value>检查 Store 更新</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
-    <value>Left {0:P0}, Top {1:P0}, Width {2:P0}, Height {3:P0}</value>
+    <value>左侧 {0:P0}，上侧 {1:P0}，宽度 {2:P0}，高度 {3:P0}</value>
   </data>
   <data name="VirtualKey.CapitalLock" xml:space="preserve">
     <value>Caps Lock</value>

@@ -102,7 +102,7 @@ public sealed partial class ManageWindow : WindowEx
 
     private async void OnLaunchOnStartupToggleMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => await _settingsService.SetLaunchOnStartupEnabledAsync(LaunchOnStartupToggleMenuFlyoutItem.IsChecked);
 
-    private void OnExitApplicationMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => App.ShutdownApplication();
+    private void OnExitApplicationMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => Environment.Exit(0);
 
     private void OnLocalizationServiceLanguageChanged(object? sender, EventArgs eventArguments)
     {
@@ -171,7 +171,7 @@ public sealed partial class ManageWindow : WindowEx
 
             case WindowEndSessionMessage:
                 if (wParam != 0)
-                    App.ShutdownApplication();
+                    Environment.Exit(0);
 
                 return 0;
 

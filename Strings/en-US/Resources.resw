@@ -616,7 +616,7 @@
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Enable trigger area: shows the Navigator overlay when the pointer enters the configured screen region.
-• Left / Top / Width / Height: set the trigger area position and size as 0 to 1 ratio values.
+• Left / Top / Width / Height: set the trigger area position and size as percentage values.
 • If you also enable the Navigator overlay hotkey in the global hotkeys section, both the shortcut and mouse area triggers stay active together.</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -644,16 +644,16 @@
     <value>Enable trigger area</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
-    <value>Height</value>
+    <value>Height (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerLeftNumberBox.Header" xml:space="preserve">
-    <value>Left</value>
+    <value>Left (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerTopNumberBox.Header" xml:space="preserve">
-    <value>Top</value>
+    <value>Top (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerWidthNumberBox.Header" xml:space="preserve">
-    <value>Width</value>
+    <value>Width (%)</value>
   </data>
   <data name="SettingsPage_PendingBlacklistedProcessNameTextBox.Header" xml:space="preserve">
     <value>Process name</value>
