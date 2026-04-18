@@ -17,8 +17,8 @@ namespace DeskBorder.ViewModels;
 
 public sealed partial class NavigatorDesktopWindowItemViewModel : ObservableObject
 {
-    private const double IconSizeScaleFactor = 0.85d;
-    private const double MaximumIconContainerSize = 180d;
+    private const double IconSizeScaleFactor = 1.25d;
+    private const double MaximumIconContainerSize = 240d;
     private const double MinimumIconContainerSize = 90d;
     private static readonly ConcurrentDictionary<string, Task<ImageSource?>> s_executableIconImageSourceCache = new(StringComparer.OrdinalIgnoreCase);
 

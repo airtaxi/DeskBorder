@@ -393,14 +393,22 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
         if (!TryParseDesktopIdentifier(desktopIdentifier, out var parsedDesktopIdentifier))
             return new(0, []);
 
+        var shellWindowHandle = Win32.GetShellWindow();
         var blockedProcessNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var visibleWindowCount = 0;
-        foreach (var visibleDesktopWindowSnapshot in GetVisibleDesktopWindowSnapshots(virtualDesktopShell))
+        foreach (var applicationViewSnapshot in VirtualDesktopFoundation.GetApplicationViewSnapshots(virtualDesktopShell.ApplicationViewCollection))
         {
-            if (visibleDesktopWindowSnapshot.DesktopIdentifier != parsedDesktopIdentifier)
+            var windowHandle = applicationViewSnapshot.ThumbnailWindowHandle;
+            if (windowHandle == 0
+                || windowHandle == shellWindowHandle
+                || applicationViewSnapshot.VirtualDesktopIdentifier != parsedDesktopIdentifier
+                || !applicationViewSnapshot.ShowsInSwitchers
+                || Win32.IsIconic(windowHandle))
+            {
                 continue;
+            }
 
-            var processName = TryGetProcessName(visibleDesktopWindowSnapshot.WindowHandle);
+            var processName = TryGetProcessName(windowHandle);
             if (string.IsNullOrWhiteSpace(processName))
                 continue;
 
@@ -430,16 +438,26 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
         DisplayMonitorInfo targetDisplayMonitor)
     {
         var navigatorWindowItemsByDesktopIdentifier = new Dictionary<string, List<NavigatorDesktopWindowItemModel>>(StringComparer.Ordinal);
-        foreach (var visibleDesktopWindowSnapshot in GetVisibleDesktopWindowSnapshots(virtualDesktopShell))
+        var shellWindowHandle = Win32.GetShellWindow();
+        foreach (var applicationViewSnapshot in VirtualDesktopFoundation.GetApplicationViewSnapshots(virtualDesktopShell.ApplicationViewCollection))
         {
-            if (!TryGetNavigatorWindowBounds(visibleDesktopWindowSnapshot.WindowHandle, out var windowBounds))
+            var windowHandle = applicationViewSnapshot.ThumbnailWindowHandle;
+            if (windowHandle == 0
+                || windowHandle == shellWindowHandle
+                || !applicationViewSnapshot.ShowsInSwitchers
+                || Win32.IsIconic(windowHandle))
+            {
+                continue;
+            }
+
+            if (!TryGetNavigatorWindowBounds(applicationViewSnapshot, out var windowBounds))
                 continue;
 
             var previewBounds = CreateNavigatorPreviewBounds(windowBounds, targetDisplayMonitor.WorkAreaBounds);
             if (previewBounds.IsEmpty)
                 continue;
 
-            var desktopIdentifier = visibleDesktopWindowSnapshot.DesktopIdentifier.ToString();
+            var desktopIdentifier = applicationViewSnapshot.VirtualDesktopIdentifier.ToString();
             if (!navigatorWindowItemsByDesktopIdentifier.TryGetValue(desktopIdentifier, out var navigatorDesktopWindowItems))
             {
                 navigatorDesktopWindowItems = [];
@@ -449,8 +467,8 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
             navigatorDesktopWindowItems.Add(new()
             {
                 PreviewBounds = previewBounds,
-                WindowHandle = visibleDesktopWindowSnapshot.WindowHandle,
-                ExecutablePath = TryGetProcessExecutablePath(visibleDesktopWindowSnapshot.WindowHandle)
+                WindowHandle = windowHandle,
+                ExecutablePath = TryGetProcessExecutablePath(windowHandle)
             });
         }
 
@@ -559,6 +577,17 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
 
         windowBounds = new();
         return false;
+    }
+
+    private static bool TryGetNavigatorWindowBounds(ApplicationViewSnapshot applicationViewSnapshot, out ScreenRectangle windowBounds)
+    {
+        if (applicationViewSnapshot.HasExtendedFrameBounds)
+        {
+            windowBounds = CreateScreenRectangle(applicationViewSnapshot.ExtendedFrameBounds);
+            return true;
+        }
+
+        return TryGetNavigatorWindowBounds(applicationViewSnapshot.ThumbnailWindowHandle, out windowBounds);
     }
 
     private static void TryActivateWindow(nint windowHandle)
