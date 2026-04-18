@@ -23,6 +23,7 @@ public sealed partial class SettingsPage : Page
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsSuggestedFileName = "DeskBorder_Settings";
     private static readonly TimeSpan s_infoBarAutoHideDelay = TimeSpan.FromSeconds(4);
+    private static bool s_shouldShowPendingLanguageRestartRecommendedStatus;
 
     private readonly DispatcherQueueTimer _settingsImportExportInfoBarAutoHideTimer;
     private readonly IDeskBorderRuntimeService _deskBorderRuntimeService;
@@ -199,6 +200,7 @@ public sealed partial class SettingsPage : Page
     {
         await _settingsService.RefreshLaunchOnStartupEnabledAsync();
         ApplySettingsToViewModel();
+        ShowPendingLanguageRestartRecommendedStatusIfNeeded();
     }
 
     private async void OnAddBlacklistedProcessNameButtonClicked(object sender, RoutedEventArgs routedEventArgs)
@@ -516,31 +518,46 @@ public sealed partial class SettingsPage : Page
             var updatedSettings = ViewModel.CreateSettings();
             var isLanguagePreferenceChanged = currentSettings.AppLanguagePreference != updatedSettings.AppLanguagePreference;
             var isThemePreferenceChanged = currentSettings.ApplicationThemePreference != updatedSettings.ApplicationThemePreference;
+            if (isLanguagePreferenceChanged)
+                s_shouldShowPendingLanguageRestartRecommendedStatus = true;
+
             await _settingsService.UpdateSettingsAsync(updatedSettings);
+            if (isLanguagePreferenceChanged)
+                return;
+
             if (isThemePreferenceChanged)
                 ShowSettingsStatus(
                     LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedTitle"),
                     LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedMessage"),
-                    InfoBarSeverity.Informational);
-            else if (isLanguagePreferenceChanged)
-                ShowSettingsStatus(
-                    LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedTitle"),
-                    LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedMessage"),
                     InfoBarSeverity.Informational);
             else
                 ClearSettingsStatus();
         }
         catch (ArgumentException exception)
         {
+            s_shouldShowPendingLanguageRestartRecommendedStatus = false;
             ApplySettingsToViewModel();
             ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), exception.Message, InfoBarSeverity.Error);
         }
         catch (InvalidOperationException exception)
         {
+            s_shouldShowPendingLanguageRestartRecommendedStatus = false;
             ApplySettingsToViewModel();
             ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), exception.Message, InfoBarSeverity.Error);
         }
         finally { _settingsUpdateSemaphore.Release(); }
+    }
+
+    private void ShowPendingLanguageRestartRecommendedStatusIfNeeded()
+    {
+        if (!s_shouldShowPendingLanguageRestartRecommendedStatus)
+            return;
+
+        s_shouldShowPendingLanguageRestartRecommendedStatus = false;
+        ShowSettingsStatus(
+            LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedTitle"),
+            LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedMessage"),
+            InfoBarSeverity.Informational);
     }
 
     private async Task SelectNavigatorTriggerAreaAsync()
