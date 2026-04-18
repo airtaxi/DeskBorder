@@ -14,6 +14,8 @@ public interface ISettingsService
 
     Task InitializeAsync();
 
+    Task ReloadAsync();
+
     Task<bool> RefreshLaunchOnStartupEnabledAsync();
 
     Task SetLaunchOnStartupEnabledAsync(bool isEnabled);

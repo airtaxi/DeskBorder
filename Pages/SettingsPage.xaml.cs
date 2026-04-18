@@ -186,8 +186,7 @@ public sealed partial class SettingsPage : Page
 
     private async Task LoadSettingsAsync()
     {
-        await _settingsService.RefreshLaunchOnStartupEnabledAsync();
-        ApplySettingsToViewModel();
+        await _settingsService.ReloadAsync();
         ShowPendingLanguageRestartRecommendedStatusIfNeeded();
     }
 

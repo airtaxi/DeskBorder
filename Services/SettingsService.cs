@@ -54,32 +54,25 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         if (_isInitialized)
             return;
 
-        var hasStoredSettings = TryLoadStoredSettings(out var storedSettings);
-        if (!hasStoredSettings && storedSettings.IsLaunchOnStartupEnabled)
-            await _startupRegistrationService.SetIsEnabledAsync(true);
-
-        var isLaunchOnStartupEnabled = await _startupRegistrationService.GetIsEnabledAsync();
-        _settings = NormalizeSettings(storedSettings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled });
-        SaveSettings(_settings);
-        _localizationService.ApplyLanguagePreference(_settings.AppLanguagePreference);
-        _themeService.ApplyApplicationThemePreference(_settings.ApplicationThemePreference);
+        await ReloadStoredSettingsAsync(shouldApplyDefaultLaunchOnStartupWhenMissing: true);
         _isInitialized = true;
-        SettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public async Task ReloadAsync()
+    {
+        if (!_isInitialized)
+        {
+            await InitializeAsync();
+            return;
+        }
+
+        await ReloadStoredSettingsAsync(shouldApplyDefaultLaunchOnStartupWhenMissing: false);
     }
 
     public async Task<bool> RefreshLaunchOnStartupEnabledAsync()
     {
-        if (!_isInitialized)
-            await InitializeAsync();
-
-        var isLaunchOnStartupEnabled = await _startupRegistrationService.GetIsEnabledAsync();
-        if (_settings.IsLaunchOnStartupEnabled == isLaunchOnStartupEnabled)
-            return isLaunchOnStartupEnabled;
-
-        _settings = _settings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled };
-        SaveSettings(_settings);
-        SettingsChanged?.Invoke(this, EventArgs.Empty);
-        return isLaunchOnStartupEnabled;
+        await ReloadAsync();
+        return _settings.IsLaunchOnStartupEnabled;
     }
 
     public async Task SetLaunchOnStartupEnabledAsync(bool isEnabled)
@@ -99,12 +92,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         if (normalizedSettings.IsLaunchOnStartupEnabled != _settings.IsLaunchOnStartupEnabled)
             await _startupRegistrationService.SetIsEnabledAsync(normalizedSettings.IsLaunchOnStartupEnabled);
 
-        var isLaunchOnStartupEnabled = await _startupRegistrationService.GetIsEnabledAsync();
-        _settings = normalizedSettings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled };
-        SaveSettings(_settings);
-        _localizationService.ApplyLanguagePreference(_settings.AppLanguagePreference);
-        _themeService.ApplyApplicationThemePreference(_settings.ApplicationThemePreference);
-        SettingsChanged?.Invoke(this, EventArgs.Empty);
+        await ApplySettingsAsync(normalizedSettings);
     }
 
     private static DeskBorderSettings CloneSettings(DeskBorderSettings settings) => NormalizeSettings(settings);
@@ -309,6 +297,26 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
         settings = LoadDeserializedSettings(serializedSettings);
         return true;
+    }
+
+    private async Task ApplySettingsAsync(DeskBorderSettings settings)
+    {
+        var normalizedSettings = NormalizeSettings(settings);
+        var isLaunchOnStartupEnabled = await _startupRegistrationService.GetIsEnabledAsync();
+        _settings = normalizedSettings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled };
+        SaveSettings(_settings);
+        _localizationService.ApplyLanguagePreference(_settings.AppLanguagePreference);
+        _themeService.ApplyApplicationThemePreference(_settings.ApplicationThemePreference);
+        SettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private async Task ReloadStoredSettingsAsync(bool shouldApplyDefaultLaunchOnStartupWhenMissing)
+    {
+        var hasStoredSettings = TryLoadStoredSettings(out var storedSettings);
+        if (!hasStoredSettings && shouldApplyDefaultLaunchOnStartupWhenMissing && storedSettings.IsLaunchOnStartupEnabled)
+            await _startupRegistrationService.SetIsEnabledAsync(true);
+
+        await ApplySettingsAsync(storedSettings);
     }
 
     private static void SaveSettings(DeskBorderSettings settings) => s_localSettings.Values[SettingsKey] =
