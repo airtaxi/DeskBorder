@@ -97,6 +97,10 @@ public sealed partial class SettingsPage : Page
         KeyboardShortcutValidationState.RegistrationFailed => "Settings.HotkeyValidation.RegistrationFailed",
         _ => "Settings.HotkeyValidation.Disabled"
     });
+
+    private Visibility GetAutoDeleteWarningTimeoutVisibility(bool isAutoDeleteEnabled, bool isAutoDeleteWarningEnabled) => isAutoDeleteEnabled && isAutoDeleteWarningEnabled
+        ? Visibility.Visible
+        : Visibility.Collapsed;
 #pragma warning restore CA1822 // Mark members as static => Used on XAML bindings
 
     private void ApplyHotkeyRegistrationState()

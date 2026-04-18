@@ -13,7 +13,6 @@ public sealed class DesktopLifecycleService(
     IToastService toastService,
     IVirtualDesktopService virtualDesktopService) : IDesktopLifecycleService
 {
-    private static readonly TimeSpan s_autoDeleteUndoDuration = TimeSpan.FromSeconds(3);
     private const int DesktopEdgeTriggerRearmDistanceInPixels = 24;
 
     private readonly IDesktopEdgeMonitorService _desktopEdgeMonitorService = desktopEdgeMonitorService;
@@ -191,7 +190,7 @@ public sealed class DesktopLifecycleService(
             DesktopIdentifier = sourceDesktopEntry.DesktopIdentifier,
             DesktopDisplayName = sourceDesktopEntry.DisplayName,
             FallbackDesktopIdentifier = desktopNavigationResult.TargetDesktopIdentifier,
-            UndoDuration = s_autoDeleteUndoDuration
+            UndoDuration = TimeSpan.FromSeconds(_settingsService.Settings.AutoDeleteWarningTimeoutSeconds)
         };
 
         if (!_settingsService.Settings.IsAutoDeleteWarningEnabled)

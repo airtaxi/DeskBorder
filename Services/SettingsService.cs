@@ -11,7 +11,10 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsKey = "DeskBorderSettings";
     private const int CurrentSchemaVersion = 1;
+    private const double DefaultAutoDeleteWarningTimeoutSeconds = 3.0;
+    private const double MaximumAutoDeleteWarningTimeoutSeconds = 10.0;
     private const double MaximumDesktopEdgeIgnorePercentage = 49.0;
+    private const double MinimumAutoDeleteWarningTimeoutSeconds = 0.5;
 
     private static readonly ApplicationDataContainer s_localSettings =
         ApplicationData.Current.LocalSettings;
@@ -134,6 +137,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             IsDesktopCreationEnabled = settings.IsDesktopCreationEnabled,
             IsAutoDeleteEnabled = settings.IsAutoDeleteEnabled,
             IsAutoDeleteWarningEnabled = settings.IsAutoDeleteWarningEnabled,
+            AutoDeleteWarningTimeoutSeconds = ClampAutoDeleteWarningTimeoutSeconds(settings.AutoDeleteWarningTimeoutSeconds),
             EmptyDesktopDetectionMode = settings.EmptyDesktopDetectionMode,
             DesktopEdgeIgnoreZoneSettings = NormalizeDesktopEdgeIgnoreZoneSettings(settings.DesktopEdgeIgnoreZoneSettings),
             ApplicationHotkeySettings = NormalizeApplicationHotkeySettings(settings.ApplicationHotkeySettings),
@@ -211,6 +215,10 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private static double ClampNormalizedLength(double value) => double.IsFinite(value) ? Math.Clamp(value, 0.01, 1.0) : 0.01;
 
     private static double ClampNormalizedOffset(double value, double length) => double.IsFinite(value) ? Math.Clamp(value, 0.0, 1.0 - length) : 0.0;
+
+    private static double ClampAutoDeleteWarningTimeoutSeconds(double value) => double.IsFinite(value)
+        ? Math.Clamp(value, MinimumAutoDeleteWarningTimeoutSeconds, MaximumAutoDeleteWarningTimeoutSeconds)
+        : DefaultAutoDeleteWarningTimeoutSeconds;
 
     private static double ClampDesktopEdgeIgnorePercentage(double value) => double.IsFinite(value) ? Math.Clamp(value, 0.0, MaximumDesktopEdgeIgnorePercentage) : 0.0;
 

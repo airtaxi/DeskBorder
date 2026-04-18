@@ -444,6 +444,12 @@
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>自動刪除空桌面</value>
   </data>
+  <data name="SettingsPage_AutoDeleteWarningTimeoutDescriptionTextBlock.Text" xml:space="preserve">
+    <value>調整顯示刪除警告時等待復原的時間。</value>
+  </data>
+  <data name="SettingsPage_AutoDeleteWarningTimeoutSecondsNumberBox.Header" xml:space="preserve">
+    <value>刪除警告逾時（秒）</value>
+  </data>
   <data name="SettingsPage_AutoDeleteWarningToggleSwitch.Header" xml:space="preserve">
     <value>顯示刪除警告</value>
   </data>
@@ -669,6 +675,7 @@
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 自動刪除空桌面：當你從最外側桌面往內移動且該桌面已無視窗時，會刪除該桌面。
 • 顯示刪除警告：開啟後會先短暫等待並允許復原，關閉後則不顯示警告並立即刪除，以便連續整理。
+• 刪除警告逾時：調整顯示刪除警告時等待復原的時間。
 • 空桌面偵測：切換刪除判斷方式，包括是否將通知區域類應用程式視為仍有開啟視窗。
 • 頂部/底部忽略區域：以百分比調整螢幕上下有多少區域不回應邊緣切換與桌面建立。
 • 啟用桌面建立：開啟或關閉在最後一個桌面的右邊緣建立新桌面的功能。

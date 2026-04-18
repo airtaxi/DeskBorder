@@ -444,6 +444,12 @@
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>Auto delete empty desktops</value>
   </data>
+  <data name="SettingsPage_AutoDeleteWarningTimeoutDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Adjust how long DeskBorder waits for undo while the deletion warning is shown.</value>
+  </data>
+  <data name="SettingsPage_AutoDeleteWarningTimeoutSecondsNumberBox.Header" xml:space="preserve">
+    <value>Deletion warning timeout (seconds)</value>
+  </data>
   <data name="SettingsPage_AutoDeleteWarningToggleSwitch.Header" xml:space="preserve">
     <value>Show deletion warning</value>
   </data>
@@ -669,6 +675,7 @@
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.
 • Show deletion warning: when enabled, deletion waits briefly so you can undo it; when disabled, empty desktops are deleted immediately for continuous cleanup.
+• Deletion warning timeout: adjusts how long the undo wait lasts while the deletion warning is shown.
 • Empty desktop detection: changes how deletion decides whether tray-style apps still count as open windows.
 • Top and bottom ignore zones: adjusts, in percentages, how much of the upper and lower screen area should ignore edge switching and desktop creation.
 • Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.

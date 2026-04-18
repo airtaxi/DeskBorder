@@ -204,6 +204,30 @@
                             IsOn="{x:Bind ViewModel.IsAutoDeleteWarningEnabled, Mode=TwoWay}"
                             Toggled="OnSettingToggleSwitchToggled" />
 
+                        <Border
+                            Padding="12"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="10"
+                            Visibility="{x:Bind GetAutoDeleteWarningTimeoutVisibility(ViewModel.IsAutoDeleteEnabled, ViewModel.IsAutoDeleteWarningEnabled), Mode=OneWay}">
+                            <StackPanel Spacing="8">
+                                <TextBlock
+                                    x:Uid="SettingsPage_AutoDeleteWarningTimeoutDescriptionTextBlock"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="삭제 경고가 켜져 있을 때 실행 취소를 기다리는 시간을 조절합니다."
+                                    TextWrapping="WrapWholeWords" />
+                                <NumberBox
+                                    x:Name="AutoDeleteWarningTimeoutSecondsNumberBox"
+                                    x:Uid="SettingsPage_AutoDeleteWarningTimeoutSecondsNumberBox"
+                                    Header="삭제 경고 타임아웃 (초)"
+                                    Maximum="10"
+                                    Minimum="0.5"
+                                    SmallChange="0.5"
+                                    SpinButtonPlacementMode="Inline"
+                                    Value="{x:Bind ViewModel.AutoDeleteWarningTimeoutSeconds, Mode=TwoWay}"
+                                    ValueChanged="OnSettingNumberBoxValueChanged" />
+                            </StackPanel>
+                        </Border>
+
                         <ComboBox
                             x:Name="EmptyDesktopDetectionModeComboBox"
                             x:Uid="SettingsPage_EmptyDesktopDetectionModeComboBox"

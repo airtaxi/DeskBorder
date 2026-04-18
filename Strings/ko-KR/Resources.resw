@@ -444,6 +444,12 @@
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>빈 데스크톱 자동 삭제</value>
   </data>
+  <data name="SettingsPage_AutoDeleteWarningTimeoutDescriptionTextBlock.Text" xml:space="preserve">
+    <value>삭제 경고가 켜져 있을 때 실행 취소를 기다리는 시간을 조절합니다.</value>
+  </data>
+  <data name="SettingsPage_AutoDeleteWarningTimeoutSecondsNumberBox.Header" xml:space="preserve">
+    <value>삭제 경고 타임아웃 (초)</value>
+  </data>
   <data name="SettingsPage_AutoDeleteWarningToggleSwitch.Header" xml:space="preserve">
     <value>삭제 경고 표시</value>
   </data>
@@ -669,6 +675,7 @@
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 빈 데스크톱 자동 삭제: 양 끝 데스크톱에서 안쪽으로 이동할 때 비어 있으면 삭제를 실행합니다.
 • 삭제 경고 표시: 켜면 실행 취소 가능한 짧은 대기 후 삭제하고, 끄면 경고 없이 즉시 삭제해 연속 정리가 가능합니다.
+• 삭제 경고 타임아웃: 삭제 경고가 켜져 있을 때 실행 취소를 기다리는 시간을 조절합니다.
 • 빈 데스크톱 감지 기준: 트레이 앱을 비어 있는 것으로 볼지까지 포함해 삭제 판단 방식을 바꿉니다.
 • 상단/하단 무시 영역: 화면 위아래 일부 구간에서는 가장자리 전환과 생성이 반응하지 않게 퍼센트로 조절합니다.
 • 새 데스크톱 생성: 마지막 데스크톱 오른쪽 끝에서 새 데스크톱을 만들 기능 자체를 켜거나 끕니다.
