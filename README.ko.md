@@ -5,6 +5,8 @@
 DeskBorder는 가상 데스크톱을 자주 사용하는 사용자를 위한 Windows 유틸리티입니다.
 마우스를 화면 가장자리로 밀어 데스크톱을 전환하고, 필요할 때 새 데스크톱을 만들고, 단축키로 현재 창을 옮기고, Navigator 오버레이로 전체 데스크톱을 빠르게 살펴볼 수 있습니다.
 
+[![Microsoft Store에서 다운로드](https://get.microsoft.com/images/en-US%20dark.svg)](https://apps.microsoft.com/detail/9P3PLVML3JQD)
+
 ## 주요 기능
 
 - 화면 왼쪽 또는 오른쪽 가장자리에 커서를 닿게 해 가상 데스크톱 전환

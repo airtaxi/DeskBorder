@@ -21,7 +21,9 @@
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+		<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
+		<PackageCertificateKeyFile>DeskBorderCert.pfx</PackageCertificateKeyFile>
+		<PackageCertificatePassword></PackageCertificatePassword>
 	</PropertyGroup>
 
 	<ItemGroup>
