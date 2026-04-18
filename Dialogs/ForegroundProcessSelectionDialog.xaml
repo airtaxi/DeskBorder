@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentDialog
     x:Class="DeskBorder.Dialogs.ForegroundProcessSelectionDialog"
-    x:Uid="ForegroundProcessSelectionDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Style="{StaticResource DefaultContentDialogStyle}"
+    x:Uid="ForegroundProcessSelectionDialog"
     Title="실행된 프로세스에서 추가"
-    PrimaryButtonText="추가"
     CloseButtonText="취소"
     DefaultButton="Primary"
+    PrimaryButtonText="추가"
+    Style="{StaticResource DefaultContentDialogStyle}"
     mc:Ignorable="d">
     <StackPanel Spacing="12">
         <TextBlock
@@ -20,7 +20,7 @@
         <ListView
             x:Name="AvailableProcessNamesListView"
             MaxHeight="360"
-            ItemsSource="{x:Bind AvailableProcessNames, Mode=OneWay}"
+            ItemsSource="{x:Bind AvailableProcessNames}"
             SelectionChanged="OnAvailableProcessNamesListViewSelectionChanged"
             SelectionMode="Multiple" />
     </StackPanel>
