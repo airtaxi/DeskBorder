@@ -19,7 +19,6 @@
 		<PublishAot>true</PublishAot>
 		<PublishTrimmed>true</PublishTrimmed>
 		<IsAotCompatible>true</IsAotCompatible>
-		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
