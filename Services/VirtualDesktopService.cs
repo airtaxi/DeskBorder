@@ -393,43 +393,34 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
         if (!TryParseDesktopIdentifier(desktopIdentifier, out var parsedDesktopIdentifier))
             return new(0, []);
 
-        var shellWindowHandle = Win32.GetShellWindow();
         var blockedProcessNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var visibleWindowCount = 0;
-        _ = Win32.EnumWindows((windowHandle, applicationData) =>
+        foreach (var visibleDesktopWindowSnapshot in GetVisibleDesktopWindowSnapshots(virtualDesktopShell))
         {
-            _ = applicationData;
-            if (windowHandle == 0 || windowHandle == shellWindowHandle || !Win32.IsWindowVisible(windowHandle) || Win32.IsIconic(windowHandle))
-                return true;
+            if (visibleDesktopWindowSnapshot.DesktopIdentifier != parsedDesktopIdentifier)
+                continue;
 
-            if (!TryGetWindowDesktopIdentifier(virtualDesktopShell, windowHandle, out var windowDesktopIdentifier))
-                return true;
-
-            if (windowDesktopIdentifier != parsedDesktopIdentifier)
-                return true;
-
-            var processName = TryGetProcessName(windowHandle);
+            var processName = TryGetProcessName(visibleDesktopWindowSnapshot.WindowHandle);
             if (string.IsNullOrWhiteSpace(processName))
-                return true;
+                continue;
 
             visibleWindowCount++;
             _ = blockedProcessNames.Add(processName);
-            return true;
-        }, 0);
+        }
         return new(visibleWindowCount, [.. blockedProcessNames.Order(StringComparer.OrdinalIgnoreCase)]);
     }
 
     private static VirtualDesktopShellConnection CreateVirtualDesktopShellConnection() => new(VirtualDesktopFoundation.Connect());
 
-    private static ScreenRectangle CreateNavigatorPreviewBounds(ScreenRectangle windowBounds, ScreenRectangle monitorBounds)
+    private static ScreenRectangle CreateNavigatorPreviewBounds(ScreenRectangle windowBounds, ScreenRectangle previewAreaBounds)
     {
-        var left = Math.Max(windowBounds.Left, monitorBounds.Left);
-        var top = Math.Max(windowBounds.Top, monitorBounds.Top);
-        var right = Math.Min(windowBounds.Right, monitorBounds.Right);
-        var bottom = Math.Min(windowBounds.Bottom, monitorBounds.Bottom);
+        var left = Math.Max(windowBounds.Left, previewAreaBounds.Left);
+        var top = Math.Max(windowBounds.Top, previewAreaBounds.Top);
+        var right = Math.Min(windowBounds.Right, previewAreaBounds.Right);
+        var bottom = Math.Min(windowBounds.Bottom, previewAreaBounds.Bottom);
         return right <= left || bottom <= top
             ? new()
-            : new(left - monitorBounds.Left, top - monitorBounds.Top, right - monitorBounds.Left, bottom - monitorBounds.Top);
+            : new(left - previewAreaBounds.Left, top - previewAreaBounds.Top, right - previewAreaBounds.Left, bottom - previewAreaBounds.Top);
     }
 
     private static ScreenRectangle CreateScreenRectangle(Win32.NativeRectangle nativeRectangle) => new(nativeRectangle.Left, nativeRectangle.Top, nativeRectangle.Right, nativeRectangle.Bottom);
@@ -439,24 +430,16 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
         DisplayMonitorInfo targetDisplayMonitor)
     {
         var navigatorWindowItemsByDesktopIdentifier = new Dictionary<string, List<NavigatorDesktopWindowItemModel>>(StringComparer.Ordinal);
-        var shellWindowHandle = Win32.GetShellWindow();
-        _ = Win32.EnumWindows((windowHandle, applicationData) =>
+        foreach (var visibleDesktopWindowSnapshot in GetVisibleDesktopWindowSnapshots(virtualDesktopShell))
         {
-            _ = applicationData;
-            if (!ShouldIncludeNavigatorWindow(virtualDesktopShell, windowHandle, shellWindowHandle))
-                return true;
+            if (!TryGetNavigatorWindowBounds(visibleDesktopWindowSnapshot.WindowHandle, out var windowBounds))
+                continue;
 
-            if (!TryGetWindowDesktopIdentifier(virtualDesktopShell, windowHandle, out var windowDesktopIdentifier))
-                return true;
-
-            if (!TryGetNavigatorWindowBounds(windowHandle, out var windowBounds))
-                return true;
-
-            var previewBounds = CreateNavigatorPreviewBounds(windowBounds, targetDisplayMonitor.MonitorBounds);
+            var previewBounds = CreateNavigatorPreviewBounds(windowBounds, targetDisplayMonitor.WorkAreaBounds);
             if (previewBounds.IsEmpty)
-                return true;
+                continue;
 
-            var desktopIdentifier = windowDesktopIdentifier.ToString();
+            var desktopIdentifier = visibleDesktopWindowSnapshot.DesktopIdentifier.ToString();
             if (!navigatorWindowItemsByDesktopIdentifier.TryGetValue(desktopIdentifier, out var navigatorDesktopWindowItems))
             {
                 navigatorDesktopWindowItems = [];
@@ -466,11 +449,10 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
             navigatorDesktopWindowItems.Add(new()
             {
                 PreviewBounds = previewBounds,
-                WindowHandle = windowHandle,
-                ExecutablePath = TryGetProcessExecutablePath(windowHandle)
+                WindowHandle = visibleDesktopWindowSnapshot.WindowHandle,
+                ExecutablePath = TryGetProcessExecutablePath(visibleDesktopWindowSnapshot.WindowHandle)
             });
-            return true;
-        }, 0);
+        }
 
         foreach (var navigatorWindowItems in navigatorWindowItemsByDesktopIdentifier.Values)
             navigatorWindowItems.Reverse();
@@ -478,46 +460,19 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
         return navigatorWindowItemsByDesktopIdentifier;
     }
 
-    private static bool ShouldIncludeNavigatorWindow(VirtualDesktopShell virtualDesktopShell, nint windowHandle, nint shellWindowHandle)
+    private static List<VisibleDesktopWindowSnapshot> GetVisibleDesktopWindowSnapshots(VirtualDesktopShell virtualDesktopShell)
     {
-        if (windowHandle == 0 || windowHandle == shellWindowHandle || !Win32.IsWindowVisible(windowHandle) || Win32.IsIconic(windowHandle))
-            return false;
-
-        if (IsNavigatorToolWindow(windowHandle) || IsNavigatorWindowCloaked(windowHandle) || !IsAltTabWindow(windowHandle))
-            return false;
-
-        return VirtualDesktopFoundation.TryGetApplicationView(virtualDesktopShell.ApplicationViewCollection, windowHandle, out _);
-    }
-
-    private static bool IsAltTabWindow(nint windowHandle)
-    {
-        var rootOwnerWindowHandle = Win32.GetAncestor(windowHandle, Win32.GetAncestorRootOwnerFlag);
-        if (rootOwnerWindowHandle == 0)
-            rootOwnerWindowHandle = windowHandle;
-
-        var lastActivePopupWindowHandle = rootOwnerWindowHandle;
-        while (true)
+        var shellWindowHandle = Win32.GetShellWindow();
+        var visibleDesktopWindowSnapshots = new List<VisibleDesktopWindowSnapshot>();
+        _ = Win32.EnumWindows((windowHandle, applicationData) =>
         {
-            var nextLastActivePopupWindowHandle = Win32.GetLastActivePopup(lastActivePopupWindowHandle);
-            if (nextLastActivePopupWindowHandle == 0 || nextLastActivePopupWindowHandle == lastActivePopupWindowHandle)
-                break;
+            _ = applicationData;
+            if (TryCreateVisibleDesktopWindowSnapshot(virtualDesktopShell, shellWindowHandle, windowHandle, out var visibleDesktopWindowSnapshot))
+                visibleDesktopWindowSnapshots.Add(visibleDesktopWindowSnapshot);
 
-            lastActivePopupWindowHandle = nextLastActivePopupWindowHandle;
-            if (Win32.IsWindowVisible(lastActivePopupWindowHandle))
-                break;
-        }
-
-        return lastActivePopupWindowHandle == windowHandle;
-    }
-
-    private static bool IsNavigatorToolWindow(nint windowHandle)
-    {
-        var extendedWindowStyle = Win32.GetWindowLongPointer(windowHandle, Win32.ExtendedWindowStyleIndex);
-        if ((extendedWindowStyle & Win32.ExtendedWindowStyleNoActivate) != 0)
             return true;
-
-        return (extendedWindowStyle & Win32.ExtendedWindowStyleToolWindow) != 0
-            && (extendedWindowStyle & Win32.ExtendedWindowStyleApplicationWindow) == 0;
+        }, 0);
+        return visibleDesktopWindowSnapshots;
     }
 
     private static bool IsNavigatorWindowCloaked(nint windowHandle)
@@ -525,9 +480,30 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
         return Win32.DwmGetWindowInt32Attribute(
             windowHandle,
             Win32.DesktopWindowManagerCloakedAttribute,
-            out var isCloaked,
+            out var cloakState,
             (uint)Marshal.SizeOf<int>()) >= 0
-            && isCloaked != 0;
+            && cloakState != 0;
+    }
+
+    private static bool TryCreateVisibleDesktopWindowSnapshot(
+        VirtualDesktopShell virtualDesktopShell,
+        nint shellWindowHandle,
+        nint windowHandle,
+        out VisibleDesktopWindowSnapshot visibleDesktopWindowSnapshot)
+    {
+        if (windowHandle == 0
+            || windowHandle == shellWindowHandle
+            || !Win32.IsWindowVisible(windowHandle)
+            || Win32.IsIconic(windowHandle)
+            || IsNavigatorWindowCloaked(windowHandle)
+            || !TryGetWindowDesktopIdentifier(virtualDesktopShell, windowHandle, out var desktopIdentifier))
+        {
+            visibleDesktopWindowSnapshot = default;
+            return false;
+        }
+
+        visibleDesktopWindowSnapshot = new(windowHandle, desktopIdentifier);
+        return true;
     }
 
     private static string? TryGetProcessName(nint windowHandle)
@@ -638,6 +614,8 @@ public sealed class VirtualDesktopService(ISettingsService settingsService) : IV
 
         public void Dispose() => _ = VirtualDesktopShell;
     }
+
+    private readonly record struct VisibleDesktopWindowSnapshot(nint WindowHandle, VirtualDesktopIdentifier DesktopIdentifier);
 
     private readonly record struct DesktopWindowInventory(int VisibleWindowCount, string[] ProcessNames);
 }

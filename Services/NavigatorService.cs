@@ -43,8 +43,8 @@ public sealed class NavigatorService(
         _targetDisplayMonitor = previewSnapshot.TargetDisplayMonitor;
         ViewModel.ReplaceDesktopItems(
             previewSnapshot.DesktopItems,
-            previewSnapshot.TargetDisplayMonitor.MonitorBounds.Width,
-            previewSnapshot.TargetDisplayMonitor.MonitorBounds.Height);
+            previewSnapshot.TargetDisplayMonitor.WorkAreaBounds.Width,
+            previewSnapshot.TargetDisplayMonitor.WorkAreaBounds.Height);
     }
 
     public bool ShowFromTriggerArea()

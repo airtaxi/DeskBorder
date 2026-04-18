@@ -79,14 +79,15 @@
                                                                     <ItemsControl.ItemTemplate>
                                                                         <DataTemplate x:DataType="viewModels:NavigatorDesktopWindowItemViewModel">
                                                                             <Border
-                                                                                Canvas.Left="{x:Bind PreviewLeft, Mode=OneWay}"
-                                                                                Canvas.Top="{x:Bind PreviewTop, Mode=OneWay}"
                                                                                 Width="{x:Bind PreviewWidth, Mode=OneWay}"
                                                                                 Height="{x:Bind PreviewHeight, Mode=OneWay}"
                                                                                 Background="#08000000"
                                                                                 BorderBrush="#88FFFFFF"
                                                                                 BorderThickness="3"
                                                                                 CornerRadius="8">
+                                                                                <Border.RenderTransform>
+                                                                                    <TranslateTransform X="{x:Bind PreviewLeft, Mode=OneWay}" Y="{x:Bind PreviewTop, Mode=OneWay}" />
+                                                                                </Border.RenderTransform>
                                                                                 <Grid>
                                                                                     <Border
                                                                                         Width="{x:Bind IconContainerSize, Mode=OneWay}"

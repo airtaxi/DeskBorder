@@ -1,3 +1,4 @@
+using DeskBorder.Interop;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
@@ -66,6 +67,26 @@ internal static partial class VirtualDesktopFoundation
         ThrowIfFailed(hresult);
         applicationView = nativeApplicationView;
         return true;
+    }
+
+    public static IReadOnlyList<ApplicationViewSnapshot> GetApplicationViewSnapshots(IApplicationViewCollection applicationViewCollection)
+    {
+        ThrowIfFailed(applicationViewCollection.GetViewsByZOrder(out var applicationViews));
+        var applicationViewCount = GetObjectCount(applicationViews);
+        var applicationViewSnapshots = new List<ApplicationViewSnapshot>(applicationViewCount);
+        var applicationViewInterfaceIdentifier = typeof(IApplicationView).GUID;
+        for (var index = 0; index < applicationViewCount; index++)
+        {
+            var applicationViewPointer = GetObjectPointerAt(applicationViews, index, applicationViewInterfaceIdentifier);
+            try
+            {
+                if (TryCreateApplicationViewSnapshot(applicationViewPointer, out var applicationViewSnapshot))
+                    applicationViewSnapshots.Add(applicationViewSnapshot);
+            }
+            finally { _ = Marshal.Release(applicationViewPointer); }
+        }
+
+        return applicationViewSnapshots;
     }
 
     public static IReadOnlyList<IVirtualDesktop> GetDesktops(IVirtualDesktopManagerInternal virtualDesktopManagerInternal)
@@ -211,6 +232,71 @@ internal static partial class VirtualDesktopFoundation
         return ConvertToManaged<TInterface>(objectPointer);
     }
 
+    private static nint GetObjectPointerAt(IObjectArray objectArray, int index, Guid interfaceIdentifier)
+    {
+        ThrowIfFailed(objectArray.GetAt(index, in interfaceIdentifier, out var objectPointer));
+        return objectPointer;
+    }
+
+    private static unsafe bool TryCreateApplicationViewSnapshot(nint applicationViewPointer, out ApplicationViewSnapshot applicationViewSnapshot)
+    {
+        if (!TryInvokeApplicationViewMethod(applicationViewPointer, 9, out nint thumbnailWindowHandle)
+            || thumbnailWindowHandle == 0
+            || !TryInvokeApplicationViewMethod(applicationViewPointer, 25, out Guid virtualDesktopIdentifier))
+        {
+            applicationViewSnapshot = default;
+            return false;
+        }
+
+        var isVisible = !TryInvokeApplicationViewMethod(applicationViewPointer, 11, out int visibility) || visibility != 0;
+        var showsInSwitchers = !TryInvokeApplicationViewMethod(applicationViewPointer, 27, out int showInSwitchers) || showInSwitchers != 0;
+        var hasExtendedFrameBounds = TryInvokeApplicationViewMethod(applicationViewPointer, 16, out Win32.NativeRectangle extendedFrameBounds)
+            && !extendedFrameBounds.IsEmpty;
+
+        applicationViewSnapshot = new()
+        {
+            ThumbnailWindowHandle = thumbnailWindowHandle,
+            VirtualDesktopIdentifier = virtualDesktopIdentifier,
+            IsVisible = isVisible,
+            ShowsInSwitchers = showsInSwitchers,
+            HasExtendedFrameBounds = hasExtendedFrameBounds,
+            ExtendedFrameBounds = extendedFrameBounds
+        };
+        return true;
+    }
+
+    private static unsafe bool TryInvokeApplicationViewMethod(nint applicationViewPointer, int methodIndex, out nint value)
+    {
+        var virtualFunctionTable = *(nint**)applicationViewPointer;
+        var methodPointer = (delegate* unmanaged[Stdcall]<nint, out nint, int>)virtualFunctionTable[methodIndex];
+        value = 0;
+        return methodPointer(applicationViewPointer, out value) >= 0;
+    }
+
+    private static unsafe bool TryInvokeApplicationViewMethod(nint applicationViewPointer, int methodIndex, out int value)
+    {
+        var virtualFunctionTable = *(nint**)applicationViewPointer;
+        var methodPointer = (delegate* unmanaged[Stdcall]<nint, out int, int>)virtualFunctionTable[methodIndex];
+        value = 0;
+        return methodPointer(applicationViewPointer, out value) >= 0;
+    }
+
+    private static unsafe bool TryInvokeApplicationViewMethod(nint applicationViewPointer, int methodIndex, out Guid value)
+    {
+        var virtualFunctionTable = *(nint**)applicationViewPointer;
+        var methodPointer = (delegate* unmanaged[Stdcall]<nint, out Guid, int>)virtualFunctionTable[methodIndex];
+        value = default;
+        return methodPointer(applicationViewPointer, out value) >= 0;
+    }
+
+    private static unsafe bool TryInvokeApplicationViewMethod(nint applicationViewPointer, int methodIndex, out Win32.NativeRectangle value)
+    {
+        var virtualFunctionTable = *(nint**)applicationViewPointer;
+        var methodPointer = (delegate* unmanaged[Stdcall]<nint, out Win32.NativeRectangle, int>)virtualFunctionTable[methodIndex];
+        value = default;
+        return methodPointer(applicationViewPointer, out value) >= 0;
+    }
+
     private static unsafe TInterface ConvertToManaged<TInterface>(nint objectPointer) where TInterface : class
     {
         if (objectPointer == 0)
@@ -228,4 +314,19 @@ internal static partial class VirtualDesktopFoundation
 
     [LibraryImport("ole32.dll", SetLastError = true)]
     private static partial int CoCreateInstance(in Guid classIdentifier, nint outerUnknownPointer, uint classContext, in Guid interfaceIdentifier, out nint objectPointer);
+}
+
+internal readonly record struct ApplicationViewSnapshot
+{
+    public required nint ThumbnailWindowHandle { get; init; }
+
+    public required VirtualDesktopIdentifier VirtualDesktopIdentifier { get; init; }
+
+    public required bool IsVisible { get; init; }
+
+    public required bool ShowsInSwitchers { get; init; }
+
+    public required bool HasExtendedFrameBounds { get; init; }
+
+    public Win32.NativeRectangle ExtendedFrameBounds { get; init; }
 }
