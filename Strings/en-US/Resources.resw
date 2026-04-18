@@ -351,6 +351,9 @@
   <data name="Runtime.Status.Stopped" xml:space="preserve">
     <value>The DeskBorder background service is stopped, so only settings and the manual overlay are available.</value>
   </data>
+  <data name="Runtime.Status.Paused" xml:space="preserve">
+    <value>The DeskBorder background service is paused and will resume after the selection overlay closes.</value>
+  </data>
   <data name="Settings.AppLanguage.ChineseSimplified" xml:space="preserve">
     <value>Chinese (Simplified)</value>
   </data>
@@ -616,7 +619,7 @@
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Enable trigger area: shows the Navigator overlay when the pointer enters the configured screen region.
-• Horizontal position / Vertical position / Width / Height: set the trigger area position and size as percentage values. The position values mean how far inward the area sits from the outer edge of its current half of the screen.
+• Select area: opens a selection overlay on the monitor that currently shows the settings window. The dragged rectangle is saved as-is, and the DeskBorder service pauses while you are selecting.
 • If you also enable the Navigator overlay hotkey in the global hotkeys section, both the shortcut and mouse area triggers stay active together.</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -644,7 +647,13 @@
     <value>Enable trigger area</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerAreaHintTextBlock.Text" xml:space="preserve">
-    <value>Horizontal and vertical position mean how far inward the area sits from the outer edge of its current half of the screen.</value>
+    <value>Click Select area to drag a region on the monitor that currently shows the settings window. The DeskBorder service pauses while the selector is open.</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerAreaSummaryTitleTextBlock.Text" xml:space="preserve">
+    <value>Selected area</value>
+  </data>
+  <data name="SettingsPage_SelectNavigatorTriggerAreaButton.Content" xml:space="preserve">
+    <value>Select area</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
     <value>Height (%)</value>
@@ -767,7 +776,16 @@
     <value>Check for Store updates</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
-    <value>Horizontal position {0:P0}, Vertical position {1:P0}, Width {2:P0}, Height {3:P0}</value>
+    <value>Left {0:P0}, Top {1:P0}, Width {2:P0}, Height {3:P0}</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.WindowTitle" xml:space="preserve">
+    <value>Select Navigator trigger area</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.Title" xml:space="preserve">
+    <value>Select the Navigator trigger area</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.Description" xml:space="preserve">
+    <value>Drag to choose an area. Press Escape to cancel. The DeskBorder service stays paused while this selector is open.</value>
   </data>
   <data name="VirtualKey.CapitalLock" xml:space="preserve">
     <value>Caps Lock</value>

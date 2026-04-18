@@ -206,15 +206,19 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         NavigatorToggleHotkeyRegistrationFailureMessage);
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NavigatorTriggerAreaSummary))]
     public partial double NavigatorTriggerHeightPercentage { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NavigatorTriggerAreaSummary))]
     public partial double NavigatorTriggerLeftPercentage { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NavigatorTriggerAreaSummary))]
     public partial double NavigatorTriggerTopPercentage { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NavigatorTriggerAreaSummary))]
     public partial double NavigatorTriggerWidthPercentage { get; set; }
 
     [ObservableProperty]
@@ -245,6 +249,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
         ToggleDeskBorderEnabledHotkeyRegistrationFailureMessage);
+
+    public string NavigatorTriggerAreaSummary => SettingsDisplayFormatter.FormatTriggerRectangle(CreateNavigatorTriggerRectangleSettings());
 
     public bool AddBlacklistedProcessNames(IEnumerable<string> processNames)
     {
@@ -301,17 +307,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         {
             ToggleHotkey = NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings(),
             IsTriggerAreaEnabled = IsNavigatorTriggerAreaEnabled,
-            TriggerRectangle = new TriggerRectangleSettings
-            {
-                Width = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerWidthPercentage),
-                Height = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerHeightPercentage),
-                Left = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedOffset(
-                    NavigatorTriggerLeftPercentage,
-                    TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerWidthPercentage)),
-                Top = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedOffset(
-                    NavigatorTriggerTopPercentage,
-                    TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerHeightPercentage))
-            }
+            TriggerRectangle = CreateNavigatorTriggerRectangleSettings()
         },
         BlacklistedProcessNames = [.. BlacklistedProcessNames],
         IsLaunchOnStartupEnabled = IsLaunchOnStartupEnabled,
@@ -331,14 +327,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         TopDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.TopIgnorePercentage;
         BottomDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage;
         IsNavigatorTriggerAreaEnabled = deskBorderSettings.NavigatorSettings.IsTriggerAreaEnabled;
-        NavigatorTriggerWidthPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedLengthToDisplayPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Width);
-        NavigatorTriggerHeightPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedLengthToDisplayPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Height);
-        NavigatorTriggerLeftPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedOffsetToDisplayPercentage(
-            deskBorderSettings.NavigatorSettings.TriggerRectangle.Left,
-            deskBorderSettings.NavigatorSettings.TriggerRectangle.Width);
-        NavigatorTriggerTopPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedOffsetToDisplayPercentage(
-            deskBorderSettings.NavigatorSettings.TriggerRectangle.Top,
-            deskBorderSettings.NavigatorSettings.TriggerRectangle.Height);
+        SetNavigatorTriggerRectangle(deskBorderSettings.NavigatorSettings.TriggerRectangle);
         SelectedMultiDisplayBehaviorOption = FindSelectionOption(
             MultiDisplayBehaviorOptions,
             deskBorderSettings.MultiDisplayBehavior);
@@ -364,6 +353,14 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     }
 
     public bool RemoveBlacklistedProcessName(string processName) => BlacklistedProcessNames.Remove(processName);
+
+    public void SetNavigatorTriggerRectangle(TriggerRectangleSettings triggerRectangleSettings)
+    {
+        NavigatorTriggerLeftPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedOffsetToDisplayPercentage(triggerRectangleSettings.Left, triggerRectangleSettings.Width);
+        NavigatorTriggerTopPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedOffsetToDisplayPercentage(triggerRectangleSettings.Top, triggerRectangleSettings.Height);
+        NavigatorTriggerWidthPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedLengthToDisplayPercentage(triggerRectangleSettings.Width);
+        NavigatorTriggerHeightPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedLengthToDisplayPercentage(triggerRectangleSettings.Height);
+    }
 
     public void UpdateHotkeyRegistrationFailureMessage(HotkeyActionType hotkeyActionType, string? registrationFailureMessage)
     {
@@ -391,6 +388,18 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     }
 
     private static List<SelectionOption<TValue>> CreateSelectionOptions<TValue>(IReadOnlyList<TValue> values, Func<TValue, string> displayTextSelector) where TValue : notnull => [.. values.Select(value => new SelectionOption<TValue>(value, displayTextSelector(value)))];
+
+    private TriggerRectangleSettings CreateNavigatorTriggerRectangleSettings() => new()
+    {
+        Left = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedOffset(
+            NavigatorTriggerLeftPercentage,
+            TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerWidthPercentage)),
+        Top = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedOffset(
+            NavigatorTriggerTopPercentage,
+            TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerHeightPercentage)),
+        Width = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerWidthPercentage),
+        Height = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerHeightPercentage)
+    };
 
     private static SelectionOption<TValue> FindSelectionOption<TValue>(List<SelectionOption<TValue>> selectionOptions, TValue value) where TValue : notnull
     {

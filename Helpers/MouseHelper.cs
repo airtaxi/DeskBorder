@@ -98,6 +98,22 @@ public static class MouseHelper
         finally { monitorEnumerationContextHandle.Free(); }
     }
 
+    public static DisplayMonitorInfo GetDisplayMonitorFromWindow(nint windowHandle)
+    {
+        if (!Win32.GetWindowRect(windowHandle, out var nativeWindowRectangle))
+            throw new InvalidOperationException("Unable to retrieve the window bounds.");
+
+        var windowRectangle = CreateScreenRectangle(nativeWindowRectangle);
+        var displayMonitors = GetDisplayMonitors();
+        if (displayMonitors.Length == 0)
+            throw new InvalidOperationException("No display monitor is available.");
+
+        return displayMonitors
+            .OrderByDescending(displayMonitorInfo => GetIntersectionArea(displayMonitorInfo.MonitorBounds, windowRectangle))
+            .ThenByDescending(displayMonitorInfo => displayMonitorInfo.IsPrimaryDisplay)
+            .First();
+    }
+
     public static ModifierKeySnapshot GetModifierKeySnapshot()
     {
         var pressedKeyboardModifierKeys = GetPressedKeyboardModifierKeys();
@@ -124,6 +140,17 @@ public static class MouseHelper
     }
 
     private static ScreenRectangle CreateScreenRectangle(Win32.NativeRectangle nativeRectangle) => new(nativeRectangle.Left, nativeRectangle.Top, nativeRectangle.Right, nativeRectangle.Bottom);
+
+    private static int GetIntersectionArea(ScreenRectangle firstRectangle, ScreenRectangle secondRectangle)
+    {
+        var left = Math.Max(firstRectangle.Left, secondRectangle.Left);
+        var top = Math.Max(firstRectangle.Top, secondRectangle.Top);
+        var right = Math.Min(firstRectangle.Right, secondRectangle.Right);
+        var bottom = Math.Min(firstRectangle.Bottom, secondRectangle.Bottom);
+        return right <= left || bottom <= top
+            ? 0
+            : (right - left) * (bottom - top);
+    }
 
     private static KeyboardModifierKeys GetPressedKeyboardModifierKeys()
     {

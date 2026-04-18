@@ -351,6 +351,9 @@
   <data name="Runtime.Status.Stopped" xml:space="preserve">
     <value>DeskBorder 백그라운드 서비스가 중지되어 있으며 설정과 수동 오버레이만 사용할 수 있습니다.</value>
   </data>
+  <data name="Runtime.Status.Paused" xml:space="preserve">
+    <value>DeskBorder 백그라운드 서비스가 일시 중지되어 있으며 선택 오버레이가 끝나면 다시 이어집니다.</value>
+  </data>
   <data name="Settings.AppLanguage.ChineseSimplified" xml:space="preserve">
     <value>중국어(간체)</value>
   </data>
@@ -616,7 +619,7 @@
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 트리거 영역 사용: 지정한 화면 비율 영역에 마우스가 들어오면 Navigator 오버레이를 표시합니다.
-• 가로 위치 / 세로 위치 / 너비 / 높이: 퍼센트 값으로 트리거 영역의 위치와 크기를 정합니다. 가로/세로 위치는 현재 위치한 화면 절반 기준으로 바깥쪽에서 안쪽으로 얼마나 들어올지 뜻합니다.
+• 영역 선택: 버튼을 누르면 현재 설정 창이 있는 모니터에 선택 오버레이가 열리고, 드래그한 사각형이 그대로 트리거 영역으로 저장됩니다. 선택하는 동안 DeskBorder 서비스는 잠시 멈춥니다.
 • 전역 단축키 섹션의 Navigator 오버레이 토글과 함께 켜 두면 단축키와 마우스 영역 두 방식이 동시에 동작합니다.</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -644,7 +647,13 @@
     <value>트리거 영역 사용</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerAreaHintTextBlock.Text" xml:space="preserve">
-    <value>가로/세로 위치는 현재 위치한 화면 절반 기준으로 바깥쪽에서 안쪽으로 얼마나 들어올지 뜻합니다.</value>
+    <value>영역 선택을 누르면 현재 설정 창이 있는 모니터에서 드래그로 지정합니다. 선택하는 동안 DeskBorder 서비스는 잠시 멈춥니다.</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerAreaSummaryTitleTextBlock.Text" xml:space="preserve">
+    <value>선택된 영역</value>
+  </data>
+  <data name="SettingsPage_SelectNavigatorTriggerAreaButton.Content" xml:space="preserve">
+    <value>영역 선택</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
     <value>높이 (%)</value>
@@ -767,7 +776,16 @@
     <value>스토어 업데이트 확인</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
-    <value>가로 위치 {0:P0}, 세로 위치 {1:P0}, 너비 {2:P0}, 높이 {3:P0}</value>
+    <value>왼쪽 {0:P0}, 위 {1:P0}, 너비 {2:P0}, 높이 {3:P0}</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.WindowTitle" xml:space="preserve">
+    <value>Navigator 트리거 영역 선택</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.Title" xml:space="preserve">
+    <value>Navigator 트리거 영역 선택</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.Description" xml:space="preserve">
+    <value>드래그해서 영역을 선택하세요. Esc 키를 누르면 취소됩니다. 이 선택 UI가 열려 있는 동안 DeskBorder 서비스는 잠시 멈춥니다.</value>
   </data>
   <data name="VirtualKey.CapitalLock" xml:space="preserve">
     <value>Caps Lock</value>

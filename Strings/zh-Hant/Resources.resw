@@ -351,6 +351,9 @@
   <data name="Runtime.Status.Stopped" xml:space="preserve">
     <value>DeskBorder 背景服務已停止，因此只能使用設定與手動覆疊層。</value>
   </data>
+  <data name="Runtime.Status.Paused" xml:space="preserve">
+    <value>DeskBorder 背景服務已暫停，並會在選取覆疊層關閉後繼續執行。</value>
+  </data>
   <data name="Settings.AppLanguage.ChineseSimplified" xml:space="preserve">
     <value>簡體中文</value>
   </data>
@@ -616,7 +619,7 @@
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 啟用觸發區域：當指標進入指定的螢幕區域時顯示 Navigator 覆疊層。
-• 橫向位置 / 縱向位置 / 寬度 / 高度：以百分比設定觸發區域的位置與大小。位置值表示該區域在目前所在螢幕半邊中，從外側往內進入了多少。
+• 選取區域：按下按鈕後，會在目前顯示設定視窗的螢幕上開啟選取覆疊層。拖曳出的矩形會原樣儲存為觸發區域，選取期間 DeskBorder 服務會暫時暫停。
 • 若同時啟用全域熱鍵區段中的 Navigator 覆疊層切換，快捷鍵與滑鼠區域兩種觸發方式會同時生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -644,7 +647,13 @@
     <value>啟用觸發區域</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerAreaHintTextBlock.Text" xml:space="preserve">
-    <value>橫向與縱向位置表示該區域在目前所在螢幕半邊中，從外側往內進入了多少。</value>
+    <value>按一下「選取區域」後，即可在目前顯示設定視窗的螢幕上拖曳指定區域。選取器開啟期間 DeskBorder 服務會暫時暫停。</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerAreaSummaryTitleTextBlock.Text" xml:space="preserve">
+    <value>已選區域</value>
+  </data>
+  <data name="SettingsPage_SelectNavigatorTriggerAreaButton.Content" xml:space="preserve">
+    <value>選取區域</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
     <value>高度 (%)</value>
@@ -767,7 +776,16 @@
     <value>檢查 Store 更新</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
-    <value>橫向位置 {0:P0}，縱向位置 {1:P0}，寬度 {2:P0}，高度 {3:P0}</value>
+    <value>左側 {0:P0}，頂部 {1:P0}，寬度 {2:P0}，高度 {3:P0}</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.WindowTitle" xml:space="preserve">
+    <value>選取 Navigator 觸發區域</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.Title" xml:space="preserve">
+    <value>選取 Navigator 觸發區域</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.Description" xml:space="preserve">
+    <value>拖曳以選取區域。按 Esc 可取消。選取器開啟期間 DeskBorder 服務會暫時暫停。</value>
   </data>
   <data name="VirtualKey.CapitalLock" xml:space="preserve">
     <value>Caps Lock</value>

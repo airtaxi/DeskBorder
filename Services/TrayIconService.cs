@@ -17,7 +17,7 @@ public sealed class TrayIconService : ITrayIconService, IDisposable
 
     public string LaunchOnStartupToggleText => LocalizedResourceAccessor.GetString("Tray.LaunchOnStartup");
 
-    public string RuntimeStatusText => _deskBorderRuntimeService.IsRunning
+    public string RuntimeStatusText => _deskBorderRuntimeService.IsRunning && !_deskBorderRuntimeService.IsSuspended
         ? LocalizedResourceAccessor.GetString("Tray.RuntimeStatus.Running")
         : LocalizedResourceAccessor.GetString("Tray.RuntimeStatus.Paused");
 

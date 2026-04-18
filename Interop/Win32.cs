@@ -25,6 +25,10 @@ internal static partial class Win32
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool GetWindowRect(nint windowHandle, out NativeRectangle windowRectangle);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool GetCursorPos(out NativePoint point);
 
     [LibraryImport("user32.dll")]

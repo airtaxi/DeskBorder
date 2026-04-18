@@ -351,6 +351,9 @@
   <data name="Runtime.Status.Stopped" xml:space="preserve">
     <value>DeskBorder 后台服务已停止，因此只能使用设置和手动叠加层。</value>
   </data>
+  <data name="Runtime.Status.Paused" xml:space="preserve">
+    <value>DeskBorder 后台服务已暂停，并会在选择叠加层关闭后继续运行。</value>
+  </data>
   <data name="Settings.AppLanguage.ChineseSimplified" xml:space="preserve">
     <value>简体中文</value>
   </data>
@@ -616,7 +619,7 @@
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 启用触发区域：当指针进入指定屏幕区域时显示 Navigator 叠加层。
-• 横向位置 / 纵向位置 / 宽度 / 高度：用百分比设置触发区域的位置和大小。位置值表示该区域在当前所在屏幕半边中，从外侧向内进入了多少。
+• 选择区域：点击按钮后，会在当前显示设置窗口的显示器上打开选择叠加层。拖拽出的矩形会原样保存为触发区域，选择期间 DeskBorder 服务会暂时暂停。
 • 如果同时启用全局热键中的 Navigator 叠加层切换，则快捷键和鼠标区域触发会一起生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -644,7 +647,13 @@
     <value>启用触发区域</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerAreaHintTextBlock.Text" xml:space="preserve">
-    <value>横向和纵向位置表示该区域在当前所在屏幕半边中，从外侧向内进入了多少。</value>
+    <value>点击“选择区域”后，可在当前显示设置窗口的显示器上通过拖拽指定区域。选择器打开期间 DeskBorder 服务会暂时暂停。</value>
+  </data>
+  <data name="SettingsPage_NavigatorTriggerAreaSummaryTitleTextBlock.Text" xml:space="preserve">
+    <value>已选区域</value>
+  </data>
+  <data name="SettingsPage_SelectNavigatorTriggerAreaButton.Content" xml:space="preserve">
+    <value>选择区域</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
     <value>高度 (%)</value>
@@ -767,7 +776,16 @@
     <value>检查 Store 更新</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
-    <value>横向位置 {0:P0}，纵向位置 {1:P0}，宽度 {2:P0}，高度 {3:P0}</value>
+    <value>左侧 {0:P0}，顶部 {1:P0}，宽度 {2:P0}，高度 {3:P0}</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.WindowTitle" xml:space="preserve">
+    <value>选择 Navigator 触发区域</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.Title" xml:space="preserve">
+    <value>选择 Navigator 触发区域</value>
+  </data>
+  <data name="NavigatorTriggerAreaSelectionWindow.Description" xml:space="preserve">
+    <value>拖拽以选择区域。按 Esc 可取消。选择器打开期间 DeskBorder 服务会暂时暂停。</value>
   </data>
   <data name="VirtualKey.CapitalLock" xml:space="preserve">
     <value>Caps Lock</value>

@@ -25,13 +25,16 @@ public sealed partial class SettingsPage : Page
     private static readonly TimeSpan s_infoBarAutoHideDelay = TimeSpan.FromSeconds(4);
 
     private readonly DispatcherQueueTimer _settingsImportExportInfoBarAutoHideTimer;
+    private readonly IDeskBorderRuntimeService _deskBorderRuntimeService;
     private readonly IHotkeyService _hotkeyService;
+    private readonly ILocalizationService _localizationService;
     private readonly ManageWindow _manageWindow;
     private readonly DispatcherQueueTimer _settingsStatusInfoBarAutoHideTimer;
     private readonly ISettingsService _settingsService;
     private readonly SemaphoreSlim _settingsUpdateSemaphore = new(1, 1);
     private TeachingTip? _activeSectionTeachingTip;
     private bool _isInitialSettingsLoadCompleted;
+    private bool _isNavigatorTriggerAreaSelectionInProgress;
     private bool _isSynchronizingViewModel;
     private bool _isSettingsTransferInProgress;
 
@@ -41,8 +44,10 @@ public sealed partial class SettingsPage : Page
     {
         InitializeComponent();
 
+        _deskBorderRuntimeService = App.GetRequiredService<IDeskBorderRuntimeService>();
         _settingsImportExportInfoBarAutoHideTimer = CreateInfoBarAutoHideTimer(SettingsImportExportInfoBar);
         _hotkeyService = App.GetRequiredService<IHotkeyService>();
+        _localizationService = App.GetRequiredService<ILocalizationService>();
         _manageWindow = App.GetRequiredService<ManageWindow>();
         _settingsStatusInfoBarAutoHideTimer = CreateInfoBarAutoHideTimer(SettingsStatusInfoBar);
         _settingsService = App.GetRequiredService<ISettingsService>();
@@ -195,6 +200,13 @@ public sealed partial class SettingsPage : Page
     private async void OnExportSettingsButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ExportSettingsAsync();
 
     private async void OnImportSettingsButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ImportSettingsAsync();
+
+    private async void OnSelectNavigatorTriggerAreaButtonClicked(object sender, RoutedEventArgs routedEventArgs)
+    {
+        _ = sender;
+        _ = routedEventArgs;
+        await SelectNavigatorTriggerAreaAsync();
+    }
 
     private void OnHotkeyServiceRegistrationStateChanged(object? sender, EventArgs eventArguments)
     {
@@ -395,6 +407,37 @@ public sealed partial class SettingsPage : Page
             ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), exception.Message, InfoBarSeverity.Error);
         }
         finally { _settingsUpdateSemaphore.Release(); }
+    }
+
+    private async Task SelectNavigatorTriggerAreaAsync()
+    {
+        if (_isNavigatorTriggerAreaSelectionInProgress)
+            return;
+
+        _isNavigatorTriggerAreaSelectionInProgress = true;
+        SelectNavigatorTriggerAreaButton.IsEnabled = false;
+
+        try
+        {
+            await using var runtimeSuspension = await _deskBorderRuntimeService.CreateSuspensionAsync();
+            var targetDisplayMonitor = MouseHelper.GetDisplayMonitorFromWindow(GetManageWindowHandle());
+            var navigatorTriggerAreaSelectionWindow = new NavigatorTriggerAreaSelectionWindow(_localizationService, targetDisplayMonitor);
+            var selectedTriggerRectangleSettings = await navigatorTriggerAreaSelectionWindow.ShowSelectionAsync();
+            if (selectedTriggerRectangleSettings is null)
+                return;
+
+            ViewModel.SetNavigatorTriggerRectangle(selectedTriggerRectangleSettings);
+            await SaveSettingsAsync();
+        }
+        catch (InvalidOperationException exception)
+        {
+            ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), exception.Message, InfoBarSeverity.Error);
+        }
+        finally
+        {
+            SelectNavigatorTriggerAreaButton.IsEnabled = true;
+            _isNavigatorTriggerAreaSelectionInProgress = false;
+        }
     }
 
     private void SetSettingsTransferInProgress(bool isSettingsTransferInProgress)

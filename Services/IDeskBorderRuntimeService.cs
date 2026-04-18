@@ -6,6 +6,8 @@ public interface IDeskBorderRuntimeService
 
     bool IsRunning { get; }
 
+    bool IsSuspended { get; }
+
     string StatusMessage { get; }
 
     Task StartAsync();
@@ -13,4 +15,6 @@ public interface IDeskBorderRuntimeService
     Task StopAsync();
 
     Task SetRunningStateAsync(bool isRunning);
+
+    Task<IAsyncDisposable> CreateSuspensionAsync();
 }

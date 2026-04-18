@@ -792,70 +792,29 @@
                             IsOn="{x:Bind ViewModel.IsNavigatorTriggerAreaEnabled, Mode=TwoWay}"
                             Toggled="OnSettingToggleSwitchToggled" />
 
-                        <Grid ColumnSpacing="12" RowSpacing="12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <NumberBox
-                                x:Name="NavigatorTriggerLeftNumberBox"
-                                x:Uid="SettingsPage_NavigatorTriggerLeftNumberBox"
-                                Header="가로 위치 (%)"
-                                Maximum="100"
-                                Minimum="0"
-                                SmallChange="1"
-                                SpinButtonPlacementMode="Inline"
-                                ValueChanged="OnSettingNumberBoxValueChanged"
-                                Value="{x:Bind ViewModel.NavigatorTriggerLeftPercentage, Mode=TwoWay}" />
-
-                            <NumberBox
-                                x:Name="NavigatorTriggerTopNumberBox"
-                                x:Uid="SettingsPage_NavigatorTriggerTopNumberBox"
-                                Grid.Column="1"
-                                Header="세로 위치 (%)"
-                                Maximum="100"
-                                Minimum="0"
-                                SmallChange="1"
-                                SpinButtonPlacementMode="Inline"
-                                ValueChanged="OnSettingNumberBoxValueChanged"
-                                Value="{x:Bind ViewModel.NavigatorTriggerTopPercentage, Mode=TwoWay}" />
-
-                            <NumberBox
-                                x:Name="NavigatorTriggerWidthNumberBox"
-                                x:Uid="SettingsPage_NavigatorTriggerWidthNumberBox"
-                                Grid.Row="1"
-                                Header="너비 (%)"
-                                Maximum="100"
-                                Minimum="1"
-                                SmallChange="1"
-                                SpinButtonPlacementMode="Inline"
-                                ValueChanged="OnSettingNumberBoxValueChanged"
-                                Value="{x:Bind ViewModel.NavigatorTriggerWidthPercentage, Mode=TwoWay}" />
-
-                            <NumberBox
-                                x:Name="NavigatorTriggerHeightNumberBox"
-                                x:Uid="SettingsPage_NavigatorTriggerHeightNumberBox"
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                Header="높이 (%)"
-                                Maximum="100"
-                                Minimum="1"
-                                SmallChange="1"
-                                SpinButtonPlacementMode="Inline"
-                                ValueChanged="OnSettingNumberBoxValueChanged"
-                                Value="{x:Bind ViewModel.NavigatorTriggerHeightPercentage, Mode=TwoWay}" />
-                        </Grid>
-
-                        <TextBlock
-                            x:Uid="SettingsPage_NavigatorTriggerAreaHintTextBlock"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Text="가로/세로 위치는 현재 위치한 화면 절반 기준으로 바깥쪽에서 안쪽으로 얼마나 들어올지 뜻합니다."
-                            TextWrapping="WrapWholeWords" />
+                        <Border
+                            Padding="12"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="10">
+                            <StackPanel Spacing="8">
+                                <TextBlock
+                                    x:Uid="SettingsPage_NavigatorTriggerAreaSummaryTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="선택된 영역" />
+                                <TextBlock Text="{x:Bind ViewModel.NavigatorTriggerAreaSummary, Mode=OneWay}" TextWrapping="WrapWholeWords" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_NavigatorTriggerAreaHintTextBlock"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="영역 선택을 누르면 현재 설정 창이 있는 모니터에서 드래그로 지정합니다."
+                                    TextWrapping="WrapWholeWords" />
+                                <Button
+                                    x:Name="SelectNavigatorTriggerAreaButton"
+                                    x:Uid="SettingsPage_SelectNavigatorTriggerAreaButton"
+                                    HorizontalAlignment="Left"
+                                    Click="OnSelectNavigatorTriggerAreaButtonClicked"
+                                    Content="영역 선택" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Border>
 
