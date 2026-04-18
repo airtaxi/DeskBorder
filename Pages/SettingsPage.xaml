@@ -85,7 +85,8 @@
                                     Title="일반 설정 안내"
                                     Closed="OnSectionTeachingTipClosed"
                                     IsLightDismissEnabled="True"
-                                    PreferredPlacement="Bottom"
+                                    PreferredPlacement="Auto"
+                                    ShouldConstrainToRootBounds="False"
                                     Target="{x:Bind GeneralSectionHelpButton}">
                                     <TeachingTip.Content>
                                         <TextBlock
@@ -217,7 +218,8 @@
                                     Title="가장자리 및 자동 정리 안내"
                                     Closed="OnSectionTeachingTipClosed"
                                     IsLightDismissEnabled="True"
-                                    PreferredPlacement="Bottom"
+                                    PreferredPlacement="Auto"
+                                    ShouldConstrainToRootBounds="False"
                                     Target="{x:Bind EdgeSectionHelpButton}">
                                     <TeachingTip.Content>
                                         <TextBlock
@@ -423,7 +425,8 @@
                                     Title="전역 단축키 안내"
                                     Closed="OnSectionTeachingTipClosed"
                                     IsLightDismissEnabled="True"
-                                    PreferredPlacement="Bottom"
+                                    PreferredPlacement="Auto"
+                                    ShouldConstrainToRootBounds="False"
                                     Target="{x:Bind HotkeysSectionHelpButton}">
                                     <TeachingTip.Content>
                                         <TextBlock
@@ -805,7 +808,8 @@
                                     Title="Navigator 안내"
                                     Closed="OnSectionTeachingTipClosed"
                                     IsLightDismissEnabled="True"
-                                    PreferredPlacement="Bottom"
+                                    PreferredPlacement="Auto"
+                                    ShouldConstrainToRootBounds="False"
                                     Target="{x:Bind NavigatorSectionHelpButton}">
                                     <TeachingTip.Content>
                                         <TextBlock
@@ -888,7 +892,8 @@
                                     Title="블랙리스트 안내"
                                     Closed="OnSectionTeachingTipClosed"
                                     IsLightDismissEnabled="True"
-                                    PreferredPlacement="Bottom"
+                                    PreferredPlacement="Auto"
+                                    ShouldConstrainToRootBounds="False"
                                     Target="{x:Bind BlacklistSectionHelpButton}">
                                     <TeachingTip.Content>
                                         <TextBlock
@@ -979,7 +984,8 @@
                                     Title="설정 불러오기 및 내보내기 안내"
                                     Closed="OnSectionTeachingTipClosed"
                                     IsLightDismissEnabled="True"
-                                    PreferredPlacement="Bottom"
+                                    PreferredPlacement="Auto"
+                                    ShouldConstrainToRootBounds="False"
                                     Target="{x:Bind ImportExportSectionHelpButton}">
                                     <TeachingTip.Content>
                                         <TextBlock
