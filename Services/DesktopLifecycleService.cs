@@ -103,6 +103,9 @@ public sealed class DesktopLifecycleService(
             && currentState.CursorPosition.X <= rightmostDisplayEdge - DesktopEdgeTriggerRearmDistanceInPixels;
     }
 
+    private static bool IsCurrentDesktopRightOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.DesktopEntries.Length > 0
+        && workspaceSnapshot.CurrentDesktopNumber == workspaceSnapshot.DesktopEntries.Length;
+
     private async Task ApplyWorkspaceSnapshotAsync(VirtualDesktopWorkspaceSnapshot workspaceSnapshot)
     {
         var navigatorDesktopItems = workspaceSnapshot.DesktopEntries
@@ -148,20 +151,25 @@ public sealed class DesktopLifecycleService(
 
         var currentSettings = _settingsService.Settings;
         var desktopSwitchDirection = ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge);
-        if (desktopSwitchDirection == DesktopSwitchDirection.Next
+        var currentWorkspaceSnapshot = _virtualDesktopService.GetWorkspaceSnapshot();
+        var canCreateDesktop = desktopSwitchDirection == DesktopSwitchDirection.Next
             && currentSettings.IsDesktopCreationEnabled
-            && currentState.IsCreateDesktopModifierSatisfied)
-        {
-            return _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
-        }
+            && currentState.IsCreateDesktopModifierSatisfied
+            && IsCurrentDesktopRightOuter(currentWorkspaceSnapshot);
 
         if (currentState.IsSwitchDesktopModifierSatisfied)
         {
             var switchResult = _virtualDesktopService.SwitchDesktop(desktopSwitchDirection);
-            return switchResult;
+            if (switchResult.OperationStatus != VirtualDesktopOperationStatus.NoAdjacentDesktop || !canCreateDesktop)
+                return switchResult;
+
+            return _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
         }
 
-        return CreateNoOperationNavigationResult(_virtualDesktopService.GetWorkspaceSnapshot());
+        if (canCreateDesktop)
+            return _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
+
+        return CreateNoOperationNavigationResult(currentWorkspaceSnapshot);
     }
 
     private async Task HandleNavigationResultAsync(DesktopNavigationResult desktopNavigationResult, CancellationToken cancellationToken = default)
