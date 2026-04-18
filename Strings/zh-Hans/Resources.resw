@@ -616,7 +616,7 @@
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 启用触发区域：当指针进入指定屏幕区域时显示 Navigator 叠加层。
-• 左侧 / 上侧 / 宽度 / 高度：用百分比设置触发区域的位置和大小。
+• 横向位置 / 纵向位置 / 宽度 / 高度：用百分比设置触发区域的位置和大小。位置值表示该区域在当前所在屏幕半边中，从外侧向内进入了多少。
 • 如果同时启用全局热键中的 Navigator 叠加层切换，则快捷键和鼠标区域触发会一起生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -643,14 +643,17 @@
   <data name="SettingsPage_NavigatorTriggerAreaToggleSwitch.Header" xml:space="preserve">
     <value>启用触发区域</value>
   </data>
+  <data name="SettingsPage_NavigatorTriggerAreaHintTextBlock.Text" xml:space="preserve">
+    <value>横向和纵向位置表示该区域在当前所在屏幕半边中，从外侧向内进入了多少。</value>
+  </data>
   <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
     <value>高度 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerLeftNumberBox.Header" xml:space="preserve">
-    <value>左侧 (%)</value>
+    <value>横向位置 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerTopNumberBox.Header" xml:space="preserve">
-    <value>上侧 (%)</value>
+    <value>纵向位置 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerWidthNumberBox.Header" xml:space="preserve">
     <value>宽度 (%)</value>
@@ -764,7 +767,7 @@
     <value>检查 Store 更新</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
-    <value>左侧 {0:P0}，上侧 {1:P0}，宽度 {2:P0}，高度 {3:P0}</value>
+    <value>横向位置 {0:P0}，纵向位置 {1:P0}，宽度 {2:P0}，高度 {3:P0}</value>
   </data>
   <data name="VirtualKey.CapitalLock" xml:space="preserve">
     <value>Caps Lock</value>

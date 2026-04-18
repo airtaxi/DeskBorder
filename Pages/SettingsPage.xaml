@@ -223,8 +223,8 @@
                                     Minimum="0.5"
                                     SmallChange="0.5"
                                     SpinButtonPlacementMode="Inline"
-                                    Value="{x:Bind ViewModel.AutoDeleteWarningTimeoutSeconds, Mode=TwoWay}"
-                                    ValueChanged="OnSettingNumberBoxValueChanged" />
+                                    ValueChanged="OnSettingNumberBoxValueChanged"
+                                    Value="{x:Bind ViewModel.AutoDeleteWarningTimeoutSeconds, Mode=TwoWay}" />
                             </StackPanel>
                         </Border>
 
@@ -805,8 +805,8 @@
                             <NumberBox
                                 x:Name="NavigatorTriggerLeftNumberBox"
                                 x:Uid="SettingsPage_NavigatorTriggerLeftNumberBox"
-                                Header="왼쪽 (%)"
-                                Maximum="99"
+                                Header="가로 위치 (%)"
+                                Maximum="100"
                                 Minimum="0"
                                 SmallChange="1"
                                 SpinButtonPlacementMode="Inline"
@@ -817,8 +817,8 @@
                                 x:Name="NavigatorTriggerTopNumberBox"
                                 x:Uid="SettingsPage_NavigatorTriggerTopNumberBox"
                                 Grid.Column="1"
-                                Header="위 (%)"
-                                Maximum="99"
+                                Header="세로 위치 (%)"
+                                Maximum="100"
                                 Minimum="0"
                                 SmallChange="1"
                                 SpinButtonPlacementMode="Inline"
@@ -850,6 +850,12 @@
                                 ValueChanged="OnSettingNumberBoxValueChanged"
                                 Value="{x:Bind ViewModel.NavigatorTriggerHeightPercentage, Mode=TwoWay}" />
                         </Grid>
+
+                        <TextBlock
+                            x:Uid="SettingsPage_NavigatorTriggerAreaHintTextBlock"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="가로/세로 위치는 현재 위치한 화면 절반 기준으로 바깥쪽에서 안쪽으로 얼마나 들어올지 뜻합니다."
+                            TextWrapping="WrapWholeWords" />
                     </StackPanel>
                 </Border>
 

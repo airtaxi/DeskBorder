@@ -88,8 +88,8 @@ public static class SettingsDisplayFormatter
     public static string FormatTriggerRectangle(TriggerRectangleSettings triggerRectangleSettings) => string.Format(
         CultureInfo.CurrentCulture,
         LocalizedResourceAccessor.GetString("TriggerRectangle.Format"),
-        triggerRectangleSettings.Left,
-        triggerRectangleSettings.Top,
+        TriggerRectangleDisplayConverter.ConvertNormalizedOffsetToDisplayPercentage(triggerRectangleSettings.Left, triggerRectangleSettings.Width) / 100.0,
+        TriggerRectangleDisplayConverter.ConvertNormalizedOffsetToDisplayPercentage(triggerRectangleSettings.Top, triggerRectangleSettings.Height) / 100.0,
         triggerRectangleSettings.Width,
         triggerRectangleSettings.Height);
 

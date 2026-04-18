@@ -616,7 +616,7 @@
   </data>
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 啟用觸發區域：當指標進入指定的螢幕區域時顯示 Navigator 覆疊層。
-• 左側 / 上側 / 寬度 / 高度：以百分比設定觸發區域的位置與大小。
+• 橫向位置 / 縱向位置 / 寬度 / 高度：以百分比設定觸發區域的位置與大小。位置值表示該區域在目前所在螢幕半邊中，從外側往內進入了多少。
 • 若同時啟用全域熱鍵區段中的 Navigator 覆疊層切換，快捷鍵與滑鼠區域兩種觸發方式會同時生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -643,14 +643,17 @@
   <data name="SettingsPage_NavigatorTriggerAreaToggleSwitch.Header" xml:space="preserve">
     <value>啟用觸發區域</value>
   </data>
+  <data name="SettingsPage_NavigatorTriggerAreaHintTextBlock.Text" xml:space="preserve">
+    <value>橫向與縱向位置表示該區域在目前所在螢幕半邊中，從外側往內進入了多少。</value>
+  </data>
   <data name="SettingsPage_NavigatorTriggerHeightNumberBox.Header" xml:space="preserve">
     <value>高度 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerLeftNumberBox.Header" xml:space="preserve">
-    <value>左側 (%)</value>
+    <value>橫向位置 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerTopNumberBox.Header" xml:space="preserve">
-    <value>上側 (%)</value>
+    <value>縱向位置 (%)</value>
   </data>
   <data name="SettingsPage_NavigatorTriggerWidthNumberBox.Header" xml:space="preserve">
     <value>寬度 (%)</value>
@@ -764,7 +767,7 @@
     <value>檢查 Store 更新</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">
-    <value>左側 {0:P0}，上側 {1:P0}，寬度 {2:P0}，高度 {3:P0}</value>
+    <value>橫向位置 {0:P0}，縱向位置 {1:P0}，寬度 {2:P0}，高度 {3:P0}</value>
   </data>
   <data name="VirtualKey.CapitalLock" xml:space="preserve">
     <value>Caps Lock</value>

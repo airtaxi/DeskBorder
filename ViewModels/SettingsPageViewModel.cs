@@ -303,10 +303,14 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             IsTriggerAreaEnabled = IsNavigatorTriggerAreaEnabled,
             TriggerRectangle = new TriggerRectangleSettings
             {
-                Left = ConvertPercentageToNormalizedTriggerRectangleValue(NavigatorTriggerLeftPercentage),
-                Top = ConvertPercentageToNormalizedTriggerRectangleValue(NavigatorTriggerTopPercentage),
-                Width = ConvertPercentageToNormalizedTriggerRectangleValue(NavigatorTriggerWidthPercentage),
-                Height = ConvertPercentageToNormalizedTriggerRectangleValue(NavigatorTriggerHeightPercentage)
+                Width = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerWidthPercentage),
+                Height = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerHeightPercentage),
+                Left = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedOffset(
+                    NavigatorTriggerLeftPercentage,
+                    TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerWidthPercentage)),
+                Top = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedOffset(
+                    NavigatorTriggerTopPercentage,
+                    TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerHeightPercentage))
             }
         },
         BlacklistedProcessNames = [.. BlacklistedProcessNames],
@@ -327,10 +331,14 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         TopDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.TopIgnorePercentage;
         BottomDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage;
         IsNavigatorTriggerAreaEnabled = deskBorderSettings.NavigatorSettings.IsTriggerAreaEnabled;
-        NavigatorTriggerLeftPercentage = ConvertNormalizedTriggerRectangleValueToPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Left);
-        NavigatorTriggerTopPercentage = ConvertNormalizedTriggerRectangleValueToPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Top);
-        NavigatorTriggerWidthPercentage = ConvertNormalizedTriggerRectangleValueToPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Width);
-        NavigatorTriggerHeightPercentage = ConvertNormalizedTriggerRectangleValueToPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Height);
+        NavigatorTriggerWidthPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedLengthToDisplayPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Width);
+        NavigatorTriggerHeightPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedLengthToDisplayPercentage(deskBorderSettings.NavigatorSettings.TriggerRectangle.Height);
+        NavigatorTriggerLeftPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedOffsetToDisplayPercentage(
+            deskBorderSettings.NavigatorSettings.TriggerRectangle.Left,
+            deskBorderSettings.NavigatorSettings.TriggerRectangle.Width);
+        NavigatorTriggerTopPercentage = TriggerRectangleDisplayConverter.ConvertNormalizedOffsetToDisplayPercentage(
+            deskBorderSettings.NavigatorSettings.TriggerRectangle.Top,
+            deskBorderSettings.NavigatorSettings.TriggerRectangle.Height);
         SelectedMultiDisplayBehaviorOption = FindSelectionOption(
             MultiDisplayBehaviorOptions,
             deskBorderSettings.MultiDisplayBehavior);
@@ -381,10 +389,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
                 throw new InvalidOperationException("The requested hotkey action type is not supported.");
         }
     }
-
-    private static double ConvertNormalizedTriggerRectangleValueToPercentage(double normalizedValue) => normalizedValue * 100.0;
-
-    private static double ConvertPercentageToNormalizedTriggerRectangleValue(double percentageValue) => percentageValue / 100.0;
 
     private static List<SelectionOption<TValue>> CreateSelectionOptions<TValue>(IReadOnlyList<TValue> values, Func<TValue, string> displayTextSelector) where TValue : notnull => [.. values.Select(value => new SelectionOption<TValue>(value, displayTextSelector(value)))];
 
