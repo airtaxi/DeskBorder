@@ -24,10 +24,6 @@ public sealed partial class NavigatorDesktopWindowItemViewModel : ObservableObje
     private const double PreviewWindowBorderThicknessScaleFactor = PreviewWindowBorderThicknessAtReferenceResolution / 1080d;
     private const double PreviewWindowCornerRadiusAtReferenceResolution = 48d;
     private const double PreviewWindowCornerRadiusScaleFactor = PreviewWindowCornerRadiusAtReferenceResolution / 1080d;
-    private const double MaximumPreviewWindowBorderThickness = 12d;
-    private const double MaximumPreviewWindowCornerRadius = 16d;
-    private const double MinimumPreviewWindowBorderThickness = 3d;
-    private const double MinimumPreviewWindowCornerRadius = 4d;
     private static readonly ConcurrentDictionary<string, Task<ImageSource?>> s_executableIconImageSourceCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly int _previewCanvasHeight;
     private readonly int _previewCanvasWidth;
