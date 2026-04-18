@@ -5,15 +5,13 @@ using DeskBorder.Views;
 
 namespace DeskBorder.Services;
 
-public sealed class ToastService : IToastService
+public sealed class ToastService(IThemeService themeService) : IToastService
 {
-    private readonly object _syncLock = new();
-    private readonly IThemeService _themeService;
+    private readonly object _synchronizationLock = new();
+    private readonly IThemeService _themeService = themeService;
     private ActiveToastContext? _activeToastContext;
     private ToastPageBase? _activeToastPage;
     private ToastWindow? _toastWindow;
-
-    public ToastService(IThemeService themeService) => _themeService = themeService;
 
     public bool IsToastVisible { get; private set; }
 
@@ -65,7 +63,7 @@ public sealed class ToastService : IToastService
         activeToastContext.CancellationTokenSource.Cancel();
         activeToastContext.CancellationTokenSource.Dispose();
 
-        lock (_syncLock)
+        lock (_synchronizationLock)
         {
             if (ReferenceEquals(_activeToastContext, activeToastContext))
                 _activeToastContext = null;
@@ -96,7 +94,7 @@ public sealed class ToastService : IToastService
 
     private ActiveToastContext? GetActiveToastContext()
     {
-        lock (_syncLock)
+        lock (_synchronizationLock)
             return _activeToastContext;
     }
 
@@ -126,7 +124,7 @@ public sealed class ToastService : IToastService
 
     private void SetActiveToastContext(ActiveToastContext activeToastContext)
     {
-        lock (_syncLock)
+        lock (_synchronizationLock)
         {
             _activeToastContext = activeToastContext;
         }

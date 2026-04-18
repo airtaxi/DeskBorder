@@ -618,16 +618,18 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
     }
 
     private static bool TryGetWindowDesktopIdentifier(VirtualDesktopShell virtualDesktopShell, nint windowHandle, out VirtualDesktopIdentifier desktopIdentifier)
-    {
-        return VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopShell.VirtualDesktopManager, windowHandle, out desktopIdentifier);
-    }
+        => VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopShell.VirtualDesktopManager, windowHandle, out desktopIdentifier);
 
     private static bool TryParseDesktopIdentifier(string desktopIdentifier, out VirtualDesktopIdentifier parsedDesktopIdentifier)
     {
-        if (Guid.TryParse(desktopIdentifier, out var parsedGuid)) { parsedDesktopIdentifier = parsedGuid; return true; }
+        if (!Guid.TryParse(desktopIdentifier, out var parsedDesktopGuid))
+        {
+            parsedDesktopIdentifier = default;
+            return false;
+        }
 
-        parsedDesktopIdentifier = default;
-        return false;
+        parsedDesktopIdentifier = parsedDesktopGuid;
+        return true;
     }
 
     private static IVirtualDesktop? TryFindVirtualDesktop(VirtualDesktopShell virtualDesktopShell, VirtualDesktopIdentifier desktopIdentifier)

@@ -160,8 +160,8 @@ public sealed partial class SettingsPage : Page
         SetSettingsTransferInProgress(true);
         try
         {
-            var file = await PickImportSettingsFileAsync();
-            if (file is null)
+            var selectedSettingsFile = await PickImportSettingsFileAsync();
+            if (selectedSettingsFile is null)
             {
                 ShowSettingsImportExportResult(
                     LocalizedResourceAccessor.GetString("Settings.Import.CancelledTitle"),
@@ -170,29 +170,17 @@ public sealed partial class SettingsPage : Page
                 return;
             }
 
-            await _settingsService.ImportAsync(file.Path);
+            await _settingsService.ImportAsync(selectedSettingsFile.Path);
             ApplySettingsToViewModel();
             ShowSettingsImportExportResult(
                 LocalizedResourceAccessor.GetString("Settings.Import.SuccessTitle"),
-                LocalizedResourceAccessor.GetFormattedString("Settings.Import.SuccessMessageFormat", Path.GetFileName(file.Path)),
+                LocalizedResourceAccessor.GetFormattedString("Settings.Import.SuccessMessageFormat", Path.GetFileName(selectedSettingsFile.Path)),
                 InfoBarSeverity.Success);
         }
-        catch (ArgumentException exception)
-        {
-            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.FailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
-        catch (InvalidOperationException exception)
-        {
-            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.FailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
-        catch (IOException exception)
-        {
-            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.FailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
-        catch (UnauthorizedAccessException exception)
-        {
-            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.FailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
+        catch (ArgumentException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
+        catch (InvalidOperationException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
+        catch (IOException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
+        catch (UnauthorizedAccessException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
         finally { SetSettingsTransferInProgress(false); }
     }
 
@@ -316,8 +304,8 @@ public sealed partial class SettingsPage : Page
     private async Task<PickFileResult> PickExportSettingsFileAsync()
     {
         var fileSavePicker = new FileSavePicker(XamlRoot.ContentIslandEnvironment.AppWindowId);
-        var extensions = new List<string> { SettingsFileExtension }; // AOT Workaround : CCW doesn't support IList<string> marshaling
-        fileSavePicker.FileTypeChoices.Add(LocalizedResourceAccessor.GetString("Settings.Export.FileTypeDisplayName"), extensions);
+        List<string> fileTypeExtensions = [SettingsFileExtension]; // AOT Workaround : CCW doesn't support IList<string> marshaling
+        fileSavePicker.FileTypeChoices.Add(LocalizedResourceAccessor.GetString("Settings.Export.FileTypeDisplayName"), fileTypeExtensions);
         fileSavePicker.DefaultFileExtension = SettingsFileExtension;
         fileSavePicker.SuggestedFileName = SettingsSuggestedFileName;
         fileSavePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
@@ -350,30 +338,9 @@ public sealed partial class SettingsPage : Page
 
             SetStoreUpdateStatus("Settings.StoreUpdate.Status.UpToDate");
         }
-        catch (COMException)
-        {
-            SetStoreUpdateStatus("Settings.StoreUpdate.Status.CheckFailed");
-            ShowSettingsStatus(
-                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedTitle"),
-                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedMessage"),
-                InfoBarSeverity.Error);
-        }
-        catch (InvalidOperationException)
-        {
-            SetStoreUpdateStatus("Settings.StoreUpdate.Status.CheckFailed");
-            ShowSettingsStatus(
-                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedTitle"),
-                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedMessage"),
-                InfoBarSeverity.Error);
-        }
-        catch (UnauthorizedAccessException)
-        {
-            SetStoreUpdateStatus("Settings.StoreUpdate.Status.CheckFailed");
-            ShowSettingsStatus(
-                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedTitle"),
-                LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedMessage"),
-                InfoBarSeverity.Error);
-        }
+        catch (COMException) { ShowStoreUpdateCheckFailedStatus(); }
+        catch (InvalidOperationException) { ShowStoreUpdateCheckFailedStatus(); }
+        catch (UnauthorizedAccessException) { ShowStoreUpdateCheckFailedStatus(); }
         finally { CheckStoreUpdateButton.IsEnabled = true; }
     }
 
@@ -456,9 +423,8 @@ public sealed partial class SettingsPage : Page
         SetSettingsTransferInProgress(true);
         try
         {
-            var result = await PickExportSettingsFileAsync();
-            var file = result;
-            if (file is null)
+            var selectedSettingsFile = await PickExportSettingsFileAsync();
+            if (selectedSettingsFile is null)
             {
                 ShowSettingsImportExportResult(
                     LocalizedResourceAccessor.GetString("Settings.Export.CancelledTitle"),
@@ -467,28 +433,16 @@ public sealed partial class SettingsPage : Page
                 return;
             }
 
-            await _settingsService.ExportAsync(file.Path);
+            await _settingsService.ExportAsync(selectedSettingsFile.Path);
             ShowSettingsImportExportResult(
                 LocalizedResourceAccessor.GetString("Settings.Export.SuccessTitle"),
-                LocalizedResourceAccessor.GetFormattedString("Settings.Export.SuccessMessageFormat", Path.GetFileName(file.Path)),
+                LocalizedResourceAccessor.GetFormattedString("Settings.Export.SuccessMessageFormat", Path.GetFileName(selectedSettingsFile.Path)),
                 InfoBarSeverity.Success);
         }
-        catch (ArgumentException exception)
-        {
-            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.FailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
-        catch (InvalidOperationException exception)
-        {
-            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.FailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
-        catch (IOException exception)
-        {
-            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.FailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
-        catch (UnauthorizedAccessException exception)
-        {
-            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.FailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
+        catch (ArgumentException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
+        catch (InvalidOperationException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
+        catch (IOException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
+        catch (UnauthorizedAccessException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
         finally { SetSettingsTransferInProgress(false); }
     }
 
@@ -533,18 +487,8 @@ public sealed partial class SettingsPage : Page
             else
                 ClearSettingsStatus();
         }
-        catch (ArgumentException exception)
-        {
-            s_shouldShowPendingLanguageRestartRecommendedStatus = false;
-            ApplySettingsToViewModel();
-            ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
-        catch (InvalidOperationException exception)
-        {
-            s_shouldShowPendingLanguageRestartRecommendedStatus = false;
-            ApplySettingsToViewModel();
-            ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
+        catch (ArgumentException exception) { HandleSaveSettingsFailure(exception.Message); }
+        catch (InvalidOperationException exception) { HandleSaveSettingsFailure(exception.Message); }
         finally { _settingsUpdateSemaphore.Release(); }
     }
 
@@ -580,10 +524,7 @@ public sealed partial class SettingsPage : Page
             ViewModel.SetNavigatorTriggerRectangle(selectedTriggerRectangleSettings);
             await SaveSettingsAsync();
         }
-        catch (InvalidOperationException exception)
-        {
-            ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), exception.Message, InfoBarSeverity.Error);
-        }
+        catch (InvalidOperationException exception) { ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), exception.Message, InfoBarSeverity.Error); }
         finally
         {
             SelectNavigatorTriggerAreaButton.IsEnabled = true;
@@ -598,6 +539,15 @@ public sealed partial class SettingsPage : Page
         ImportSettingsButton.IsEnabled = !isSettingsTransferInProgress;
     }
 
+    private void ShowStoreUpdateCheckFailedStatus()
+    {
+        SetStoreUpdateStatus("Settings.StoreUpdate.Status.CheckFailed");
+        ShowSettingsStatus(
+            LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedTitle"),
+            LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedMessage"),
+            InfoBarSeverity.Error);
+    }
+
     private static void ShowInfoBar(InfoBar infoBar, DispatcherQueueTimer infoBarAutoHideTimer, string title, string message, InfoBarSeverity infoBarSeverity)
     {
         infoBar.Title = title;
@@ -610,6 +560,13 @@ public sealed partial class SettingsPage : Page
     private void ShowSettingsImportExportResult(string title, string message, InfoBarSeverity infoBarSeverity) => ShowInfoBar(SettingsImportExportInfoBar, _settingsImportExportInfoBarAutoHideTimer, title, message, infoBarSeverity);
 
     private void ShowSettingsStatus(string title, string message, InfoBarSeverity infoBarSeverity) => ShowInfoBar(SettingsStatusInfoBar, _settingsStatusInfoBarAutoHideTimer, title, message, infoBarSeverity);
+
+    private void HandleSaveSettingsFailure(string message)
+    {
+        s_shouldShowPendingLanguageRestartRecommendedStatus = false;
+        ApplySettingsToViewModel();
+        ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), message, InfoBarSeverity.Error);
+    }
 
     private static string? TryGetForegroundProcessName(Process runningProcess)
     {

@@ -235,10 +235,7 @@ public sealed class DesktopLifecycleService(
             return;
 
         await _operationSemaphore.WaitAsync(cancellationToken);
-        try
-        {
-            await DeleteDesktopAsync(pendingDesktopDeletion);
-        }
+        try { await DeleteDesktopAsync(pendingDesktopDeletion); }
         finally { _operationSemaphore.Release(); }
     }
 

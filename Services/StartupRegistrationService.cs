@@ -13,10 +13,7 @@ public sealed class StartupRegistrationService : IStartupRegistrationService
             var startupTask = await StartupTask.GetAsync(StartupTaskIdentifier);
             return startupTask.State is StartupTaskState.Enabled or StartupTaskState.EnabledByPolicy;
         }
-        catch
-        {
-            return false;
-        }
+        catch { return false; }
     }
 
     public async Task SetIsEnabledAsync(bool isEnabled)
@@ -29,8 +26,6 @@ public sealed class StartupRegistrationService : IStartupRegistrationService
             else
                 startupTask.Disable();
         }
-        catch
-        {
-        }
+        catch { }
     }
 }

@@ -31,14 +31,14 @@
                 <TextBlock
                     Grid.Row="2"
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Text="{x:Bind PresentationOptions.ActionCardTitle, Mode=OneWay}"
-                    Visibility="{x:Bind GetActionCardTitleVisibility(PresentationOptions.ActionCardTitle), Mode=OneWay}" />
+                    Text="{x:Bind PresentationOptions.ActionCardTitle}"
+                    Visibility="{x:Bind GetActionCardTitleVisibility(PresentationOptions.ActionCardTitle)}" />
 
                 <Button
                     Grid.Row="3"
                     HorizontalAlignment="Stretch"
                     Click="OnActionButtonClicked"
-                    Content="{x:Bind PresentationOptions.ActionButtonText, Mode=OneWay}" />
+                    Content="{x:Bind PresentationOptions.ActionButtonText}" />
             </Grid>
         </Border>
     </Grid>

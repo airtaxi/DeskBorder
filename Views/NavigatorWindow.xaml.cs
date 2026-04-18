@@ -34,11 +34,11 @@ public sealed partial class NavigatorWindow : WindowEx
         BringToFront();
     }
 
-    private void OnClosed(object sender, WindowEventArgs windowEventArgs)
+    private void OnNavigatorWindowClosed(object sender, WindowEventArgs windowEventArgs)
     {
         _ = windowEventArgs;
         _localizationService.LanguageChanged -= OnLocalizationServiceLanguageChanged;
-        Closed -= OnClosed;
+        Closed -= OnNavigatorWindowClosed;
     }
 
     private void InitializeOverlayWindow()
@@ -46,7 +46,7 @@ public sealed partial class NavigatorWindow : WindowEx
         InitializeComponent();
         RegisterCurrentWindowContentWithThemeService();
         _localizationService.LanguageChanged += OnLocalizationServiceLanguageChanged;
-        Closed += OnClosed;
+        Closed += OnNavigatorWindowClosed;
         _navigatorService.Initialize(this);
         RefreshLocalizedText();
         AppWindow.SetPresenter(AppWindowPresenterKind.Overlapped);

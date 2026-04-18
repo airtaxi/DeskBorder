@@ -8,7 +8,7 @@ namespace DeskBorder.Services;
 
 public sealed class LocalizationService : ILocalizationService
 {
-    private readonly static List<string> InstalledLanguages = ["en-US", "ko-KR", "ja-JP", "zh-Hans", "zh-Hant"];
+    private static readonly List<string> s_installedLanguages = ["en-US", "ko-KR", "ja-JP", "zh-Hans", "zh-Hant"];
 
     public event EventHandler? LanguageChanged;
 
@@ -38,10 +38,7 @@ public sealed class LocalizationService : ILocalizationService
         var normalizedResourceName = resourceName.Replace('.', '/');
         string localizedString;
         try { localizedString = App.ResourceLoader.GetString(normalizedResourceName); }
-        catch (COMException)
-        {
-            localizedString = resourceName;
-        }
+        catch (COMException) { localizedString = resourceName; }
 
         return string.IsNullOrWhiteSpace(localizedString) ? resourceName : localizedString;
     }
@@ -76,7 +73,7 @@ public sealed class LocalizationService : ILocalizationService
 
     private static string GetDefaultLanguageTag()
     {
-        var name = CultureInfo.InstalledUICulture.Name;
-        return InstalledLanguages.Contains(name) ? name : InstalledLanguages.First();
+        var installedUserInterfaceCultureName = CultureInfo.InstalledUICulture.Name;
+        return s_installedLanguages.Contains(installedUserInterfaceCultureName) ? installedUserInterfaceCultureName : s_installedLanguages.First();
     }
 }

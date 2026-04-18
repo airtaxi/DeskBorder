@@ -57,14 +57,14 @@ internal static partial class VirtualDesktopFoundation
 
     public static bool TryGetApplicationView(IApplicationViewCollection applicationViewCollection, nint windowHandle, out IApplicationView? applicationView)
     {
-        var hresult = applicationViewCollection.GetViewForHwnd(windowHandle, out var nativeApplicationView);
-        if (hresult == TypeElementNotFoundHresult)
+        var applicationViewResultCode = applicationViewCollection.GetViewForHwnd(windowHandle, out var nativeApplicationView);
+        if (applicationViewResultCode == TypeElementNotFoundHresult)
         {
             applicationView = null;
             return false;
         }
 
-        ThrowIfFailed(hresult);
+        ThrowIfFailed(applicationViewResultCode);
         applicationView = nativeApplicationView;
         return true;
     }
@@ -115,14 +115,14 @@ internal static partial class VirtualDesktopFoundation
 
     public static bool TryGetAdjacentDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IVirtualDesktop referenceDesktop, AdjacentVirtualDesktopDirection direction, out IVirtualDesktop? virtualDesktop)
     {
-        var hresult = virtualDesktopManagerInternal.GetAdjacentDesktop(referenceDesktop, direction, out var nativeVirtualDesktop);
-        if (hresult == AdjacentDesktopNotFoundHresult)
+        var adjacentDesktopResultCode = virtualDesktopManagerInternal.GetAdjacentDesktop(referenceDesktop, direction, out var nativeVirtualDesktop);
+        if (adjacentDesktopResultCode == AdjacentDesktopNotFoundHresult)
         {
             virtualDesktop = null;
             return false;
         }
 
-        ThrowIfFailed(hresult);
+        ThrowIfFailed(adjacentDesktopResultCode);
         virtualDesktop = nativeVirtualDesktop;
         return true;
     }
@@ -141,14 +141,14 @@ internal static partial class VirtualDesktopFoundation
 
     public static bool TryFindDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, VirtualDesktopIdentifier desktopIdentifier, out IVirtualDesktop? virtualDesktop)
     {
-        var hresult = virtualDesktopManagerInternal.FindDesktop(desktopIdentifier, out var nativeVirtualDesktop);
-        if (hresult == TypeElementNotFoundHresult)
+        var findDesktopResultCode = virtualDesktopManagerInternal.FindDesktop(desktopIdentifier, out var nativeVirtualDesktop);
+        if (findDesktopResultCode == TypeElementNotFoundHresult)
         {
             virtualDesktop = null;
             return false;
         }
 
-        ThrowIfFailed(hresult);
+        ThrowIfFailed(findDesktopResultCode);
         virtualDesktop = nativeVirtualDesktop;
         return true;
     }
@@ -173,14 +173,14 @@ internal static partial class VirtualDesktopFoundation
 
     public static bool TryIsWindowOnCurrentDesktop(IVirtualDesktopManager virtualDesktopManager, nint windowHandle, out bool isWindowOnCurrentDesktop)
     {
-        var hresult = virtualDesktopManager.IsWindowOnCurrentVirtualDesktop(windowHandle, out var nativeIsWindowOnCurrentDesktop);
-        if (hresult == TypeElementNotFoundHresult)
+        var windowDesktopStateResultCode = virtualDesktopManager.IsWindowOnCurrentVirtualDesktop(windowHandle, out var nativeIsWindowOnCurrentDesktop);
+        if (windowDesktopStateResultCode == TypeElementNotFoundHresult)
         {
             isWindowOnCurrentDesktop = false;
             return false;
         }
 
-        ThrowIfFailed(hresult);
+        ThrowIfFailed(windowDesktopStateResultCode);
         isWindowOnCurrentDesktop = nativeIsWindowOnCurrentDesktop;
         return true;
     }
@@ -193,14 +193,14 @@ internal static partial class VirtualDesktopFoundation
 
     public static bool TryGetWindowDesktopIdentifier(IVirtualDesktopManager virtualDesktopManager, nint windowHandle, out VirtualDesktopIdentifier desktopIdentifier)
     {
-        var hresult = virtualDesktopManager.GetWindowDesktopId(windowHandle, out var nativeDesktopIdentifier);
-        if (hresult == TypeElementNotFoundHresult)
+        var windowDesktopIdentifierResultCode = virtualDesktopManager.GetWindowDesktopId(windowHandle, out var nativeDesktopIdentifier);
+        if (windowDesktopIdentifierResultCode == TypeElementNotFoundHresult)
         {
             desktopIdentifier = default;
             return false;
         }
 
-        ThrowIfFailed(hresult);
+        ThrowIfFailed(windowDesktopIdentifierResultCode);
         desktopIdentifier = nativeDesktopIdentifier;
         return true;
     }
@@ -306,10 +306,10 @@ internal static partial class VirtualDesktopFoundation
             ?? throw new InvalidOperationException("The COM interface pointer could not be converted to a managed interface.");
     }
 
-    private static void ThrowIfFailed(int hresult)
+    private static void ThrowIfFailed(int resultCode)
     {
-        if (hresult < 0)
-            throw new COMException($"The COM interop call failed with HRESULT 0x{hresult:X8}.", hresult);
+        if (resultCode < 0)
+            throw new COMException($"The COM interop call failed with HRESULT 0x{resultCode:X8}.", resultCode);
     }
 
     [LibraryImport("ole32.dll", SetLastError = true)]

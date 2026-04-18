@@ -860,10 +860,10 @@
   <data name="Tray.LaunchOnStartup" xml:space="preserve">
     <value>システム起動時に実行</value>
   </data>
-  <data name="Tray.LaunchOnStartup.DisableAction" xml:space="preserve">
+  <data name="Tray.LaunchOnStartupDisableAction" xml:space="preserve">
     <value>システム起動時の実行を解除</value>
   </data>
-  <data name="Tray.LaunchOnStartup.EnableAction" xml:space="preserve">
+  <data name="Tray.LaunchOnStartupEnableAction" xml:space="preserve">
     <value>システム起動時の実行を設定</value>
   </data>
   <data name="Tray.RuntimeStatus.Paused" xml:space="preserve">
@@ -875,19 +875,19 @@
   <data name="Tray.RuntimeToggle" xml:space="preserve">
     <value>DeskBorder を有効化</value>
   </data>
-  <data name="Tray.Runtime.DisableAction" xml:space="preserve">
+  <data name="Tray.RuntimeDisableAction" xml:space="preserve">
     <value>DeskBorder を無効化</value>
   </data>
-  <data name="Tray.Runtime.EnableAction" xml:space="preserve">
+  <data name="Tray.RuntimeEnableAction" xml:space="preserve">
     <value>DeskBorder を有効化</value>
   </data>
   <data name="Tray.StoreUpdateCheck" xml:space="preserve">
     <value>Store 更新を自動確認</value>
   </data>
-  <data name="Tray.StoreUpdateCheck.DisableAction" xml:space="preserve">
+  <data name="Tray.StoreUpdateCheckDisableAction" xml:space="preserve">
     <value>Store 更新の自動確認を解除</value>
   </data>
-  <data name="Tray.StoreUpdateCheck.EnableAction" xml:space="preserve">
+  <data name="Tray.StoreUpdateCheckEnableAction" xml:space="preserve">
     <value>Store 更新の自動確認を設定</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">

@@ -8,17 +8,9 @@ public sealed class ManageWindowService : IManageWindowService
 
     public bool IsInitialized => _manageWindow is not null;
 
-    public void ForceClose()
-    {
-        if (_manageWindow is not null)
-            _manageWindow.ForceClose();
-    }
+    public void ForceClose() => _manageWindow?.ForceClose();
 
-    public void Hide()
-    {
-        if (_manageWindow is not null)
-            _manageWindow.AppWindow.Hide();
-    }
+    public void Hide() => _manageWindow?.AppWindow.Hide();
 
     public void Initialize(ManageWindow manageWindow)
     {

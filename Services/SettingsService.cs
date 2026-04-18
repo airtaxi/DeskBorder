@@ -295,14 +295,8 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
                 ? throw new InvalidOperationException("Stored settings payload was empty.")
                 : NormalizeSettings(deserializedSettings);
         }
-        catch (JsonException exception)
-        {
-            throw new InvalidOperationException("Stored settings payload is invalid.", exception);
-        }
-        catch (NotSupportedException exception)
-        {
-            throw new InvalidOperationException("Stored settings payload contains unsupported values.", exception);
-        }
+        catch (JsonException exception) { throw new InvalidOperationException("Stored settings payload is invalid.", exception); }
+        catch (NotSupportedException exception) { throw new InvalidOperationException("Stored settings payload contains unsupported values.", exception); }
     }
 
     private static bool TryLoadStoredSettings(out DeskBorderSettings settings)

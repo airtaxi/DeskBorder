@@ -860,10 +860,10 @@
   <data name="Tray.LaunchOnStartup" xml:space="preserve">
     <value>시스템 시작 시 자동 실행</value>
   </data>
-  <data name="Tray.LaunchOnStartup.DisableAction" xml:space="preserve">
+  <data name="Tray.LaunchOnStartupDisableAction" xml:space="preserve">
     <value>시스템 시작 시 자동 실행 해제</value>
   </data>
-  <data name="Tray.LaunchOnStartup.EnableAction" xml:space="preserve">
+  <data name="Tray.LaunchOnStartupEnableAction" xml:space="preserve">
     <value>시스템 시작 시 자동 실행 설정</value>
   </data>
   <data name="Tray.RuntimeStatus.Paused" xml:space="preserve">
@@ -875,19 +875,19 @@
   <data name="Tray.RuntimeToggle" xml:space="preserve">
     <value>DeskBorder 사용</value>
   </data>
-  <data name="Tray.Runtime.DisableAction" xml:space="preserve">
+  <data name="Tray.RuntimeDisableAction" xml:space="preserve">
     <value>DeskBorder 사용 안 함</value>
   </data>
-  <data name="Tray.Runtime.EnableAction" xml:space="preserve">
+  <data name="Tray.RuntimeEnableAction" xml:space="preserve">
     <value>DeskBorder 사용</value>
   </data>
   <data name="Tray.StoreUpdateCheck" xml:space="preserve">
     <value>스토어 업데이트 자동 확인</value>
   </data>
-  <data name="Tray.StoreUpdateCheck.DisableAction" xml:space="preserve">
+  <data name="Tray.StoreUpdateCheckDisableAction" xml:space="preserve">
     <value>스토어 업데이트 자동 확인 해제</value>
   </data>
-  <data name="Tray.StoreUpdateCheck.EnableAction" xml:space="preserve">
+  <data name="Tray.StoreUpdateCheckEnableAction" xml:space="preserve">
     <value>스토어 업데이트 자동 확인 설정</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">

@@ -860,10 +860,10 @@
   <data name="Tray.LaunchOnStartup" xml:space="preserve">
     <value>Run at system startup</value>
   </data>
-  <data name="Tray.LaunchOnStartup.DisableAction" xml:space="preserve">
+  <data name="Tray.LaunchOnStartupDisableAction" xml:space="preserve">
     <value>Disable run at system startup</value>
   </data>
-  <data name="Tray.LaunchOnStartup.EnableAction" xml:space="preserve">
+  <data name="Tray.LaunchOnStartupEnableAction" xml:space="preserve">
     <value>Enable run at system startup</value>
   </data>
   <data name="Tray.RuntimeStatus.Paused" xml:space="preserve">
@@ -875,19 +875,19 @@
   <data name="Tray.RuntimeToggle" xml:space="preserve">
     <value>Enable DeskBorder</value>
   </data>
-  <data name="Tray.Runtime.DisableAction" xml:space="preserve">
+  <data name="Tray.RuntimeDisableAction" xml:space="preserve">
     <value>Disable DeskBorder</value>
   </data>
-  <data name="Tray.Runtime.EnableAction" xml:space="preserve">
+  <data name="Tray.RuntimeEnableAction" xml:space="preserve">
     <value>Enable DeskBorder</value>
   </data>
   <data name="Tray.StoreUpdateCheck" xml:space="preserve">
     <value>Check for Store updates automatically</value>
   </data>
-  <data name="Tray.StoreUpdateCheck.DisableAction" xml:space="preserve">
+  <data name="Tray.StoreUpdateCheckDisableAction" xml:space="preserve">
     <value>Disable automatic Store update checks</value>
   </data>
-  <data name="Tray.StoreUpdateCheck.EnableAction" xml:space="preserve">
+  <data name="Tray.StoreUpdateCheckEnableAction" xml:space="preserve">
     <value>Enable automatic Store update checks</value>
   </data>
   <data name="TriggerRectangle.Format" xml:space="preserve">

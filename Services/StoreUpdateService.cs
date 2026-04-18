@@ -40,13 +40,8 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService)
         return storePackageUpdates.Count;
     }
 
-    public async Task<bool> OpenStoreProductPageAsync()
-    {
-        if (await Launcher.LaunchUriAsync(s_storePackageFamilyNameProductPageUri))
-            return true;
-
-        return await Launcher.LaunchUriAsync(s_storeProductIdentifierProductPageUri);
-    }
+    public async Task<bool> OpenStoreProductPageAsync() => await Launcher.LaunchUriAsync(s_storePackageFamilyNameProductPageUri)
+        || await Launcher.LaunchUriAsync(s_storeProductIdentifierProductPageUri);
 
     public void Dispose()
     {
@@ -69,27 +64,13 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService)
         {
             while (await periodicTimer.WaitForNextTickAsync(cancellationToken))
             {
-                try
-                {
-                    await CheckForUpdatesAndNotifyAsync();
-                }
-                catch (COMException exception)
-                {
-                    Debug.WriteLine($"Store update check failed with COMException: {exception.Message}");
-                }
-                catch (InvalidOperationException exception)
-                {
-                    Debug.WriteLine($"Store update check failed with InvalidOperationException: {exception.Message}");
-                }
-                catch (UnauthorizedAccessException exception)
-                {
-                    Debug.WriteLine($"Store update check failed with UnauthorizedAccessException: {exception.Message}");
-                }
+                try { await CheckForUpdatesAndNotifyAsync(); }
+                catch (COMException exception) { Debug.WriteLine($"Store update check failed with COMException: {exception.Message}"); }
+                catch (InvalidOperationException exception) { Debug.WriteLine($"Store update check failed with InvalidOperationException: {exception.Message}"); }
+                catch (UnauthorizedAccessException exception) { Debug.WriteLine($"Store update check failed with UnauthorizedAccessException: {exception.Message}"); }
             }
         }
-        catch (OperationCanceledException)
-        {
-        }
+        catch (OperationCanceledException) { }
     }
 
     private static void ShowSystemToast()

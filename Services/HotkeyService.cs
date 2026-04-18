@@ -215,11 +215,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
                 _registeredHotkeys.Add(registeredHotkey);
             }
         }
-        catch
-        {
-            UnregisterHotkeysCore();
-            throw;
-        }
+        catch { UnregisterHotkeysCore(); throw; }
     }
 
     private void RunMessageLoopOnBackgroundThread()

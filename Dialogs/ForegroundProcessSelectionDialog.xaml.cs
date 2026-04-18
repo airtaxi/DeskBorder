@@ -17,10 +17,5 @@ public sealed partial class ForegroundProcessSelectionDialog : ContentDialog
         IsPrimaryButtonEnabled = false;
     }
 
-    private void OnAvailableProcessNamesListViewSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
-    {
-        _ = sender;
-        _ = selectionChangedEventArgs;
-        IsPrimaryButtonEnabled = AvailableProcessNamesListView.SelectedItems.Count > 0;
-    }
+    private void OnAvailableProcessNamesListViewSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs) => IsPrimaryButtonEnabled = AvailableProcessNamesListView.SelectedItems.Count > 0;
 }

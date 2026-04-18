@@ -23,10 +23,7 @@ public static class UiThreadHelper
                 action();
                 taskCompletionSource.SetResult();
             }
-            catch (Exception exception)
-            {
-                taskCompletionSource.SetException(exception);
-            }
+            catch (Exception exception) { taskCompletionSource.SetException(exception); }
         }))
         {
             taskCompletionSource.SetException(new InvalidOperationException("Failed to enqueue the UI operation."));

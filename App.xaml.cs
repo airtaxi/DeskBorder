@@ -29,9 +29,9 @@ public partial class App : Application
         ResourceLoader = new ResourceLoader();
         s_services = ConfigureServices();
 
-        UnhandledException += OnUnhandledException;
+        UnhandledException += OnApplicationUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
-        TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+        TaskScheduler.UnobservedTaskException += OnTaskSchedulerUnobservedTaskException;
     }
 
     public static TService GetRequiredService<TService>() where TService : notnull => Services.GetRequiredService<TService>();
@@ -106,17 +106,11 @@ public partial class App : Application
         {
             return JsonSerializer.Deserialize(serializedSettings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings);
         }
-        catch (JsonException)
-        {
-            return null;
-        }
-        catch (NotSupportedException)
-        {
-            return null;
-        }
+        catch (JsonException) { return null; }
+        catch (NotSupportedException) { return null; }
     }
 
-    private static void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+    private static void OnApplicationUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs unhandledExceptionEventArgs)
     {
         WriteException("Microsoft.UI.Xaml.Application.UnhandledException", unhandledExceptionEventArgs.Exception);
         unhandledExceptionEventArgs.Handled = true;
@@ -128,7 +122,7 @@ public partial class App : Application
             WriteException("AppDomain.CurrentDomain.UnhandledException", exception);
     }
 
-    private static void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
+    private static void OnTaskSchedulerUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
     {
         WriteException("TaskScheduler.UnobservedTaskException", unobservedTaskExceptionEventArgs.Exception);
         unobservedTaskExceptionEventArgs.SetObserved();
