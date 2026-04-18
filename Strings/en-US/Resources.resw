@@ -763,8 +763,23 @@
   <data name="VirtualKey.CapitalLock" xml:space="preserve">
     <value>Caps Lock</value>
   </data>
+  <data name="VirtualKey.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
   <data name="VirtualKey.Down" xml:space="preserve">
     <value>Down Arrow</value>
+  </data>
+  <data name="VirtualKey.End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="VirtualKey.Escape" xml:space="preserve">
+    <value>Escape</value>
+  </data>
+  <data name="VirtualKey.Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="VirtualKey.Insert" xml:space="preserve">
+    <value>Insert</value>
   </data>
   <data name="VirtualKey.Left" xml:space="preserve">
     <value>Left Arrow</value>
@@ -777,6 +792,12 @@
   </data>
   <data name="VirtualKey.Right" xml:space="preserve">
     <value>Right Arrow</value>
+  </data>
+  <data name="VirtualKey.Space" xml:space="preserve">
+    <value>Space</value>
+  </data>
+  <data name="VirtualKey.Tab" xml:space="preserve">
+    <value>Tab</value>
   </data>
   <data name="VirtualKey.Up" xml:space="preserve">
     <value>Up Arrow</value>

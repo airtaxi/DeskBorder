@@ -763,11 +763,26 @@
   <data name="VirtualKey.CapitalLock" xml:space="preserve">
     <value>Caps Lock</value>
   </data>
+  <data name="VirtualKey.Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
   <data name="VirtualKey.Down" xml:space="preserve">
-    <value>下箭头</value>
+    <value>下方向键</value>
+  </data>
+  <data name="VirtualKey.End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="VirtualKey.Escape" xml:space="preserve">
+    <value>Esc</value>
+  </data>
+  <data name="VirtualKey.Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="VirtualKey.Insert" xml:space="preserve">
+    <value>Insert</value>
   </data>
   <data name="VirtualKey.Left" xml:space="preserve">
-    <value>左箭头</value>
+    <value>左方向键</value>
   </data>
   <data name="VirtualKey.PageDown" xml:space="preserve">
     <value>Page Down</value>
@@ -776,9 +791,15 @@
     <value>Page Up</value>
   </data>
   <data name="VirtualKey.Right" xml:space="preserve">
-    <value>右箭头</value>
+    <value>右方向键</value>
+  </data>
+  <data name="VirtualKey.Space" xml:space="preserve">
+    <value>空格</value>
+  </data>
+  <data name="VirtualKey.Tab" xml:space="preserve">
+    <value>Tab</value>
   </data>
   <data name="VirtualKey.Up" xml:space="preserve">
-    <value>上箭头</value>
+    <value>上方向键</value>
   </data>
 </root>
