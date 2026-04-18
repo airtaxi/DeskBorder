@@ -116,7 +116,8 @@ public sealed partial class DashboardPage : Page
         UpdatePresentation();
     }
 
-    private async void OnToggleRuntimeButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await _deskBorderRuntimeService.SetRunningStateAsync(!_deskBorderRuntimeService.IsRunning);
+    private async void OnToggleRuntimeButtonClicked(object sender, RoutedEventArgs routedEventArgs)
+        => await ApplyQuickSettingAsync(() => _settingsService.UpdateSettingsAsync(_settingsService.Settings with { IsDeskBorderEnabled = !_settingsService.Settings.IsDeskBorderEnabled }));
 
     private void EnqueuePresentationUpdate()
     {
@@ -185,8 +186,9 @@ public sealed partial class DashboardPage : Page
 
     private void UpdateRuntimePresentation()
     {
+        var currentSettings = _settingsService.Settings;
         RuntimeStatusTextBlock.Text = _deskBorderRuntimeService.StatusMessage;
-        ToggleRuntimeButton.Content = LocalizedResourceAccessor.GetString(_deskBorderRuntimeService.IsRunning ? "Dashboard.ToggleRuntime.Disable" : "Dashboard.ToggleRuntime.Enable");
+        ToggleRuntimeButton.Content = LocalizedResourceAccessor.GetString(currentSettings.IsDeskBorderEnabled ? "Dashboard.ToggleRuntime.Disable" : "Dashboard.ToggleRuntime.Enable");
         MonitoringStatusTextBlock.Text = _desktopEdgeMonitorService.IsMonitoring
             ? LocalizedResourceAccessor.GetString("Dashboard.Monitoring.Running")
             : LocalizedResourceAccessor.GetString("Dashboard.Monitoring.Stopped");

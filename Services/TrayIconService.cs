@@ -11,7 +11,7 @@ public sealed class TrayIconService : ITrayIconService, IDisposable
 
     public bool IsLaunchOnStartupEnabled => _settingsService.Settings.IsLaunchOnStartupEnabled;
 
-    public bool IsRuntimeEnabled => _deskBorderRuntimeService.IsRunning;
+    public bool IsRuntimeEnabled => _settingsService.Settings.IsDeskBorderEnabled;
 
     public bool IsStoreUpdateCheckEnabled => _settingsService.Settings.IsStoreUpdateCheckEnabled;
 

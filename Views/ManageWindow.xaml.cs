@@ -141,7 +141,8 @@ public sealed partial class ManageWindow : WindowEx
 
     private void OnOpenManageWindowMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => App.GetRequiredService<IManageWindowService>().Show();
 
-    private async void OnRuntimeToggleMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => await _deskBorderRuntimeService.SetRunningStateAsync(RuntimeToggleMenuFlyoutItem.IsChecked);
+    private async void OnRuntimeToggleMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs)
+        => await _settingsService.UpdateSettingsAsync(_settingsService.Settings with { IsDeskBorderEnabled = RuntimeToggleMenuFlyoutItem.IsChecked });
 
     private void OnShowNavigatorMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => _navigatorService.ToggleOverlay();
 

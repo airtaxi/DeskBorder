@@ -18,13 +18,14 @@ public sealed class ApplicationBootstrapService(IServiceProvider serviceProvider
         {
             await _settingsService.InitializeAsync();
             _hotkeyService.HotkeyInvoked += OnHotkeyServiceHotkeyInvoked;
+            _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
             if (!_hotkeyService.IsInitialized)
                 _hotkeyService.Initialize();
 
             var manageWindow = _serviceProvider.GetRequiredService<ManageWindow>();
             _ = _serviceProvider.GetRequiredService<NavigatorWindow>();
             _manageWindowService.Initialize(manageWindow);
-            await _deskBorderRuntimeService.StartAsync();
+            await SynchronizeDeskBorderRuntimeStateAsync();
             _isInitialized = true;
         }
 
@@ -37,6 +38,11 @@ public sealed class ApplicationBootstrapService(IServiceProvider serviceProvider
         if (hotkeyInvokedEventArgs.HotkeyActionType != HotkeyActionType.ToggleDeskBorderEnabled)
             return;
 
-        await _deskBorderRuntimeService.SetRunningStateAsync(!_deskBorderRuntimeService.IsRunning);
+        var currentSettings = _settingsService.Settings;
+        await _settingsService.UpdateSettingsAsync(currentSettings with { IsDeskBorderEnabled = !currentSettings.IsDeskBorderEnabled });
     }
+
+    private void OnSettingsServiceSettingsChanged(object? sender, EventArgs eventArguments) => _ = SynchronizeDeskBorderRuntimeStateAsync();
+
+    private async Task SynchronizeDeskBorderRuntimeStateAsync() => await _deskBorderRuntimeService.SetRunningStateAsync(_settingsService.Settings.IsDeskBorderEnabled);
 }
