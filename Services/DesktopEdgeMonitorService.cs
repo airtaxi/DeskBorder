@@ -151,15 +151,15 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
             (int)Math.Round(displayMonitorBounds.Height * triggerRectangleSettings.Height, MidpointRounding.AwayFromZero),
             1,
             displayMonitorBounds.Height);
-        var left = Math.Clamp(
-            displayMonitorBounds.Left + (int)Math.Round(displayMonitorBounds.Width * triggerRectangleSettings.Left, MidpointRounding.ToZero),
-            displayMonitorBounds.Left,
-            displayMonitorBounds.Right - width);
-        var top = Math.Clamp(
-            displayMonitorBounds.Top + (int)Math.Round(displayMonitorBounds.Height * triggerRectangleSettings.Top, MidpointRounding.ToZero),
-            displayMonitorBounds.Top,
-            displayMonitorBounds.Bottom - height);
-        return new(left, top, left + width, top + height);
+        var right = Math.Clamp(
+            displayMonitorBounds.Left + (int)Math.Round(displayMonitorBounds.Width * (triggerRectangleSettings.Left + triggerRectangleSettings.Width), MidpointRounding.AwayFromZero),
+            displayMonitorBounds.Left + width,
+            displayMonitorBounds.Right);
+        var bottom = Math.Clamp(
+            displayMonitorBounds.Top + (int)Math.Round(displayMonitorBounds.Height * (triggerRectangleSettings.Top + triggerRectangleSettings.Height), MidpointRounding.AwayFromZero),
+            displayMonitorBounds.Top + height,
+            displayMonitorBounds.Bottom);
+        return new(right - width, bottom - height, right, bottom);
     }
 
     private static DesktopEdgeKind GetActiveDesktopEdge(
