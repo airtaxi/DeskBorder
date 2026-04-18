@@ -17,6 +17,14 @@ public static class SettingsDisplayFormatter
         _ => appLanguagePreference.ToString()
     };
 
+    public static string FormatApplicationThemePreference(ApplicationThemePreference applicationThemePreference) => applicationThemePreference switch
+    {
+        ApplicationThemePreference.System => LocalizedResourceAccessor.GetString("Settings.ApplicationTheme.System"),
+        ApplicationThemePreference.Light => LocalizedResourceAccessor.GetString("Settings.ApplicationTheme.Light"),
+        ApplicationThemePreference.Dark => LocalizedResourceAccessor.GetString("Settings.ApplicationTheme.Dark"),
+        _ => applicationThemePreference.ToString()
+    };
+
     public static string FormatDesktopEdgeAvailabilityStatus(DesktopEdgeAvailabilityStatus desktopEdgeAvailabilityStatus) => desktopEdgeAvailabilityStatus switch
     {
         DesktopEdgeAvailabilityStatus.Enabled => LocalizedResourceAccessor.GetString("DesktopEdgeAvailability.Enabled"),

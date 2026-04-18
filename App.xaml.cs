@@ -25,6 +25,7 @@ public partial class App : Application
     {
         InitializeComponent();
         LocalizationService.ApplyLanguagePreferenceOverride(LoadInitialLanguagePreference());
+        ApplyInitialThemePreferenceOverride(LoadInitialApplicationThemePreference());
         ResourceLoader = new ResourceLoader();
         s_services = ConfigureServices();
 
@@ -73,21 +74,45 @@ public partial class App : Application
 
     private static AppLanguagePreference LoadInitialLanguagePreference()
     {
+        var storedSettings = LoadInitialSettings();
+        return storedSettings?.AppLanguagePreference ?? AppLanguagePreference.System;
+    }
+
+    private void ApplyInitialThemePreferenceOverride(ApplicationThemePreference applicationThemePreference)
+    {
+        if (applicationThemePreference == ApplicationThemePreference.System)
+            return;
+
+        RequestedTheme = applicationThemePreference switch
+        {
+            ApplicationThemePreference.Light => ApplicationTheme.Light,
+            ApplicationThemePreference.Dark => ApplicationTheme.Dark,
+            _ => RequestedTheme
+        };
+    }
+
+    private static ApplicationThemePreference LoadInitialApplicationThemePreference()
+    {
+        var storedSettings = LoadInitialSettings();
+        return storedSettings?.ApplicationThemePreference ?? ApplicationThemePreference.System;
+    }
+
+    private static DeskBorderSettings? LoadInitialSettings()
+    {
         if (ApplicationData.Current.LocalSettings.Values[SettingsKey] is not string serializedSettings)
-            return AppLanguagePreference.System;
+            return null;
 
         try
         {
-            var storedSettings = JsonSerializer.Deserialize(serializedSettings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings);
-            return storedSettings?.AppLanguagePreference ?? AppLanguagePreference.System;
+            return JsonSerializer.Deserialize(serializedSettings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings);
         }
         catch (JsonException)
         {
-            return AppLanguagePreference.System;
+            return null;
         }
         catch (NotSupportedException)
         {
-            return AppLanguagePreference.System;
+            return null;
         }
     }
 

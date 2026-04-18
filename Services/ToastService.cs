@@ -7,8 +7,11 @@ namespace DeskBorder.Services;
 public sealed class ToastService : IToastService
 {
     private readonly object _syncLock = new();
+    private readonly IThemeService _themeService;
     private ActiveToastContext? _activeToastContext;
     private ToastWindow? _toastWindow;
+
+    public ToastService(IThemeService themeService) => _themeService = themeService;
 
     public bool IsToastVisible { get; private set; }
 
@@ -78,7 +81,7 @@ public sealed class ToastService : IToastService
         if (_toastWindow is not null)
             return;
 
-        _toastWindow = new ToastWindow();
+        _toastWindow = new ToastWindow(_themeService);
         _toastWindow.ActionButtonClicked += OnToastWindowActionButtonClicked;
     }
 

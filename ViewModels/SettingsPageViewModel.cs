@@ -19,6 +19,13 @@ public enum KeyboardShortcutValidationState
 
 public sealed partial class SettingsPageViewModel : ObservableObject
 {
+    private static readonly ApplicationThemePreference[] s_applicationThemePreferences =
+    [
+        ApplicationThemePreference.System,
+        ApplicationThemePreference.Light,
+        ApplicationThemePreference.Dark
+    ];
+
     private static readonly AppLanguagePreference[] s_appLanguagePreferences =
     [
         AppLanguagePreference.System,
@@ -104,6 +111,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public SettingsPageViewModel()
     {
         var virtualKeyOptions = CreateSelectionOptions(s_virtualKeys, SettingsDisplayFormatter.FormatVirtualKey);
+        ApplicationThemePreferenceOptions = CreateSelectionOptions(s_applicationThemePreferences, SettingsDisplayFormatter.FormatApplicationThemePreference);
         AppLanguagePreferenceOptions = CreateSelectionOptions(s_appLanguagePreferences, SettingsDisplayFormatter.FormatAppLanguagePreference);
         MultiDisplayBehaviorOptions = CreateSelectionOptions(s_multiDisplayBehaviors, SettingsDisplayFormatter.FormatMultiDisplayBehavior);
         ToggleDeskBorderEnabledHotkeyEditor = new KeyboardShortcutEditorViewModel(virtualKeyOptions);
@@ -115,6 +123,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         RegisterKeyboardShortcutEditor(MoveFocusedWindowToNextDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(NavigatorToggleHotkeyEditor);
     }
+
+    public List<SelectionOption<ApplicationThemePreference>> ApplicationThemePreferenceOptions { get; }
 
     public List<SelectionOption<AppLanguagePreference>> AppLanguagePreferenceOptions { get; }
 
@@ -219,6 +229,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial SelectionOption<AppLanguagePreference>? SelectedAppLanguagePreferenceOption { get; set; }
 
     [ObservableProperty]
+    public partial SelectionOption<ApplicationThemePreference>? SelectedApplicationThemePreferenceOption { get; set; }
+
+    [ObservableProperty]
     public partial SelectionOption<MultiDisplayBehavior>? SelectedMultiDisplayBehaviorOption { get; set; }
 
     public ModifierKeySelectionViewModel SwitchDesktopModifierSelection { get; } = new();
@@ -299,7 +312,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         BlacklistedProcessNames = [.. BlacklistedProcessNames],
         IsLaunchOnStartupEnabled = IsLaunchOnStartupEnabled,
         IsStoreUpdateCheckEnabled = IsStoreUpdateCheckEnabled,
-        AppLanguagePreference = SelectedAppLanguagePreferenceOption?.Value ?? AppLanguagePreference.System
+        AppLanguagePreference = SelectedAppLanguagePreferenceOption?.Value ?? AppLanguagePreference.System,
+        ApplicationThemePreference = SelectedApplicationThemePreferenceOption?.Value ?? ApplicationThemePreference.System
     };
 
     public void Load(DeskBorderSettings deskBorderSettings)
@@ -321,6 +335,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         SelectedAppLanguagePreferenceOption = FindSelectionOption(
             AppLanguagePreferenceOptions,
             deskBorderSettings.AppLanguagePreference);
+        SelectedApplicationThemePreferenceOption = FindSelectionOption(
+            ApplicationThemePreferenceOptions,
+            deskBorderSettings.ApplicationThemePreference);
         SwitchDesktopModifierSelection.Load(deskBorderSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
         CreateDesktopModifierSelection.Load(deskBorderSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys);
         ToggleDeskBorderEnabledHotkeyEditor.Load(deskBorderSettings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey);

@@ -375,6 +375,15 @@
   <data name="Settings.AppLanguage.System" xml:space="preserve">
     <value>系統預設</value>
   </data>
+  <data name="Settings.ApplicationTheme.Dark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="Settings.ApplicationTheme.Light" xml:space="preserve">
+    <value>淺色</value>
+  </data>
+  <data name="Settings.ApplicationTheme.System" xml:space="preserve">
+    <value>系統預設</value>
+  </data>
   <data name="Settings.Blacklist.AddFailedTitle" xml:space="preserve">
     <value>新增黑名單項目失敗</value>
   </data>
@@ -435,6 +444,12 @@
   <data name="Settings.Status.ApplyFailedTitle" xml:space="preserve">
     <value>套用設定失敗</value>
   </data>
+  <data name="Settings.Status.ThemeRestartRecommendedMessage" xml:space="preserve">
+    <value>主題已立即套用，但為了讓所有子視窗與對話方塊完全重新整理，建議重新啟動應用程式。</value>
+  </data>
+  <data name="Settings.Status.ThemeRestartRecommendedTitle" xml:space="preserve">
+    <value>建議重新啟動</value>
+  </data>
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>該處理程序已在黑名單中。</value>
   </data>
@@ -452,6 +467,9 @@
   </data>
   <data name="SettingsPage_AppLanguagePreferenceComboBox.Header" xml:space="preserve">
     <value>應用程式語言</value>
+  </data>
+  <data name="SettingsPage_ApplicationThemePreferenceComboBox.Header" xml:space="preserve">
+    <value>應用程式主題</value>
   </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>自動刪除空桌面</value>

@@ -1,6 +1,7 @@
 using DeskBorder.Interop;
 using DeskBorder.Helpers;
 using DeskBorder.Models;
+using DeskBorder.Services;
 using DeskBorder.ViewModels;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -15,9 +16,10 @@ public sealed partial class ToastWindow : WindowEx
     private const int ToastHeight = 160;
     private const int ToastWidth = 420;
 
-    public ToastWindow()
+    public ToastWindow(IThemeService themeService)
     {
         InitializeComponent();
+        RegisterCurrentWindowContentWithThemeService(themeService);
         Title = LocalizedResourceAccessor.GetString("Toast.WindowTitle");
         AppWindow.SetPresenter(AppWindowPresenterKind.Overlapped);
     }
@@ -51,6 +53,14 @@ public sealed partial class ToastWindow : WindowEx
     }
 
     private void OnActionButtonClicked(object sender, RoutedEventArgs routedEventArgs) => ActionButtonClicked?.Invoke(this, EventArgs.Empty);
+
+    private void RegisterCurrentWindowContentWithThemeService(IThemeService themeService)
+    {
+        if (Content is not FrameworkElement rootFrameworkElement)
+            throw new InvalidOperationException("Unable to resolve the toast window root content for theme application.");
+
+        themeService.RegisterFrameworkElement(rootFrameworkElement);
+    }
 
     private void UpdateWindowBounds()
     {

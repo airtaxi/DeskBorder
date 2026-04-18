@@ -128,6 +128,15 @@
                             SelectionChanged="OnSettingSelectionChanged" />
 
                         <ComboBox
+                            x:Name="ApplicationThemePreferenceComboBox"
+                            x:Uid="SettingsPage_ApplicationThemePreferenceComboBox"
+                            Header="앱 테마"
+                            ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                            ItemsSource="{x:Bind ViewModel.ApplicationThemePreferenceOptions, Mode=OneWay}"
+                            SelectedItem="{x:Bind ViewModel.SelectedApplicationThemePreferenceOption, Mode=TwoWay}"
+                            SelectionChanged="OnSettingSelectionChanged" />
+
+                        <ComboBox
                             x:Name="AppLanguagePreferenceComboBox"
                             x:Uid="SettingsPage_AppLanguagePreferenceComboBox"
                             Header="앱 언어"

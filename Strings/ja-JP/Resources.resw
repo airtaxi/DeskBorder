@@ -375,6 +375,15 @@
   <data name="Settings.AppLanguage.System" xml:space="preserve">
     <value>システム既定</value>
   </data>
+  <data name="Settings.ApplicationTheme.Dark" xml:space="preserve">
+    <value>ダーク</value>
+  </data>
+  <data name="Settings.ApplicationTheme.Light" xml:space="preserve">
+    <value>ライト</value>
+  </data>
+  <data name="Settings.ApplicationTheme.System" xml:space="preserve">
+    <value>システム既定</value>
+  </data>
   <data name="Settings.Blacklist.AddFailedTitle" xml:space="preserve">
     <value>ブラックリストへの追加に失敗しました</value>
   </data>
@@ -435,6 +444,12 @@
   <data name="Settings.Status.ApplyFailedTitle" xml:space="preserve">
     <value>設定の適用に失敗しました</value>
   </data>
+  <data name="Settings.Status.ThemeRestartRecommendedMessage" xml:space="preserve">
+    <value>テーマはすぐに適用されましたが、すべてのサブウィンドウとダイアログに完全に反映するにはアプリの再起動を推奨します。</value>
+  </data>
+  <data name="Settings.Status.ThemeRestartRecommendedTitle" xml:space="preserve">
+    <value>再起動を推奨</value>
+  </data>
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>そのプロセスは既にブラックリストに含まれています。</value>
   </data>
@@ -452,6 +467,9 @@
   </data>
   <data name="SettingsPage_AppLanguagePreferenceComboBox.Header" xml:space="preserve">
     <value>アプリの言語</value>
+  </data>
+  <data name="SettingsPage_ApplicationThemePreferenceComboBox.Header" xml:space="preserve">
+    <value>アプリのテーマ</value>
   </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>空のデスクトップを自動削除</value>

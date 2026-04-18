@@ -20,6 +20,7 @@ public sealed partial class ManageWindow : WindowEx
     private readonly INavigatorService _navigatorService;
     private readonly ILocalizationService _localizationService;
     private readonly ISettingsService _settingsService;
+    private readonly IThemeService _themeService;
     private readonly ITrayIconService _trayIconService;
     private readonly WindowSubclassProcedure _windowSubclassProcedure;
     private bool _forceClose;
@@ -40,7 +41,8 @@ public sealed partial class ManageWindow : WindowEx
         INavigatorService navigatorService,
         ITrayIconService trayIconService,
         ISettingsService settingsService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IThemeService themeService)
     {
         _manageNavigationService = manageNavigationService;
         _deskBorderRuntimeService = deskBorderRuntimeService;
@@ -48,8 +50,10 @@ public sealed partial class ManageWindow : WindowEx
         _trayIconService = trayIconService;
         _settingsService = settingsService;
         _localizationService = localizationService;
+        _themeService = themeService;
 
         InitializeComponent();
+        RegisterCurrentWindowContentWithThemeService();
 
         AppWindow.SetIcon("Assets/Icon.ico");
 
@@ -69,6 +73,14 @@ public sealed partial class ManageWindow : WindowEx
         RefreshLocalizedText();
         UpdateNavigationChrome();
         RefreshTrayMenu();
+    }
+
+    private void RegisterCurrentWindowContentWithThemeService()
+    {
+        if (Content is not FrameworkElement rootFrameworkElement)
+            throw new InvalidOperationException("Unable to resolve the manage window root content for theme application.");
+
+        _themeService.RegisterFrameworkElement(rootFrameworkElement);
     }
 
     public void ForceClose()

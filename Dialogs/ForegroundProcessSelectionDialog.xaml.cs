@@ -1,3 +1,4 @@
+using DeskBorder.Services;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DeskBorder.Dialogs;
@@ -8,10 +9,11 @@ public sealed partial class ForegroundProcessSelectionDialog : ContentDialog
 
     public IReadOnlyList<string> SelectedProcessNames => [.. AvailableProcessNamesListView.SelectedItems.Cast<string>()];
 
-    public ForegroundProcessSelectionDialog(IEnumerable<string> availableProcessNames)
+    public ForegroundProcessSelectionDialog(IEnumerable<string> availableProcessNames, IThemeService themeService)
     {
         AvailableProcessNames = [.. availableProcessNames];
         InitializeComponent();
+        themeService.RegisterFrameworkElement(this);
         IsPrimaryButtonEnabled = false;
     }
 

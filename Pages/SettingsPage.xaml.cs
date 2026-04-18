@@ -31,6 +31,7 @@ public sealed partial class SettingsPage : Page
     private readonly ManageWindow _manageWindow;
     private readonly DispatcherQueueTimer _settingsStatusInfoBarAutoHideTimer;
     private readonly ISettingsService _settingsService;
+    private readonly IThemeService _themeService;
     private readonly SemaphoreSlim _settingsUpdateSemaphore = new(1, 1);
     private TeachingTip? _activeSectionTeachingTip;
     private bool _isInitialSettingsLoadCompleted;
@@ -51,6 +52,7 @@ public sealed partial class SettingsPage : Page
         _manageWindow = App.GetRequiredService<ManageWindow>();
         _settingsStatusInfoBarAutoHideTimer = CreateInfoBarAutoHideTimer(SettingsStatusInfoBar);
         _settingsService = App.GetRequiredService<ISettingsService>();
+        _themeService = App.GetRequiredService<IThemeService>();
         _hotkeyService.RegistrationStateChanged += OnHotkeyServiceRegistrationStateChanged;
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
         Unloaded += OnSettingsPageUnloaded;
@@ -314,7 +316,7 @@ public sealed partial class SettingsPage : Page
             return;
         }
 
-        var foregroundProcessSelectionDialog = new ForegroundProcessSelectionDialog(availableForegroundProcessNames)
+        var foregroundProcessSelectionDialog = new ForegroundProcessSelectionDialog(availableForegroundProcessNames, _themeService)
         {
             XamlRoot = XamlRoot
         };
@@ -393,8 +395,16 @@ public sealed partial class SettingsPage : Page
         await _settingsUpdateSemaphore.WaitAsync();
         try
         {
-            await _settingsService.UpdateSettingsAsync(ViewModel.CreateSettings());
-            ClearSettingsStatus();
+            var currentSettings = _settingsService.Settings;
+            var updatedSettings = ViewModel.CreateSettings();
+            await _settingsService.UpdateSettingsAsync(updatedSettings);
+            if (currentSettings.ApplicationThemePreference != updatedSettings.ApplicationThemePreference)
+                ShowSettingsStatus(
+                    LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedTitle"),
+                    LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedMessage"),
+                    InfoBarSeverity.Informational);
+            else
+                ClearSettingsStatus();
         }
         catch (ArgumentException exception)
         {
@@ -421,7 +431,7 @@ public sealed partial class SettingsPage : Page
         {
             await using var runtimeSuspension = await _deskBorderRuntimeService.CreateSuspensionAsync();
             var targetDisplayMonitor = MouseHelper.GetDisplayMonitorFromWindow(GetManageWindowHandle());
-            var navigatorTriggerAreaSelectionWindow = new NavigatorTriggerAreaSelectionWindow(_localizationService, targetDisplayMonitor);
+            var navigatorTriggerAreaSelectionWindow = new NavigatorTriggerAreaSelectionWindow(_localizationService, _themeService, targetDisplayMonitor);
             var selectedTriggerRectangleSettings = await navigatorTriggerAreaSelectionWindow.ShowSelectionAsync();
             if (selectedTriggerRectangleSettings is null)
                 return;

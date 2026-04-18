@@ -7,7 +7,7 @@ using DeskBorder.Helpers;
 
 namespace DeskBorder.Services;
 
-public sealed class SettingsService(IStartupRegistrationService startupRegistrationService, ILocalizationService localizationService) : ISettingsService
+public sealed class SettingsService(IStartupRegistrationService startupRegistrationService, ILocalizationService localizationService, IThemeService themeService) : ISettingsService
 {
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsKey = "DeskBorderSettings";
@@ -22,6 +22,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     private readonly IStartupRegistrationService _startupRegistrationService = startupRegistrationService;
     private readonly ILocalizationService _localizationService = localizationService;
+    private readonly IThemeService _themeService = themeService;
     private DeskBorderSettings _settings = DeskBorderSettings.CreateDefault();
     private bool _isInitialized;
 
@@ -58,6 +59,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         _settings = NormalizeSettings(storedSettings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled });
         SaveSettings(_settings);
         _localizationService.ApplyLanguagePreference(_settings.AppLanguagePreference);
+        _themeService.ApplyApplicationThemePreference(_settings.ApplicationThemePreference);
         _isInitialized = true;
         SettingsChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -98,6 +100,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         _settings = normalizedSettings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled };
         SaveSettings(_settings);
         _localizationService.ApplyLanguagePreference(_settings.AppLanguagePreference);
+        _themeService.ApplyApplicationThemePreference(_settings.ApplicationThemePreference);
         SettingsChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -146,7 +149,8 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             BlacklistedProcessNames = NormalizeBlacklistedProcessNames(settings.BlacklistedProcessNames),
             IsLaunchOnStartupEnabled = settings.IsLaunchOnStartupEnabled,
             IsStoreUpdateCheckEnabled = settings.IsStoreUpdateCheckEnabled,
-            AppLanguagePreference = settings.AppLanguagePreference
+            AppLanguagePreference = settings.AppLanguagePreference,
+            ApplicationThemePreference = settings.ApplicationThemePreference
         };
         ValidateSettings(normalizedSettings);
         return normalizedSettings;

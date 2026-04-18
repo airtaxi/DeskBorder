@@ -14,12 +14,14 @@ public sealed partial class NavigatorWindow : WindowEx
     private const int NavigatorWindowHeight = 170;
     private readonly ILocalizationService _localizationService;
     private readonly INavigatorService _navigatorService;
+    private readonly IThemeService _themeService;
     public NavigatorViewModel ViewModel => _navigatorService.ViewModel;
 
-    public NavigatorWindow(INavigatorService navigatorService, ILocalizationService localizationService)
+    public NavigatorWindow(INavigatorService navigatorService, ILocalizationService localizationService, IThemeService themeService)
     {
         _navigatorService = navigatorService;
         _localizationService = localizationService;
+        _themeService = themeService;
         InitializeOverlayWindow();
     }
 
@@ -42,12 +44,21 @@ public sealed partial class NavigatorWindow : WindowEx
     private void InitializeOverlayWindow()
     {
         InitializeComponent();
+        RegisterCurrentWindowContentWithThemeService();
         _localizationService.LanguageChanged += OnLocalizationServiceLanguageChanged;
         Closed += OnClosed;
         _navigatorService.Initialize(this);
         RefreshLocalizedText();
         AppWindow.SetPresenter(AppWindowPresenterKind.Overlapped);
         AppWindow.SetIcon("Assets/Icon.ico");
+    }
+
+    private void RegisterCurrentWindowContentWithThemeService()
+    {
+        if (Content is not FrameworkElement rootFrameworkElement)
+            throw new InvalidOperationException("Unable to resolve the navigator window root content for theme application.");
+
+        _themeService.RegisterFrameworkElement(rootFrameworkElement);
     }
 
     private void OnLocalizationServiceLanguageChanged(object? sender, EventArgs eventArguments)

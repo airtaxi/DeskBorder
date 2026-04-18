@@ -16,17 +16,20 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
 {
     private const double MinimumSelectionLength = 8.0;
     private readonly ILocalizationService _localizationService;
+    private readonly IThemeService _themeService;
     private readonly DisplayMonitorInfo _targetDisplayMonitor;
     private readonly TaskCompletionSource<TriggerRectangleSettings?> _selectionTaskCompletionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private ScreenPoint _selectionStartScreenPoint;
     private bool _isCompletingSelection;
     private bool _isPointerPressed;
 
-    public NavigatorTriggerAreaSelectionWindow(ILocalizationService localizationService, DisplayMonitorInfo targetDisplayMonitor)
+    public NavigatorTriggerAreaSelectionWindow(ILocalizationService localizationService, IThemeService themeService, DisplayMonitorInfo targetDisplayMonitor)
     {
         _localizationService = localizationService;
+        _themeService = themeService;
         _targetDisplayMonitor = targetDisplayMonitor;
         InitializeComponent();
+        RegisterCurrentWindowContentWithThemeService();
         InitializeSelectionWindow();
     }
 
@@ -76,6 +79,14 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
         var right = Math.Max(_selectionStartScreenPoint.X, currentScreenPoint.X) + 1;
         var bottom = Math.Max(_selectionStartScreenPoint.Y, currentScreenPoint.Y) + 1;
         return new(left, top, right, bottom);
+    }
+
+    private void RegisterCurrentWindowContentWithThemeService()
+    {
+        if (Content is not FrameworkElement rootFrameworkElement)
+            throw new InvalidOperationException("Unable to resolve the navigator trigger selection window root content for theme application.");
+
+        _themeService.RegisterFrameworkElement(rootFrameworkElement);
     }
 
     private void InitializeSelectionWindow()

@@ -375,6 +375,15 @@
   <data name="Settings.AppLanguage.System" xml:space="preserve">
     <value>System default</value>
   </data>
+  <data name="Settings.ApplicationTheme.Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Settings.ApplicationTheme.Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Settings.ApplicationTheme.System" xml:space="preserve">
+    <value>System default</value>
+  </data>
   <data name="Settings.Blacklist.AddFailedTitle" xml:space="preserve">
     <value>Failed to add blacklist entry</value>
   </data>
@@ -435,6 +444,12 @@
   <data name="Settings.Status.ApplyFailedTitle" xml:space="preserve">
     <value>Failed to apply settings</value>
   </data>
+  <data name="Settings.Status.ThemeRestartRecommendedMessage" xml:space="preserve">
+    <value>Theme changes were applied immediately, but restarting the app is recommended to fully refresh subwindows and dialogs.</value>
+  </data>
+  <data name="Settings.Status.ThemeRestartRecommendedTitle" xml:space="preserve">
+    <value>Restart recommended</value>
+  </data>
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>That process is already blacklisted.</value>
   </data>
@@ -452,6 +467,9 @@
   </data>
   <data name="SettingsPage_AppLanguagePreferenceComboBox.Header" xml:space="preserve">
     <value>App language</value>
+  </data>
+  <data name="SettingsPage_ApplicationThemePreferenceComboBox.Header" xml:space="preserve">
+    <value>App theme</value>
   </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>Auto delete empty desktops</value>

@@ -18,6 +18,13 @@ public enum AppLanguagePreference
     ChineseTraditional,
 }
 
+public enum ApplicationThemePreference
+{
+    System,
+    Light,
+    Dark,
+}
+
 [Flags]
 public enum KeyboardModifierKeys
 {
@@ -119,6 +126,8 @@ public sealed record DeskBorderSettings
     public bool IsStoreUpdateCheckEnabled { get; init; } = true;
 
     public AppLanguagePreference AppLanguagePreference { get; init; } = AppLanguagePreference.System;
+
+    public ApplicationThemePreference ApplicationThemePreference { get; init; } = ApplicationThemePreference.System;
 
     public static DeskBorderSettings CreateDefault() => new();
 }
