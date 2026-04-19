@@ -130,7 +130,20 @@ public sealed class DesktopLifecycleService(
         var newX = currentState.ActiveDesktopEdge == DesktopEdgeKind.RightOuterDisplayEdge
             ? leftmostDisplayEdge + DesktopEdgeTriggerRearmDistanceInPixels
             : rightmostDisplayEdge - DesktopEdgeTriggerRearmDistanceInPixels;
-        MouseHelper.SetCursorPosition(new(newX, currentState.CursorPosition.Y));
+        var newY = MapCursorVerticalPosition(currentState.DisplayMonitors, currentState.CurrentDisplayMonitor, currentState.CursorPosition.Y, newX);
+        MouseHelper.TrySetCursorPosition(new(newX, newY));
+    }
+
+    private static int MapCursorVerticalPosition(DisplayMonitorInfo[] displayMonitors, DisplayMonitorInfo? sourceMonitor, int cursorY, int targetX)
+    {
+        if (sourceMonitor is null) return cursorY;
+
+        var targetMonitor = displayMonitors.FirstOrDefault(monitor => targetX >= monitor.MonitorBounds.Left && targetX < monitor.MonitorBounds.Right);
+        if (targetMonitor is null || targetMonitor == sourceMonitor) return cursorY;
+
+        var relativeVerticalPosition = (double)(cursorY - sourceMonitor.MonitorBounds.Top) / sourceMonitor.MonitorBounds.Height;
+        var mappedY = targetMonitor.MonitorBounds.Top + (int)Math.Round(relativeVerticalPosition * targetMonitor.MonitorBounds.Height, MidpointRounding.AwayFromZero);
+        return Math.Clamp(mappedY, targetMonitor.MonitorBounds.Top, targetMonitor.MonitorBounds.Bottom - 1);
     }
 
     private async Task CancelPendingDesktopDeletionAsync()

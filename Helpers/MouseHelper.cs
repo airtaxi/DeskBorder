@@ -37,6 +37,8 @@ public static class MouseHelper
             throw new InvalidOperationException("Unable to set the cursor position.");
     }
 
+    public static bool TrySetCursorPosition(ScreenPoint position) => Win32.SetCursorPos(position.X, position.Y);
+
     public static CursorClippingState GetCursorClippingState()
     {
         if (!Win32.GetClipCursor(out var clippingRectangle))
