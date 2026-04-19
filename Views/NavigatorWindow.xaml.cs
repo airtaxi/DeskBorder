@@ -11,7 +11,7 @@ namespace DeskBorder.Views;
 
 public sealed partial class NavigatorWindow : WindowEx
 {
-    private const int NavigatorWindowHeight = 170;
+    private const int NavigatorWindowHeight = 180;
     private readonly ILocalizationService _localizationService;
     private readonly INavigatorService _navigatorService;
     private readonly IThemeService _themeService;
