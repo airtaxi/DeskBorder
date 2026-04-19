@@ -185,8 +185,7 @@ public sealed partial class DashboardPage : Page
     private async Task ShowStorePatchNotesIfNeededAsync()
     {
         var currentApplicationVersion = GetCurrentApplicationVersion();
-        if (IsStorePatchNotesAlreadyShown(currentApplicationVersion) || !TryBeginStorePatchNotesCheck())
-            return;
+        if (IsStorePatchNotesAlreadyShown(currentApplicationVersion) || !TryBeginStorePatchNotesCheck()) return;
 
         try
         {
