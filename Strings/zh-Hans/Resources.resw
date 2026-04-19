@@ -959,4 +959,10 @@
   <data name="Settings.Status.LanguageRestartRecommendedMessage" xml:space="preserve">
     <value>建议重启应用，以便将新语言完整应用到所有窗口和通知。</value>
   </data>
+  <data name="Dashboard.StorePatchNotes.Dialog.TitleFormat" xml:space="preserve">
+    <value>v{0} 更新说明</value>
+  </data>
+  <data name="Dashboard.StorePatchNotes.Dialog.CloseButtonText" xml:space="preserve">
+    <value>关闭</value>
+  </data>
 </root>

@@ -959,4 +959,10 @@
   <data name="Settings.Status.LanguageRestartRecommendedMessage" xml:space="preserve">
     <value>すべてのウィンドウと通知に新しい言語を完全に反映するには、アプリの再起動をおすすめします。</value>
   </data>
+  <data name="Dashboard.StorePatchNotes.Dialog.TitleFormat" xml:space="preserve">
+    <value>v{0} 更新ノート</value>
+  </data>
+  <data name="Dashboard.StorePatchNotes.Dialog.CloseButtonText" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
 </root>

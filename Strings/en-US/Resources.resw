@@ -959,4 +959,10 @@
   <data name="Settings.Status.LanguageRestartRecommendedMessage" xml:space="preserve">
     <value>Restarting the app is recommended to fully apply the new language to all windows and notifications.</value>
   </data>
+  <data name="Dashboard.StorePatchNotes.Dialog.TitleFormat" xml:space="preserve">
+    <value>What's new in v{0}</value>
+  </data>
+  <data name="Dashboard.StorePatchNotes.Dialog.CloseButtonText" xml:space="preserve">
+    <value>Close</value>
+  </data>
 </root>

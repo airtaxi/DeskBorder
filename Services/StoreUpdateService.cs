@@ -14,7 +14,7 @@ namespace DeskBorder.Services;
 public sealed partial class StoreUpdateService(ISettingsService settingsService) : IStoreUpdateService, IDisposable
 {
     private const string StorePackageFamilyName = "49536HowonLee.DeskBorder_q278kdbtfr3f2";
-    private const string StoreProductId = "9P3PLVML3JQD";
+    public const string StoreProductId = "9P3PLVML3JQD";
     private static readonly TimeSpan s_checkInterval = TimeSpan.FromHours(8);
     private static readonly Uri s_storePackageFamilyNameProductPageUri = new($"ms-windows-store://pdp/?PFN={StorePackageFamilyName}");
     private static readonly Uri s_storeProductIdentifierProductPageUri = new($"ms-windows-store://pdp/?ProductId={StoreProductId}");
