@@ -50,6 +50,10 @@ internal static partial class Win32
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool GetCursorPos(out NativePoint point);
 
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool SetCursorPos(int x, int y);
+
     [LibraryImport("user32.dll")]
     public static partial short GetAsyncKeyState(int virtualKey);
 

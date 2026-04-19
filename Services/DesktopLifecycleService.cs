@@ -120,6 +120,19 @@ public sealed class DesktopLifecycleService(
     private static bool IsCurrentDesktopRightOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.DesktopEntries.Length > 0
         && workspaceSnapshot.CurrentDesktopNumber == workspaceSnapshot.DesktopEntries.Length;
 
+    private static void MoveMouseToOppositeEdgeRearmBoundary(DesktopEdgeMonitoringState currentState)
+    {
+        if (currentState.DisplayMonitors.Length == 0 || currentState.ActiveDesktopEdge == DesktopEdgeKind.None)
+            return;
+
+        var leftmostDisplayEdge = currentState.DisplayMonitors.Min(displayMonitor => displayMonitor.MonitorBounds.Left);
+        var rightmostDisplayEdge = currentState.DisplayMonitors.Max(displayMonitor => displayMonitor.MonitorBounds.Right);
+        var newX = currentState.ActiveDesktopEdge == DesktopEdgeKind.RightOuterDisplayEdge
+            ? leftmostDisplayEdge + DesktopEdgeTriggerRearmDistanceInPixels
+            : rightmostDisplayEdge - DesktopEdgeTriggerRearmDistanceInPixels;
+        MouseHelper.SetCursorPosition(new(newX, currentState.CursorPosition.Y));
+    }
+
     private async Task CancelPendingDesktopDeletionAsync()
     {
         _pendingDesktopDeletionCancellationTokenSource?.Cancel();
@@ -282,6 +295,8 @@ public sealed class DesktopLifecycleService(
         {
             await CancelPendingDesktopDeletionAsync();
             var desktopNavigationResult = HandleEdgeActivation(currentState);
+            if (desktopNavigationResult.NavigationActionKind != DesktopNavigationActionKind.None)
+                MoveMouseToOppositeEdgeRearmBoundary(currentState);
             await HandleNavigationResultAsync(desktopNavigationResult);
         }
         finally { _operationSemaphore.Release(); }
