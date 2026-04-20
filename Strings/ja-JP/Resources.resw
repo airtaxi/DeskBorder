@@ -246,6 +246,9 @@
   <data name="DesktopEdgeAvailability.DisabledByBlacklistedProcess" xml:space="preserve">
     <value>現在フォーカス中のウィンドウ プロセスがブラックリストのため無効です</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByPressedMouseButton" xml:space="preserve">
+    <value>マウス ボタンが押されているため無効です</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>エッジ監視が利用可能です</value>
   </data>

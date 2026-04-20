@@ -15,6 +15,7 @@ public enum DesktopEdgeAvailabilityStatus
     DisabledInMultiDisplayEnvironment,
     CursorOutsideDisplayEnvironment,
     DisabledByBlacklistedProcess,
+    DisabledByPressedMouseButton,
 }
 
 public readonly record struct ScreenPoint(int X, int Y);
@@ -54,6 +55,17 @@ public sealed record ModifierKeySnapshot
     public bool IsWindowsPressed { get; init; }
 }
 
+public sealed record MouseButtonSnapshot
+{
+    public bool IsLeftButtonPressed { get; init; }
+
+    public bool IsRightButtonPressed { get; init; }
+
+    public bool IsMiddleButtonPressed { get; init; }
+
+    public bool IsAnyButtonPressed => IsLeftButtonPressed || IsRightButtonPressed || IsMiddleButtonPressed;
+}
+
 public sealed record DisplayMonitorInfo
 {
     public nint MonitorHandle { get; init; }
@@ -87,6 +99,8 @@ public sealed record DesktopEdgeMonitoringState
     public CursorClippingState CursorClippingState { get; init; } = new();
 
     public ModifierKeySnapshot ModifierKeySnapshot { get; init; } = new();
+
+    public MouseButtonSnapshot MouseButtonSnapshot { get; init; } = new();
 
     public DisplayMonitorInfo[] DisplayMonitors { get; init; } = [];
 

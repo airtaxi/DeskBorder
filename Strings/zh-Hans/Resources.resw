@@ -246,6 +246,9 @@
   <data name="DesktopEdgeAvailability.DisabledByBlacklistedProcess" xml:space="preserve">
     <value>由于当前焦点窗口进程在黑名单中，已禁用</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByPressedMouseButton" xml:space="preserve">
+    <value>由于鼠标按钮被按下而禁用</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>可进行边缘监视</value>
   </data>

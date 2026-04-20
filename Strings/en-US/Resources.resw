@@ -246,6 +246,9 @@
   <data name="DesktopEdgeAvailability.DisabledByBlacklistedProcess" xml:space="preserve">
     <value>Disabled because the focused window process is blacklisted</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByPressedMouseButton" xml:space="preserve">
+    <value>Disabled because a mouse button is pressed</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>Edge monitoring available</value>
   </data>

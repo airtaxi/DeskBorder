@@ -29,6 +29,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         var cursorClippingState = MouseHelper.GetCursorClippingState();
         var currentForegroundProcessName = MouseHelper.TryGetForegroundProcessName();
         var modifierKeySnapshot = MouseHelper.GetModifierKeySnapshot();
+        var mouseButtonSnapshot = MouseHelper.GetMouseButtonSnapshot();
         var displayMonitors = MouseHelper.GetDisplayMonitors();
         var currentDisplayMonitor = FindCurrentDisplayMonitor(displayMonitors, currentCursorPosition);
         var desktopEdgeAvailabilityStatus = GetDesktopEdgeAvailabilityStatus(
@@ -36,6 +37,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             displayMonitors.Length,
             currentDisplayMonitor is not null,
             cursorClippingState.IsCursorClipped,
+            mouseButtonSnapshot.IsAnyButtonPressed,
             currentForegroundProcessName);
         var activeDesktopEdge = desktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.Enabled
             ? GetActiveDesktopEdge(displayMonitors, currentDisplayMonitor, currentCursorPosition, currentSettings.DesktopEdgeIgnoreZoneSettings)
@@ -53,6 +55,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             CursorPosition = currentCursorPosition,
             CursorClippingState = cursorClippingState,
             ModifierKeySnapshot = modifierKeySnapshot,
+            MouseButtonSnapshot = mouseButtonSnapshot,
             DisplayMonitors = displayMonitors,
             CurrentDisplayMonitor = currentDisplayMonitor,
             DesktopEdgeAvailabilityStatus = desktopEdgeAvailabilityStatus,
@@ -219,6 +222,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         int displayMonitorCount,
         bool hasCurrentDisplayMonitor,
         bool isCursorClipped,
+        bool isAnyMouseButtonPressed,
         string? currentForegroundProcessName)
     {
         if (!settings.IsDeskBorderEnabled)
@@ -226,6 +230,9 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
 
         if (isCursorClipped)
             return DesktopEdgeAvailabilityStatus.DisabledByCursorClipping;
+
+        if (isAnyMouseButtonPressed)
+            return DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton;
 
         if (!hasCurrentDisplayMonitor)
             return DesktopEdgeAvailabilityStatus.CursorOutsideDisplayEnvironment;
@@ -251,6 +258,9 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             return true;
 
         if (previousState.ModifierKeySnapshot != currentState.ModifierKeySnapshot)
+            return true;
+
+        if (previousState.MouseButtonSnapshot != currentState.MouseButtonSnapshot)
             return true;
 
         if (previousState.CurrentDisplayMonitor != currentState.CurrentDisplayMonitor)

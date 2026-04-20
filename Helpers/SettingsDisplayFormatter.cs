@@ -33,6 +33,7 @@ public static class SettingsDisplayFormatter
         DesktopEdgeAvailabilityStatus.DisabledInMultiDisplayEnvironment => LocalizedResourceAccessor.GetString("DesktopEdgeAvailability.DisabledInMultiDisplayEnvironment"),
         DesktopEdgeAvailabilityStatus.CursorOutsideDisplayEnvironment => LocalizedResourceAccessor.GetString("DesktopEdgeAvailability.CursorOutsideDisplayEnvironment"),
         DesktopEdgeAvailabilityStatus.DisabledByBlacklistedProcess => LocalizedResourceAccessor.GetString("DesktopEdgeAvailability.DisabledByBlacklistedProcess"),
+        DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton => LocalizedResourceAccessor.GetString("DesktopEdgeAvailability.DisabledByPressedMouseButton"),
         _ => desktopEdgeAvailabilityStatus.ToString()
     };
 

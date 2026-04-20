@@ -19,6 +19,9 @@ public static class MouseHelper
     private const int LeftAlternateVirtualKey = 0xA4;
     private const int RightAlternateVirtualKey = 0xA5;
     private const int LeftWindowsVirtualKey = 0x5B;
+    private const int LeftMouseButtonVirtualKey = 0x01;
+    private const int MiddleMouseButtonVirtualKey = 0x04;
+    private const int RightMouseButtonVirtualKey = 0x02;
     private const int RightWindowsVirtualKey = 0x5C;
 
     public static bool AreRequiredKeyboardModifierKeysPressed(KeyboardModifierKeys requiredKeyboardModifierKeys, KeyboardModifierKeys pressedKeyboardModifierKeys) => (pressedKeyboardModifierKeys & requiredKeyboardModifierKeys) == requiredKeyboardModifierKeys;
@@ -136,6 +139,13 @@ public static class MouseHelper
             IsWindowsPressed = pressedKeyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows)
         };
     }
+
+    public static MouseButtonSnapshot GetMouseButtonSnapshot() => new()
+    {
+        IsLeftButtonPressed = IsVirtualKeyPressed(LeftMouseButtonVirtualKey),
+        IsRightButtonPressed = IsVirtualKeyPressed(RightMouseButtonVirtualKey),
+        IsMiddleButtonPressed = IsVirtualKeyPressed(MiddleMouseButtonVirtualKey)
+    };
 
     private static nint s_windowsKeyHookHandle;
     private static Win32.LowLevelKeyboardHookProcedure? s_windowsKeyHookCallback;
