@@ -232,6 +232,19 @@
                         </Grid>
 
                         <ToggleSwitch
+                            x:Uid="SettingsPage_CreateDesktopEnabledToggleSwitch"
+                            Header="데스크톱 생성"
+                            IsOn="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <ToggleSwitch
+                            x:Uid="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch"
+                            Header="현재 데스크톱이 비어 있으면 생성 안 함"
+                            IsOn="{x:Bind ViewModel.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled"
+                            Visibility="{x:Bind GetDesktopCreationSkippedWhenCurrentDesktopIsEmptyVisibility(ViewModel.IsDesktopCreationEnabled), Mode=OneWay}" />
+
+                        <ToggleSwitch
                             x:Name="AutoDeleteToggleSwitch"
                             x:Uid="SettingsPage_AutoDeleteToggleSwitch"
                             Header="빈 데스크톱 자동 삭제"
@@ -387,18 +400,11 @@
                                 </StackPanel>
                             </Border>
 
-                            <Grid
+                            <Border
                                 Grid.Column="1"
                                 Padding="12"
                                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                                 CornerRadius="10">
-                                <ToggleSwitch
-                                    x:Uid="SettingsPage_CreateDesktopEnabledToggleSwitch"
-                                    MinWidth="0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Top"
-                                    IsOn="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=TwoWay}"
-                                    Toggled="OnSettingToggleSwitchToggled" />
                                 <StackPanel Spacing="10">
                                     <TextBlock
                                         x:Uid="SettingsPage_CreateDesktopModifierTitleTextBlock"
@@ -433,7 +439,7 @@
                                         </StackPanel>
                                     </Frame>
                                 </StackPanel>
-                            </Grid>
+                            </Border>
 
                         </Grid>
 

@@ -285,6 +285,19 @@ public sealed class DesktopLifecycleService(
         catch (InvalidOperationException exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to consume modifier keys after desktop action. ModifierKeys={keyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.", exception); }
     }
 
+    private bool ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(DeskBorderSettings currentSettings, VirtualDesktopWorkspaceSnapshot currentWorkspaceSnapshot)
+    {
+        if (!currentSettings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty
+            || string.IsNullOrWhiteSpace(currentWorkspaceSnapshot.CurrentDesktopIdentifier)
+            || !_virtualDesktopService.IsDesktopEmpty(currentWorkspaceSnapshot.CurrentDesktopIdentifier))
+        {
+            return false;
+        }
+
+        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Skipped desktop creation because the current desktop '{currentWorkspaceSnapshot.CurrentDesktopIdentifier}' is empty.");
+        return true;
+    }
+
     private DesktopNavigationResult HandleEdgeActivation(DesktopEdgeMonitoringState currentState)
     {
         if (!currentState.IsDesktopEdgeAvailable || currentState.ActiveDesktopEdge == DesktopEdgeKind.None)
@@ -296,7 +309,8 @@ public sealed class DesktopLifecycleService(
         var canCreateDesktop = currentSettings.IsDesktopCreationEnabled
             && currentState.IsCreateDesktopModifierSatisfied
             && (desktopSwitchDirection == DesktopSwitchDirection.Next && IsCurrentDesktopRightOuter(currentWorkspaceSnapshot)
-                || desktopSwitchDirection == DesktopSwitchDirection.Previous && IsCurrentDesktopLeftOuter(currentWorkspaceSnapshot));
+                || desktopSwitchDirection == DesktopSwitchDirection.Previous && IsCurrentDesktopLeftOuter(currentWorkspaceSnapshot))
+            && !ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(currentSettings, currentWorkspaceSnapshot);
 
         if (currentState.IsSwitchDesktopModifierSatisfied)
         {

@@ -16,6 +16,8 @@ public interface IVirtualDesktopService
 
     DesktopNavigationResult SwitchToDesktop(string desktopIdentifier);
 
+    bool IsDesktopEmpty(string desktopIdentifier);
+
     DesktopAutoDeletionValidationResult EvaluateAutoDeletion(string sourceDesktopIdentifier, string targetDesktopIdentifier);
 
     DesktopDeletionResult DeleteDesktop(string desktopIdentifier, string fallbackDesktopIdentifier);

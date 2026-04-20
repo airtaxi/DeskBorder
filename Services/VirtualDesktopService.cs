@@ -176,6 +176,18 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         };
     }
 
+    public bool IsDesktopEmpty(string desktopIdentifier)
+    {
+        if (!TryParseDesktopIdentifier(desktopIdentifier, out _))
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"IsDesktopEmpty received an invalid desktop identifier '{desktopIdentifier}'.");
+            return false;
+        }
+
+        using var virtualDesktopShellConnection = CreateVirtualDesktopShellConnection();
+        return GetDesktopWindowInventory(virtualDesktopShellConnection.VirtualDesktopShell, desktopIdentifier).VisibleWindowCount == 0;
+    }
+
     public VirtualDesktopWorkspaceSnapshot GetWorkspaceSnapshot()
     {
         using var virtualDesktopShellConnection = CreateVirtualDesktopShellConnection();

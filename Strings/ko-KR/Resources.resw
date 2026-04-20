@@ -531,6 +531,12 @@
   <data name="SettingsPage_ApplicationThemePreferenceComboBox.Header" xml:space="preserve">
     <value>앱 테마</value>
   </data>
+  <data name="SettingsPage_CreateDesktopEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>데스크톱 생성</value>
+  </data>
+  <data name="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch.Header" xml:space="preserve">
+    <value>현재 데스크톱이 비어 있으면 생성 안 함</value>
+  </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>빈 데스크톱 자동 삭제</value>
   </data>

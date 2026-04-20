@@ -531,6 +531,12 @@
   <data name="SettingsPage_ApplicationThemePreferenceComboBox.Header" xml:space="preserve">
     <value>应用主题</value>
   </data>
+  <data name="SettingsPage_CreateDesktopEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>创建桌面</value>
+  </data>
+  <data name="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch.Header" xml:space="preserve">
+    <value>当前桌面为空时不创建</value>
+  </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>自动删除空桌面</value>
   </data>

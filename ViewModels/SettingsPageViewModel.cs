@@ -179,6 +179,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial bool IsDesktopCreationEnabled { get; set; }
 
     [ObservableProperty]
+    public partial bool IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty { get; set; }
+
+    [ObservableProperty]
     public partial bool IsDesktopEdgeAdditionalTriggerDistanceEnabled { get; set; }
 
     [ObservableProperty]
@@ -395,6 +398,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             RequiredKeyboardModifierKeys = CreateDesktopModifierSelection.CreateKeyboardModifierKeys()
         },
         IsDesktopCreationEnabled = IsDesktopCreationEnabled,
+        IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty,
         IsAutoDeleteEnabled = IsAutoDeleteEnabled,
         IsAutoDeleteWarningEnabled = IsAutoDeleteWarningEnabled,
         IsAutoDeleteCompletionToastEnabled = IsAutoDeleteCompletionToastEnabled,
@@ -447,6 +451,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsStoreUpdateCheckEnabled = deskBorderSettings.IsStoreUpdateCheckEnabled;
         IsWindowsOnlyModifierWarningSuppressed = deskBorderSettings.IsWindowsOnlyModifierWarningSuppressed;
         IsDesktopCreationEnabled = deskBorderSettings.IsDesktopCreationEnabled;
+        IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = deskBorderSettings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty;
         IsAutoDeleteEnabled = deskBorderSettings.IsAutoDeleteEnabled;
         IsAutoDeleteWarningEnabled = deskBorderSettings.IsAutoDeleteWarningEnabled;
         IsAutoDeleteCompletionToastEnabled = deskBorderSettings.IsAutoDeleteCompletionToastEnabled;

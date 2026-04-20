@@ -136,6 +136,10 @@ public sealed partial class SettingsPage : Page
     private Visibility GetDesktopEdgeAdditionalTriggerDistanceVisibility(bool isDesktopEdgeAdditionalTriggerDistanceEnabled) => isDesktopEdgeAdditionalTriggerDistanceEnabled
         ? Visibility.Visible
         : Visibility.Collapsed;
+
+    private Visibility GetDesktopCreationSkippedWhenCurrentDesktopIsEmptyVisibility(bool isDesktopCreationEnabled) => isDesktopCreationEnabled
+        ? Visibility.Visible
+        : Visibility.Collapsed;
 #pragma warning restore CA1822 // Mark members as static => Used on XAML bindings
 
     private void ApplyHotkeyRegistrationState()

@@ -531,6 +531,12 @@
   <data name="SettingsPage_ApplicationThemePreferenceComboBox.Header" xml:space="preserve">
     <value>アプリのテーマ</value>
   </data>
+  <data name="SettingsPage_CreateDesktopEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>デスクトップを作成</value>
+  </data>
+  <data name="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch.Header" xml:space="preserve">
+    <value>現在のデスクトップが空の場合は作成しない</value>
+  </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>空のデスクトップを自動削除</value>
   </data>
