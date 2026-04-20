@@ -118,7 +118,7 @@ public sealed record DeskBorderSettings
 
     public ModifierGateSettings CreateDesktopModifierSettings { get; init; } = new();
 
-    public bool IsDesktopCreationEnabled { get; init; }
+    public bool IsDesktopCreationEnabled { get; init; } = true;
 
     public bool IsAutoDeleteEnabled { get; init; } = true;
 

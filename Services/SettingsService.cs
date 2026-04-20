@@ -21,8 +21,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private const double MinimumAutoDeleteWarningTimeoutSeconds = 0.5;
     private const double MinimumDesktopEdgeAdditionalTriggerDistancePercentage = 0.1;
 
-    private static readonly ApplicationDataContainer s_localSettings =
-        ApplicationData.Current.LocalSettings;
+    private static readonly ApplicationDataContainer s_localSettings = ApplicationData.Current.LocalSettings;
 
     private readonly IFileLogService _fileLogService = fileLogService;
     private readonly IStartupRegistrationService _startupRegistrationService = startupRegistrationService;
@@ -37,8 +36,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     public async Task ExportAsync(string destinationFilePath)
     {
-        if (!_isInitialized)
-            await InitializeAsync();
+        if (!_isInitialized) await InitializeAsync();
 
         ValidateSettingsFilePath(destinationFilePath, nameof(destinationFilePath));
         await File.WriteAllTextAsync(destinationFilePath, JsonSerializer.Serialize(_settings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings));
@@ -47,8 +45,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     public async Task ImportAsync(string sourceFilePath)
     {
-        if (!_isInitialized)
-            await InitializeAsync();
+        if (!_isInitialized) await InitializeAsync();
 
         ValidateSettingsFilePath(sourceFilePath, nameof(sourceFilePath));
         var serializedSettings = await File.ReadAllTextAsync(sourceFilePath);
@@ -58,8 +55,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     public async Task InitializeAsync()
     {
-        if (_isInitialized)
-            return;
+        if (_isInitialized) return;
 
         _fileLogService.WriteInformation(nameof(SettingsService), "Initializing settings service.");
         await ReloadStoredSettingsAsync(shouldApplyDefaultLaunchOnStartupWhenMissing: true);
@@ -96,12 +92,10 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     public async Task UpdateSettingsAsync(DeskBorderSettings settings)
     {
-        if (!_isInitialized)
-            await InitializeAsync();
+        if (!_isInitialized) await InitializeAsync();
 
         var normalizedSettings = NormalizeSettings(settings);
-        if (normalizedSettings.IsLaunchOnStartupEnabled != _settings.IsLaunchOnStartupEnabled)
-            await _startupRegistrationService.SetIsEnabledAsync(normalizedSettings.IsLaunchOnStartupEnabled);
+        if (normalizedSettings.IsLaunchOnStartupEnabled != _settings.IsLaunchOnStartupEnabled) await _startupRegistrationService.SetIsEnabledAsync(normalizedSettings.IsLaunchOnStartupEnabled);
 
         await ApplySettingsAsync(normalizedSettings);
         _fileLogService.WriteInformation(nameof(SettingsService), "Applied updated settings.");
@@ -148,7 +142,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             IsDeskBorderEnabled = settings.IsDeskBorderEnabled,
             MultiDisplayBehavior = settings.MultiDisplayBehavior,
             SwitchDesktopModifierSettings = NormalizeModifierGateSettings(settings.SwitchDesktopModifierSettings),
-            CreateDesktopModifierSettings = NormalizeModifierGateSettings(settings.CreateDesktopModifierSettings, KeyboardModifierKeys.Shift),
+            CreateDesktopModifierSettings = NormalizeModifierGateSettings(settings.CreateDesktopModifierSettings),
             IsDesktopCreationEnabled = settings.IsDesktopCreationEnabled,
             IsAutoDeleteEnabled = settings.IsAutoDeleteEnabled,
             IsAutoDeleteWarningEnabled = settings.IsAutoDeleteWarningEnabled,
@@ -244,8 +238,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     private static double ClampDesktopEdgeAdditionalTriggerDistancePercentage(double value)
     {
-        if (!double.IsFinite(value))
-            return DefaultDesktopEdgeAdditionalTriggerDistancePercentage;
+        if (!double.IsFinite(value)) return DefaultDesktopEdgeAdditionalTriggerDistancePercentage;
 
         return Math.Round(
             Math.Clamp(value, MinimumDesktopEdgeAdditionalTriggerDistancePercentage, MaximumDesktopEdgeAdditionalTriggerDistancePercentage),
@@ -259,13 +252,9 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     private static void ValidateKeyboardShortcutSettings(KeyboardShortcutSettings keyboardShortcutSettings, string keyboardShortcutDisplayNameResourceKey)
     {
-        if (!keyboardShortcutSettings.IsEnabled)
-            return;
+        if (!keyboardShortcutSettings.IsEnabled) return;
 
-        if (keyboardShortcutSettings.Key == VirtualKey.None)
-            throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString(
-                "Settings.Validation.HotkeyMissingKeyFormat",
-                GetKeyboardShortcutDisplayName(keyboardShortcutDisplayNameResourceKey)));
+        if (keyboardShortcutSettings.Key == VirtualKey.None) throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyMissingKeyFormat", GetKeyboardShortcutDisplayName(keyboardShortcutDisplayNameResourceKey)));
     }
 
     private static void ValidateSettings(DeskBorderSettings settings)
@@ -289,15 +278,13 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         var registeredKeyboardShortcuts = new Dictionary<(KeyboardModifierKeys RequiredKeyboardModifierKeys, VirtualKey Key), string>();
         foreach (var keyboardShortcutEntry in keyboardShortcutEntries)
         {
-            if (!keyboardShortcutEntry.KeyboardShortcutSettings.IsEnabled || keyboardShortcutEntry.KeyboardShortcutSettings.Key == VirtualKey.None)
-                continue;
+            if (!keyboardShortcutEntry.KeyboardShortcutSettings.IsEnabled || keyboardShortcutEntry.KeyboardShortcutSettings.Key == VirtualKey.None) continue;
 
             var keyboardShortcutIdentity = (
                 keyboardShortcutEntry.KeyboardShortcutSettings.RequiredKeyboardModifierKeys,
                 keyboardShortcutEntry.KeyboardShortcutSettings.Key);
             if (registeredKeyboardShortcuts.TryGetValue(keyboardShortcutIdentity, out var existingKeyboardShortcutDisplayNameResourceKey))
-                throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString(
-                    "Settings.Validation.HotkeyDuplicateFormat",
+                throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyDuplicateFormat",
                     GetKeyboardShortcutDisplayName(keyboardShortcutEntry.KeyboardShortcutDisplayNameResourceKey),
                     GetKeyboardShortcutDisplayName(existingKeyboardShortcutDisplayNameResourceKey)));
 
@@ -308,8 +295,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private static void ValidateSettingsFilePath(string filePath, string parameterName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath, parameterName);
-        if (!string.Equals(Path.GetExtension(filePath), SettingsFileExtension, StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("Settings files must use the .dbs extension.", parameterName);
+        if (!string.Equals(Path.GetExtension(filePath), SettingsFileExtension, StringComparison.OrdinalIgnoreCase)) throw new ArgumentException("Settings files must use the .dbs extension.", parameterName);
     }
 
     private DeskBorderSettings LoadDeserializedSettings(string serializedSettings)
@@ -317,9 +303,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         try
         {
             var deserializedSettings = JsonSerializer.Deserialize(serializedSettings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings);
-            return deserializedSettings is null
-                ? throw new InvalidOperationException("Stored settings payload was empty.")
-                : NormalizeSettings(deserializedSettings);
+            return deserializedSettings is null ? throw new InvalidOperationException("Stored settings payload was empty.") : NormalizeSettings(deserializedSettings);
         }
         catch (JsonException exception)
         {
