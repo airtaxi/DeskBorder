@@ -3,6 +3,8 @@ namespace DeskBorder.Services;
 public enum HotkeyActionType
 {
     ToggleDeskBorderEnabled,
+    SwitchToPreviousDesktop,
+    SwitchToNextDesktop,
     MoveFocusedWindowToPreviousDesktop,
     MoveFocusedWindowToNextDesktop,
     ToggleNavigator,

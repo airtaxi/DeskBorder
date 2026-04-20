@@ -156,6 +156,12 @@
   <data name="Dashboard.Hotkey.MovePreviousFormat" xml:space="preserve">
     <value>將視窗移到上一個桌面：{0}</value>
   </data>
+  <data name="Dashboard.Hotkey.SwitchNextFormat" xml:space="preserve">
+    <value>切換到下一個桌面：{0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.SwitchPreviousFormat" xml:space="preserve">
+    <value>切換到上一個桌面：{0}</value>
+  </data>
   <data name="Dashboard.Hotkey.NavigatorToggleFormat" xml:space="preserve">
     <value>切換 Navigator：{0}</value>
   </data>
@@ -280,7 +286,19 @@
     <value>Windows</value>
   </data>
   <data name="KeyboardShortcut.KeyNotSpecified" xml:space="preserve">
-    <value>未指定按鍵</value>
+    <value>未選擇觸發器</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseLeftButton" xml:space="preserve">
+    <value>左鍵點擊</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseRightButton" xml:space="preserve">
+    <value>右鍵點擊</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseWheelDown" xml:space="preserve">
+    <value>滑鼠滾輪向下</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseWheelUp" xml:space="preserve">
+    <value>滑鼠滾輪向上</value>
   </data>
   <data name="ManageWindow.ExitApplication" xml:space="preserve">
     <value>結束應用程式</value>
@@ -436,10 +454,13 @@
     <value>與其他全域熱鍵重複</value>
   </data>
   <data name="Settings.HotkeyValidation.MissingKey" xml:space="preserve">
-    <value>必須選擇主要按鍵</value>
+    <value>需要觸發器</value>
   </data>
   <data name="Settings.HotkeyValidation.RegistrationFailed" xml:space="preserve">
     <value>目前無法註冊此熱鍵</value>
+  </data>
+  <data name="Settings.HotkeyValidation.ReservedByWindowsDesktopSwitch" xml:space="preserve">
+    <value>Windows 保留組合 (Ctrl + Windows + ←/→)</value>
   </data>
   <data name="Settings.HotkeyValidation.Valid" xml:space="preserve">
     <value>熱鍵有效</value>
@@ -475,7 +496,10 @@
     <value>{0} 與 {1} 重複。</value>
   </data>
   <data name="Settings.Validation.HotkeyMissingKeyFormat" xml:space="preserve">
-    <value>啟用 {0} 時必須指定主要按鍵。</value>
+    <value>啟用 {0} 時必須指定觸發器。</value>
+  </data>
+  <data name="Settings.Validation.HotkeyReservedByWindowsDesktopSwitchFormat" xml:space="preserve">
+    <value>{0} 不能使用 Ctrl + Windows + ←/→，因為這是 Windows 為桌面切換保留的熱鍵。</value>
   </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>請輸入處理程序名稱。</value>
@@ -657,7 +681,7 @@
     <value>在 Microsoft Store 中檢查更新</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>設定可直接控制 DeskBorder、視窗移動與 Navigator 的熱鍵。</value>
+    <value>設定可直接控制 DeskBorder、桌面切換、視窗移動與 Navigator 的熱鍵。</value>
   </data>
   <data name="SettingsPage_HotkeysSectionTitleTextBlock.Text" xml:space="preserve">
     <value>全域熱鍵</value>
@@ -667,8 +691,10 @@
   </data>
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 每個全域熱鍵都可以獨立啟用或停用。
-• 透過主要按鍵與修飾鍵的組合，可設定 DeskBorder 總開關、將焦點視窗移到上一個桌面、移到下一個桌面，以及切換 Navigator 覆疊層。
-• 狀態指示會立即顯示目前組合是否有效、是否缺少按鍵、是否重複，或是否註冊失敗。</value>
+• 可以選擇鍵盤按鍵或滑鼠觸發器（滾輪上/下、左鍵點擊、右鍵點擊），並依需要與修飾鍵組合。
+• 可以設定切換 DeskBorder、切換到上一個桌面、切換到下一個桌面、將焦點視窗移到上一個桌面、將焦點視窗移到下一個桌面，以及切換 Navigator 覆疊層。
+• Ctrl + Windows + ←/→ 是 Windows 為桌面切換保留的組合，因此 DeskBorder 會將其視為無效熱鍵。
+• 狀態指示會立即顯示目前組合是否有效、是否缺少觸發器、是否被 Windows 保留、是否重複，或是否註冊失敗。</value>
   </data>
   <data name="SettingsPage_DeveloperSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>提供用於診斷與重現問題的工具。</value>
@@ -730,7 +756,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>主要按鍵</value>
+    <value>觸發器</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>修飾鍵</value>
@@ -751,7 +777,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_MovePreviousHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>主要按鍵</value>
+    <value>觸發器</value>
   </data>
   <data name="SettingsPage_MovePreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>修飾鍵</value>
@@ -789,7 +815,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>主要按鍵</value>
+    <value>觸發器</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>修飾鍵</value>
@@ -897,7 +923,49 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_ToggleDeskBorderHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>主要按鍵</value>
+    <value>觸發器</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>修飾鍵</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>切換到下一個桌面</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyTriggerComboBox.Header" xml:space="preserve">
+    <value>觸發器</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>修飾鍵</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>切換到上一個桌面</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyTriggerComboBox.Header" xml:space="preserve">
+    <value>觸發器</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
   </data>
   <data name="SettingsPage_ToggleDeskBorderHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>修飾鍵</value>

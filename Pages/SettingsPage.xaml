@@ -497,6 +497,8 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <Grid Grid.Row="0" RowSpacing="8">
@@ -532,15 +534,15 @@
                                         IsOn="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=TwoWay}"
                                         Toggled="OnSettingToggleSwitchToggled" />
                                     <ComboBox
-                                        x:Uid="SettingsPage_ToggleDeskBorderHotkeyKeyComboBox"
-                                        Grid.Column="1"
-                                        VerticalAlignment="Top"
-                                        Header="기본 키"
-                                        IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}"
-                                        ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                                        ItemsSource="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.VirtualKeyOptions, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.SelectedVirtualKeyOption, Mode=TwoWay}"
-                                        SelectionChanged="OnSettingSelectionChanged" />
+                                         x:Uid="SettingsPage_ToggleDeskBorderHotkeyKeyComboBox"
+                                         Grid.Column="1"
+                                         VerticalAlignment="Top"
+                                         Header="기본 키"
+                                         IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                         ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                                         ItemsSource="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
+                                         SelectedItem="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
+                                         SelectionChanged="OnSettingSelectionChanged" />
                                     <StackPanel
                                         Grid.Column="2"
                                         VerticalAlignment="Top"
@@ -598,8 +600,8 @@
                                         Width="10"
                                         Height="10"
                                         VerticalAlignment="Center"
-                                        Fill="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyValidationState), Mode=OneWay}" />
-                                    <TextBlock Foreground="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyValidationState), Mode=OneWay}" Text="{x:Bind GetKeyboardShortcutValidationText(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyValidationState), Mode=OneWay}" />
+                                        Fill="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.SwitchToPreviousDesktopHotkeyValidationState), Mode=OneWay}" />
+                                    <TextBlock Foreground="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.SwitchToPreviousDesktopHotkeyValidationState), Mode=OneWay}" Text="{x:Bind GetKeyboardShortcutValidationText(ViewModel.SwitchToPreviousDesktopHotkeyValidationState), Mode=OneWay}" />
                                 </StackPanel>
                                 <Grid Grid.Row="1" ColumnSpacing="12">
                                     <Grid.ColumnDefinitions>
@@ -608,66 +610,150 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <ToggleSwitch
-                                        x:Uid="SettingsPage_MovePreviousHotkeyToggleSwitch"
+                                        x:Uid="SettingsPage_SwitchPreviousHotkeyToggleSwitch"
                                         Grid.Column="0"
                                         Margin="0,-8"
                                         VerticalAlignment="Center"
-                                        Header="창을 이전 데스크톱으로 이동"
-                                        IsOn="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=TwoWay}"
+                                        Header="이전 데스크톱으로 전환"
+                                        IsOn="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.IsEnabled, Mode=TwoWay}"
                                         Toggled="OnSettingToggleSwitchToggled" />
                                     <ComboBox
-                                        x:Uid="SettingsPage_MovePreviousHotkeyKeyComboBox"
+                                        x:Uid="SettingsPage_SwitchPreviousHotkeyTriggerComboBox"
                                         Grid.Column="1"
                                         VerticalAlignment="Top"
-                                        Header="기본 키"
-                                        IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                        Header="트리거"
+                                        IsEnabled="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
                                         ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                                        ItemsSource="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.VirtualKeyOptions, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.SelectedVirtualKeyOption, Mode=TwoWay}"
+                                        ItemsSource="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
                                         SelectionChanged="OnSettingSelectionChanged" />
                                     <StackPanel
                                         Grid.Column="2"
                                         VerticalAlignment="Top"
                                         Spacing="10">
                                         <TextBlock
-                                            x:Uid="SettingsPage_MovePreviousHotkeyModifierTextBlock"
-                                            Foreground="{x:Bind GetHotkeyLabelForegroundBrush(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled), Mode=OneWay}"
+                                            x:Uid="SettingsPage_SwitchPreviousHotkeyModifierTextBlock"
+                                            Foreground="{x:Bind GetHotkeyLabelForegroundBrush(ViewModel.SwitchToPreviousDesktopHotkeyEditor.IsEnabled), Mode=OneWay}"
                                             Text="보조 키" />
                                         <StackPanel Orientation="Horizontal" Spacing="12">
                                             <CheckBox
-                                                x:Uid="SettingsPage_MovePreviousHotkeyControlCheckBox"
+                                                x:Uid="SettingsPage_SwitchPreviousHotkeyControlCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Ctrl"
-                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
-                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
-                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                                Tag="SwitchToPreviousDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
-                                                x:Uid="SettingsPage_MovePreviousHotkeyShiftCheckBox"
+                                                x:Uid="SettingsPage_SwitchPreviousHotkeyShiftCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Shift"
-                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
-                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
-                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                                Tag="SwitchToPreviousDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
-                                                x:Uid="SettingsPage_MovePreviousHotkeyAltCheckBox"
+                                                x:Uid="SettingsPage_SwitchPreviousHotkeyAltCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Alt"
-                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
-                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
-                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                                Tag="SwitchToPreviousDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
-                                                x:Uid="SettingsPage_MovePreviousHotkeyWindowsCheckBox"
+                                                x:Uid="SettingsPage_SwitchPreviousHotkeyWindowsCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Windows"
-                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
-                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
-                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                                Tag="SwitchToPreviousDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                         </StackPanel>
                                     </StackPanel>
                                 </Grid>
                             </Grid>
 
                             <Grid Grid.Row="2" RowSpacing="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <StackPanel
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <Ellipse
+                                        Width="10"
+                                        Height="10"
+                                        VerticalAlignment="Center"
+                                        Fill="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.SwitchToNextDesktopHotkeyValidationState), Mode=OneWay}" />
+                                    <TextBlock Foreground="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.SwitchToNextDesktopHotkeyValidationState), Mode=OneWay}" Text="{x:Bind GetKeyboardShortcutValidationText(ViewModel.SwitchToNextDesktopHotkeyValidationState), Mode=OneWay}" />
+                                </StackPanel>
+                                <Grid Grid.Row="1" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleSwitch
+                                        x:Uid="SettingsPage_SwitchNextHotkeyToggleSwitch"
+                                        Grid.Column="0"
+                                        Margin="0,-8"
+                                        VerticalAlignment="Center"
+                                        Header="다음 데스크톱으로 전환"
+                                        IsOn="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.IsEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <ComboBox
+                                        x:Uid="SettingsPage_SwitchNextHotkeyTriggerComboBox"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Top"
+                                        Header="트리거"
+                                        IsEnabled="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                        ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                                        ItemsSource="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
+                                        SelectionChanged="OnSettingSelectionChanged" />
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        VerticalAlignment="Top"
+                                        Spacing="10">
+                                        <TextBlock
+                                            x:Uid="SettingsPage_SwitchNextHotkeyModifierTextBlock"
+                                            Foreground="{x:Bind GetHotkeyLabelForegroundBrush(ViewModel.SwitchToNextDesktopHotkeyEditor.IsEnabled), Mode=OneWay}"
+                                            Text="보조 키" />
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <CheckBox
+                                                x:Uid="SettingsPage_SwitchNextHotkeyControlCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Ctrl"
+                                                Tag="SwitchToNextDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_SwitchNextHotkeyShiftCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Shift"
+                                                Tag="SwitchToNextDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_SwitchNextHotkeyAltCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Alt"
+                                                Tag="SwitchToNextDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_SwitchNextHotkeyWindowsCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Windows"
+                                                Tag="SwitchToNextDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+
+                            <Grid Grid.Row="4" RowSpacing="8">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
@@ -706,8 +792,8 @@
                                         Header="기본 키"
                                         IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
                                         ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                                        ItemsSource="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.VirtualKeyOptions, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.SelectedVirtualKeyOption, Mode=TwoWay}"
+                                        ItemsSource="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
                                         SelectionChanged="OnSettingSelectionChanged" />
                                     <StackPanel
                                         Grid.Column="2"
@@ -766,6 +852,90 @@
                                         Width="10"
                                         Height="10"
                                         VerticalAlignment="Center"
+                                        Fill="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyValidationState), Mode=OneWay}" />
+                                    <TextBlock Foreground="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyValidationState), Mode=OneWay}" Text="{x:Bind GetKeyboardShortcutValidationText(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyValidationState), Mode=OneWay}" />
+                                </StackPanel>
+                                <Grid Grid.Row="1" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleSwitch
+                                        x:Uid="SettingsPage_MovePreviousHotkeyToggleSwitch"
+                                        Grid.Column="0"
+                                        Margin="0,-8"
+                                        VerticalAlignment="Center"
+                                        Header="창을 이전 데스크톱으로 이동"
+                                        IsOn="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <ComboBox
+                                        x:Uid="SettingsPage_MovePreviousHotkeyKeyComboBox"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Top"
+                                        Header="기본 키"
+                                        IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                        ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                                        ItemsSource="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
+                                        SelectionChanged="OnSettingSelectionChanged" />
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        VerticalAlignment="Top"
+                                        Spacing="10">
+                                        <TextBlock
+                                            x:Uid="SettingsPage_MovePreviousHotkeyModifierTextBlock"
+                                            Foreground="{x:Bind GetHotkeyLabelForegroundBrush(ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled), Mode=OneWay}"
+                                            Text="보조 키" />
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MovePreviousHotkeyControlCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Ctrl"
+                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MovePreviousHotkeyShiftCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Shift"
+                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MovePreviousHotkeyAltCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Alt"
+                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_MovePreviousHotkeyWindowsCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Windows"
+                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
+                                                IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+
+                            <Grid Grid.Row="5" RowSpacing="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <StackPanel
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <Ellipse
+                                        Width="10"
+                                        Height="10"
+                                        VerticalAlignment="Center"
                                         Fill="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.NavigatorToggleHotkeyValidationState), Mode=OneWay}" />
                                     <TextBlock Foreground="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.NavigatorToggleHotkeyValidationState), Mode=OneWay}" Text="{x:Bind GetKeyboardShortcutValidationText(ViewModel.NavigatorToggleHotkeyValidationState), Mode=OneWay}" />
                                 </StackPanel>
@@ -790,8 +960,8 @@
                                         Header="기본 키"
                                         IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}"
                                         ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                                        ItemsSource="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.VirtualKeyOptions, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.SelectedVirtualKeyOption, Mode=TwoWay}"
+                                        ItemsSource="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
                                         SelectionChanged="OnSettingSelectionChanged" />
                                     <StackPanel
                                         Grid.Column="2"

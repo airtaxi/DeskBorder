@@ -156,6 +156,12 @@
   <data name="Dashboard.Hotkey.MovePreviousFormat" xml:space="preserve">
     <value>Move window to previous desktop: {0}</value>
   </data>
+  <data name="Dashboard.Hotkey.SwitchNextFormat" xml:space="preserve">
+    <value>Switch to next desktop: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.SwitchPreviousFormat" xml:space="preserve">
+    <value>Switch to previous desktop: {0}</value>
+  </data>
   <data name="Dashboard.Hotkey.NavigatorToggleFormat" xml:space="preserve">
     <value>Toggle Navigator: {0}</value>
   </data>
@@ -280,7 +286,19 @@
     <value>Windows</value>
   </data>
   <data name="KeyboardShortcut.KeyNotSpecified" xml:space="preserve">
-    <value>No key selected</value>
+    <value>No trigger selected</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseLeftButton" xml:space="preserve">
+    <value>Left click</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseRightButton" xml:space="preserve">
+    <value>Right click</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseWheelDown" xml:space="preserve">
+    <value>Mouse wheel down</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseWheelUp" xml:space="preserve">
+    <value>Mouse wheel up</value>
   </data>
   <data name="ManageWindow.ExitApplication" xml:space="preserve">
     <value>Exit application</value>
@@ -436,10 +454,13 @@
     <value>Duplicates another global hotkey</value>
   </data>
   <data name="Settings.HotkeyValidation.MissingKey" xml:space="preserve">
-    <value>Primary key required</value>
+    <value>Trigger required</value>
   </data>
   <data name="Settings.HotkeyValidation.RegistrationFailed" xml:space="preserve">
     <value>Cannot register this hotkey right now</value>
+  </data>
+  <data name="Settings.HotkeyValidation.ReservedByWindowsDesktopSwitch" xml:space="preserve">
+    <value>Reserved by Windows (Ctrl + Windows + ←/→)</value>
   </data>
   <data name="Settings.HotkeyValidation.Valid" xml:space="preserve">
     <value>Hotkey is valid</value>
@@ -475,7 +496,10 @@
     <value>{0} duplicates {1}.</value>
   </data>
   <data name="Settings.Validation.HotkeyMissingKeyFormat" xml:space="preserve">
-    <value>{0} must specify a primary key when enabled.</value>
+    <value>{0} must specify a trigger when enabled.</value>
+  </data>
+  <data name="Settings.Validation.HotkeyReservedByWindowsDesktopSwitchFormat" xml:space="preserve">
+    <value>{0} cannot use Ctrl + Windows + ←/→ because Windows reserves that shortcut for desktop switching.</value>
   </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>Enter a process name.</value>
@@ -657,7 +681,7 @@
     <value>Check for updates in Microsoft Store</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>Configure hotkeys that directly control DeskBorder, window movement, and Navigator.</value>
+    <value>Configure hotkeys that directly control DeskBorder, desktop switching, window movement, and Navigator.</value>
   </data>
   <data name="SettingsPage_HotkeysSectionTitleTextBlock.Text" xml:space="preserve">
     <value>Global hotkeys</value>
@@ -667,8 +691,10 @@
   </data>
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Each global hotkey can be enabled or disabled independently.
-• Combine a primary key with modifiers to configure the DeskBorder toggle, move focused window to previous desktop, move focused window to next desktop, and Navigator overlay toggle actions.
-• The status indicator immediately shows whether the shortcut is valid, missing a key, duplicated, or failed to register.</value>
+• Choose either a keyboard key or a mouse trigger (wheel up, wheel down, left click, right click), then combine it with modifiers as needed.
+• You can configure DeskBorder toggle, switch previous desktop, switch next desktop, move focused window to previous desktop, move focused window to next desktop, and Navigator overlay toggle actions.
+• Ctrl + Windows + ←/→ is reserved by Windows for desktop switching, so DeskBorder treats it as invalid.
+• The status indicator immediately shows whether the shortcut is valid, missing a trigger, reserved by Windows, duplicated, or failed to register.</value>
   </data>
   <data name="SettingsPage_DeveloperSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>Provides tools for diagnostics and issue reproduction.</value>
@@ -730,7 +756,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>Primary key</value>
+    <value>Trigger</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>Modifiers</value>
@@ -751,7 +777,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_MovePreviousHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>Primary key</value>
+    <value>Trigger</value>
   </data>
   <data name="SettingsPage_MovePreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>Modifiers</value>
@@ -789,7 +815,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>Primary key</value>
+    <value>Trigger</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>Modifiers</value>
@@ -897,7 +923,49 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_ToggleDeskBorderHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>Primary key</value>
+    <value>Trigger</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>Modifiers</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>Switch to next desktop</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyTriggerComboBox.Header" xml:space="preserve">
+    <value>Trigger</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>Modifiers</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>Switch to previous desktop</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyTriggerComboBox.Header" xml:space="preserve">
+    <value>Trigger</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
   </data>
   <data name="SettingsPage_ToggleDeskBorderHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>Modifiers</value>

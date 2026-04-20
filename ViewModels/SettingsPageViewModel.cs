@@ -13,6 +13,7 @@ public enum KeyboardShortcutValidationState
     Disabled,
     Valid,
     MissingKey,
+    ReservedByWindowsDesktopSwitch,
     Duplicate,
     RegistrationFailed,
 }
@@ -108,17 +109,29 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         VirtualKey.Down
     ];
 
+    private static readonly KeyboardShortcutTriggerType[] s_mouseKeyboardShortcutTriggerTypes =
+    [
+        KeyboardShortcutTriggerType.MouseWheelUp,
+        KeyboardShortcutTriggerType.MouseWheelDown,
+        KeyboardShortcutTriggerType.MouseLeftButton,
+        KeyboardShortcutTriggerType.MouseRightButton
+    ];
+
     public SettingsPageViewModel()
     {
-        var virtualKeyOptions = CreateSelectionOptions(s_virtualKeys, SettingsDisplayFormatter.FormatVirtualKey);
+        var keyboardShortcutTriggerOptions = CreateKeyboardShortcutTriggerOptions();
         ApplicationThemePreferenceOptions = CreateSelectionOptions(s_applicationThemePreferences, SettingsDisplayFormatter.FormatApplicationThemePreference);
         AppLanguagePreferenceOptions = CreateSelectionOptions(s_appLanguagePreferences, SettingsDisplayFormatter.FormatAppLanguagePreference);
         MultiDisplayBehaviorOptions = CreateSelectionOptions(s_multiDisplayBehaviors, SettingsDisplayFormatter.FormatMultiDisplayBehavior);
-        ToggleDeskBorderEnabledHotkeyEditor = new KeyboardShortcutEditorViewModel(virtualKeyOptions);
-        MoveFocusedWindowToPreviousDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(virtualKeyOptions);
-        MoveFocusedWindowToNextDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(virtualKeyOptions);
-        NavigatorToggleHotkeyEditor = new KeyboardShortcutEditorViewModel(virtualKeyOptions);
+        ToggleDeskBorderEnabledHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
+        SwitchToPreviousDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
+        SwitchToNextDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
+        MoveFocusedWindowToPreviousDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
+        MoveFocusedWindowToNextDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
+        NavigatorToggleHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
         RegisterKeyboardShortcutEditor(ToggleDeskBorderEnabledHotkeyEditor);
+        RegisterKeyboardShortcutEditor(SwitchToPreviousDesktopHotkeyEditor);
+        RegisterKeyboardShortcutEditor(SwitchToNextDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(MoveFocusedWindowToPreviousDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(MoveFocusedWindowToNextDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(NavigatorToggleHotkeyEditor);
@@ -175,6 +188,40 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsWindowsOnlyModifierWarningSuppressed { get; set; }
 
+    public KeyboardShortcutEditorViewModel SwitchToNextDesktopHotkeyEditor { get; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SwitchToNextDesktopHotkeyValidationState))]
+    public partial string? SwitchToNextDesktopHotkeyRegistrationFailureMessage { get; set; }
+
+    public KeyboardShortcutValidationState SwitchToNextDesktopHotkeyValidationState => GetKeyboardShortcutValidationState(
+        SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+        [
+            ToggleDeskBorderEnabledHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
+        ],
+        SwitchToNextDesktopHotkeyRegistrationFailureMessage);
+
+    public KeyboardShortcutEditorViewModel SwitchToPreviousDesktopHotkeyEditor { get; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SwitchToPreviousDesktopHotkeyValidationState))]
+    public partial string? SwitchToPreviousDesktopHotkeyRegistrationFailureMessage { get; set; }
+
+    public KeyboardShortcutValidationState SwitchToPreviousDesktopHotkeyValidationState => GetKeyboardShortcutValidationState(
+        SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+        [
+            ToggleDeskBorderEnabledHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
+        ],
+        SwitchToPreviousDesktopHotkeyRegistrationFailureMessage);
+
     public KeyboardShortcutEditorViewModel MoveFocusedWindowToNextDesktopHotkeyEditor { get; }
 
     [ObservableProperty]
@@ -185,6 +232,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
         [
             ToggleDeskBorderEnabledHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
@@ -200,6 +249,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
         [
             ToggleDeskBorderEnabledHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
@@ -217,6 +268,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings(),
         [
             ToggleDeskBorderEnabledHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
@@ -261,6 +314,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public KeyboardShortcutValidationState ToggleDeskBorderEnabledHotkeyValidationState => GetKeyboardShortcutValidationState(
         ToggleDeskBorderEnabledHotkeyEditor.CreateKeyboardShortcutSettings(),
         [
+            SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
@@ -336,6 +391,11 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         {
             ToggleDeskBorderEnabledHotkey = ToggleDeskBorderEnabledHotkeyEditor.CreateKeyboardShortcutSettings()
         },
+        DesktopSwitchHotkeySettings = new DesktopSwitchHotkeySettings
+        {
+            SwitchToPreviousDesktopHotkey = SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToNextDesktopHotkey = SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings()
+        },
         FocusedWindowMoveHotkeySettings = new FocusedWindowMoveHotkeySettings
         {
             MoveToPreviousDesktopHotkey = MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
@@ -385,6 +445,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         SwitchDesktopModifierSelection.Load(deskBorderSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
         CreateDesktopModifierSelection.Load(deskBorderSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys);
         ToggleDeskBorderEnabledHotkeyEditor.Load(deskBorderSettings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey);
+        SwitchToPreviousDesktopHotkeyEditor.Load(deskBorderSettings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey);
+        SwitchToNextDesktopHotkeyEditor.Load(deskBorderSettings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey);
         MoveFocusedWindowToPreviousDesktopHotkeyEditor.Load(deskBorderSettings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey);
         MoveFocusedWindowToNextDesktopHotkeyEditor.Load(deskBorderSettings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey);
         NavigatorToggleHotkeyEditor.Load(deskBorderSettings.NavigatorSettings.ToggleHotkey);
@@ -422,6 +484,14 @@ public sealed partial class SettingsPageViewModel : ObservableObject
                 ToggleDeskBorderEnabledHotkeyRegistrationFailureMessage = registrationFailureMessage;
                 return;
 
+            case HotkeyActionType.SwitchToPreviousDesktop:
+                SwitchToPreviousDesktopHotkeyRegistrationFailureMessage = registrationFailureMessage;
+                return;
+
+            case HotkeyActionType.SwitchToNextDesktop:
+                SwitchToNextDesktopHotkeyRegistrationFailureMessage = registrationFailureMessage;
+                return;
+
             case HotkeyActionType.MoveFocusedWindowToPreviousDesktop:
                 MoveFocusedWindowToPreviousDesktopHotkeyRegistrationFailureMessage = registrationFailureMessage;
                 return;
@@ -440,6 +510,26 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     }
 
     private static List<SelectionOption<TValue>> CreateSelectionOptions<TValue>(IReadOnlyList<TValue> values, Func<TValue, string> displayTextSelector) where TValue : notnull => [.. values.Select(value => new SelectionOption<TValue>(value, displayTextSelector(value)))];
+
+    private static List<SelectionOption<KeyboardShortcutTriggerOptionValue>> CreateKeyboardShortcutTriggerOptions()
+    {
+        var keyboardShortcutTriggerOptions = new List<SelectionOption<KeyboardShortcutTriggerOptionValue>>(s_virtualKeys.Length + s_mouseKeyboardShortcutTriggerTypes.Length);
+        foreach (var virtualKey in s_virtualKeys)
+        {
+            keyboardShortcutTriggerOptions.Add(new(
+                new KeyboardShortcutTriggerOptionValue(KeyboardShortcutTriggerType.VirtualKey, virtualKey),
+                SettingsDisplayFormatter.FormatKeyboardShortcutTrigger(KeyboardShortcutTriggerType.VirtualKey, virtualKey)));
+        }
+
+        foreach (var mouseKeyboardShortcutTriggerType in s_mouseKeyboardShortcutTriggerTypes)
+        {
+            keyboardShortcutTriggerOptions.Add(new(
+                new KeyboardShortcutTriggerOptionValue(mouseKeyboardShortcutTriggerType, VirtualKey.None),
+                SettingsDisplayFormatter.FormatKeyboardShortcutTrigger(mouseKeyboardShortcutTriggerType, VirtualKey.None)));
+        }
+
+        return keyboardShortcutTriggerOptions;
+    }
 
     private TriggerRectangleSettings CreateNavigatorTriggerRectangleSettings() => new()
     {
@@ -472,18 +562,18 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         if (!currentKeyboardShortcutSettings.IsEnabled)
             return KeyboardShortcutValidationState.Disabled;
 
-        if (currentKeyboardShortcutSettings.Key == VirtualKey.None)
+        if (!KeyboardShortcutHelper.IsKeyboardShortcutSpecified(currentKeyboardShortcutSettings))
             return KeyboardShortcutValidationState.MissingKey;
+
+        if (KeyboardShortcutHelper.IsReservedByWindowsDesktopSwitchHotkey(currentKeyboardShortcutSettings))
+            return KeyboardShortcutValidationState.ReservedByWindowsDesktopSwitch;
 
         foreach (var otherKeyboardShortcutSetting in otherKeyboardShortcutSettings)
         {
-            if (!otherKeyboardShortcutSetting.IsEnabled || otherKeyboardShortcutSetting.Key == VirtualKey.None)
+            if (!otherKeyboardShortcutSetting.IsEnabled || !KeyboardShortcutHelper.IsKeyboardShortcutSpecified(otherKeyboardShortcutSetting))
                 continue;
 
-            if (otherKeyboardShortcutSetting.Key != currentKeyboardShortcutSettings.Key)
-                continue;
-
-            if (otherKeyboardShortcutSetting.RequiredKeyboardModifierKeys != currentKeyboardShortcutSettings.RequiredKeyboardModifierKeys)
+            if (KeyboardShortcutHelper.CreateKeyboardShortcutIdentity(otherKeyboardShortcutSetting) != KeyboardShortcutHelper.CreateKeyboardShortcutIdentity(currentKeyboardShortcutSettings))
                 continue;
 
             return KeyboardShortcutValidationState.Duplicate;
@@ -498,6 +588,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     private void NotifyKeyboardShortcutValidationStatesChanged()
     {
         OnPropertyChanged(nameof(ToggleDeskBorderEnabledHotkeyValidationState));
+        OnPropertyChanged(nameof(SwitchToPreviousDesktopHotkeyValidationState));
+        OnPropertyChanged(nameof(SwitchToNextDesktopHotkeyValidationState));
         OnPropertyChanged(nameof(MoveFocusedWindowToPreviousDesktopHotkeyValidationState));
         OnPropertyChanged(nameof(MoveFocusedWindowToNextDesktopHotkeyValidationState));
         OnPropertyChanged(nameof(NavigatorToggleHotkeyValidationState));

@@ -156,6 +156,12 @@
   <data name="Dashboard.Hotkey.MovePreviousFormat" xml:space="preserve">
     <value>창을 이전 데스크톱으로 이동: {0}</value>
   </data>
+  <data name="Dashboard.Hotkey.SwitchNextFormat" xml:space="preserve">
+    <value>다음 데스크톱으로 전환: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.SwitchPreviousFormat" xml:space="preserve">
+    <value>이전 데스크톱으로 전환: {0}</value>
+  </data>
   <data name="Dashboard.Hotkey.NavigatorToggleFormat" xml:space="preserve">
     <value>Navigator 토글: {0}</value>
   </data>
@@ -280,7 +286,19 @@
     <value>Windows</value>
   </data>
   <data name="KeyboardShortcut.KeyNotSpecified" xml:space="preserve">
-    <value>키 미지정</value>
+    <value>트리거가 지정되지 않음</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseLeftButton" xml:space="preserve">
+    <value>왼쪽 클릭</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseRightButton" xml:space="preserve">
+    <value>오른쪽 클릭</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseWheelDown" xml:space="preserve">
+    <value>마우스 휠 아래로</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseWheelUp" xml:space="preserve">
+    <value>마우스 휠 위로</value>
   </data>
   <data name="ManageWindow.ExitApplication" xml:space="preserve">
     <value>프로그램 종료</value>
@@ -436,10 +454,13 @@
     <value>다른 전역 단축키와 중복됨</value>
   </data>
   <data name="Settings.HotkeyValidation.MissingKey" xml:space="preserve">
-    <value>기본 키를 선택해야 함</value>
+    <value>트리거 필요</value>
   </data>
   <data name="Settings.HotkeyValidation.RegistrationFailed" xml:space="preserve">
     <value>현재 등록할 수 없는 단축키</value>
+  </data>
+  <data name="Settings.HotkeyValidation.ReservedByWindowsDesktopSwitch" xml:space="preserve">
+    <value>Windows 예약 조합 (Ctrl + Windows + ←/→)</value>
   </data>
   <data name="Settings.HotkeyValidation.Valid" xml:space="preserve">
     <value>유효한 단축키</value>
@@ -475,7 +496,10 @@
     <value>{0}이(가) {1}와(과) 중복됩니다.</value>
   </data>
   <data name="Settings.Validation.HotkeyMissingKeyFormat" xml:space="preserve">
-    <value>{0}을(를) 사용할 때는 기본 키를 지정해야 합니다.</value>
+    <value>{0}은(는) 사용 시 트리거를 지정해야 합니다.</value>
+  </data>
+  <data name="Settings.Validation.HotkeyReservedByWindowsDesktopSwitchFormat" xml:space="preserve">
+    <value>{0}은(는) Ctrl + Windows + ←/→ 를 사용할 수 없습니다. Windows에서 데스크톱 전환용으로 예약한 조합입니다.</value>
   </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>프로세스 이름을 입력하세요.</value>
@@ -657,7 +681,7 @@
     <value>스토어에서 업데이트 확인</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>DeskBorder, 창 이동, Navigator를 직접 제어하는 단축키를 설정합니다.</value>
+    <value>DeskBorder, 데스크톱 전환, 창 이동, Navigator를 직접 제어하는 단축키를 설정합니다.</value>
   </data>
   <data name="SettingsPage_HotkeysSectionTitleTextBlock.Text" xml:space="preserve">
     <value>전역 단축키</value>
@@ -667,8 +691,10 @@
   </data>
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 각 전역 단축키는 기능별로 따로 켜고 끌 수 있습니다.
-• 기본 키와 보조 키를 조합해 DeskBorder 전체 토글, 포커스 창 이전 이동, 포커스 창 다음 이동, Navigator 오버레이 토글을 지정합니다.
-• 상태 점은 현재 조합이 유효한지, 키 미지정인지, 중복인지, 등록 실패인지 바로 보여줍니다.</value>
+• 키보드 키 또는 마우스 트리거(휠 위/아래, 왼쪽 클릭, 오른쪽 클릭)를 고르고 필요하면 보조 키와 함께 조합할 수 있습니다.
+• DeskBorder 전체 토글, 이전 데스크톱 전환, 다음 데스크톱 전환, 포커스 창 이전 이동, 포커스 창 다음 이동, Navigator 오버레이 토글을 지정할 수 있습니다.
+• Ctrl + Windows + ←/→ 는 Windows가 데스크톱 전환용으로 예약한 조합이므로 DeskBorder에서는 유효하지 않은 단축키로 처리합니다.
+• 상태 점은 현재 조합이 유효한지, 트리거 미지정인지, Windows 예약 조합인지, 중복인지, 등록 실패인지 바로 보여줍니다.</value>
   </data>
   <data name="SettingsPage_DeveloperSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>진단과 문제 재현에 필요한 도구를 제공합니다.</value>
@@ -730,7 +756,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>기본 키</value>
+    <value>트리거</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>보조 키</value>
@@ -751,7 +777,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_MovePreviousHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>기본 키</value>
+    <value>트리거</value>
   </data>
   <data name="SettingsPage_MovePreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>보조 키</value>
@@ -789,7 +815,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>기본 키</value>
+    <value>트리거</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>보조 키</value>
@@ -897,7 +923,49 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_ToggleDeskBorderHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>기본 키</value>
+    <value>트리거</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>보조 키</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>다음 데스크톱으로 전환</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyTriggerComboBox.Header" xml:space="preserve">
+    <value>트리거</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>보조 키</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>이전 데스크톱으로 전환</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyTriggerComboBox.Header" xml:space="preserve">
+    <value>트리거</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
   </data>
   <data name="SettingsPage_ToggleDeskBorderHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>보조 키</value>

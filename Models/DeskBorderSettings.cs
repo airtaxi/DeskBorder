@@ -35,6 +35,15 @@ public enum KeyboardModifierKeys
     Windows = 1 << 3,
 }
 
+public enum KeyboardShortcutTriggerType
+{
+    VirtualKey,
+    MouseWheelUp,
+    MouseWheelDown,
+    MouseLeftButton,
+    MouseRightButton,
+}
+
 public sealed record ModifierGateSettings
 {
     public KeyboardModifierKeys RequiredKeyboardModifierKeys { get; init; } = KeyboardModifierKeys.None;
@@ -46,6 +55,8 @@ public sealed record KeyboardShortcutSettings
 
     public KeyboardModifierKeys RequiredKeyboardModifierKeys { get; init; } = KeyboardModifierKeys.None;
 
+    public KeyboardShortcutTriggerType TriggerType { get; init; } = KeyboardShortcutTriggerType.VirtualKey;
+
     public VirtualKey Key { get; init; } = VirtualKey.None;
 }
 
@@ -55,6 +66,21 @@ public sealed record ApplicationHotkeySettings
     {
         RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Shift | KeyboardModifierKeys.Alternate,
         Key = VirtualKey.D
+    };
+}
+
+public sealed record DesktopSwitchHotkeySettings
+{
+    public KeyboardShortcutSettings SwitchToPreviousDesktopHotkey { get; init; } = new()
+    {
+        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Shift | KeyboardModifierKeys.Windows,
+        Key = VirtualKey.Left
+    };
+
+    public KeyboardShortcutSettings SwitchToNextDesktopHotkey { get; init; } = new()
+    {
+        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Shift | KeyboardModifierKeys.Windows,
+        Key = VirtualKey.Right
     };
 }
 
@@ -135,6 +161,8 @@ public sealed record DeskBorderSettings
     public DesktopEdgeIgnoreZoneSettings DesktopEdgeIgnoreZoneSettings { get; init; } = new();
 
     public ApplicationHotkeySettings ApplicationHotkeySettings { get; init; } = new();
+
+    public DesktopSwitchHotkeySettings DesktopSwitchHotkeySettings { get; init; } = new();
 
     public FocusedWindowMoveHotkeySettings FocusedWindowMoveHotkeySettings { get; init; } = new();
 

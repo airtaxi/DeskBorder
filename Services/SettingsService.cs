@@ -152,6 +152,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             AutoDeleteWarningTimeoutSeconds = ClampAutoDeleteWarningTimeoutSeconds(settings.AutoDeleteWarningTimeoutSeconds),
             DesktopEdgeIgnoreZoneSettings = NormalizeDesktopEdgeIgnoreZoneSettings(settings.DesktopEdgeIgnoreZoneSettings),
             ApplicationHotkeySettings = NormalizeApplicationHotkeySettings(settings.ApplicationHotkeySettings),
+            DesktopSwitchHotkeySettings = NormalizeDesktopSwitchHotkeySettings(settings.DesktopSwitchHotkeySettings),
             FocusedWindowMoveHotkeySettings = NormalizeFocusedWindowMoveHotkeySettings(settings.FocusedWindowMoveHotkeySettings),
             NavigatorSettings = NormalizeNavigatorSettings(settings.NavigatorSettings),
             BlacklistedProcessNames = NormalizeBlacklistedProcessNames(settings.BlacklistedProcessNames)
@@ -197,12 +198,23 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         };
     }
 
+    private static DesktopSwitchHotkeySettings NormalizeDesktopSwitchHotkeySettings(DesktopSwitchHotkeySettings? desktopSwitchHotkeySettings)
+    {
+        var actualDesktopSwitchHotkeySettings = desktopSwitchHotkeySettings ?? new();
+        return actualDesktopSwitchHotkeySettings with
+        {
+            SwitchToPreviousDesktopHotkey = NormalizeKeyboardShortcutSettings(actualDesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey),
+            SwitchToNextDesktopHotkey = NormalizeKeyboardShortcutSettings(actualDesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey)
+        };
+    }
+
     private static KeyboardShortcutSettings NormalizeKeyboardShortcutSettings(KeyboardShortcutSettings? keyboardShortcutSettings)
     {
         var actualKeyboardShortcutSettings = keyboardShortcutSettings ?? new();
         return actualKeyboardShortcutSettings with
         {
-            RequiredKeyboardModifierKeys = actualKeyboardShortcutSettings.RequiredKeyboardModifierKeys
+            RequiredKeyboardModifierKeys = actualKeyboardShortcutSettings.RequiredKeyboardModifierKeys,
+            Key = actualKeyboardShortcutSettings.TriggerType == KeyboardShortcutTriggerType.VirtualKey ? actualKeyboardShortcutSettings.Key : VirtualKey.None
         };
     }
 
@@ -254,18 +266,26 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     {
         if (!keyboardShortcutSettings.IsEnabled) return;
 
-        if (keyboardShortcutSettings.Key == VirtualKey.None) throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyMissingKeyFormat", GetKeyboardShortcutDisplayName(keyboardShortcutDisplayNameResourceKey)));
+        if (!KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutSettings))
+            throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyMissingKeyFormat", GetKeyboardShortcutDisplayName(keyboardShortcutDisplayNameResourceKey)));
+
+        if (KeyboardShortcutHelper.IsReservedByWindowsDesktopSwitchHotkey(keyboardShortcutSettings))
+            throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyReservedByWindowsDesktopSwitchFormat", GetKeyboardShortcutDisplayName(keyboardShortcutDisplayNameResourceKey)));
     }
 
     private static void ValidateSettings(DeskBorderSettings settings)
     {
         ValidateKeyboardShortcutSettings(settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey, "SettingsPage_ToggleDeskBorderHotkeyToggleSwitch.Header");
+        ValidateKeyboardShortcutSettings(settings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey, "SettingsPage_SwitchPreviousHotkeyToggleSwitch.Header");
+        ValidateKeyboardShortcutSettings(settings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey, "SettingsPage_SwitchNextHotkeyToggleSwitch.Header");
         ValidateKeyboardShortcutSettings(settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey, "SettingsPage_MovePreviousHotkeyToggleSwitch.Header");
         ValidateKeyboardShortcutSettings(settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey, "SettingsPage_MoveNextHotkeyToggleSwitch.Header");
         ValidateKeyboardShortcutSettings(settings.NavigatorSettings.ToggleHotkey, "SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header");
         ValidateUniqueKeyboardShortcutSettings(
         [
             new("SettingsPage_ToggleDeskBorderHotkeyToggleSwitch.Header", settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey),
+            new("SettingsPage_SwitchPreviousHotkeyToggleSwitch.Header", settings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey),
+            new("SettingsPage_SwitchNextHotkeyToggleSwitch.Header", settings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey),
             new("SettingsPage_MovePreviousHotkeyToggleSwitch.Header", settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey),
             new("SettingsPage_MoveNextHotkeyToggleSwitch.Header", settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey),
             new("SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header", settings.NavigatorSettings.ToggleHotkey)
@@ -275,14 +295,12 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private static void ValidateUniqueKeyboardShortcutSettings(
         IReadOnlyList<(string KeyboardShortcutDisplayNameResourceKey, KeyboardShortcutSettings KeyboardShortcutSettings)> keyboardShortcutEntries)
     {
-        var registeredKeyboardShortcuts = new Dictionary<(KeyboardModifierKeys RequiredKeyboardModifierKeys, VirtualKey Key), string>();
+        var registeredKeyboardShortcuts = new Dictionary<(KeyboardModifierKeys RequiredKeyboardModifierKeys, KeyboardShortcutTriggerType TriggerType, VirtualKey Key), string>();
         foreach (var keyboardShortcutEntry in keyboardShortcutEntries)
         {
-            if (!keyboardShortcutEntry.KeyboardShortcutSettings.IsEnabled || keyboardShortcutEntry.KeyboardShortcutSettings.Key == VirtualKey.None) continue;
+            if (!keyboardShortcutEntry.KeyboardShortcutSettings.IsEnabled || !KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutEntry.KeyboardShortcutSettings)) continue;
 
-            var keyboardShortcutIdentity = (
-                keyboardShortcutEntry.KeyboardShortcutSettings.RequiredKeyboardModifierKeys,
-                keyboardShortcutEntry.KeyboardShortcutSettings.Key);
+            var keyboardShortcutIdentity = KeyboardShortcutHelper.CreateKeyboardShortcutIdentity(keyboardShortcutEntry.KeyboardShortcutSettings);
             if (registeredKeyboardShortcuts.TryGetValue(keyboardShortcutIdentity, out var existingKeyboardShortcutDisplayNameResourceKey))
                 throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyDuplicateFormat",
                     GetKeyboardShortcutDisplayName(keyboardShortcutEntry.KeyboardShortcutDisplayNameResourceKey),

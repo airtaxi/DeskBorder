@@ -71,16 +71,26 @@ public static class SettingsDisplayFormatter
         if (!keyboardShortcutSettings.IsEnabled)
             return LocalizedResourceAccessor.GetString("Common.Disabled");
 
-        if (keyboardShortcutSettings.Key == VirtualKey.None)
+        if (!KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutSettings))
             return LocalizedResourceAccessor.GetString("KeyboardShortcut.KeyNotSpecified");
 
         var keyNames = new List<string>(5);
         if (keyboardShortcutSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None)
             keyNames.Add(FormatKeyboardModifierKeys(keyboardShortcutSettings.RequiredKeyboardModifierKeys));
 
-        keyNames.Add(FormatVirtualKey(keyboardShortcutSettings.Key));
+        keyNames.Add(FormatKeyboardShortcutTrigger(keyboardShortcutSettings.TriggerType, keyboardShortcutSettings.Key));
         return string.Join(" + ", keyNames);
     }
+
+    public static string FormatKeyboardShortcutTrigger(KeyboardShortcutTriggerType keyboardShortcutTriggerType, VirtualKey virtualKey) => keyboardShortcutTriggerType switch
+    {
+        KeyboardShortcutTriggerType.VirtualKey => FormatVirtualKey(virtualKey),
+        KeyboardShortcutTriggerType.MouseWheelUp => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseWheelUp"),
+        KeyboardShortcutTriggerType.MouseWheelDown => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseWheelDown"),
+        KeyboardShortcutTriggerType.MouseLeftButton => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseLeftButton"),
+        KeyboardShortcutTriggerType.MouseRightButton => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseRightButton"),
+        _ => keyboardShortcutTriggerType.ToString()
+    };
 
     public static string FormatMultiDisplayBehavior(MultiDisplayBehavior multiDisplayBehavior) => multiDisplayBehavior switch
     {

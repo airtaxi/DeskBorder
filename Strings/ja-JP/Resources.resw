@@ -156,6 +156,12 @@
   <data name="Dashboard.Hotkey.MovePreviousFormat" xml:space="preserve">
     <value>ウィンドウを前のデスクトップへ移動: {0}</value>
   </data>
+  <data name="Dashboard.Hotkey.SwitchNextFormat" xml:space="preserve">
+    <value>次のデスクトップへ切り替え: {0}</value>
+  </data>
+  <data name="Dashboard.Hotkey.SwitchPreviousFormat" xml:space="preserve">
+    <value>前のデスクトップへ切り替え: {0}</value>
+  </data>
   <data name="Dashboard.Hotkey.NavigatorToggleFormat" xml:space="preserve">
     <value>Navigator の切り替え: {0}</value>
   </data>
@@ -280,7 +286,19 @@
     <value>Windows</value>
   </data>
   <data name="KeyboardShortcut.KeyNotSpecified" xml:space="preserve">
-    <value>キーが未指定です</value>
+    <value>トリガー未設定</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseLeftButton" xml:space="preserve">
+    <value>左クリック</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseRightButton" xml:space="preserve">
+    <value>右クリック</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseWheelDown" xml:space="preserve">
+    <value>マウスホイール下</value>
+  </data>
+  <data name="KeyboardShortcutTrigger.MouseWheelUp" xml:space="preserve">
+    <value>マウスホイール上</value>
   </data>
   <data name="ManageWindow.ExitApplication" xml:space="preserve">
     <value>アプリケーションを終了</value>
@@ -436,10 +454,13 @@
     <value>他のグローバル ホットキーと重複しています</value>
   </data>
   <data name="Settings.HotkeyValidation.MissingKey" xml:space="preserve">
-    <value>メイン キーを選択してください</value>
+    <value>トリガーが必要です</value>
   </data>
   <data name="Settings.HotkeyValidation.RegistrationFailed" xml:space="preserve">
     <value>現在は登録できないホットキーです</value>
+  </data>
+  <data name="Settings.HotkeyValidation.ReservedByWindowsDesktopSwitch" xml:space="preserve">
+    <value>Windows 予約済み (Ctrl + Windows + ←/→)</value>
   </data>
   <data name="Settings.HotkeyValidation.Valid" xml:space="preserve">
     <value>有効なホットキーです</value>
@@ -475,7 +496,10 @@
     <value>{0} が {1} と重複しています。</value>
   </data>
   <data name="Settings.Validation.HotkeyMissingKeyFormat" xml:space="preserve">
-    <value>{0} を使うにはメイン キーを指定する必要があります。</value>
+    <value>{0} を有効にするにはトリガーを指定する必要があります。</value>
+  </data>
+  <data name="Settings.Validation.HotkeyReservedByWindowsDesktopSwitchFormat" xml:space="preserve">
+    <value>{0} では Ctrl + Windows + ←/→ を使えません。Windows がデスクトップ切り替え用に予約しているためです。</value>
   </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>プロセス名を入力してください。</value>
@@ -657,7 +681,7 @@
     <value>Microsoft Store で更新を確認</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
-    <value>DeskBorder、ウィンドウ移動、Navigator を直接制御するホットキーを設定します。</value>
+    <value>DeskBorder、デスクトップ切り替え、ウィンドウ移動、Navigator を直接制御するホットキーを設定します。</value>
   </data>
   <data name="SettingsPage_HotkeysSectionTitleTextBlock.Text" xml:space="preserve">
     <value>グローバル ホットキー</value>
@@ -667,8 +691,10 @@
   </data>
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 各グローバル ホットキーは機能ごとに個別に有効化または無効化できます。
-• メイン キーと修飾キーを組み合わせて、DeskBorder の切り替え、フォーカス中ウィンドウの前後デスクトップ移動、Navigator オーバーレイ切り替えを設定します。
-• 状態インジケーターは、その組み合わせが有効か、キー未指定か、重複か、登録失敗かをすぐに示します。</value>
+• キーボードキーまたはマウストリガー（ホイール上/下、左クリック、右クリック）を選び、必要に応じて修飾キーと組み合わせられます。
+• DeskBorder 切り替え、前のデスクトップへ切り替え、次のデスクトップへ切り替え、前のデスクトップへフォーカスウィンドウを移動、次のデスクトップへフォーカスウィンドウを移動、Navigator オーバーレイ切り替えを設定できます。
+• Ctrl + Windows + ←/→ は Windows がデスクトップ切り替え用に予約しているため、DeskBorder では無効なホットキーとして扱います。
+• 状態インジケーターは、その組み合わせが有効か、トリガー未設定か、Windows 予約済みか、重複か、登録失敗かをすぐに示します。</value>
   </data>
   <data name="SettingsPage_DeveloperSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>診断や問題の再現に役立つツールを提供します。</value>
@@ -730,7 +756,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>メイン キー</value>
+    <value>トリガー</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>修飾キー</value>
@@ -751,7 +777,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_MovePreviousHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>メイン キー</value>
+    <value>トリガー</value>
   </data>
   <data name="SettingsPage_MovePreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>修飾キー</value>
@@ -789,7 +815,7 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>メイン キー</value>
+    <value>トリガー</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>修飾キー</value>
@@ -897,7 +923,49 @@
     <value>Ctrl</value>
   </data>
   <data name="SettingsPage_ToggleDeskBorderHotkeyKeyComboBox.Header" xml:space="preserve">
-    <value>メイン キー</value>
+    <value>トリガー</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>修飾キー</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>次のデスクトップへ切り替え</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyTriggerComboBox.Header" xml:space="preserve">
+    <value>トリガー</value>
+  </data>
+  <data name="SettingsPage_SwitchNextHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>修飾キー</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>前のデスクトップへ切り替え</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyTriggerComboBox.Header" xml:space="preserve">
+    <value>トリガー</value>
+  </data>
+  <data name="SettingsPage_SwitchPreviousHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
   </data>
   <data name="SettingsPage_ToggleDeskBorderHotkeyModifierTextBlock.Text" xml:space="preserve">
     <value>修飾キー</value>

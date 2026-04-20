@@ -1,10 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using DeskBorder.Helpers;
 using DeskBorder.Models;
 using Windows.System;
 
 namespace DeskBorder.ViewModels;
 
-public sealed partial class KeyboardShortcutEditorViewModel(List<SelectionOption<VirtualKey>> virtualKeyOptions) : ObservableObject
+public readonly record struct KeyboardShortcutTriggerOptionValue(KeyboardShortcutTriggerType TriggerType, VirtualKey VirtualKey);
+
+public sealed partial class KeyboardShortcutEditorViewModel(List<SelectionOption<KeyboardShortcutTriggerOptionValue>> keyboardShortcutTriggerOptions) : ObservableObject
 {
     public ModifierKeySelectionViewModel RequiredKeyboardModifierSelection { get; } = new();
 
@@ -12,22 +15,24 @@ public sealed partial class KeyboardShortcutEditorViewModel(List<SelectionOption
     public partial bool IsEnabled { get; set; }
 
     [ObservableProperty]
-    public partial SelectionOption<VirtualKey>? SelectedVirtualKeyOption { get; set; }
+    public partial SelectionOption<KeyboardShortcutTriggerOptionValue>? SelectedKeyboardShortcutTriggerOption { get; set; }
 
-    public List<SelectionOption<VirtualKey>> VirtualKeyOptions { get; } = virtualKeyOptions;
+    public List<SelectionOption<KeyboardShortcutTriggerOptionValue>> KeyboardShortcutTriggerOptions { get; } = keyboardShortcutTriggerOptions;
 
     public KeyboardShortcutSettings CreateKeyboardShortcutSettings() => new()
     {
         IsEnabled = IsEnabled,
         RequiredKeyboardModifierKeys = RequiredKeyboardModifierSelection.CreateKeyboardModifierKeys(),
-        Key = SelectedVirtualKeyOption?.Value ?? VirtualKey.None
+        TriggerType = SelectedKeyboardShortcutTriggerOption?.Value.TriggerType ?? KeyboardShortcutTriggerType.VirtualKey,
+        Key = SelectedKeyboardShortcutTriggerOption?.Value.VirtualKey ?? VirtualKey.None
     };
 
     public void Load(KeyboardShortcutSettings keyboardShortcutSettings)
     {
         IsEnabled = keyboardShortcutSettings.IsEnabled;
         RequiredKeyboardModifierSelection.Load(keyboardShortcutSettings.RequiredKeyboardModifierKeys);
-        SelectedVirtualKeyOption = VirtualKeyOptions.FirstOrDefault(selectionOption => selectionOption.Value == keyboardShortcutSettings.Key) ?? VirtualKeyOptions.First(selectionOption => selectionOption.Value == VirtualKey.None);
+        SelectedKeyboardShortcutTriggerOption = KeyboardShortcutTriggerOptions.FirstOrDefault(selectionOption => selectionOption.Value.TriggerType == keyboardShortcutSettings.TriggerType && selectionOption.Value.VirtualKey == keyboardShortcutSettings.Key)
+            ?? KeyboardShortcutTriggerOptions.First(selectionOption => selectionOption.Value.TriggerType == KeyboardShortcutTriggerType.VirtualKey && selectionOption.Value.VirtualKey == VirtualKey.None);
     }
 
     partial void OnIsEnabledChanged(bool value)
@@ -35,11 +40,15 @@ public sealed partial class KeyboardShortcutEditorViewModel(List<SelectionOption
         if (!value)
             return;
 
-        if (SelectedVirtualKeyOption is not null && SelectedVirtualKeyOption.Value != VirtualKey.None)
+        if (SelectedKeyboardShortcutTriggerOption is not null
+            && KeyboardShortcutHelper.IsKeyboardShortcutSpecified(CreateKeyboardShortcutSettings()))
+        {
             return;
+        }
 
-        SelectedVirtualKeyOption = GetDefaultVirtualKeyOption();
+        SelectedKeyboardShortcutTriggerOption = GetDefaultKeyboardShortcutTriggerOption();
     }
 
-    private SelectionOption<VirtualKey> GetDefaultVirtualKeyOption() => VirtualKeyOptions.FirstOrDefault(selectionOption => selectionOption.Value != VirtualKey.None) ?? VirtualKeyOptions.First(selectionOption => selectionOption.Value == VirtualKey.None);
+    private SelectionOption<KeyboardShortcutTriggerOptionValue> GetDefaultKeyboardShortcutTriggerOption() => KeyboardShortcutTriggerOptions.FirstOrDefault(selectionOption => selectionOption.Value.TriggerType != KeyboardShortcutTriggerType.VirtualKey || selectionOption.Value.VirtualKey != VirtualKey.None)
+        ?? KeyboardShortcutTriggerOptions.First(selectionOption => selectionOption.Value.TriggerType == KeyboardShortcutTriggerType.VirtualKey && selectionOption.Value.VirtualKey == VirtualKey.None);
 }

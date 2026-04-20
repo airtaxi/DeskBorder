@@ -25,6 +25,8 @@ public sealed partial class SettingsPage : Page
     private const string LogFileExtension = ".txt";
     private const string LogSuggestedFileNamePrefix = "DeskBorder_Logs";
     private const string CreateDesktopModifierSelectionTag = "CreateDesktopModifierSelection";
+    private const string SwitchToNextDesktopHotkeyEditorTag = "SwitchToNextDesktopHotkeyEditor";
+    private const string SwitchToPreviousDesktopHotkeyEditorTag = "SwitchToPreviousDesktopHotkeyEditor";
     private const string MoveFocusedWindowToNextDesktopHotkeyEditorTag = "MoveFocusedWindowToNextDesktopHotkeyEditor";
     private const string MoveFocusedWindowToPreviousDesktopHotkeyEditorTag = "MoveFocusedWindowToPreviousDesktopHotkeyEditor";
     private const string NavigatorToggleHotkeyEditorTag = "NavigatorToggleHotkeyEditor";
@@ -113,7 +115,7 @@ public sealed partial class SettingsPage : Page
     private Brush GetKeyboardShortcutValidationForegroundBrush(KeyboardShortcutValidationState keyboardShortcutValidationState) => (Brush)Application.Current.Resources[keyboardShortcutValidationState switch
     {
         KeyboardShortcutValidationState.Valid => "SystemFillColorSuccessBrush",
-        KeyboardShortcutValidationState.MissingKey or KeyboardShortcutValidationState.Duplicate or KeyboardShortcutValidationState.RegistrationFailed => "SystemFillColorCriticalBrush",
+        KeyboardShortcutValidationState.MissingKey or KeyboardShortcutValidationState.ReservedByWindowsDesktopSwitch or KeyboardShortcutValidationState.Duplicate or KeyboardShortcutValidationState.RegistrationFailed => "SystemFillColorCriticalBrush",
         _ => "TextFillColorSecondaryBrush"
     }];
 
@@ -121,6 +123,7 @@ public sealed partial class SettingsPage : Page
     {
         KeyboardShortcutValidationState.Valid => "Settings.HotkeyValidation.Valid",
         KeyboardShortcutValidationState.MissingKey => "Settings.HotkeyValidation.MissingKey",
+        KeyboardShortcutValidationState.ReservedByWindowsDesktopSwitch => "Settings.HotkeyValidation.ReservedByWindowsDesktopSwitch",
         KeyboardShortcutValidationState.Duplicate => "Settings.HotkeyValidation.Duplicate",
         KeyboardShortcutValidationState.RegistrationFailed => "Settings.HotkeyValidation.RegistrationFailed",
         _ => "Settings.HotkeyValidation.Disabled"
@@ -138,6 +141,8 @@ public sealed partial class SettingsPage : Page
     private void ApplyHotkeyRegistrationState()
     {
         ViewModel.UpdateHotkeyRegistrationFailureMessage(HotkeyActionType.ToggleDeskBorderEnabled, _hotkeyService.GetRegistrationFailureMessage(HotkeyActionType.ToggleDeskBorderEnabled));
+        ViewModel.UpdateHotkeyRegistrationFailureMessage(HotkeyActionType.SwitchToPreviousDesktop, _hotkeyService.GetRegistrationFailureMessage(HotkeyActionType.SwitchToPreviousDesktop));
+        ViewModel.UpdateHotkeyRegistrationFailureMessage(HotkeyActionType.SwitchToNextDesktop, _hotkeyService.GetRegistrationFailureMessage(HotkeyActionType.SwitchToNextDesktop));
         ViewModel.UpdateHotkeyRegistrationFailureMessage(HotkeyActionType.MoveFocusedWindowToPreviousDesktop, _hotkeyService.GetRegistrationFailureMessage(HotkeyActionType.MoveFocusedWindowToPreviousDesktop));
         ViewModel.UpdateHotkeyRegistrationFailureMessage(HotkeyActionType.MoveFocusedWindowToNextDesktop, _hotkeyService.GetRegistrationFailureMessage(HotkeyActionType.MoveFocusedWindowToNextDesktop));
         ViewModel.UpdateHotkeyRegistrationFailureMessage(HotkeyActionType.ToggleNavigator, _hotkeyService.GetRegistrationFailureMessage(HotkeyActionType.ToggleNavigator));
@@ -148,6 +153,8 @@ public sealed partial class SettingsPage : Page
         SwitchDesktopModifierSelectionTag => settingsPageViewModel.SwitchDesktopModifierSelection,
         CreateDesktopModifierSelectionTag => settingsPageViewModel.CreateDesktopModifierSelection,
         ToggleDeskBorderEnabledHotkeyEditorTag => settingsPageViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection,
+        SwitchToPreviousDesktopHotkeyEditorTag => settingsPageViewModel.SwitchToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
+        SwitchToNextDesktopHotkeyEditorTag => settingsPageViewModel.SwitchToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
         MoveFocusedWindowToPreviousDesktopHotkeyEditorTag => settingsPageViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
         MoveFocusedWindowToNextDesktopHotkeyEditorTag => settingsPageViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
         NavigatorToggleHotkeyEditorTag => settingsPageViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection,
