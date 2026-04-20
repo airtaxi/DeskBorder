@@ -73,14 +73,14 @@ public sealed record DesktopSwitchHotkeySettings
 {
     public KeyboardShortcutSettings SwitchToPreviousDesktopHotkey { get; init; } = new()
     {
-        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Shift | KeyboardModifierKeys.Windows,
-        Key = VirtualKey.Left
+        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Windows,
+        TriggerType = KeyboardShortcutTriggerType.MouseWheelUp
     };
 
     public KeyboardShortcutSettings SwitchToNextDesktopHotkey { get; init; } = new()
     {
-        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Shift | KeyboardModifierKeys.Windows,
-        Key = VirtualKey.Right
+        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Windows,
+        TriggerType = KeyboardShortcutTriggerType.MouseWheelDown
     };
 }
 
