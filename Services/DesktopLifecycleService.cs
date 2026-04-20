@@ -154,6 +154,7 @@ public sealed class DesktopLifecycleService(
 
     private async Task CancelPendingDesktopDeletionAsync()
     {
+        var hadPendingDesktopDeletion = _pendingDesktopDeletionCancellationTokenSource is not null || _pendingDesktopDeletionTask is not null;
         _pendingDesktopDeletionCancellationTokenSource?.Cancel();
         if (_pendingDesktopDeletionTask is not null)
         {
@@ -167,7 +168,8 @@ public sealed class DesktopLifecycleService(
         _pendingDesktopDeletionCancellationTokenSource?.Dispose();
         _pendingDesktopDeletionCancellationTokenSource = null;
         _pendingDesktopDeletionTask = null;
-        await _toastService.DismissAsync();
+        if (hadPendingDesktopDeletion)
+            await _toastService.DismissAsync();
     }
 
     private void ConsumeKeyboardModifiersAfterDesktopAction(DesktopNavigationResult desktopNavigationResult, KeyboardModifierKeys keyboardModifierKeys)
