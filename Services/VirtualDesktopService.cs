@@ -244,6 +244,9 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             ConvertToAdjacentVirtualDesktopDirection(desktopSwitchDirection),
             out var adjacentVirtualDesktop))
         {
+            if (CanCreateDesktopForFocusedWindowMove(desktopSwitchDirection, previousWorkspaceSnapshot))
+                return MoveFocusedWindowToCreatedDesktop(virtualDesktopShellConnection.VirtualDesktopShell, previousWorkspaceSnapshot, applicationView, focusedWindowHandle, desktopSwitchDirection);
+
             _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"MoveFocusedWindowToAdjacentDesktop found no adjacent desktop for direction {desktopSwitchDirection}.");
             return new()
             {
@@ -353,6 +356,13 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         _ => throw new InvalidOperationException("The requested desktop switch direction is not supported.")
     };
 
+    private static bool CanCreateDesktopForFocusedWindowMove(DesktopSwitchDirection desktopSwitchDirection, VirtualDesktopWorkspaceSnapshot previousWorkspaceSnapshot) => desktopSwitchDirection switch
+    {
+        DesktopSwitchDirection.Previous => previousWorkspaceSnapshot.CurrentDesktopNumber == 1,
+        DesktopSwitchDirection.Next => previousWorkspaceSnapshot.CurrentDesktopNumber == previousWorkspaceSnapshot.DesktopCount,
+        _ => false
+    };
+
     private static bool AttachThreadInputIfNeeded(uint currentThreadIdentifier, uint targetThreadIdentifier)
         => targetThreadIdentifier != 0
         && targetThreadIdentifier != currentThreadIdentifier
@@ -367,6 +377,34 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         CurrentWorkspaceSnapshot = workspaceSnapshot,
         SourceDesktopIdentifier = workspaceSnapshot.CurrentDesktopIdentifier
     };
+
+    private DesktopNavigationResult MoveFocusedWindowToCreatedDesktop(
+        VirtualDesktopShell virtualDesktopShell,
+        VirtualDesktopWorkspaceSnapshot previousWorkspaceSnapshot,
+        IApplicationView applicationView,
+        nint focusedWindowHandle,
+        DesktopSwitchDirection desktopSwitchDirection)
+    {
+        var createdVirtualDesktop = VirtualDesktopFoundation.CreateDesktop(virtualDesktopShell);
+        if (desktopSwitchDirection == DesktopSwitchDirection.Previous)
+            VirtualDesktopFoundation.MoveDesktop(virtualDesktopShell, createdVirtualDesktop, previousWorkspaceSnapshot.CurrentDesktopNumber - 1);
+
+        var targetDesktopIdentifier = VirtualDesktopFoundation.GetDesktopIdentifier(createdVirtualDesktop);
+        VirtualDesktopFoundation.MoveViewToDesktop(virtualDesktopShell, applicationView, createdVirtualDesktop);
+        VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShell, createdVirtualDesktop);
+        FocusWindowOnTargetDesktop(virtualDesktopShell.VirtualDesktopManager, focusedWindowHandle, targetDesktopIdentifier);
+        var currentWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShell);
+        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Created a desktop for direction {desktopSwitchDirection}, moved the focused window, and switched to desktop '{targetDesktopIdentifier}'.");
+        return new()
+        {
+            OperationStatus = VirtualDesktopOperationStatus.Success,
+            NavigationActionKind = DesktopNavigationActionKind.CreatedAndSwitched,
+            PreviousWorkspaceSnapshot = previousWorkspaceSnapshot,
+            CurrentWorkspaceSnapshot = currentWorkspaceSnapshot,
+            SourceDesktopIdentifier = previousWorkspaceSnapshot.CurrentDesktopIdentifier,
+            TargetDesktopIdentifier = currentWorkspaceSnapshot.CurrentDesktopIdentifier
+        };
+    }
 
     private static VirtualDesktopWorkspaceSnapshot CreateWorkspaceSnapshot(VirtualDesktopShell virtualDesktopShell)
     {
