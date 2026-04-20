@@ -21,6 +21,16 @@ Move your mouse to the edge of the screen to switch desktops, create a new deskt
 - Open a navigator overlay to see desktops at a glance
 - Run quietly from the tray with a simple settings window
 
+## Libraries Used
+
+- [Microsoft.WindowsAppSDK](https://github.com/microsoft/WindowsAppSDK) - WinUI 3 app platform and Windows integration
+- [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) - MVVM helpers and source generators
+- [CommunityToolkit.WinUI.Converters](https://github.com/CommunityToolkit/Windows) - WinUI value converters
+- [DevWinUI.Controls](https://github.com/ghost1372/DevWinUI) - additional WinUI controls used in settings and dialogs
+- [H.NotifyIcon.WinUI](https://github.com/HavenDV/H.NotifyIcon) - tray icon integration
+- [Microsoft.Extensions.DependencyInjection](https://github.com/dotnet/runtime) - dependency injection container
+- [WinUIEx](https://github.com/dotMorten/WinUIEx) - extra windowing helpers for WinUI
+
 ## License
 
 This project is distributed under the [MIT License](LICENSE.txt).

@@ -21,6 +21,16 @@ DeskBorder는 가상 데스크톱을 자주 사용하는 사용자를 위한 Win
 - Navigator 오버레이로 전체 데스크톱을 한눈에 보기
 - 트레이에서 조용히 실행되며 간단한 설정 창 제공
 
+## 사용 라이브러리
+
+- [Microsoft.WindowsAppSDK](https://github.com/microsoft/WindowsAppSDK) - WinUI 3 앱 플랫폼과 Windows 통합 기능
+- [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) - MVVM 헬퍼와 소스 제너레이터
+- [CommunityToolkit.WinUI.Converters](https://github.com/CommunityToolkit/Windows) - WinUI 값 변환기
+- [DevWinUI.Controls](https://github.com/ghost1372/DevWinUI) - 설정 화면과 대화상자에 사용한 추가 WinUI 컨트롤
+- [H.NotifyIcon.WinUI](https://github.com/HavenDV/H.NotifyIcon) - 트레이 아이콘 통합
+- [Microsoft.Extensions.DependencyInjection](https://github.com/dotnet/runtime) - 의존성 주입 컨테이너
+- [WinUIEx](https://github.com/dotMorten/WinUIEx) - WinUI용 추가 창 관리 헬퍼
+
 ## 라이선스
 
 이 프로젝트는 [MIT 라이선스](LICENSE.txt)로 배포됩니다.
