@@ -12,6 +12,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsKey = "DeskBorderSettings";
     private const int CurrentSchemaVersion = 1;
+    private const int DesktopEdgeAdditionalTriggerDistancePercentageDecimalPlaces = 1;
     private const double DefaultAutoDeleteWarningTimeoutSeconds = 3.0;
     private const double DefaultDesktopEdgeAdditionalTriggerDistancePercentage = 5.0;
     private const double MaximumAutoDeleteWarningTimeoutSeconds = 10.0;
@@ -241,9 +242,16 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         ? Math.Clamp(value, MinimumAutoDeleteWarningTimeoutSeconds, MaximumAutoDeleteWarningTimeoutSeconds)
         : DefaultAutoDeleteWarningTimeoutSeconds;
 
-    private static double ClampDesktopEdgeAdditionalTriggerDistancePercentage(double value) => double.IsFinite(value)
-        ? Math.Clamp(value, MinimumDesktopEdgeAdditionalTriggerDistancePercentage, MaximumDesktopEdgeAdditionalTriggerDistancePercentage)
-        : DefaultDesktopEdgeAdditionalTriggerDistancePercentage;
+    private static double ClampDesktopEdgeAdditionalTriggerDistancePercentage(double value)
+    {
+        if (!double.IsFinite(value))
+            return DefaultDesktopEdgeAdditionalTriggerDistancePercentage;
+
+        return Math.Round(
+            Math.Clamp(value, MinimumDesktopEdgeAdditionalTriggerDistancePercentage, MaximumDesktopEdgeAdditionalTriggerDistancePercentage),
+            DesktopEdgeAdditionalTriggerDistancePercentageDecimalPlaces,
+            MidpointRounding.AwayFromZero);
+    }
 
     private static double ClampDesktopEdgeIgnorePercentage(double value) => double.IsFinite(value) ? Math.Clamp(value, 0.0, MaximumDesktopEdgeIgnorePercentage) : 0.0;
 
