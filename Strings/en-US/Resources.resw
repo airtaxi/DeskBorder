@@ -657,6 +657,7 @@
 • Check for Store updates automatically: when enabled, checks Microsoft Store every 8 hours and shows a system toast when a new version is available.
 • Check for updates now: checks Microsoft Store immediately and can open the app's product page when a new version is available.
 • Multi-display behavior: disables monitoring on multi-monitor setups, or limits it to the outermost display edges only.
+• App theme: switches the current app theme. Some secondary windows or dialogs may look fully consistent after reopening the app.
 • App language: pins the UI to a specific language or follows the system language.</value>
   </data>
   <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
@@ -756,6 +757,13 @@
   <data name="SettingsPage_DeveloperSectionTitleTextBlock.Text" xml:space="preserve">
     <value>Developer</value>
   </data>
+  <data name="SettingsPage_DeveloperSectionTeachingTip.Title" xml:space="preserve">
+    <value>Developer guide</value>
+  </data>
+  <data name="SettingsPage_DeveloperSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• Download integrated logs: saves logs from the current app session to a text file, up to 1,000 entries.
+• Use the result info bar below to confirm whether the export completed, was canceled, or failed.</value>
+  </data>
   <data name="SettingsPage_ExportIntegratedLogButton.Content" xml:space="preserve">
     <value>Save</value>
   </data>
@@ -795,7 +803,8 @@
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Export settings: saves the current app configuration to a .dbs file for backup or transfer to another PC.
 • Import settings: loads a saved .dbs file and applies it to the current configuration in one step.
-• The info bar below briefly shows import and export results or errors.</value>
+• Reset settings: restores the current settings to their defaults after confirmation.
+• The info bar below briefly shows import, export, and reset results or errors.</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
     <value>Import settings</value>
@@ -939,18 +948,30 @@
   <data name="SettingsPage_WhitelistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>Manage process names that should always be allowed to prevent false positives when game-recognized programs are auto-added.</value>
   </data>
+  <data name="SettingsPage_WhitelistSectionTeachingTip.Title" xml:space="preserve">
+    <value>Whitelist guide</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• Add from running processes and blacklist: lets you pick currently running processes plus names already in the blacklist, then moves the selected ones into the whitelist.
+• Whitelisted process names always stay allowed, even when automatic game detection would normally block DeskBorder.
+• If a process exists in both lists, the whitelist wins and the blacklist entry is removed automatically.</value>
+  </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>Edges and auto cleanup guide</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.
-• Show deletion warning: when enabled, deletion waits briefly so you can undo it; when disabled, empty desktops are deleted immediately for continuous cleanup.
+    <value>• Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.
+• Skip creation when current desktop is empty: prevents creating another desktop when the desktop you are leaving has no windows.
+• Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.
+• Show deletion warning: when enabled, deletion waits briefly so you can undo it; when disabled, empty desktops are deleted immediately.
+• Show auto-delete completion notification: available only when the deletion warning is off, and shows a completion notification after an empty desktop is deleted immediately.
 • Deletion warning timeout: adjusts how long the undo wait lasts while the deletion warning is shown.
-• Empty desktop detection: a desktop counts as empty only when the wallpaper is actually visible. Minimized windows do not block auto deletion.
-• Top and bottom ignore zones: adjusts, in percentages, how much of the upper and lower screen area should ignore edge switching and desktop creation.
-• Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.
+• Require extra movement past the edge / Extra movement distance (%): edge switching or creation only triggers after you keep pushing farther past the edge by the configured percentage of the current monitor width.
+• Top and bottom ignore zones: adjusts how much of the upper and lower screen area should ignore edge switching and desktop creation.
+• Mouse position after hotkey desktop switch / Mouse position after edge desktop switch: chooses where the pointer lands after switching desktops.
 • Switch desktop modifiers: key combination that must be held before edge-based desktop switching triggers.
-• Create desktop modifiers: key combination required to create a new desktop from the right edge of the last desktop.</value>
+• Create desktop modifiers: key combination required to create a new desktop from the right edge of the last desktop.
+• Allow click/drag while switching modifiers: edge-based switching can still run while a mouse button is held, but only when both the switch modifiers and this extra modifier combination are pressed.</value>
   </data>
   <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>Top ignore zone (%)</value>

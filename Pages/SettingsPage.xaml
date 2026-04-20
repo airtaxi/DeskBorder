@@ -1243,16 +1243,48 @@
                     BorderThickness="1"
                     CornerRadius="12">
                     <StackPanel Spacing="16">
-                        <StackPanel Spacing="6">
-                            <TextBlock
-                                x:Uid="SettingsPage_WhitelistSectionTitleTextBlock"
-                                FontWeight="SemiBold"
-                                Text="화이트리스트" />
-                            <TextBlock
-                                x:Uid="SettingsPage_WhitelistSectionDescriptionTextBlock"
-                                Text="게임으로 인식되는 프로그램이 자동 추가되어 오작동하는 경우를 방지하기 위해 항상 허용할 프로세스 이름을 관리합니다."
-                                TextWrapping="WrapWholeWords" />
-                        </StackPanel>
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    x:Uid="SettingsPage_WhitelistSectionTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="화이트리스트" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_WhitelistSectionDescriptionTextBlock"
+                                    Text="게임으로 인식되는 프로그램이 자동 추가되어 오작동하는 경우를 방지하기 위해 항상 허용할 프로세스 이름을 관리합니다."
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                            <Grid
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                                <Button
+                                    x:Name="WhitelistSectionHelpButton"
+                                    Click="OnSectionHelpButtonClicked"
+                                    Style="{StaticResource SectionHelpButtonStyle}"
+                                    Tag="{x:Bind WhitelistSectionTeachingTip}">
+                                    <FontIcon Glyph="&#xE9CE;" />
+                                </Button>
+                                <TeachingTip
+                                    x:Name="WhitelistSectionTeachingTip"
+                                    x:Uid="SettingsPage_WhitelistSectionTeachingTip"
+                                    Title="화이트리스트 안내"
+                                    Closed="OnSectionTeachingTipClosed"
+                                    IsLightDismissEnabled="True"
+                                    Target="{x:Bind WhitelistSectionHelpButton}">
+                                    <TeachingTip.Content>
+                                        <TextBlock
+                                            x:Uid="SettingsPage_WhitelistSectionTeachingTipContentTextBlock"
+                                            Style="{StaticResource SectionTeachingTipContentTextBlockStyle}"
+                                            Text="화이트리스트 섹션의 각 설정 설명" />
+                                    </TeachingTip.Content>
+                                </TeachingTip>
+                            </Grid>
+                        </Grid>
 
                         <Button
                             x:Uid="SettingsPage_AddWhitelistedProcessNameButton"
@@ -1301,17 +1333,49 @@
                     BorderThickness="1"
                     CornerRadius="12">
                     <StackPanel Spacing="16">
-                        <StackPanel Spacing="6">
-                            <TextBlock
-                                x:Uid="SettingsPage_DeveloperSectionTitleTextBlock"
-                                FontWeight="SemiBold"
-                                Text="개발자" />
-                            <TextBlock
-                                x:Uid="SettingsPage_DeveloperSectionDescriptionTextBlock"
-                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="진단과 문제 재현에 필요한 도구를 제공합니다."
-                                TextWrapping="WrapWholeWords" />
-                        </StackPanel>
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    x:Uid="SettingsPage_DeveloperSectionTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="개발자" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_DeveloperSectionDescriptionTextBlock"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="진단과 문제 재현에 필요한 도구를 제공합니다."
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                            <Grid
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                                <Button
+                                    x:Name="DeveloperSectionHelpButton"
+                                    Click="OnSectionHelpButtonClicked"
+                                    Style="{StaticResource SectionHelpButtonStyle}"
+                                    Tag="{x:Bind DeveloperSectionTeachingTip}">
+                                    <FontIcon Glyph="&#xE9CE;" />
+                                </Button>
+                                <TeachingTip
+                                    x:Name="DeveloperSectionTeachingTip"
+                                    x:Uid="SettingsPage_DeveloperSectionTeachingTip"
+                                    Title="개발자 안내"
+                                    Closed="OnSectionTeachingTipClosed"
+                                    IsLightDismissEnabled="True"
+                                    Target="{x:Bind DeveloperSectionHelpButton}">
+                                    <TeachingTip.Content>
+                                        <TextBlock
+                                            x:Uid="SettingsPage_DeveloperSectionTeachingTipContentTextBlock"
+                                            Style="{StaticResource SectionTeachingTipContentTextBlockStyle}"
+                                            Text="개발자 섹션의 각 설정 설명" />
+                                    </TeachingTip.Content>
+                                </TeachingTip>
+                            </Grid>
+                        </Grid>
 
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>

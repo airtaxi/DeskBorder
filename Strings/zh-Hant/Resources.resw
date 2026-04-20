@@ -657,6 +657,7 @@
 • 自動檢查 Store 更新：啟用後每 8 小時檢查一次 Microsoft Store 更新，有新版本時顯示系統通知。
 • 立即檢查更新：立即在 Microsoft Store 中檢查新版本，並在有更新時開啟產品頁面。
 • 多顯示器行為：在多螢幕環境中停用監視，或只在最外側顯示器邊緣啟用。
+• 應用程式主題：切換目前的應用程式主題。部分輔助視窗或對話方塊在重新開啟應用程式後會顯示得更一致。
 • 應用程式語言：將介面固定為指定語言，或跟隨系統語言。</value>
   </data>
   <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
@@ -756,6 +757,13 @@
   <data name="SettingsPage_DeveloperSectionTitleTextBlock.Text" xml:space="preserve">
     <value>開發人員</value>
   </data>
+  <data name="SettingsPage_DeveloperSectionTeachingTip.Title" xml:space="preserve">
+    <value>開發人員說明</value>
+  </data>
+  <data name="SettingsPage_DeveloperSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 下載整合日誌：將目前應用程式工作階段中記錄的日誌儲存為文字檔，最多包含 1,000 筆。
+• 可透過下方資訊列立即確認匯出成功、取消或失敗。</value>
+  </data>
   <data name="SettingsPage_ExportIntegratedLogButton.Content" xml:space="preserve">
     <value>儲存</value>
   </data>
@@ -795,7 +803,8 @@
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 匯出設定：將目前應用程式設定儲存為 .dbs 檔案，方便備份或移到另一台電腦。
 • 匯入設定：讀取已儲存的 .dbs 檔案，並一次套用到目前設定。
-• 下方資訊列會短暫顯示匯入匯出的結果或錯誤。</value>
+• 重設設定：確認後將目前設定還原為預設值。
+• 下方資訊列會短暫顯示匯入、匯出、重設的結果或錯誤。</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
     <value>匯入設定</value>
@@ -939,18 +948,30 @@
   <data name="SettingsPage_WhitelistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>管理永遠允許的處理程序名稱，以避免被辨識為遊戲的程式自動加入後造成誤判。</value>
   </data>
+  <data name="SettingsPage_WhitelistSectionTeachingTip.Title" xml:space="preserve">
+    <value>白名單說明</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 從執行中的處理程序與黑名單新增：可以從目前正在執行的處理程序以及已在黑名單中的名稱裡挑選，並將它們移到白名單。
+• 白名單中的處理程序名稱即使會被自動遊戲偵測判定為需要阻擋，也會始終保持允許狀態。
+• 如果同一個名稱同時出現在黑名單與白名單中，會以白名單為準，並自動移除黑名單項目。</value>
+  </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>邊緣與自動整理說明</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 自動刪除空桌面：當你從最外側桌面往內移動且該桌面已無視窗時，會刪除該桌面。
-• 顯示刪除警告：開啟後會先短暫等待並允許復原，關閉後則不顯示警告並立即刪除，以便連續整理。
+    <value>• 桌面建立：決定是否允許從最後一個桌面的右側邊緣建立新桌面。
+• 目前桌面為空時不建立：如果即將離開的目前桌面沒有視窗，則不再額外建立新桌面。
+• 自動刪除空桌面：當你從最外側桌面往內移動時，如果該桌面沒有視窗就會刪除它。
+• 顯示刪除警告：開啟時會先短暫等待以便復原，關閉時會立即刪除空桌面。
+• 顯示自動刪除完成通知：僅在關閉刪除警告時可用，會在空桌面被立即刪除後顯示完成通知。
 • 刪除警告逾時：調整顯示刪除警告時等待復原的時間。
-• 空桌面判定：只有在桌布實際可見時才視為空桌面。已最小化的視窗不會阻止自動刪除。
-• 頂部/底部忽略區域：以百分比調整螢幕上下有多少區域不回應邊緣切換與桌面建立。
-• 啟用桌面建立：開啟或關閉在最後一個桌面的右邊緣建立新桌面的功能。
-• 桌面切換修飾鍵：在螢幕左右邊緣觸發桌面切換前必須按住的組合鍵。
-• 桌面建立修飾鍵：在最後一個桌面的右邊緣建立新桌面時所需的組合鍵。</value>
+• 使用邊緣額外移動距離 / 額外移動距離（%）：只有持續往邊緣外推，達到目前顯示器寬度指定比例時，才會觸發切換或建立。
+• 上方忽略區域 / 下方忽略區域：以百分比調整螢幕上方與下方忽略邊緣切換與桌面建立的範圍。
+• 熱鍵切換桌面後的滑鼠位置 / 邊緣切換桌面後的滑鼠位置：選擇切換桌面後指標要移動到哪裡。
+• 桌面切換修飾鍵：觸發基於邊緣的桌面切換前必須按住的按鍵組合。
+• 桌面建立修飾鍵：從最後一個桌面的右側邊緣建立新桌面時需要按住的按鍵組合。
+• 允許切換時點擊/拖曳的修飾鍵：即使滑鼠按鈕正按住，也允許邊緣切換的附加按鍵組合。只有桌面切換修飾鍵和這組附加修飾鍵同時滿足時才會生效。</value>
   </data>
   <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>頂部忽略區域 (%)</value>

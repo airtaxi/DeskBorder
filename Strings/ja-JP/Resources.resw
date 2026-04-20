@@ -657,6 +657,7 @@
 • Store 更新の自動確認: 有効にすると 8 時間ごとに Microsoft Store の更新を確認し、新しいバージョンがある場合はシステム トーストを表示します。
 • 今すぐ更新を確認: Microsoft Store で新しいバージョンをすぐに確認し、更新がある場合は製品ページを開けます。
 • マルチディスプレイ動作: マルチモニターでは監視を無効化するか、最も外側のディスプレイ端だけで動作させます。
+• アプリ テーマ: 現在のアプリ テーマを切り替えます。補助ウィンドウやダイアログは、アプリを開き直すとより一貫して反映されます。
 • アプリの言語: UI 言語を固定するか、システム言語に従わせます。</value>
   </data>
   <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
@@ -756,6 +757,13 @@
   <data name="SettingsPage_DeveloperSectionTitleTextBlock.Text" xml:space="preserve">
     <value>開発者</value>
   </data>
+  <data name="SettingsPage_DeveloperSectionTeachingTip.Title" xml:space="preserve">
+    <value>開発者ガイド</value>
+  </data>
+  <data name="SettingsPage_DeveloperSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 統合ログをダウンロード: 現在のアプリ セッション中に記録されたログをテキスト ファイルとして保存します。最大 1,000 件まで含まれます。
+• 下の情報バーで、エクスポートの成功、キャンセル、失敗をすぐ確認できます。</value>
+  </data>
   <data name="SettingsPage_ExportIntegratedLogButton.Content" xml:space="preserve">
     <value>保存</value>
   </data>
@@ -795,7 +803,8 @@
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 設定をエクスポート: 現在のアプリ設定を .dbs ファイルとして保存し、バックアップや別 PC への移行に使えます。
 • 設定をインポート: 保存済みの .dbs ファイルを読み込み、現在の設定へ一度に適用します。
-• 下の情報バーは、インポートやエクスポートの結果やエラーを短時間表示します。</value>
+• 設定をリセット: 確認後、現在の設定を既定値に戻します。
+• 下の情報バーは、インポート、エクスポート、リセットの結果やエラーを短時間表示します。</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
     <value>設定をインポート</value>
@@ -939,18 +948,30 @@
   <data name="SettingsPage_WhitelistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>ゲームとして認識されたプログラムが自動追加されて誤動作する場合を防ぐため、常に許可するプロセス名を管理します。</value>
   </data>
+  <data name="SettingsPage_WhitelistSectionTeachingTip.Title" xml:space="preserve">
+    <value>ホワイトリスト ガイド</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 実行中のプロセスとブラックリストから追加: 現在実行中のプロセスや既存のブラックリスト項目から選んで、ホワイトリストへ移動できます。
+• ホワイトリストにあるプロセス名は、自動ゲーム検出で通常はブロック対象になる場合でも常に許可されます。
+• 同じ名前がブラックリストとホワイトリストの両方にある場合は、ホワイトリストが優先され、ブラックリスト側は自動で削除されます。</value>
+  </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>エッジと自動整理ガイド</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 空のデスクトップを自動削除: 外側デスクトップから内側へ移動するとき、ウィンドウが無ければ削除します。
-• 削除前の警告を表示: オンにすると取り消し可能な短い待機のあとで削除し、オフにすると警告なしで即座に削除して連続整理できます。
-• 削除前の警告タイムアウト: 削除前の警告を表示している間、取り消しを待つ時間を調整します。
-• 空のデスクトップ判定: 壁紙が実際に見えている状態のときだけ空のデスクトップとして扱います。最小化されたウィンドウは削除を妨げません。
-• 上側/下側の無視領域: 画面の上下の一部ではエッジ切り替えとデスクトップ作成が反応しないよう、割合で調整します。
-• デスクトップ作成を有効化: 最後のデスクトップの右端から新しいデスクトップを作る機能自体をオンまたはオフにします。
-• デスクトップ切り替えの修飾キー: 画面端でデスクトップ切り替えを発動する前に押しておくキーの組み合わせです。
-• デスクトップ作成の修飾キー: 最後のデスクトップの右端から新しいデスクトップを作るときに必要なキーの組み合わせです。</value>
+    <value>• デスクトップを作成: 最後のデスクトップの右端から新しいデスクトップを作成するかどうかを切り替えます。
+• 現在のデスクトップが空なら作成しない: 移動元の現在デスクトップにウィンドウが無い場合は、さらに新しいデスクトップを作成しません。
+• 空のデスクトップを自動削除: 外側デスクトップから内側へ移動するとき、ウィンドウが無ければそのデスクトップを削除します。
+• 削除前の警告を表示: 有効時は少し待って取り消せます。無効時は空のデスクトップをすぐ削除します。
+• 自動削除完了通知を表示: 削除前の警告をオフにしたときのみ使え、空のデスクトップがすぐ削除された後に完了通知を表示します。
+• 削除前の警告タイムアウト: 削除前の警告が表示されている間、取り消しを待つ時間を調整します。
+• 端の追加移動距離を使用 / 追加移動距離 (%): 現在のモニター幅に対して指定した割合ぶん、端の外側へさらに押し込んだときだけ切り替えまたは作成を実行します。
+• 上端無視領域 / 下端無視領域: 画面の上端と下端で、エッジ切り替えとデスクトップ作成を無視する範囲を割合で調整します。
+• ホットキーでデスクトップ切り替え後のマウス位置 / 端でデスクトップ切り替え後のマウス位置: デスクトップ切り替え後にポインターを移動する位置を選びます。
+• デスクトップ切り替え修飾キー: 端によるデスクトップ切り替えを発動する前に必ず押しておくキーの組み合わせです。
+• デスクトップ作成修飾キー: 最後のデスクトップの右端から新しいデスクトップを作成するときに必要なキーの組み合わせです。
+• 切り替え中のクリック / ドラッグ許可修飾キー: マウス ボタンを押したままでも端切り替えを許可する追加のキー組み合わせです。デスクトップ切り替え修飾キーとこの組み合わせの両方を押したときだけ動作します。</value>
   </data>
   <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>上側の無視領域 (%)</value>
