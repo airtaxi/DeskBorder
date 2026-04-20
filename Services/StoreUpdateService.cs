@@ -11,7 +11,7 @@ using Windows.UI.Notifications;
 
 namespace DeskBorder.Services;
 
-public sealed partial class StoreUpdateService(ISettingsService settingsService) : IStoreUpdateService, IDisposable
+public sealed partial class StoreUpdateService(ISettingsService settingsService, IFileLogService fileLogService) : IStoreUpdateService, IDisposable
 {
     private const string StorePackageFamilyName = "49536HowonLee.DeskBorder_q278kdbtfr3f2";
     public const string StoreProductId = "9P3PLVML3JQD";
@@ -19,6 +19,7 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService)
     private static readonly Uri s_storePackageFamilyNameProductPageUri = new($"ms-windows-store://pdp/?PFN={StorePackageFamilyName}");
     private static readonly Uri s_storeProductIdentifierProductPageUri = new($"ms-windows-store://pdp/?ProductId={StoreProductId}");
 
+    private readonly IFileLogService _fileLogService = fileLogService;
     private readonly ISettingsService _settingsService = settingsService;
     private CancellationTokenSource? _updateCheckCancellationTokenSource;
     private bool _isInitialized;
@@ -28,9 +29,11 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService)
         if (_isInitialized)
             return;
 
+        _fileLogService.WriteInformation(nameof(StoreUpdateService), "Initializing store update service.");
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
         SynchronizeMonitoringState();
         _isInitialized = true;
+        _fileLogService.WriteInformation(nameof(StoreUpdateService), "Store update service initialized.");
     }
 
     public async Task<int> GetAvailableUpdateCountAsync()
@@ -49,12 +52,17 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService)
             _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
 
         StopMonitoring();
+        _fileLogService.WriteInformation(nameof(StoreUpdateService), "Disposed store update service.");
     }
 
     private async Task CheckForUpdatesAndNotifyAsync()
     {
-        if (await GetAvailableUpdateCountAsync() > 0)
+        var availableUpdateCount = await GetAvailableUpdateCountAsync();
+        if (availableUpdateCount > 0)
+        {
+            _fileLogService.WriteInformation(nameof(StoreUpdateService), $"Detected {availableUpdateCount} available store update(s).");
             ShowSystemToast();
+        }
     }
 
     private async Task RunPeriodicUpdateCheckLoopAsync(CancellationToken cancellationToken)
@@ -65,12 +73,15 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService)
             while (await periodicTimer.WaitForNextTickAsync(cancellationToken))
             {
                 try { await CheckForUpdatesAndNotifyAsync(); }
-                catch (COMException exception) { Debug.WriteLine($"Store update check failed with COMException: {exception.Message}"); }
-                catch (InvalidOperationException exception) { Debug.WriteLine($"Store update check failed with InvalidOperationException: {exception.Message}"); }
-                catch (UnauthorizedAccessException exception) { Debug.WriteLine($"Store update check failed with UnauthorizedAccessException: {exception.Message}"); }
+                catch (COMException exception) { _fileLogService.WriteWarning(nameof(StoreUpdateService), "Store update check failed with a COM exception.", exception); }
+                catch (InvalidOperationException exception) { _fileLogService.WriteWarning(nameof(StoreUpdateService), "Store update check failed with an invalid operation exception.", exception); }
+                catch (UnauthorizedAccessException exception) { _fileLogService.WriteWarning(nameof(StoreUpdateService), "Store update check failed with an unauthorized access exception.", exception); }
             }
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+            _fileLogService.WriteInformation(nameof(StoreUpdateService), "Store update monitoring loop was canceled.");
+        }
     }
 
     private static void ShowSystemToast()
@@ -105,6 +116,7 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService)
 
         _updateCheckCancellationTokenSource = new CancellationTokenSource();
         _ = RunPeriodicUpdateCheckLoopAsync(_updateCheckCancellationTokenSource.Token);
+        _fileLogService.WriteInformation(nameof(StoreUpdateService), "Started periodic store update monitoring.");
     }
 
     private void StopMonitoring()
@@ -112,6 +124,7 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService)
         _updateCheckCancellationTokenSource?.Cancel();
         _updateCheckCancellationTokenSource?.Dispose();
         _updateCheckCancellationTokenSource = null;
+        _fileLogService.WriteInformation(nameof(StoreUpdateService), "Stopped periodic store update monitoring.");
     }
 
     private void SynchronizeMonitoringState()

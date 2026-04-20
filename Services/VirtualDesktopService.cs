@@ -9,10 +9,11 @@ using System.Threading;
 
 namespace DeskBorder.Services;
 
-public sealed partial class VirtualDesktopService(ISettingsService settingsService) : IVirtualDesktopService
+public sealed partial class VirtualDesktopService(ISettingsService settingsService, IFileLogService fileLogService) : IVirtualDesktopService
 {
     private const int WindowActivationRetryCount = 10;
     private const int WindowActivationRetryDelayInMilliseconds = 50;
+    private readonly IFileLogService _fileLogService = fileLogService;
     private readonly ISettingsService _settingsService = settingsService;
 
     public DesktopNavigationResult CreateDesktopAndSwitch(DesktopSwitchDirection desktopSwitchDirection)
@@ -20,6 +21,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         if (desktopSwitchDirection != DesktopSwitchDirection.Next)
         {
             var workspaceSnapshot = GetWorkspaceSnapshot();
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"CreateDesktopAndSwitch does not support direction {desktopSwitchDirection}.");
             return new()
             {
                 OperationStatus = VirtualDesktopOperationStatus.UnsupportedDirection,
@@ -33,6 +35,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         var createdVirtualDesktop = VirtualDesktopFoundation.CreateDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal);
         VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal, createdVirtualDesktop);
         var currentWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
+        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Created and switched to desktop {currentWorkspaceSnapshot.CurrentDesktopIdentifier}.");
         return new()
         {
             OperationStatus = VirtualDesktopOperationStatus.Success,
@@ -47,22 +50,35 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
     public DesktopDeletionResult DeleteDesktop(string desktopIdentifier, string fallbackDesktopIdentifier)
     {
         if (!TryParseDesktopIdentifier(desktopIdentifier, out var parsedDesktopIdentifier))
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"DeleteDesktop received an invalid desktop identifier '{desktopIdentifier}'.");
             return CreateFailedDeletionResult(VirtualDesktopOperationStatus.InvalidDesktopIdentifier);
+        }
 
         if (!TryParseDesktopIdentifier(fallbackDesktopIdentifier, out var parsedFallbackDesktopIdentifier))
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"DeleteDesktop received an invalid fallback desktop identifier '{fallbackDesktopIdentifier}'.");
             return CreateFailedDeletionResult(VirtualDesktopOperationStatus.InvalidDesktopIdentifier);
+        }
 
         using var virtualDesktopShellConnection = CreateVirtualDesktopShellConnection();
         var previousWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
         var removeVirtualDesktop = TryFindVirtualDesktop(virtualDesktopShellConnection.VirtualDesktopShell, parsedDesktopIdentifier);
         if (removeVirtualDesktop is null)
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"DeleteDesktop could not find desktop '{desktopIdentifier}'.");
             return CreateFailedDeletionResult(VirtualDesktopOperationStatus.DesktopNotFound, previousWorkspaceSnapshot);
+        }
 
         var fallbackVirtualDesktop = TryFindVirtualDesktop(virtualDesktopShellConnection.VirtualDesktopShell, parsedFallbackDesktopIdentifier);
         if (fallbackVirtualDesktop is null)
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"DeleteDesktop could not find fallback desktop '{fallbackDesktopIdentifier}'.");
             return CreateFailedDeletionResult(VirtualDesktopOperationStatus.DesktopNotFound, previousWorkspaceSnapshot);
+        }
 
         VirtualDesktopFoundation.RemoveDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal, removeVirtualDesktop, fallbackVirtualDesktop);
+        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Deleted desktop '{desktopIdentifier}' with fallback '{fallbackDesktopIdentifier}'.");
         return new()
         {
             OperationStatus = VirtualDesktopOperationStatus.Success,
@@ -193,20 +209,35 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         var previousWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
         var focusedWindowHandle = Win32.GetForegroundWindow();
         if (focusedWindowHandle == 0)
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), "MoveFocusedWindowToAdjacentDesktop could not find a foreground window.");
             return CreateFailedNavigationResult(VirtualDesktopOperationStatus.WindowNotFound, previousWorkspaceSnapshot);
+        }
 
         if (!VirtualDesktopFoundation.TryGetApplicationView(virtualDesktopShellConnection.VirtualDesktopShell.ApplicationViewCollection, focusedWindowHandle, out var applicationView))
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), "MoveFocusedWindowToAdjacentDesktop could not resolve the application view.");
             return CreateFailedNavigationResult(VirtualDesktopOperationStatus.WindowNotFound, previousWorkspaceSnapshot);
+        }
 
         ArgumentNullException.ThrowIfNull(applicationView);
         if (!VirtualDesktopFoundation.CanMoveViewBetweenDesktops(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal, applicationView))
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), "MoveFocusedWindowToAdjacentDesktop could not move the focused window between desktops.");
             return CreateFailedNavigationResult(VirtualDesktopOperationStatus.WindowCannotMove, previousWorkspaceSnapshot);
+        }
 
         if (!VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManager, focusedWindowHandle, out var currentDesktopIdentifier))
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), "MoveFocusedWindowToAdjacentDesktop could not determine the window desktop identifier.");
             return CreateFailedNavigationResult(VirtualDesktopOperationStatus.WindowNotFound, previousWorkspaceSnapshot);
+        }
 
         if (!VirtualDesktopFoundation.TryFindDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal, currentDesktopIdentifier, out var currentVirtualDesktop))
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), "MoveFocusedWindowToAdjacentDesktop could not locate the source desktop.");
             return CreateFailedNavigationResult(VirtualDesktopOperationStatus.DesktopNotFound, previousWorkspaceSnapshot);
+        }
 
         ArgumentNullException.ThrowIfNull(currentVirtualDesktop);
         if (!VirtualDesktopFoundation.TryGetAdjacentDesktop(
@@ -215,6 +246,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             ConvertToAdjacentVirtualDesktopDirection(desktopSwitchDirection),
             out var adjacentVirtualDesktop))
         {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"MoveFocusedWindowToAdjacentDesktop found no adjacent desktop for direction {desktopSwitchDirection}.");
             return new()
             {
                 OperationStatus = VirtualDesktopOperationStatus.NoAdjacentDesktop,
@@ -229,6 +261,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         VirtualDesktopFoundation.MoveViewToDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal, applicationView, adjacentVirtualDesktop);
         VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal, adjacentVirtualDesktop);
         FocusWindowOnTargetDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManager, focusedWindowHandle, targetDesktopIdentifier);
+        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Moved the focused window and switched desktop to '{targetDesktopIdentifier}'.");
         return new()
         {
             OperationStatus = VirtualDesktopOperationStatus.Success,
@@ -251,6 +284,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             ConvertToAdjacentVirtualDesktopDirection(desktopSwitchDirection),
             out var adjacentVirtualDesktop))
         {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"SwitchDesktop found no adjacent desktop for direction {desktopSwitchDirection}.");
             return new()
             {
                 OperationStatus = VirtualDesktopOperationStatus.NoAdjacentDesktop,
@@ -263,6 +297,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         ArgumentNullException.ThrowIfNull(adjacentVirtualDesktop);
         var targetDesktopIdentifier = VirtualDesktopFoundation.GetDesktopIdentifier(adjacentVirtualDesktop).ToString();
         VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal, adjacentVirtualDesktop);
+        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Switched desktop to '{targetDesktopIdentifier}'.");
         return new()
         {
             OperationStatus = VirtualDesktopOperationStatus.Success,
@@ -279,6 +314,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         if (!TryParseDesktopIdentifier(desktopIdentifier, out var parsedDesktopIdentifier))
         {
             var workspaceSnapshot = GetWorkspaceSnapshot();
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"SwitchToDesktop received an invalid desktop identifier '{desktopIdentifier}'.");
             return new()
             {
                 OperationStatus = VirtualDesktopOperationStatus.InvalidDesktopIdentifier,
@@ -292,6 +328,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         var targetVirtualDesktop = TryFindVirtualDesktop(virtualDesktopShellConnection.VirtualDesktopShell, parsedDesktopIdentifier);
         if (targetVirtualDesktop is null)
         {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"SwitchToDesktop could not find desktop '{desktopIdentifier}'.");
             return new()
             {
                 OperationStatus = VirtualDesktopOperationStatus.DesktopNotFound,
@@ -301,6 +338,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         }
 
         VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal, targetVirtualDesktop);
+        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Switched directly to desktop '{desktopIdentifier}'.");
         return new()
         {
             OperationStatus = VirtualDesktopOperationStatus.Success,
@@ -388,7 +426,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         }
     }
 
-    private static DesktopWindowInventory GetDesktopWindowInventory(VirtualDesktopShell virtualDesktopShell, string desktopIdentifier)
+    private DesktopWindowInventory GetDesktopWindowInventory(VirtualDesktopShell virtualDesktopShell, string desktopIdentifier)
     {
         if (!TryParseDesktopIdentifier(desktopIdentifier, out var parsedDesktopIdentifier))
             return new(0, []);
@@ -433,7 +471,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
 
     private static ScreenRectangle CreateScreenRectangle(Win32.NativeRectangle nativeRectangle) => new(nativeRectangle.Left, nativeRectangle.Top, nativeRectangle.Right, nativeRectangle.Bottom);
 
-    private static Dictionary<string, List<NavigatorDesktopWindowItemModel>> GetNavigatorWindowItemsByDesktopIdentifier(
+    private Dictionary<string, List<NavigatorDesktopWindowItemModel>> GetNavigatorWindowItemsByDesktopIdentifier(
         VirtualDesktopShell virtualDesktopShell,
         DisplayMonitorInfo targetDisplayMonitor)
     {
@@ -524,7 +562,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         return true;
     }
 
-    private static string? TryGetProcessName(nint windowHandle)
+    private string? TryGetProcessName(nint windowHandle)
     {
         _ = Win32.GetWindowThreadProcessId(windowHandle, out var processIdentifier);
         if (processIdentifier == 0)
@@ -535,11 +573,19 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             using var process = Process.GetProcessById((int)processIdentifier);
             return process.ProcessName;
         }
-        catch (ArgumentException) { return null; }
-        catch (InvalidOperationException) { return null; }
+        catch (ArgumentException exception)
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"Failed to read the process name for window handle {windowHandle}.", exception);
+            return null;
+        }
+        catch (InvalidOperationException exception)
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"Failed to read the process name for window handle {windowHandle}.", exception);
+            return null;
+        }
     }
 
-    private static string? TryGetProcessExecutablePath(nint windowHandle)
+    private string? TryGetProcessExecutablePath(nint windowHandle)
     {
         _ = Win32.GetWindowThreadProcessId(windowHandle, out var processIdentifier);
         if (processIdentifier == 0)
@@ -550,10 +596,26 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             using var process = Process.GetProcessById((int)processIdentifier);
             return process.MainModule?.FileName;
         }
-        catch (ArgumentException) { return null; }
-        catch (InvalidOperationException) { return null; }
-        catch (NotSupportedException) { return null; }
-        catch (Win32Exception) { return null; }
+        catch (ArgumentException exception)
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"Failed to read the process executable path for window handle {windowHandle}.", exception);
+            return null;
+        }
+        catch (InvalidOperationException exception)
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"Failed to read the process executable path for window handle {windowHandle}.", exception);
+            return null;
+        }
+        catch (NotSupportedException exception)
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"Failed to read the process executable path for window handle {windowHandle}.", exception);
+            return null;
+        }
+        catch (Win32Exception exception)
+        {
+            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"Failed to read the process executable path for window handle {windowHandle}.", exception);
+            return null;
+        }
     }
 
     private static bool TryGetNavigatorWindowBounds(nint windowHandle, out ScreenRectangle windowBounds)

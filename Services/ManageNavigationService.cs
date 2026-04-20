@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DeskBorder.Services;
 
-public sealed class ManageNavigationService : IManageNavigationService
+public sealed class ManageNavigationService(IFileLogService fileLogService) : IManageNavigationService
 {
     private static readonly Dictionary<ManageNavigationTarget, Type> s_pageTypes = new()
     {
@@ -12,6 +12,7 @@ public sealed class ManageNavigationService : IManageNavigationService
         [ManageNavigationTarget.Settings] = typeof(SettingsPage)
     };
 
+    private readonly IFileLogService _fileLogService = fileLogService;
     private Frame? _navigationFrame;
 
     public bool CanGoBack => _navigationFrame?.CanGoBack == true;
@@ -21,7 +22,10 @@ public sealed class ManageNavigationService : IManageNavigationService
     public void GoBack()
     {
         if (_navigationFrame?.CanGoBack == true)
+        {
             _navigationFrame.GoBack();
+            _fileLogService.WriteInformation(nameof(ManageNavigationService), "Navigated back in the manage window.");
+        }
     }
 
     public bool NavigateTo(ManageNavigationTarget manageNavigationTarget, object? navigationParameter = null, bool clearBackStack = false)
@@ -37,6 +41,9 @@ public sealed class ManageNavigationService : IManageNavigationService
         if (didNavigate && clearBackStack)
             _navigationFrame.BackStack.Clear();
 
+        if (didNavigate)
+            _fileLogService.WriteInformation(nameof(ManageNavigationService), $"Navigated to {manageNavigationTarget}.");
+
         return didNavigate;
     }
 
@@ -46,6 +53,7 @@ public sealed class ManageNavigationService : IManageNavigationService
             return;
 
         _navigationFrame = navigationFrame;
+        _fileLogService.WriteInformation(nameof(ManageNavigationService), "Registered the manage navigation frame.");
     }
 
     public void ReloadCurrentPage()
@@ -57,6 +65,8 @@ public sealed class ManageNavigationService : IManageNavigationService
         _ = _navigationFrame.Navigate(currentPageType);
         while (_navigationFrame.BackStack.Count > previousBackStackCount)
             _navigationFrame.BackStack.RemoveAt(_navigationFrame.BackStack.Count - 1);
+
+        _fileLogService.WriteInformation(nameof(ManageNavigationService), $"Reloaded page {currentPageType.Name}.");
     }
 
     private bool TryGetCurrentNavigationTarget(out ManageNavigationTarget currentNavigationTarget)

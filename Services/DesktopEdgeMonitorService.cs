@@ -3,14 +3,18 @@ using DeskBorder.Models;
 
 namespace DeskBorder.Services;
 
-public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) : IDesktopEdgeMonitorService, IDisposable
+public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, IFileLogService fileLogService) : IDesktopEdgeMonitorService, IDisposable
 {
     private static readonly TimeSpan s_defaultPollingInterval = TimeSpan.FromMilliseconds(40);
+    private static readonly TimeSpan s_refreshFailureLoggingWindow = TimeSpan.FromSeconds(2);
 
+    private readonly IFileLogService _fileLogService = fileLogService;
     private readonly ISettingsService _settingsService = settingsService;
     private CancellationTokenSource? _monitoringCancellationTokenSource;
     private Task? _monitoringTask;
     private bool _isDisposed;
+    private DateTimeOffset _lastRefreshFailureLoggedAt;
+    private string? _lastRefreshFailureSignature;
 
     public event EventHandler<DesktopEdgeMonitoringStateChangedEventArgs>? MonitoringStateChanged;
 
@@ -66,6 +70,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
         if (_isDisposed)
             return;
 
+        _fileLogService.WriteInformation(nameof(DesktopEdgeMonitorService), "Disposing desktop edge monitor service.");
         _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
         if (_monitoringCancellationTokenSource is not null)
             _monitoringCancellationTokenSource.Cancel();
@@ -91,9 +96,10 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
         if (_monitoringTask is not null)
             return Task.CompletedTask;
 
+        _fileLogService.WriteInformation(nameof(DesktopEdgeMonitorService), "Starting desktop edge monitoring.");
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
         try { Refresh(); }
-        catch { }
+        catch (Exception exception) { LogRefreshFailure("Initial refresh failed.", exception); }
         _monitoringCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _monitoringTask = RunMonitoringLoopAsync(_monitoringCancellationTokenSource.Token);
         return Task.CompletedTask;
@@ -107,13 +113,23 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
         _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
         _monitoringCancellationTokenSource?.Cancel();
 
-        try { await _monitoringTask; }
-        catch { }
+        try
+        {
+            await _monitoringTask;
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception)
+        {
+            _fileLogService.WriteWarning(nameof(DesktopEdgeMonitorService), "Monitoring loop completed with an exception during stop.", exception);
+        }
         finally
         {
             _monitoringCancellationTokenSource?.Dispose();
             _monitoringCancellationTokenSource = null;
             _monitoringTask = null;
+            _fileLogService.WriteInformation(nameof(DesktopEdgeMonitorService), "Stopped desktop edge monitoring.");
         }
     }
 
@@ -298,7 +314,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
         while (await periodicTimer.WaitForNextTickAsync(cancellationToken))
         {
             try { Refresh(); }
-            catch { }
+            catch (Exception exception) { LogRefreshFailure("Monitoring refresh failed.", exception); }
         }
     }
 
@@ -307,6 +323,21 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
         _ = sender;
         _ = eventArguments;
         try { Refresh(); }
-        catch { }
+        catch (Exception exception) { LogRefreshFailure("Settings change refresh failed.", exception); }
+    }
+
+    private void LogRefreshFailure(string message, Exception exception)
+    {
+        var currentTimestamp = DateTimeOffset.UtcNow;
+        var exceptionSignature = $"{exception.GetType().FullName}:{exception.Message}";
+        if (string.Equals(_lastRefreshFailureSignature, exceptionSignature, StringComparison.Ordinal)
+            && currentTimestamp - _lastRefreshFailureLoggedAt < s_refreshFailureLoggingWindow)
+        {
+            return;
+        }
+
+        _lastRefreshFailureSignature = exceptionSignature;
+        _lastRefreshFailureLoggedAt = currentTimestamp;
+        _fileLogService.WriteWarning(nameof(DesktopEdgeMonitorService), message, exception);
     }
 }

@@ -637,11 +637,44 @@
 • メイン キーと修飾キーを組み合わせて、DeskBorder の切り替え、フォーカス中ウィンドウの前後デスクトップ移動、Navigator オーバーレイ切り替えを設定します。
 • 状態インジケーターは、その組み合わせが有効か、キー未指定か、重複か、登録失敗かをすぐに示します。</value>
   </data>
+  <data name="SettingsPage_DeveloperSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>診断や問題の再現に役立つツールを提供します。</value>
+  </data>
+  <data name="SettingsPage_DeveloperSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>開発者</value>
+  </data>
+  <data name="SettingsPage_ExportIntegratedLogButton.Content" xml:space="preserve">
+    <value>保存</value>
+  </data>
   <data name="SettingsPage_ImportExportSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>.dbs ファイルに現在の設定を保存したり、保存済みファイルを現在のアプリ状態へ適用したりできます。</value>
   </data>
   <data name="SettingsPage_ImportExportSectionTitleTextBlock.Text" xml:space="preserve">
     <value>設定のインポートとエクスポート</value>
+  </data>
+  <data name="SettingsPage_IntegratedLogExportDescriptionTextBlock.Text" xml:space="preserve">
+    <value>アプリ実行中に記録したログをファイルに保存します。（最大 1,000 件）</value>
+  </data>
+  <data name="SettingsPage_IntegratedLogExportTitleTextBlock.Text" xml:space="preserve">
+    <value>統合ログをダウンロード</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.CancelledMessage" xml:space="preserve">
+    <value>統合ログの保存をキャンセルしました。</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.CancelledTitle" xml:space="preserve">
+    <value>ログ保存をキャンセルしました</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.FailedTitle" xml:space="preserve">
+    <value>ログ保存に失敗しました</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.FileTypeDisplayName" xml:space="preserve">
+    <value>テキスト ファイル</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.SuccessMessageFormat" xml:space="preserve">
+    <value>{0} に保存しました。</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.SuccessTitle" xml:space="preserve">
+    <value>ログ保存が完了しました</value>
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTip.Title" xml:space="preserve">
     <value>インポートとエクスポートのガイド</value>

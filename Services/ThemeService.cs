@@ -3,8 +3,9 @@ using Microsoft.UI.Xaml;
 
 namespace DeskBorder.Services;
 
-public sealed class ThemeService : IThemeService
+public sealed class ThemeService(IFileLogService fileLogService) : IThemeService
 {
+    private readonly IFileLogService _fileLogService = fileLogService;
     private readonly List<WeakReference<FrameworkElement>> _registeredFrameworkElements = [];
     private readonly Lock _registeredFrameworkElementsLock = new();
 
@@ -16,6 +17,8 @@ public sealed class ThemeService : IThemeService
         var requestedTheme = ConvertToElementTheme(applicationThemePreference);
         foreach (var registeredFrameworkElement in GetRegisteredFrameworkElementsSnapshot())
             ApplyRequestedTheme(registeredFrameworkElement, requestedTheme);
+
+        _fileLogService.WriteInformation(nameof(ThemeService), $"Applied application theme preference {applicationThemePreference}.");
     }
 
     public void RegisterFrameworkElement(FrameworkElement frameworkElement)
@@ -30,6 +33,7 @@ public sealed class ThemeService : IThemeService
         }
 
         ApplyRequestedTheme(frameworkElement, ConvertToElementTheme(CurrentApplicationThemePreference));
+        _fileLogService.WriteInformation(nameof(ThemeService), $"Registered framework element '{frameworkElement.GetType().Name}' for theme updates.");
     }
 
     private static void ApplyRequestedTheme(FrameworkElement frameworkElement, ElementTheme requestedTheme)

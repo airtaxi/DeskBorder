@@ -637,11 +637,44 @@
 • Combine a primary key with modifiers to configure the DeskBorder toggle, move focused window to previous desktop, move focused window to next desktop, and Navigator overlay toggle actions.
 • The status indicator immediately shows whether the shortcut is valid, missing a key, duplicated, or failed to register.</value>
   </data>
+  <data name="SettingsPage_DeveloperSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Provides tools for diagnostics and issue reproduction.</value>
+  </data>
+  <data name="SettingsPage_DeveloperSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>Developer</value>
+  </data>
+  <data name="SettingsPage_ExportIntegratedLogButton.Content" xml:space="preserve">
+    <value>Save</value>
+  </data>
   <data name="SettingsPage_ImportExportSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>Save the current settings to a .dbs file, or apply a saved settings file to the current app state.</value>
   </data>
   <data name="SettingsPage_ImportExportSectionTitleTextBlock.Text" xml:space="preserve">
     <value>Import and export settings</value>
+  </data>
+  <data name="SettingsPage_IntegratedLogExportDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Save the logs recorded during the current app session to a file. (Up to 1,000 entries)</value>
+  </data>
+  <data name="SettingsPage_IntegratedLogExportTitleTextBlock.Text" xml:space="preserve">
+    <value>Download integrated logs</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.CancelledMessage" xml:space="preserve">
+    <value>Integrated log export was canceled.</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.CancelledTitle" xml:space="preserve">
+    <value>Log export canceled</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.FailedTitle" xml:space="preserve">
+    <value>Log export failed</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.FileTypeDisplayName" xml:space="preserve">
+    <value>Text file</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.SuccessMessageFormat" xml:space="preserve">
+    <value>Saved the integrated log to {0}.</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.SuccessTitle" xml:space="preserve">
+    <value>Log export completed</value>
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTip.Title" xml:space="preserve">
     <value>Import and export guide</value>

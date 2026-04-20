@@ -8,6 +8,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDeskBorderServices(this IServiceCollection serviceCollection)
     {
+        serviceCollection.AddSingleton<IFileLogService, FileLogService>();
         serviceCollection.AddSingleton<ILocalizationService, LocalizationService>();
         serviceCollection.AddSingleton<IManageWindowService, ManageWindowService>();
         serviceCollection.AddSingleton<IManageNavigationService, ManageNavigationService>();

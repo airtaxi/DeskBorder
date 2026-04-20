@@ -5,6 +5,7 @@ namespace DeskBorder.Services;
 
 public sealed class DesktopLifecycleService(
     IDesktopEdgeMonitorService desktopEdgeMonitorService,
+    IFileLogService fileLogService,
     IHotkeyService hotkeyService,
     ILocalizationService localizationService,
     INavigatorService navigatorService,
@@ -15,6 +16,7 @@ public sealed class DesktopLifecycleService(
     private const int DesktopEdgeTriggerRearmDistanceInPixels = 24;
 
     private readonly IDesktopEdgeMonitorService _desktopEdgeMonitorService = desktopEdgeMonitorService;
+    private readonly IFileLogService _fileLogService = fileLogService;
     private readonly IHotkeyService _hotkeyService = hotkeyService;
     private readonly ILocalizationService _localizationService = localizationService;
     private readonly INavigatorService _navigatorService = navigatorService;
@@ -33,6 +35,7 @@ public sealed class DesktopLifecycleService(
         if (IsRunning)
             return;
 
+        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Starting desktop lifecycle service.");
         _isDesktopEdgeActivationArmed = true;
         if (!_hotkeyService.IsInitialized)
             _hotkeyService.Initialize();
@@ -45,6 +48,7 @@ public sealed class DesktopLifecycleService(
         await RefreshNavigatorAsync();
         await _desktopEdgeMonitorService.StartAsync(cancellationToken);
         IsRunning = true;
+        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Desktop lifecycle service started.");
     }
 
     public async Task StopAsync()
@@ -52,6 +56,7 @@ public sealed class DesktopLifecycleService(
         if (!IsRunning)
             return;
 
+        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Stopping desktop lifecycle service.");
         IsRunning = false;
         _isDesktopEdgeActivationArmed = true;
         _desktopEdgeMonitorService.MonitoringStateChanged -= OnDesktopEdgeMonitorServiceMonitoringStateChanged;
@@ -62,6 +67,7 @@ public sealed class DesktopLifecycleService(
         await CancelPendingDesktopDeletionAsync();
         await _desktopEdgeMonitorService.StopAsync();
         await UiThreadHelper.ExecuteAsync(_navigatorService.Hide);
+        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Desktop lifecycle service stopped.");
     }
 
     private static DesktopSwitchDirection ConvertToDesktopSwitchDirection(DesktopEdgeKind desktopEdgeKind) => desktopEdgeKind switch
@@ -152,7 +158,10 @@ public sealed class DesktopLifecycleService(
         if (_pendingDesktopDeletionTask is not null)
         {
             try { await _pendingDesktopDeletionTask; }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException)
+            {
+                _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Pending desktop deletion task was canceled.");
+            }
         }
 
         _pendingDesktopDeletionCancellationTokenSource?.Dispose();
@@ -192,11 +201,17 @@ public sealed class DesktopLifecycleService(
     private async Task HandleNavigationResultAsync(DesktopNavigationResult desktopNavigationResult, CancellationToken cancellationToken = default)
     {
         if (!desktopNavigationResult.IsSuccessful)
+        {
+            _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Desktop navigation did not succeed. Status={desktopNavigationResult.OperationStatus}.");
             return;
+        }
 
         await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
         if (desktopNavigationResult.NavigationActionKind == DesktopNavigationActionKind.CreatedAndSwitched)
+        {
+            _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Created a new desktop and switched to it.");
             return;
+        }
 
         if (!IsInwardSwitch(desktopNavigationResult)
             || string.IsNullOrWhiteSpace(desktopNavigationResult.SourceDesktopIdentifier)
@@ -226,10 +241,12 @@ public sealed class DesktopLifecycleService(
             if (cancellationToken.IsCancellationRequested)
                 return;
 
+            _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Deleting desktop immediately without warning. DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}.");
             await DeleteDesktopAsync(pendingDesktopDeletion);
             return;
         }
 
+        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Scheduling pending desktop deletion. DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}.");
         await SchedulePendingDesktopDeletionAsync(pendingDesktopDeletion, cancellationToken);
     }
 
@@ -269,7 +286,13 @@ public sealed class DesktopLifecycleService(
     {
         var desktopDeletionResult = _virtualDesktopService.DeleteDesktop(pendingDesktopDeletion.DesktopIdentifier, pendingDesktopDeletion.FallbackDesktopIdentifier);
         if (desktopDeletionResult.IsSuccessful)
+        {
+            _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Deleted desktop. DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}, FallbackDesktopIdentifier={pendingDesktopDeletion.FallbackDesktopIdentifier}.");
             await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
+            return;
+        }
+
+        _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Desktop deletion failed. Status={desktopDeletionResult.OperationStatus}, DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}.");
     }
 
     private async Task SchedulePendingDesktopDeletionAsync(PendingDesktopDeletion pendingDesktopDeletion, CancellationToken cancellationToken)
@@ -309,7 +332,10 @@ public sealed class DesktopLifecycleService(
             await CancelPendingDesktopDeletionAsync();
             var desktopNavigationResult = HandleEdgeActivation(currentState);
             if (desktopNavigationResult.NavigationActionKind != DesktopNavigationActionKind.None)
+            {
+                _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Handled desktop edge activation. Action={desktopNavigationResult.NavigationActionKind}, Status={desktopNavigationResult.OperationStatus}.");
                 MoveMouseToOppositeEdgeRearmBoundary(currentState);
+            }
             await HandleNavigationResultAsync(desktopNavigationResult);
         }
         finally { _operationSemaphore.Release(); }
@@ -322,6 +348,7 @@ public sealed class DesktopLifecycleService(
         if (!IsRunning)
             return;
 
+        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Handling hotkey action. Action={hotkeyInvokedEventArgs.HotkeyActionType}.");
         await _operationSemaphore.WaitAsync();
         try
         {

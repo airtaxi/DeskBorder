@@ -637,11 +637,44 @@
 • 透過主要按鍵與修飾鍵的組合，可設定 DeskBorder 總開關、將焦點視窗移到上一個桌面、移到下一個桌面，以及切換 Navigator 覆疊層。
 • 狀態指示會立即顯示目前組合是否有效、是否缺少按鍵、是否重複，或是否註冊失敗。</value>
   </data>
+  <data name="SettingsPage_DeveloperSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>提供用於診斷與重現問題的工具。</value>
+  </data>
+  <data name="SettingsPage_DeveloperSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>開發人員</value>
+  </data>
+  <data name="SettingsPage_ExportIntegratedLogButton.Content" xml:space="preserve">
+    <value>儲存</value>
+  </data>
   <data name="SettingsPage_ImportExportSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>可將目前設定儲存為 .dbs 檔案，或將已儲存的設定檔套用到目前應用程式狀態。</value>
   </data>
   <data name="SettingsPage_ImportExportSectionTitleTextBlock.Text" xml:space="preserve">
     <value>匯入與匯出設定</value>
+  </data>
+  <data name="SettingsPage_IntegratedLogExportDescriptionTextBlock.Text" xml:space="preserve">
+    <value>將應用程式執行期間記錄的日誌儲存為檔案。（最多 1,000 筆）</value>
+  </data>
+  <data name="SettingsPage_IntegratedLogExportTitleTextBlock.Text" xml:space="preserve">
+    <value>下載整合日誌</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.CancelledMessage" xml:space="preserve">
+    <value>已取消整合日誌匯出。</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.CancelledTitle" xml:space="preserve">
+    <value>已取消日誌匯出</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.FailedTitle" xml:space="preserve">
+    <value>日誌匯出失敗</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.FileTypeDisplayName" xml:space="preserve">
+    <value>文字檔</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.SuccessMessageFormat" xml:space="preserve">
+    <value>已儲存到 {0}。</value>
+  </data>
+  <data name="Settings.DeveloperLogExport.SuccessTitle" xml:space="preserve">
+    <value>日誌匯出完成</value>
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTip.Title" xml:space="preserve">
     <value>匯入與匯出說明</value>

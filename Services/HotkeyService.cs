@@ -6,7 +6,7 @@ using Windows.System;
 
 namespace DeskBorder.Services;
 
-public sealed partial class HotkeyService(ISettingsService settingsService) : IHotkeyService
+public sealed partial class HotkeyService(ISettingsService settingsService, IFileLogService fileLogService) : IHotkeyService
 {
     private const int ToggleDeskBorderEnabledHotkeyIdentifier = 1;
     private const int MoveFocusedWindowToPreviousDesktopHotkeyIdentifier = 2;
@@ -15,6 +15,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
     private const uint RefreshRegisteredHotkeysMessage = Win32.WindowApplicationMessage + 1;
     private const uint ShutdownMessage = Win32.WindowApplicationMessage + 2;
 
+    private readonly IFileLogService _fileLogService = fileLogService;
     private readonly ISettingsService _settingsService = settingsService;
     private readonly ManualResetEventSlim _messageLoopReadySignal = new(false);
     private readonly Dictionary<HotkeyActionType, string?> _registrationFailureMessages = CreateEmptyRegistrationFailureMessages();
@@ -33,6 +34,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
         if (_isDisposed)
             return;
 
+        _fileLogService.WriteInformation(nameof(HotkeyService), "Disposing hotkey service.");
         _isDisposed = true;
         _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
 
@@ -52,6 +54,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
         if (IsInitialized)
             return;
 
+        _fileLogService.WriteInformation(nameof(HotkeyService), "Initializing hotkey service.");
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
 
         _messageLoopThread = new Thread(RunMessageLoopOnBackgroundThread)
@@ -67,6 +70,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
 
         IsInitialized = true;
         RefreshRegisteredHotkeys();
+        _fileLogService.WriteInformation(nameof(HotkeyService), "Hotkey service initialized.");
     }
 
     public void RefreshRegisteredHotkeys()
@@ -75,10 +79,13 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
         if (!IsInitialized)
             throw new InvalidOperationException("The hotkey service has not been initialized.");
 
+        _fileLogService.WriteInformation(nameof(HotkeyService), "Refreshing registered hotkeys.");
         if (TryPostControlMessage(RefreshRegisteredHotkeysMessage))
             return;
 
-        throw CreateWin32Exception("Failed to schedule the hotkey registration refresh.");
+        var win32Exception = CreateWin32Exception("Failed to schedule the hotkey registration refresh.");
+        _fileLogService.WriteError(nameof(HotkeyService), "Failed to schedule hotkey registration refresh.", win32Exception);
+        throw win32Exception;
     }
 
     public string? GetRegistrationFailureMessage(HotkeyActionType hotkeyActionType) => _registrationFailureMessages.GetValueOrDefault(hotkeyActionType);
@@ -168,6 +175,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
 
     private void HandleHotkeyAction(HotkeyActionType hotkeyActionType)
     {
+        _fileLogService.WriteInformation(nameof(HotkeyService), $"Hotkey invoked. Action={hotkeyActionType}.");
         HotkeyInvoked?.Invoke(this, new HotkeyInvokedEventArgs(hotkeyActionType));
 
         switch (hotkeyActionType)
@@ -194,6 +202,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
         if (_isDisposed || !IsInitialized)
             return;
 
+        _fileLogService.WriteInformation(nameof(HotkeyService), "Scheduling hotkey refresh because settings changed.");
         _ = TryPostControlMessage(RefreshRegisteredHotkeysMessage);
     }
 
@@ -215,7 +224,12 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
                 _registeredHotkeys.Add(registeredHotkey);
             }
         }
-        catch { UnregisterHotkeysCore(); throw; }
+        catch (Exception exception)
+        {
+            _fileLogService.WriteError(nameof(HotkeyService), "Failed to register one or more hotkeys.", exception);
+            UnregisterHotkeysCore();
+            throw;
+        }
     }
 
     private void RunMessageLoopOnBackgroundThread()
@@ -231,7 +245,11 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
                 return;
 
             if (messageResult < 0)
-                throw CreateWin32Exception("The hotkey message loop failed to retrieve the next message.");
+            {
+                var win32Exception = CreateWin32Exception("The hotkey message loop failed to retrieve the next message.");
+                _fileLogService.WriteError(nameof(HotkeyService), "The hotkey message loop failed to retrieve the next message.", win32Exception);
+                throw win32Exception;
+            }
 
             if (nativeMessage.Message == Win32.WindowHotkeyMessage)
             {
@@ -276,7 +294,11 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
     {
         var registrationFailureMessages = CreateEmptyRegistrationFailureMessages();
         try { RegisterHotkeysCore(BuildRegisteredHotkeys(_settingsService.Settings), registrationFailureMessages); }
-        catch { UnregisterHotkeysCore(); }
+        catch (Exception exception)
+        {
+            _fileLogService.WriteWarning(nameof(HotkeyService), "Hotkey refresh failed; all hotkeys were unregistered.", exception);
+            UnregisterHotkeysCore();
+        }
 
         UpdateRegistrationFailureMessages(registrationFailureMessages);
     }
@@ -302,7 +324,12 @@ public sealed partial class HotkeyService(ISettingsService settingsService) : IH
         }
 
         if (hasChanged)
+        {
+            foreach (var registrationFailureEntry in _registrationFailureMessages.Where(registrationFailureEntry => !string.IsNullOrWhiteSpace(registrationFailureEntry.Value)))
+                _fileLogService.WriteWarning(nameof(HotkeyService), $"Hotkey registration warning for {registrationFailureEntry.Key}: {registrationFailureEntry.Value}");
+
             RegistrationStateChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private readonly record struct RegisteredHotkey(int Identifier, HotkeyActionType HotkeyActionType, uint NativeModifierMask, uint NativeVirtualKey);

@@ -6,9 +6,10 @@ using System.Runtime.InteropServices;
 
 namespace DeskBorder.Services;
 
-public sealed class LocalizationService : ILocalizationService
+public sealed class LocalizationService(IFileLogService fileLogService) : ILocalizationService
 {
     private static readonly List<string> s_installedLanguages = ["en-US", "ko-KR", "ja-JP", "zh-Hans", "zh-Hant"];
+    private readonly IFileLogService _fileLogService = fileLogService;
 
     public event EventHandler? LanguageChanged;
 
@@ -21,6 +22,7 @@ public sealed class LocalizationService : ILocalizationService
         ApplyLanguagePreferenceOverride(appLanguagePreference);
         App.ResourceLoader = new ResourceLoader();
         CurrentLanguagePreference = appLanguagePreference;
+        _fileLogService.WriteInformation(nameof(LocalizationService), $"Applied language preference {appLanguagePreference}.");
         LanguageChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -38,7 +40,11 @@ public sealed class LocalizationService : ILocalizationService
         var normalizedResourceName = resourceName.Replace('.', '/');
         string localizedString;
         try { localizedString = App.ResourceLoader.GetString(normalizedResourceName); }
-        catch (COMException) { localizedString = resourceName; }
+        catch (COMException exception)
+        {
+            _fileLogService.WriteWarning(nameof(LocalizationService), $"Failed to load resource '{resourceName}'. Falling back to the resource name.", exception);
+            localizedString = resourceName;
+        }
 
         return string.IsNullOrWhiteSpace(localizedString) ? resourceName : localizedString;
     }

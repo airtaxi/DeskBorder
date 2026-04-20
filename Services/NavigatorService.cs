@@ -6,9 +6,11 @@ namespace DeskBorder.Services;
 
 public sealed class NavigatorService(
     IDesktopEdgeMonitorService desktopEdgeMonitorService,
-    IVirtualDesktopService virtualDesktopService) : INavigatorService
+    IVirtualDesktopService virtualDesktopService,
+    IFileLogService fileLogService) : INavigatorService
 {
     private readonly IDesktopEdgeMonitorService _desktopEdgeMonitorService = desktopEdgeMonitorService;
+    private readonly IFileLogService _fileLogService = fileLogService;
     private NavigatorWindow? _navigatorWindow;
     private DisplayMonitorInfo? _targetDisplayMonitor;
     private readonly IVirtualDesktopService _virtualDesktopService = virtualDesktopService;
@@ -26,6 +28,8 @@ public sealed class NavigatorService(
         ViewModel.IsVisible = false;
         if (_navigatorWindow?.AppWindow.IsVisible == true)
             _navigatorWindow.AppWindow.Hide();
+
+        _fileLogService.WriteInformation(nameof(NavigatorService), "Hid the navigator overlay.");
     }
 
     public void Initialize(NavigatorWindow navigatorWindow)
@@ -35,6 +39,7 @@ public sealed class NavigatorService(
 
         _navigatorWindow = navigatorWindow;
         RefreshPreview();
+        _fileLogService.WriteInformation(nameof(NavigatorService), "Initialized the navigator service.");
     }
 
     public void RefreshPreview()
@@ -55,21 +60,27 @@ public sealed class NavigatorService(
             return false;
 
         ShowOverlay();
+        _fileLogService.WriteInformation(nameof(NavigatorService), "Displayed the navigator overlay from the trigger area.");
         return true;
     }
 
     public void ToggleOverlay()
     {
         if (IsVisible)
+        {
             Hide();
-        else
-            ShowOverlay();
+            return;
+        }
+
+        ShowOverlay();
+        _fileLogService.WriteInformation(nameof(NavigatorService), "Displayed the navigator overlay from the toggle action.");
     }
 
     public void UpdateTriggerAreaState(bool isEnabled, TriggerRectangleSettings triggerRectangleSettings)
     {
         _ = triggerRectangleSettings;
         ViewModel.IsTriggerAreaEnabled = isEnabled;
+        _fileLogService.WriteInformation(nameof(NavigatorService), $"Updated trigger area enabled state to {isEnabled}.");
     }
 
     public bool UpdateTriggerAreaPointerState(bool isPointerInsideTriggerArea)

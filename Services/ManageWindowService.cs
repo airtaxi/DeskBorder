@@ -2,15 +2,24 @@ using DeskBorder.Views;
 
 namespace DeskBorder.Services;
 
-public sealed class ManageWindowService : IManageWindowService
+public sealed class ManageWindowService(IFileLogService fileLogService) : IManageWindowService
 {
+    private readonly IFileLogService _fileLogService = fileLogService;
     private ManageWindow? _manageWindow;
 
     public bool IsInitialized => _manageWindow is not null;
 
-    public void ForceClose() => _manageWindow?.ForceClose();
+    public void ForceClose()
+    {
+        _manageWindow?.ForceClose();
+        _fileLogService.WriteInformation(nameof(ManageWindowService), "Forced the manage window to close.");
+    }
 
-    public void Hide() => _manageWindow?.AppWindow.Hide();
+    public void Hide()
+    {
+        _manageWindow?.AppWindow.Hide();
+        _fileLogService.WriteInformation(nameof(ManageWindowService), "Hid the manage window.");
+    }
 
     public void Initialize(ManageWindow manageWindow)
     {
@@ -18,6 +27,7 @@ public sealed class ManageWindowService : IManageWindowService
             return;
 
         _manageWindow = manageWindow;
+        _fileLogService.WriteInformation(nameof(ManageWindowService), "Initialized the manage window service.");
     }
 
     public void Show()
@@ -30,5 +40,6 @@ public sealed class ManageWindowService : IManageWindowService
 
         _manageWindow.Activate();
         _manageWindow.BringToFront();
+        _fileLogService.WriteInformation(nameof(ManageWindowService), "Displayed the manage window.");
     }
 }

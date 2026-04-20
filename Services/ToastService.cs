@@ -5,8 +5,9 @@ using DeskBorder.Views;
 
 namespace DeskBorder.Services;
 
-public sealed class ToastService(IThemeService themeService) : IToastService
+public sealed class ToastService(IThemeService themeService, IFileLogService fileLogService) : IToastService
 {
+    private readonly IFileLogService _fileLogService = fileLogService;
     private readonly object _synchronizationLock = new();
     private readonly IThemeService _themeService = themeService;
     private ActiveToastContext? _activeToastContext;
@@ -31,6 +32,7 @@ public sealed class ToastService(IThemeService themeService) : IToastService
 
         var activeToastContext = new ActiveToastContext();
         SetActiveToastContext(activeToastContext);
+        _fileLogService.WriteInformation(nameof(ToastService), $"Showing toast of type '{toastPresentationOptions.GetType().Name}'.");
 
         using var cancellationTokenRegistration = cancellationToken.Register(() => _ = CompleteToastAsync(activeToastContext, ToastPresentationResultKind.Dismissed));
         await UiThreadHelper.ExecuteAsync(() =>
@@ -46,7 +48,10 @@ public sealed class ToastService(IThemeService themeService) : IToastService
             await Task.Delay(toastPresentationOptions.Duration, activeToastContext.CancellationTokenSource.Token);
             await CompleteToastAsync(activeToastContext, ToastPresentationResultKind.TimedOut);
         }
-        catch (TaskCanceledException) { }
+        catch (TaskCanceledException)
+        {
+            _fileLogService.WriteInformation(nameof(ToastService), "Toast delay task was canceled.");
+        }
 
         return await activeToastContext.TaskCompletionSource.Task;
     }
@@ -75,6 +80,7 @@ public sealed class ToastService(IThemeService themeService) : IToastService
             _toastWindow?.HideToast();
             IsToastVisible = false;
         });
+        _fileLogService.WriteInformation(nameof(ToastService), $"Completed toast with result {toastPresentationResultKind}.");
     }
 
     private static ToastPageBase CreateToastPage(ToastPresentationOptions toastPresentationOptions) => toastPresentationOptions switch
@@ -107,6 +113,7 @@ public sealed class ToastService(IThemeService themeService) : IToastService
         if (activeToastContext is null)
             return;
 
+        _fileLogService.WriteInformation(nameof(ToastService), "Toast action was invoked.");
         _ = CompleteToastAsync(activeToastContext, ToastPresentationResultKind.ActionInvoked);
     }
 

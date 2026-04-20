@@ -7,7 +7,7 @@ using DeskBorder.Helpers;
 
 namespace DeskBorder.Services;
 
-public sealed class SettingsService(IStartupRegistrationService startupRegistrationService, ILocalizationService localizationService, IThemeService themeService) : ISettingsService
+public sealed class SettingsService(IStartupRegistrationService startupRegistrationService, ILocalizationService localizationService, IThemeService themeService, IFileLogService fileLogService) : ISettingsService
 {
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsKey = "DeskBorderSettings";
@@ -20,6 +20,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private static readonly ApplicationDataContainer s_localSettings =
         ApplicationData.Current.LocalSettings;
 
+    private readonly IFileLogService _fileLogService = fileLogService;
     private readonly IStartupRegistrationService _startupRegistrationService = startupRegistrationService;
     private readonly ILocalizationService _localizationService = localizationService;
     private readonly IThemeService _themeService = themeService;
@@ -37,6 +38,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
         ValidateSettingsFilePath(destinationFilePath, nameof(destinationFilePath));
         await File.WriteAllTextAsync(destinationFilePath, JsonSerializer.Serialize(_settings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings));
+        _fileLogService.WriteInformation(nameof(SettingsService), $"Exported settings to '{destinationFilePath}'.");
     }
 
     public async Task ImportAsync(string sourceFilePath)
@@ -47,6 +49,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         ValidateSettingsFilePath(sourceFilePath, nameof(sourceFilePath));
         var serializedSettings = await File.ReadAllTextAsync(sourceFilePath);
         await UpdateSettingsAsync(LoadDeserializedSettings(serializedSettings));
+        _fileLogService.WriteInformation(nameof(SettingsService), $"Imported settings from '{sourceFilePath}'.");
     }
 
     public async Task InitializeAsync()
@@ -54,8 +57,10 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         if (_isInitialized)
             return;
 
+        _fileLogService.WriteInformation(nameof(SettingsService), "Initializing settings service.");
         await ReloadStoredSettingsAsync(shouldApplyDefaultLaunchOnStartupWhenMissing: true);
         _isInitialized = true;
+        _fileLogService.WriteInformation(nameof(SettingsService), "Settings service initialized.");
     }
 
     public async Task ReloadAsync()
@@ -67,6 +72,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         }
 
         await ReloadStoredSettingsAsync(shouldApplyDefaultLaunchOnStartupWhenMissing: false);
+        _fileLogService.WriteInformation(nameof(SettingsService), "Reloaded settings from local storage.");
     }
 
     public async Task<bool> RefreshLaunchOnStartupEnabledAsync()
@@ -81,6 +87,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             await InitializeAsync();
 
         await UpdateSettingsAsync(_settings with { IsLaunchOnStartupEnabled = isEnabled });
+        _fileLogService.WriteInformation(nameof(SettingsService), $"Requested launch on startup state {isEnabled}.");
     }
 
     public async Task UpdateSettingsAsync(DeskBorderSettings settings)
@@ -93,6 +100,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             await _startupRegistrationService.SetIsEnabledAsync(normalizedSettings.IsLaunchOnStartupEnabled);
 
         await ApplySettingsAsync(normalizedSettings);
+        _fileLogService.WriteInformation(nameof(SettingsService), "Applied updated settings.");
     }
 
     private static DeskBorderSettings CloneSettings(DeskBorderSettings settings) => NormalizeSettings(settings);
@@ -274,7 +282,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             throw new ArgumentException("Settings files must use the .dbs extension.", parameterName);
     }
 
-    private static DeskBorderSettings LoadDeserializedSettings(string serializedSettings)
+    private DeskBorderSettings LoadDeserializedSettings(string serializedSettings)
     {
         try
         {
@@ -283,11 +291,19 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
                 ? throw new InvalidOperationException("Stored settings payload was empty.")
                 : NormalizeSettings(deserializedSettings);
         }
-        catch (JsonException exception) { throw new InvalidOperationException("Stored settings payload is invalid.", exception); }
-        catch (NotSupportedException exception) { throw new InvalidOperationException("Stored settings payload contains unsupported values.", exception); }
+        catch (JsonException exception)
+        {
+            _fileLogService.WriteError(nameof(SettingsService), "Stored settings payload is invalid.", exception);
+            throw new InvalidOperationException("Stored settings payload is invalid.", exception);
+        }
+        catch (NotSupportedException exception)
+        {
+            _fileLogService.WriteError(nameof(SettingsService), "Stored settings payload contains unsupported values.", exception);
+            throw new InvalidOperationException("Stored settings payload contains unsupported values.", exception);
+        }
     }
 
-    private static bool TryLoadStoredSettings(out DeskBorderSettings settings)
+    private bool TryLoadStoredSettings(out DeskBorderSettings settings)
     {
         if (s_localSettings.Values[SettingsKey] is not string serializedSettings)
         {
@@ -307,6 +323,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         SaveSettings(_settings);
         _localizationService.ApplyLanguagePreference(_settings.AppLanguagePreference);
         _themeService.ApplyApplicationThemePreference(_settings.ApplicationThemePreference);
+        _fileLogService.WriteInformation(nameof(SettingsService), $"Persisted settings. LaunchOnStartup={_settings.IsLaunchOnStartupEnabled}, StoreUpdateChecks={_settings.IsStoreUpdateCheckEnabled}, Language={_settings.AppLanguagePreference}, Theme={_settings.ApplicationThemePreference}.");
         SettingsChanged?.Invoke(this, EventArgs.Empty);
     }
 

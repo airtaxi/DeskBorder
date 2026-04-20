@@ -20,13 +20,17 @@ namespace DeskBorder.Pages;
 
 public sealed partial class SettingsPage : Page
 {
+    private const string LogFileExtension = ".txt";
+    private const string LogSuggestedFileNamePrefix = "DeskBorder_Logs";
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsSuggestedFileName = "DeskBorder_Settings";
     private static readonly TimeSpan s_infoBarAutoHideDelay = TimeSpan.FromSeconds(4);
     private static bool s_shouldShowPendingLanguageRestartRecommendedStatus;
 
+    private readonly DispatcherQueueTimer _developerLogInfoBarAutoHideTimer;
     private readonly DispatcherQueueTimer _settingsImportExportInfoBarAutoHideTimer;
     private readonly IDeskBorderRuntimeService _deskBorderRuntimeService;
+    private readonly IFileLogService _fileLogService;
     private readonly IHotkeyService _hotkeyService;
     private readonly ILocalizationService _localizationService;
     private readonly ManageWindow _manageWindow;
@@ -37,6 +41,7 @@ public sealed partial class SettingsPage : Page
     private readonly SemaphoreSlim _settingsUpdateSemaphore = new(1, 1);
     private TeachingTip? _activeSectionTeachingTip;
     private bool _isInitialSettingsLoadCompleted;
+    private bool _isLogExportInProgress;
     private bool _isNavigatorTriggerAreaSelectionInProgress;
     private bool _isSynchronizingViewModel;
     private bool _isSettingsTransferInProgress;
@@ -49,6 +54,8 @@ public sealed partial class SettingsPage : Page
         InitializeComponent();
 
         _deskBorderRuntimeService = App.GetRequiredService<IDeskBorderRuntimeService>();
+        _developerLogInfoBarAutoHideTimer = CreateInfoBarAutoHideTimer(DeveloperLogInfoBar);
+        _fileLogService = App.GetRequiredService<IFileLogService>();
         _settingsImportExportInfoBarAutoHideTimer = CreateInfoBarAutoHideTimer(SettingsImportExportInfoBar);
         _hotkeyService = App.GetRequiredService<IHotkeyService>();
         _localizationService = App.GetRequiredService<ILocalizationService>();
@@ -184,6 +191,60 @@ public sealed partial class SettingsPage : Page
         finally { SetSettingsTransferInProgress(false); }
     }
 
+    private async Task ExportIntegratedLogAsync()
+    {
+        if (_isLogExportInProgress)
+            return;
+
+        _isLogExportInProgress = true;
+        ExportIntegratedLogButton.IsEnabled = false;
+        try
+        {
+            var selectedLogFile = await PickExportLogFileAsync();
+            if (selectedLogFile is null)
+            {
+                _fileLogService.WriteInformation(nameof(SettingsPage), "Integrated log export was canceled.");
+                ShowDeveloperLogResult(
+                    LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.CancelledTitle"),
+                    LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.CancelledMessage"),
+                    InfoBarSeverity.Informational);
+                return;
+            }
+
+            _fileLogService.WriteInformation(nameof(SettingsPage), $"Exporting integrated log to '{selectedLogFile.Path}'.");
+            await _fileLogService.ExportAsync(selectedLogFile.Path);
+            ShowDeveloperLogResult(
+                LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.SuccessTitle"),
+                LocalizedResourceAccessor.GetFormattedString("Settings.DeveloperLogExport.SuccessMessageFormat", Path.GetFileName(selectedLogFile.Path)),
+                InfoBarSeverity.Success);
+        }
+        catch (ArgumentException exception)
+        {
+            _fileLogService.WriteWarning(nameof(SettingsPage), "Integrated log export failed because the selected path was invalid.", exception);
+            ShowDeveloperLogResult(LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.FailedTitle"), exception.Message, InfoBarSeverity.Error);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _fileLogService.WriteWarning(nameof(SettingsPage), "Integrated log export failed because there were no logs to export.", exception);
+            ShowDeveloperLogResult(LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.FailedTitle"), exception.Message, InfoBarSeverity.Error);
+        }
+        catch (IOException exception)
+        {
+            _fileLogService.WriteWarning(nameof(SettingsPage), "Integrated log export failed because the output file could not be written.", exception);
+            ShowDeveloperLogResult(LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.FailedTitle"), exception.Message, InfoBarSeverity.Error);
+        }
+        catch (UnauthorizedAccessException exception)
+        {
+            _fileLogService.WriteWarning(nameof(SettingsPage), "Integrated log export failed because access to the output path was denied.", exception);
+            ShowDeveloperLogResult(LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.FailedTitle"), exception.Message, InfoBarSeverity.Error);
+        }
+        finally
+        {
+            ExportIntegratedLogButton.IsEnabled = true;
+            _isLogExportInProgress = false;
+        }
+    }
+
     private async Task LoadSettingsAsync()
     {
         await _settingsService.ReloadAsync();
@@ -198,6 +259,8 @@ public sealed partial class SettingsPage : Page
     }
 
     private async void OnExportSettingsButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ExportSettingsAsync();
+
+    private async void OnExportIntegratedLogButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ExportIntegratedLogAsync();
 
     private async void OnImportSettingsButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ImportSettingsAsync();
 
@@ -273,6 +336,7 @@ public sealed partial class SettingsPage : Page
 
     private void OnSettingsPageUnloaded(object sender, RoutedEventArgs routedEventArgs)
     {
+        _developerLogInfoBarAutoHideTimer.Stop();
         _settingsImportExportInfoBarAutoHideTimer.Stop();
         _hotkeyService.RegistrationStateChanged -= OnHotkeyServiceRegistrationStateChanged;
         _localizationService.LanguageChanged -= OnLocalizationServiceLanguageChanged;
@@ -307,6 +371,18 @@ public sealed partial class SettingsPage : Page
         fileSavePicker.FileTypeChoices.Add(LocalizedResourceAccessor.GetString("Settings.Export.FileTypeDisplayName"), fileTypeExtensions);
         fileSavePicker.DefaultFileExtension = SettingsFileExtension;
         fileSavePicker.SuggestedFileName = SettingsSuggestedFileName;
+        fileSavePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+
+        return await fileSavePicker.PickSaveFileAsync();
+    }
+
+    private async Task<PickFileResult> PickExportLogFileAsync()
+    {
+        var fileSavePicker = new FileSavePicker(XamlRoot.ContentIslandEnvironment.AppWindowId);
+        List<string> fileTypeExtensions = [LogFileExtension]; // AOT Workaround : CCW doesn't support IList<string> marshaling
+        fileSavePicker.FileTypeChoices.Add(LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.FileTypeDisplayName"), fileTypeExtensions);
+        fileSavePicker.DefaultFileExtension = LogFileExtension;
+        fileSavePicker.SuggestedFileName = $"{LogSuggestedFileNamePrefix}_{DateTime.Now:yyyyMMdd_HHmmss}";
         fileSavePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
 
         return await fileSavePicker.PickSaveFileAsync();
@@ -555,6 +631,8 @@ public sealed partial class SettingsPage : Page
         infoBar.IsOpen = true;
         RestartInfoBarAutoHideTimer(infoBarAutoHideTimer);
     }
+
+    private void ShowDeveloperLogResult(string title, string message, InfoBarSeverity infoBarSeverity) => ShowInfoBar(DeveloperLogInfoBar, _developerLogInfoBarAutoHideTimer, title, message, infoBarSeverity);
 
     private void ShowSettingsImportExportResult(string title, string message, InfoBarSeverity infoBarSeverity) => ShowInfoBar(SettingsImportExportInfoBar, _settingsImportExportInfoBarAutoHideTimer, title, message, infoBarSeverity);
 

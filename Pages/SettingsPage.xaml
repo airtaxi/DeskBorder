@@ -952,6 +952,59 @@
                     BorderThickness="1"
                     CornerRadius="12">
                     <StackPanel Spacing="16">
+                        <StackPanel Spacing="6">
+                            <TextBlock
+                                x:Uid="SettingsPage_DeveloperSectionTitleTextBlock"
+                                FontWeight="SemiBold"
+                                Text="개발자" />
+                            <TextBlock
+                                x:Uid="SettingsPage_DeveloperSectionDescriptionTextBlock"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="진단과 문제 재현에 필요한 도구를 제공합니다."
+                                TextWrapping="WrapWholeWords" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="6">
+                                <TextBlock
+                                    x:Uid="SettingsPage_IntegratedLogExportTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="통합 로그 다운로드" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_IntegratedLogExportDescriptionTextBlock"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="앱 실행 중 기록된 로그를 파일로 저장합니다. (최대 1,000건)"
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                            <Button
+                                x:Name="ExportIntegratedLogButton"
+                                x:Uid="SettingsPage_ExportIntegratedLogButton"
+                                Grid.Column="1"
+                                MinWidth="120"
+                                VerticalAlignment="Bottom"
+                                Click="OnExportIntegratedLogButtonClicked"
+                                Content="저장" />
+                        </Grid>
+
+                        <InfoBar
+                            x:Name="DeveloperLogInfoBar"
+                            IsClosable="False"
+                            IsOpen="False"
+                            Severity="Informational" />
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="16">
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />

@@ -32,6 +32,7 @@ public partial class App : Application
         UnhandledException += OnApplicationUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
         TaskScheduler.UnobservedTaskException += OnTaskSchedulerUnobservedTaskException;
+        GetFileLogService()?.WriteInformation(nameof(App), "Application initialized.");
     }
 
     public static TService GetRequiredService<TService>() where TService : notnull => Services.GetRequiredService<TService>();
@@ -63,7 +64,9 @@ public partial class App : Application
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddDeskBorderServices();
-        return serviceCollection.BuildServiceProvider(validateScopes: false);
+        var serviceProvider = serviceCollection.BuildServiceProvider(validateScopes: false);
+        _ = serviceProvider.GetRequiredService<IFileLogService>();
+        return serviceProvider;
     }
 
     private async void OnRedirectedActivation(AppActivationArguments appActivationArguments)
@@ -130,6 +133,12 @@ public partial class App : Application
 
     private static void WriteException(string source, Exception exception)
     {
+        Debug.WriteLine(CreateExceptionMessage(source, exception));
+        GetFileLogService()?.WriteError(nameof(App), $"Unhandled exception reported by {source}.", exception);
+    }
+
+    private static string CreateExceptionMessage(string source, Exception exception)
+    {
         var stringBuilder = new StringBuilder();
         stringBuilder.Append('[');
         stringBuilder.Append(source);
@@ -149,6 +158,8 @@ public partial class App : Application
                 stringBuilder.AppendLine("--->");
         }
 
-        Debug.WriteLine(stringBuilder.ToString());
+        return stringBuilder.ToString();
     }
+
+    private static IFileLogService? GetFileLogService() => s_services?.GetService<IFileLogService>();
 }
