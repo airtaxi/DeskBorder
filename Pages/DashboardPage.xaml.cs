@@ -281,6 +281,8 @@ public sealed partial class DashboardPage : Page
         HotkeySummaryTextBlock.Text = string.Join(Environment.NewLine,
         [
             LocalizedResourceAccessor.GetFormattedString("Dashboard.Hotkey.ToggleDeskBorderFormat", SettingsDisplayFormatter.FormatKeyboardShortcut(currentSettings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey)),
+            LocalizedResourceAccessor.GetFormattedString("Dashboard.Hotkey.SwitchPreviousFormat", SettingsDisplayFormatter.FormatKeyboardShortcut(currentSettings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey)),
+            LocalizedResourceAccessor.GetFormattedString("Dashboard.Hotkey.SwitchNextFormat", SettingsDisplayFormatter.FormatKeyboardShortcut(currentSettings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey)),
             LocalizedResourceAccessor.GetFormattedString("Dashboard.Hotkey.MovePreviousFormat", SettingsDisplayFormatter.FormatKeyboardShortcut(currentSettings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey)),
             LocalizedResourceAccessor.GetFormattedString("Dashboard.Hotkey.MoveNextFormat", SettingsDisplayFormatter.FormatKeyboardShortcut(currentSettings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey)),
             LocalizedResourceAccessor.GetFormattedString("Dashboard.Hotkey.NavigatorToggleFormat", SettingsDisplayFormatter.FormatKeyboardShortcut(currentSettings.NavigatorSettings.ToggleHotkey))

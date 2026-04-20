@@ -398,6 +398,16 @@ public sealed class DesktopLifecycleService(
         {
             switch (hotkeyInvokedEventArgs.HotkeyActionType)
             {
+                case HotkeyActionType.SwitchToPreviousDesktop:
+                    await CancelPendingDesktopDeletionAsync();
+                    await HandleNavigationResultAsync(_virtualDesktopService.SwitchDesktop(DesktopSwitchDirection.Previous));
+                    return;
+
+                case HotkeyActionType.SwitchToNextDesktop:
+                    await CancelPendingDesktopDeletionAsync();
+                    await HandleNavigationResultAsync(_virtualDesktopService.SwitchDesktop(DesktopSwitchDirection.Next));
+                    return;
+
                 case HotkeyActionType.MoveFocusedWindowToPreviousDesktop:
                     await CancelPendingDesktopDeletionAsync();
                     await HandleNavigationResultAsync(_virtualDesktopService.MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection.Previous));
