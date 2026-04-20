@@ -210,21 +210,6 @@ internal static partial class VirtualDesktopFoundation
         }
     }
 
-    public static void SwapDesktops(VirtualDesktopShell virtualDesktopShell, VirtualDesktopHandle firstVirtualDesktop, int firstDesktopIndex, VirtualDesktopHandle secondVirtualDesktop, int secondDesktopIndex)
-    {
-        if (firstDesktopIndex == secondDesktopIndex)
-            return;
-
-        if (firstDesktopIndex > secondDesktopIndex)
-        {
-            (firstVirtualDesktop, secondVirtualDesktop) = (secondVirtualDesktop, firstVirtualDesktop);
-            (firstDesktopIndex, secondDesktopIndex) = (secondDesktopIndex, firstDesktopIndex);
-        }
-
-        MoveDesktop(virtualDesktopShell, firstVirtualDesktop, secondDesktopIndex);
-        MoveDesktop(virtualDesktopShell, secondVirtualDesktop, firstDesktopIndex);
-    }
-
     public static bool TryFindDesktop(VirtualDesktopShell virtualDesktopShell, VirtualDesktopIdentifier desktopIdentifier, out VirtualDesktopHandle virtualDesktop)
     {
         switch (virtualDesktopShell.VirtualDesktopApiVersion)

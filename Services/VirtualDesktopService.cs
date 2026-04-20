@@ -23,24 +23,18 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
 
         using var virtualDesktopShellConnection = CreateVirtualDesktopShellConnection();
         var previousWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
-        var currentVirtualDesktop = VirtualDesktopFoundation.GetCurrentDesktop(virtualDesktopShellConnection.VirtualDesktopShell);
         var createdVirtualDesktop = VirtualDesktopFoundation.CreateDesktop(virtualDesktopShellConnection.VirtualDesktopShell);
         if (desktopSwitchDirection == DesktopSwitchDirection.Previous)
         {
             if (previousWorkspaceSnapshot.CurrentDesktopNumber != 1)
                 return CreateFailedNavigationResult(VirtualDesktopOperationStatus.NoAdjacentDesktop, previousWorkspaceSnapshot);
 
-            VirtualDesktopFoundation.SwapDesktops(
-                virtualDesktopShellConnection.VirtualDesktopShell,
-                currentVirtualDesktop,
-                previousWorkspaceSnapshot.CurrentDesktopNumber - 1,
-                createdVirtualDesktop,
-                previousWorkspaceSnapshot.DesktopCount);
+            VirtualDesktopFoundation.MoveDesktop(virtualDesktopShellConnection.VirtualDesktopShell, createdVirtualDesktop, previousWorkspaceSnapshot.CurrentDesktopNumber - 1);
         }
 
         VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell, createdVirtualDesktop);
         var currentWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
-        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Created a desktop for direction {desktopSwitchDirection}, swapped it with the current desktop when needed, and switched to desktop {currentWorkspaceSnapshot.CurrentDesktopIdentifier}.");
+        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Created a desktop for direction {desktopSwitchDirection}, inserted it before the current desktop when needed, and switched to desktop {currentWorkspaceSnapshot.CurrentDesktopIdentifier}.");
         return new()
         {
             OperationStatus = VirtualDesktopOperationStatus.Success,
