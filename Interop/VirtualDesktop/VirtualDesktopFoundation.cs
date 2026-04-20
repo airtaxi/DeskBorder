@@ -11,6 +11,9 @@ internal static partial class VirtualDesktopFoundation
     private const uint ClassContextLocalServer = 0x00000004;
     private const uint ClassContextRemoteServer = 0x00000010;
     private const uint ClassContextAll = ClassContextInProcessServer | ClassContextLocalServer | ClassContextRemoteServer;
+    private const int MinimumSupportedWindowsBuildNumber = 17763;
+    private const int MinimumWindows11BuildNumber = 22000;
+    private const int MinimumWindows11Version24H2BuildNumber = 26100;
     private const int TypeElementNotFoundHresult = unchecked((int)0x8002802B);
     private const int AdjacentDesktopNotFoundHresult = unchecked((int)0x80028CA1);
 
@@ -22,11 +25,31 @@ internal static partial class VirtualDesktopFoundation
     public static VirtualDesktopShell Connect()
     {
         var nativeServiceProvider = CreateInstance<INativeServiceProvider>(s_immersiveShellClassIdentifier);
-        return new VirtualDesktopShell(
-            nativeServiceProvider,
-            CreateInstance<IVirtualDesktopManager>(s_virtualDesktopManagerClassIdentifier),
-            QueryService<IVirtualDesktopManagerInternal>(nativeServiceProvider, s_virtualDesktopManagerInternalServiceIdentifier),
-            QueryService<IApplicationViewCollection>(nativeServiceProvider, s_applicationViewCollectionServiceIdentifier));
+        var virtualDesktopApiVersion = GetVirtualDesktopApiVersion();
+        var virtualDesktopManager = CreateInstance<IVirtualDesktopManager>(s_virtualDesktopManagerClassIdentifier);
+        var applicationViewCollection = QueryService<IApplicationViewCollection>(nativeServiceProvider, s_applicationViewCollectionServiceIdentifier);
+        return virtualDesktopApiVersion switch
+        {
+            VirtualDesktopApiVersion.Windows10 => new(
+                virtualDesktopApiVersion,
+                nativeServiceProvider,
+                virtualDesktopManager,
+                applicationViewCollection,
+                windows10VirtualDesktopManagerInternal: QueryService<IWindows10VirtualDesktopManagerInternal>(nativeServiceProvider, s_virtualDesktopManagerInternalServiceIdentifier)),
+            VirtualDesktopApiVersion.Windows11 => new(
+                virtualDesktopApiVersion,
+                nativeServiceProvider,
+                virtualDesktopManager,
+                applicationViewCollection,
+                windows11VirtualDesktopManagerInternal: QueryService<IWindows11VirtualDesktopManagerInternal>(nativeServiceProvider, s_virtualDesktopManagerInternalServiceIdentifier)),
+            VirtualDesktopApiVersion.Windows11Version24H2OrGreater => new(
+                virtualDesktopApiVersion,
+                nativeServiceProvider,
+                virtualDesktopManager,
+                applicationViewCollection,
+                windows11Version24H2OrGreaterVirtualDesktopManagerInternal: QueryService<IWindows11Version24H2OrGreaterVirtualDesktopManagerInternal>(nativeServiceProvider, s_virtualDesktopManagerInternalServiceIdentifier)),
+            _ => throw new PlatformNotSupportedException("The current Windows version is not supported.")
+        };
     }
 
     public static TInterface CreateInstance<TInterface>(Guid classIdentifier) where TInterface : class
@@ -43,11 +66,13 @@ internal static partial class VirtualDesktopFoundation
         return ConvertToManaged<TInterface>(objectPointer);
     }
 
-    public static int GetDesktopCount(IVirtualDesktopManagerInternal virtualDesktopManagerInternal)
+    public static int GetDesktopCount(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.VirtualDesktopApiVersion switch
     {
-        ThrowIfFailed(virtualDesktopManagerInternal.GetCount(out var desktopCount));
-        return desktopCount;
-    }
+        VirtualDesktopApiVersion.Windows10 => GetDesktopCount(GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell)),
+        VirtualDesktopApiVersion.Windows11 => GetDesktopCount(GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell)),
+        VirtualDesktopApiVersion.Windows11Version24H2OrGreater => GetDesktopCount(GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell)),
+        _ => throw new PlatformNotSupportedException("The current Windows version is not supported.")
+    };
 
     public static IApplicationView GetApplicationView(IApplicationViewCollection applicationViewCollection, nint windowHandle)
     {
@@ -89,53 +114,103 @@ internal static partial class VirtualDesktopFoundation
         return applicationViewSnapshots;
     }
 
-    public static IReadOnlyList<IVirtualDesktop> GetDesktops(IVirtualDesktopManagerInternal virtualDesktopManagerInternal)
+    public static IReadOnlyList<VirtualDesktopHandle> GetDesktops(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.VirtualDesktopApiVersion switch
     {
-        ThrowIfFailed(virtualDesktopManagerInternal.GetDesktops(out var objectArray));
-        var desktopCount = GetObjectCount(objectArray);
-        var virtualDesktops = new List<IVirtualDesktop>((int)desktopCount);
+        VirtualDesktopApiVersion.Windows10 => GetWindows10VirtualDesktops(virtualDesktopShell),
+        VirtualDesktopApiVersion.Windows11 => GetWindows11VirtualDesktops(virtualDesktopShell),
+        VirtualDesktopApiVersion.Windows11Version24H2OrGreater => GetWindows11Version24H2OrGreaterVirtualDesktops(virtualDesktopShell),
+        _ => throw new PlatformNotSupportedException("The current Windows version is not supported.")
+    };
 
-        for (var index = 0; index < desktopCount; index++)
-            virtualDesktops.Add(GetObjectAt<IVirtualDesktop>(objectArray, index));
-
-        return virtualDesktops;
-    }
-
-    public static IVirtualDesktop GetCurrentDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal)
+    public static VirtualDesktopHandle GetCurrentDesktop(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.VirtualDesktopApiVersion switch
     {
-        ThrowIfFailed(virtualDesktopManagerInternal.GetCurrentDesktop(out var virtualDesktop));
-        return virtualDesktop;
-    }
+        VirtualDesktopApiVersion.Windows10 => GetCurrentWindows10VirtualDesktop(virtualDesktopShell),
+        VirtualDesktopApiVersion.Windows11 => GetCurrentWindows11VirtualDesktop(virtualDesktopShell),
+        VirtualDesktopApiVersion.Windows11Version24H2OrGreater => GetCurrentWindows11Version24H2OrGreaterVirtualDesktop(virtualDesktopShell),
+        _ => throw new PlatformNotSupportedException("The current Windows version is not supported.")
+    };
 
-    public static IVirtualDesktop GetAdjacentDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IVirtualDesktop referenceDesktop, AdjacentVirtualDesktopDirection direction)
+    public static bool TryGetAdjacentDesktop(VirtualDesktopShell virtualDesktopShell, VirtualDesktopHandle referenceVirtualDesktop, AdjacentVirtualDesktopDirection direction, out VirtualDesktopHandle virtualDesktop)
     {
-        ThrowIfFailed(virtualDesktopManagerInternal.GetAdjacentDesktop(referenceDesktop, direction, out var virtualDesktop));
-        return virtualDesktop;
-    }
-
-    public static bool TryGetAdjacentDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IVirtualDesktop referenceDesktop, AdjacentVirtualDesktopDirection direction, out IVirtualDesktop? virtualDesktop)
-    {
-        var adjacentDesktopResultCode = virtualDesktopManagerInternal.GetAdjacentDesktop(referenceDesktop, direction, out var nativeVirtualDesktop);
-        if (adjacentDesktopResultCode == AdjacentDesktopNotFoundHresult)
+        switch (virtualDesktopShell.VirtualDesktopApiVersion)
         {
-            virtualDesktop = null;
-            return false;
+            case VirtualDesktopApiVersion.Windows10:
+            {
+                var adjacentDesktopResultCode = GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).GetAdjacentDesktop(GetWindows10VirtualDesktop(referenceVirtualDesktop), direction, out var nativeVirtualDesktop);
+                if (adjacentDesktopResultCode == AdjacentDesktopNotFoundHresult)
+                {
+                    virtualDesktop = default;
+                    return false;
+                }
+
+                ThrowIfFailed(adjacentDesktopResultCode);
+                virtualDesktop = new(VirtualDesktopApiVersion.Windows10, nativeVirtualDesktop);
+                return true;
+            }
+
+            case VirtualDesktopApiVersion.Windows11:
+            {
+                var adjacentDesktopResultCode = GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).GetAdjacentDesktop(GetWindows11VirtualDesktop(referenceVirtualDesktop), direction, out var nativeVirtualDesktop);
+                if (adjacentDesktopResultCode == AdjacentDesktopNotFoundHresult)
+                {
+                    virtualDesktop = default;
+                    return false;
+                }
+
+                ThrowIfFailed(adjacentDesktopResultCode);
+                virtualDesktop = new(VirtualDesktopApiVersion.Windows11, nativeVirtualDesktop);
+                return true;
+            }
+
+            case VirtualDesktopApiVersion.Windows11Version24H2OrGreater:
+            {
+                var adjacentDesktopResultCode = GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).GetAdjacentDesktop(GetWindows11VirtualDesktop(referenceVirtualDesktop), direction, out var nativeVirtualDesktop);
+                if (adjacentDesktopResultCode == AdjacentDesktopNotFoundHresult)
+                {
+                    virtualDesktop = default;
+                    return false;
+                }
+
+                ThrowIfFailed(adjacentDesktopResultCode);
+                virtualDesktop = new(VirtualDesktopApiVersion.Windows11Version24H2OrGreater, nativeVirtualDesktop);
+                return true;
+            }
+
+            default:
+                throw new PlatformNotSupportedException("The current Windows version is not supported.");
         }
-
-        ThrowIfFailed(adjacentDesktopResultCode);
-        virtualDesktop = nativeVirtualDesktop;
-        return true;
     }
 
-    public static IVirtualDesktop CreateDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal)
+    public static VirtualDesktopHandle CreateDesktop(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.VirtualDesktopApiVersion switch
     {
-        ThrowIfFailed(virtualDesktopManagerInternal.CreateDesktop(out var virtualDesktop));
-        return virtualDesktop;
+        VirtualDesktopApiVersion.Windows10 => CreateWindows10VirtualDesktop(virtualDesktopShell),
+        VirtualDesktopApiVersion.Windows11 => CreateWindows11VirtualDesktop(virtualDesktopShell),
+        VirtualDesktopApiVersion.Windows11Version24H2OrGreater => CreateWindows11Version24H2OrGreaterVirtualDesktop(virtualDesktopShell),
+        _ => throw new PlatformNotSupportedException("The current Windows version is not supported.")
+    };
+
+    public static void MoveDesktop(VirtualDesktopShell virtualDesktopShell, VirtualDesktopHandle virtualDesktop, int desktopIndex)
+    {
+        switch (virtualDesktopShell.VirtualDesktopApiVersion)
+        {
+            case VirtualDesktopApiVersion.Windows10:
+                ThrowIfFailed(GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).MoveDesktop(GetWindows10VirtualDesktop(virtualDesktop), desktopIndex));
+                return;
+
+            case VirtualDesktopApiVersion.Windows11:
+                ThrowIfFailed(GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).MoveDesktop(GetWindows11VirtualDesktop(virtualDesktop), desktopIndex));
+                return;
+
+            case VirtualDesktopApiVersion.Windows11Version24H2OrGreater:
+                ThrowIfFailed(GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).MoveDesktop(GetWindows11VirtualDesktop(virtualDesktop), desktopIndex));
+                return;
+
+            default:
+                throw new PlatformNotSupportedException("The current Windows version is not supported.");
+        }
     }
 
-    public static void MoveDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IVirtualDesktop virtualDesktop, int desktopIndex) => ThrowIfFailed(virtualDesktopManagerInternal.MoveDesktop(virtualDesktop, desktopIndex));
-
-    public static void SwapDesktops(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IVirtualDesktop firstVirtualDesktop, int firstDesktopIndex, IVirtualDesktop secondVirtualDesktop, int secondDesktopIndex)
+    public static void SwapDesktops(VirtualDesktopShell virtualDesktopShell, VirtualDesktopHandle firstVirtualDesktop, int firstDesktopIndex, VirtualDesktopHandle secondVirtualDesktop, int secondDesktopIndex)
     {
         if (firstDesktopIndex == secondDesktopIndex)
             return;
@@ -146,40 +221,143 @@ internal static partial class VirtualDesktopFoundation
             (firstDesktopIndex, secondDesktopIndex) = (secondDesktopIndex, firstDesktopIndex);
         }
 
-        MoveDesktop(virtualDesktopManagerInternal, firstVirtualDesktop, secondDesktopIndex);
-        MoveDesktop(virtualDesktopManagerInternal, secondVirtualDesktop, firstDesktopIndex);
+        MoveDesktop(virtualDesktopShell, firstVirtualDesktop, secondDesktopIndex);
+        MoveDesktop(virtualDesktopShell, secondVirtualDesktop, firstDesktopIndex);
     }
 
-    public static IVirtualDesktop FindDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, VirtualDesktopIdentifier desktopIdentifier)
+    public static bool TryFindDesktop(VirtualDesktopShell virtualDesktopShell, VirtualDesktopIdentifier desktopIdentifier, out VirtualDesktopHandle virtualDesktop)
     {
-        ThrowIfFailed(virtualDesktopManagerInternal.FindDesktop(desktopIdentifier, out var virtualDesktop));
-        return virtualDesktop;
-    }
-
-    public static bool TryFindDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, VirtualDesktopIdentifier desktopIdentifier, out IVirtualDesktop? virtualDesktop)
-    {
-        var findDesktopResultCode = virtualDesktopManagerInternal.FindDesktop(desktopIdentifier, out var nativeVirtualDesktop);
-        if (findDesktopResultCode == TypeElementNotFoundHresult)
+        switch (virtualDesktopShell.VirtualDesktopApiVersion)
         {
-            virtualDesktop = null;
-            return false;
-        }
+            case VirtualDesktopApiVersion.Windows10:
+            {
+                var findDesktopResultCode = GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).FindDesktop(desktopIdentifier, out var nativeVirtualDesktop);
+                if (findDesktopResultCode == TypeElementNotFoundHresult)
+                {
+                    virtualDesktop = default;
+                    return false;
+                }
 
-        ThrowIfFailed(findDesktopResultCode);
-        virtualDesktop = nativeVirtualDesktop;
-        return true;
+                ThrowIfFailed(findDesktopResultCode);
+                virtualDesktop = new(VirtualDesktopApiVersion.Windows10, nativeVirtualDesktop);
+                return true;
+            }
+
+            case VirtualDesktopApiVersion.Windows11:
+            {
+                var findDesktopResultCode = GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).FindDesktop(desktopIdentifier, out var nativeVirtualDesktop);
+                if (findDesktopResultCode == TypeElementNotFoundHresult)
+                {
+                    virtualDesktop = default;
+                    return false;
+                }
+
+                ThrowIfFailed(findDesktopResultCode);
+                virtualDesktop = new(VirtualDesktopApiVersion.Windows11, nativeVirtualDesktop);
+                return true;
+            }
+
+            case VirtualDesktopApiVersion.Windows11Version24H2OrGreater:
+            {
+                var findDesktopResultCode = GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).FindDesktop(desktopIdentifier, out var nativeVirtualDesktop);
+                if (findDesktopResultCode == TypeElementNotFoundHresult)
+                {
+                    virtualDesktop = default;
+                    return false;
+                }
+
+                ThrowIfFailed(findDesktopResultCode);
+                virtualDesktop = new(VirtualDesktopApiVersion.Windows11Version24H2OrGreater, nativeVirtualDesktop);
+                return true;
+            }
+
+            default:
+                throw new PlatformNotSupportedException("The current Windows version is not supported.");
+        }
     }
 
-    public static void SwitchDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IVirtualDesktop virtualDesktop) => ThrowIfFailed(virtualDesktopManagerInternal.SwitchDesktop(virtualDesktop));
-
-    public static void RemoveDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IVirtualDesktop removeDesktop, IVirtualDesktop fallbackDesktop) => ThrowIfFailed(virtualDesktopManagerInternal.RemoveDesktop(removeDesktop, fallbackDesktop));
-
-    public static void MoveViewToDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IApplicationView applicationView, IVirtualDesktop virtualDesktop) => ThrowIfFailed(virtualDesktopManagerInternal.MoveViewToDesktop(applicationView, virtualDesktop));
-
-    public static bool CanMoveViewBetweenDesktops(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IApplicationView applicationView)
+    public static void SwitchDesktop(VirtualDesktopShell virtualDesktopShell, VirtualDesktopHandle virtualDesktop)
     {
-        ThrowIfFailed(virtualDesktopManagerInternal.CanViewMoveDesktops(applicationView, out var canMoveView));
-        return canMoveView;
+        switch (virtualDesktopShell.VirtualDesktopApiVersion)
+        {
+            case VirtualDesktopApiVersion.Windows10:
+                ThrowIfFailed(GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).SwitchDesktop(GetWindows10VirtualDesktop(virtualDesktop)));
+                return;
+
+            case VirtualDesktopApiVersion.Windows11:
+                ThrowIfFailed(GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).SwitchDesktop(GetWindows11VirtualDesktop(virtualDesktop)));
+                return;
+
+            case VirtualDesktopApiVersion.Windows11Version24H2OrGreater:
+                ThrowIfFailed(GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).SwitchDesktop(GetWindows11VirtualDesktop(virtualDesktop)));
+                return;
+
+            default:
+                throw new PlatformNotSupportedException("The current Windows version is not supported.");
+        }
+    }
+
+    public static void RemoveDesktop(VirtualDesktopShell virtualDesktopShell, VirtualDesktopHandle removeVirtualDesktop, VirtualDesktopHandle fallbackVirtualDesktop)
+    {
+        switch (virtualDesktopShell.VirtualDesktopApiVersion)
+        {
+            case VirtualDesktopApiVersion.Windows10:
+                ThrowIfFailed(GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).RemoveDesktop(GetWindows10VirtualDesktop(removeVirtualDesktop), GetWindows10VirtualDesktop(fallbackVirtualDesktop)));
+                return;
+
+            case VirtualDesktopApiVersion.Windows11:
+                ThrowIfFailed(GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).RemoveDesktop(GetWindows11VirtualDesktop(removeVirtualDesktop), GetWindows11VirtualDesktop(fallbackVirtualDesktop)));
+                return;
+
+            case VirtualDesktopApiVersion.Windows11Version24H2OrGreater:
+                ThrowIfFailed(GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).RemoveDesktop(GetWindows11VirtualDesktop(removeVirtualDesktop), GetWindows11VirtualDesktop(fallbackVirtualDesktop)));
+                return;
+
+            default:
+                throw new PlatformNotSupportedException("The current Windows version is not supported.");
+        }
+    }
+
+    public static void MoveViewToDesktop(VirtualDesktopShell virtualDesktopShell, IApplicationView applicationView, VirtualDesktopHandle virtualDesktop)
+    {
+        switch (virtualDesktopShell.VirtualDesktopApiVersion)
+        {
+            case VirtualDesktopApiVersion.Windows10:
+                ThrowIfFailed(GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).MoveViewToDesktop(applicationView, GetWindows10VirtualDesktop(virtualDesktop)));
+                return;
+
+            case VirtualDesktopApiVersion.Windows11:
+                ThrowIfFailed(GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).MoveViewToDesktop(applicationView, GetWindows11VirtualDesktop(virtualDesktop)));
+                return;
+
+            case VirtualDesktopApiVersion.Windows11Version24H2OrGreater:
+                ThrowIfFailed(GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).MoveViewToDesktop(applicationView, GetWindows11VirtualDesktop(virtualDesktop)));
+                return;
+
+            default:
+                throw new PlatformNotSupportedException("The current Windows version is not supported.");
+        }
+    }
+
+    public static bool CanMoveViewBetweenDesktops(VirtualDesktopShell virtualDesktopShell, IApplicationView applicationView)
+    {
+        switch (virtualDesktopShell.VirtualDesktopApiVersion)
+        {
+            case VirtualDesktopApiVersion.Windows10:
+                ThrowIfFailed(GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).CanViewMoveDesktops(applicationView, out var canMoveWindows10View));
+                return canMoveWindows10View;
+
+            case VirtualDesktopApiVersion.Windows11:
+                ThrowIfFailed(GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).CanViewMoveDesktops(applicationView, out var canMoveWindows11View));
+                return canMoveWindows11View;
+
+            case VirtualDesktopApiVersion.Windows11Version24H2OrGreater:
+                ThrowIfFailed(GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).CanViewMoveDesktops(applicationView, out var canMoveWindows11Version24H2OrGreaterView));
+                return canMoveWindows11Version24H2OrGreaterView;
+
+            default:
+                throw new PlatformNotSupportedException("The current Windows version is not supported.");
+        }
     }
 
     public static bool IsWindowOnCurrentDesktop(IVirtualDesktopManager virtualDesktopManager, nint windowHandle)
@@ -224,17 +402,162 @@ internal static partial class VirtualDesktopFoundation
 
     public static void MoveWindowToDesktop(IVirtualDesktopManager virtualDesktopManager, nint windowHandle, VirtualDesktopIdentifier desktopIdentifier) => ThrowIfFailed(virtualDesktopManager.MoveWindowToDesktop(windowHandle, desktopIdentifier));
 
-    public static VirtualDesktopIdentifier GetDesktopIdentifier(IVirtualDesktop virtualDesktop)
+    public static VirtualDesktopIdentifier GetDesktopIdentifier(VirtualDesktopHandle virtualDesktop) => virtualDesktop.VirtualDesktopApiVersion switch
     {
-        ThrowIfFailed(virtualDesktop.GetId(out var desktopIdentifier));
+        VirtualDesktopApiVersion.Windows10 => GetWindows10VirtualDesktopIdentifier(virtualDesktop),
+        VirtualDesktopApiVersion.Windows11 => GetWindows11VirtualDesktopIdentifier(virtualDesktop),
+        VirtualDesktopApiVersion.Windows11Version24H2OrGreater => GetWindows11VirtualDesktopIdentifier(virtualDesktop),
+        _ => throw new PlatformNotSupportedException("The current Windows version is not supported.")
+    };
+
+    public static bool IsViewVisibleOnDesktop(VirtualDesktopHandle virtualDesktop, IApplicationView applicationView)
+    {
+        switch (virtualDesktop.VirtualDesktopApiVersion)
+        {
+            case VirtualDesktopApiVersion.Windows10:
+                ThrowIfFailed(GetWindows10VirtualDesktop(virtualDesktop).IsViewVisible(applicationView, out var isWindows10Visible));
+                return isWindows10Visible;
+
+            case VirtualDesktopApiVersion.Windows11:
+            case VirtualDesktopApiVersion.Windows11Version24H2OrGreater:
+                ThrowIfFailed(GetWindows11VirtualDesktop(virtualDesktop).IsViewVisible(applicationView, out var isWindows11Visible));
+                return isWindows11Visible;
+
+            default:
+                throw new PlatformNotSupportedException("The current Windows version is not supported.");
+        }
+    }
+
+    private static int GetDesktopCount(IWindows10VirtualDesktopManagerInternal windows10VirtualDesktopManagerInternal)
+    {
+        ThrowIfFailed(windows10VirtualDesktopManagerInternal.GetCount(out var desktopCount));
+        return desktopCount;
+    }
+
+    private static int GetDesktopCount(IWindows11VirtualDesktopManagerInternal windows11VirtualDesktopManagerInternal)
+    {
+        ThrowIfFailed(windows11VirtualDesktopManagerInternal.GetCount(out var desktopCount));
+        return desktopCount;
+    }
+
+    private static int GetDesktopCount(IWindows11Version24H2OrGreaterVirtualDesktopManagerInternal windows11Version24H2OrGreaterVirtualDesktopManagerInternal)
+    {
+        ThrowIfFailed(windows11Version24H2OrGreaterVirtualDesktopManagerInternal.GetCount(out var desktopCount));
+        return desktopCount;
+    }
+
+    private static VirtualDesktopHandle CreateWindows10VirtualDesktop(VirtualDesktopShell virtualDesktopShell)
+    {
+        ThrowIfFailed(GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).CreateDesktop(out var virtualDesktop));
+        return new(VirtualDesktopApiVersion.Windows10, virtualDesktop);
+    }
+
+    private static VirtualDesktopHandle CreateWindows11VirtualDesktop(VirtualDesktopShell virtualDesktopShell)
+    {
+        ThrowIfFailed(GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).CreateDesktop(out var virtualDesktop));
+        return new(VirtualDesktopApiVersion.Windows11, virtualDesktop);
+    }
+
+    private static VirtualDesktopHandle CreateWindows11Version24H2OrGreaterVirtualDesktop(VirtualDesktopShell virtualDesktopShell)
+    {
+        ThrowIfFailed(GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).CreateDesktop(out var virtualDesktop));
+        return new(VirtualDesktopApiVersion.Windows11Version24H2OrGreater, virtualDesktop);
+    }
+
+    private static VirtualDesktopHandle GetCurrentWindows10VirtualDesktop(VirtualDesktopShell virtualDesktopShell)
+    {
+        ThrowIfFailed(GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).GetCurrentDesktop(out var virtualDesktop));
+        return new(VirtualDesktopApiVersion.Windows10, virtualDesktop);
+    }
+
+    private static VirtualDesktopHandle GetCurrentWindows11VirtualDesktop(VirtualDesktopShell virtualDesktopShell)
+    {
+        ThrowIfFailed(GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).GetCurrentDesktop(out var virtualDesktop));
+        return new(VirtualDesktopApiVersion.Windows11, virtualDesktop);
+    }
+
+    private static VirtualDesktopHandle GetCurrentWindows11Version24H2OrGreaterVirtualDesktop(VirtualDesktopShell virtualDesktopShell)
+    {
+        ThrowIfFailed(GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).GetCurrentDesktop(out var virtualDesktop));
+        return new(VirtualDesktopApiVersion.Windows11Version24H2OrGreater, virtualDesktop);
+    }
+
+    private static VirtualDesktopApiVersion GetVirtualDesktopApiVersion()
+    {
+        var currentWindowsBuildNumber = Environment.OSVersion.Version.Build;
+        if (currentWindowsBuildNumber >= MinimumWindows11Version24H2BuildNumber)
+            return VirtualDesktopApiVersion.Windows11Version24H2OrGreater;
+
+        if (currentWindowsBuildNumber >= MinimumWindows11BuildNumber)
+            return VirtualDesktopApiVersion.Windows11;
+
+        if (currentWindowsBuildNumber >= MinimumSupportedWindowsBuildNumber)
+            return VirtualDesktopApiVersion.Windows10;
+
+        throw new PlatformNotSupportedException($"Windows build {currentWindowsBuildNumber} is not supported.");
+    }
+
+    private static VirtualDesktopIdentifier GetWindows10VirtualDesktopIdentifier(VirtualDesktopHandle virtualDesktop)
+    {
+        ThrowIfFailed(GetWindows10VirtualDesktop(virtualDesktop).GetId(out var desktopIdentifier));
         return desktopIdentifier;
     }
 
-    public static bool IsViewVisibleOnDesktop(IVirtualDesktop virtualDesktop, IApplicationView applicationView)
+    private static VirtualDesktopIdentifier GetWindows11VirtualDesktopIdentifier(VirtualDesktopHandle virtualDesktop)
     {
-        ThrowIfFailed(virtualDesktop.IsViewVisible(applicationView, out var isVisible));
-        return isVisible;
+        ThrowIfFailed(GetWindows11VirtualDesktop(virtualDesktop).GetId(out var desktopIdentifier));
+        return desktopIdentifier;
     }
+
+    private static IReadOnlyList<VirtualDesktopHandle> GetWindows10VirtualDesktops(VirtualDesktopShell virtualDesktopShell)
+    {
+        ThrowIfFailed(GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).GetDesktops(out var objectArray));
+        var desktopCount = GetObjectCount(objectArray);
+        var virtualDesktops = new List<VirtualDesktopHandle>(desktopCount);
+        for (var index = 0; index < desktopCount; index++)
+            virtualDesktops.Add(new(VirtualDesktopApiVersion.Windows10, GetObjectAt<IWindows10VirtualDesktop>(objectArray, index)));
+
+        return virtualDesktops;
+    }
+
+    private static IReadOnlyList<VirtualDesktopHandle> GetWindows11VirtualDesktops(VirtualDesktopShell virtualDesktopShell)
+    {
+        ThrowIfFailed(GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).GetDesktops(out var objectArray));
+        var desktopCount = GetObjectCount(objectArray);
+        var virtualDesktops = new List<VirtualDesktopHandle>(desktopCount);
+        for (var index = 0; index < desktopCount; index++)
+            virtualDesktops.Add(new(VirtualDesktopApiVersion.Windows11, GetObjectAt<IWindows11VirtualDesktop>(objectArray, index)));
+
+        return virtualDesktops;
+    }
+
+    private static IReadOnlyList<VirtualDesktopHandle> GetWindows11Version24H2OrGreaterVirtualDesktops(VirtualDesktopShell virtualDesktopShell)
+    {
+        ThrowIfFailed(GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).GetDesktops(out var objectArray));
+        var desktopCount = GetObjectCount(objectArray);
+        var virtualDesktops = new List<VirtualDesktopHandle>(desktopCount);
+        for (var index = 0; index < desktopCount; index++)
+            virtualDesktops.Add(new(VirtualDesktopApiVersion.Windows11Version24H2OrGreater, GetObjectAt<IWindows11VirtualDesktop>(objectArray, index)));
+
+        return virtualDesktops;
+    }
+
+    private static IWindows10VirtualDesktop GetWindows10VirtualDesktop(VirtualDesktopHandle virtualDesktop) => virtualDesktop.VirtualDesktopApiVersion == VirtualDesktopApiVersion.Windows10
+        ? (IWindows10VirtualDesktop)virtualDesktop.NativeVirtualDesktop
+        : throw new InvalidOperationException("The virtual desktop handle is not a Windows 10 desktop.");
+
+    private static IWindows11VirtualDesktop GetWindows11VirtualDesktop(VirtualDesktopHandle virtualDesktop) => virtualDesktop.VirtualDesktopApiVersion is VirtualDesktopApiVersion.Windows11 or VirtualDesktopApiVersion.Windows11Version24H2OrGreater
+        ? (IWindows11VirtualDesktop)virtualDesktop.NativeVirtualDesktop
+        : throw new InvalidOperationException("The virtual desktop handle is not a Windows 11 desktop.");
+
+    private static IWindows10VirtualDesktopManagerInternal GetWindows10VirtualDesktopManagerInternal(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.Windows10VirtualDesktopManagerInternal
+        ?? throw new InvalidOperationException("The Windows 10 virtual desktop manager internal interface is unavailable.");
+
+    private static IWindows11VirtualDesktopManagerInternal GetWindows11VirtualDesktopManagerInternal(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.Windows11VirtualDesktopManagerInternal
+        ?? throw new InvalidOperationException("The Windows 11 virtual desktop manager internal interface is unavailable.");
+
+    private static IWindows11Version24H2OrGreaterVirtualDesktopManagerInternal GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.Windows11Version24H2OrGreaterVirtualDesktopManagerInternal
+        ?? throw new InvalidOperationException("The Windows 11 24H2 virtual desktop manager internal interface is unavailable.");
 
     private static int GetObjectCount(IObjectArray objectArray)
     {
