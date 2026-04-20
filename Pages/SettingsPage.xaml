@@ -1426,6 +1426,11 @@
                                 x:Uid="SettingsPage_ImportSettingsButton"
                                 Click="OnImportSettingsButtonClicked"
                                 Content="설정 불러오기" />
+                            <Button
+                                x:Name="ResetSettingsButton"
+                                x:Uid="SettingsPage_ResetSettingsButton"
+                                Click="OnResetSettingsButtonClicked"
+                                Content="설정 초기화" />
                         </StackPanel>
 
                         <InfoBar

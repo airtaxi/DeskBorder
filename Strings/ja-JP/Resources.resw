@@ -498,6 +498,33 @@
   <data name="Settings.Import.SuccessTitle" xml:space="preserve">
     <value>インポート完了</value>
   </data>
+  <data name="Settings.Reset.CancelledMessage" xml:space="preserve">
+    <value>設定のリセットをキャンセルしました。</value>
+  </data>
+  <data name="Settings.Reset.CancelledTitle" xml:space="preserve">
+    <value>リセットをキャンセルしました</value>
+  </data>
+  <data name="Settings.Reset.Dialog.CloseButtonText" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Settings.Reset.Dialog.Content" xml:space="preserve">
+    <value>現在の設定をすべて既定値に戻します。この操作は元に戻せません。</value>
+  </data>
+  <data name="Settings.Reset.Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>リセット</value>
+  </data>
+  <data name="Settings.Reset.Dialog.Title" xml:space="preserve">
+    <value>設定をリセットしますか？</value>
+  </data>
+  <data name="Settings.Reset.FailedTitle" xml:space="preserve">
+    <value>リセットに失敗しました</value>
+  </data>
+  <data name="Settings.Reset.SuccessMessage" xml:space="preserve">
+    <value>すべての設定を既定値に戻しました。</value>
+  </data>
+  <data name="Settings.Reset.SuccessTitle" xml:space="preserve">
+    <value>設定をリセットしました</value>
+  </data>
   <data name="Settings.Status.ApplyFailedTitle" xml:space="preserve">
     <value>設定の適用に失敗しました</value>
   </data>
@@ -775,6 +802,9 @@
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
     <value>設定をインポート</value>
+  </data>
+  <data name="SettingsPage_ResetSettingsButton.Content" xml:space="preserve">
+    <value>設定をリセット</value>
   </data>
   <data name="SettingsPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
     <value>システム起動時に実行</value>

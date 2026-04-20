@@ -498,6 +498,33 @@
   <data name="Settings.Import.SuccessTitle" xml:space="preserve">
     <value>导入完成</value>
   </data>
+  <data name="Settings.Reset.CancelledMessage" xml:space="preserve">
+    <value>已取消重置设置。</value>
+  </data>
+  <data name="Settings.Reset.CancelledTitle" xml:space="preserve">
+    <value>已取消重置</value>
+  </data>
+  <data name="Settings.Reset.Dialog.CloseButtonText" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Settings.Reset.Dialog.Content" xml:space="preserve">
+    <value>当前所有设置都将恢复为默认值。此操作无法撤销。</value>
+  </data>
+  <data name="Settings.Reset.Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  <data name="Settings.Reset.Dialog.Title" xml:space="preserve">
+    <value>要重置设置吗？</value>
+  </data>
+  <data name="Settings.Reset.FailedTitle" xml:space="preserve">
+    <value>重置失败</value>
+  </data>
+  <data name="Settings.Reset.SuccessMessage" xml:space="preserve">
+    <value>已将所有设置恢复为默认值。</value>
+  </data>
+  <data name="Settings.Reset.SuccessTitle" xml:space="preserve">
+    <value>设置已重置</value>
+  </data>
   <data name="Settings.Status.ApplyFailedTitle" xml:space="preserve">
     <value>应用设置失败</value>
   </data>
@@ -775,6 +802,9 @@
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
     <value>导入设置</value>
+  </data>
+  <data name="SettingsPage_ResetSettingsButton.Content" xml:space="preserve">
+    <value>重置设置</value>
   </data>
   <data name="SettingsPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
     <value>随系统启动运行</value>

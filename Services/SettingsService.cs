@@ -81,6 +81,14 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         return _settings.IsLaunchOnStartupEnabled;
     }
 
+    public async Task ResetAsync()
+    {
+        if (!_isInitialized) await InitializeAsync();
+
+        await UpdateSettingsAsync(DeskBorderSettings.CreateDefault());
+        _fileLogService.WriteInformation(nameof(SettingsService), "Reset settings to defaults.");
+    }
+
     public async Task SetLaunchOnStartupEnabledAsync(bool isEnabled)
     {
         if (!_isInitialized)

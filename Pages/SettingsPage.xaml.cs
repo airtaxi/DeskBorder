@@ -329,6 +329,8 @@ public sealed partial class SettingsPage : Page
 
     private async void OnImportSettingsButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ImportSettingsAsync();
 
+    private async void OnResetSettingsButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ResetSettingsAsync();
+
     private async void OnSelectNavigatorTriggerAreaButtonClicked(object sender, RoutedEventArgs routedEventArgs)
     {
         _ = sender;
@@ -561,6 +563,21 @@ public sealed partial class SettingsPage : Page
         return await windowsOnlyModifierWarningDialog.ShowAsync();
     }
 
+    private async Task<ContentDialogResult> ShowResetSettingsConfirmationDialogAsync()
+    {
+        var resetSettingsConfirmationDialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = LocalizedResourceAccessor.GetString("Settings.Reset.Dialog.Title"),
+            Content = LocalizedResourceAccessor.GetString("Settings.Reset.Dialog.Content"),
+            PrimaryButtonText = LocalizedResourceAccessor.GetString("Settings.Reset.Dialog.PrimaryButtonText"),
+            CloseButtonText = LocalizedResourceAccessor.GetString("Settings.Reset.Dialog.CloseButtonText"),
+            DefaultButton = ContentDialogButton.Close
+        };
+        _themeService.RegisterFrameworkElement(resetSettingsConfirmationDialog);
+        return await resetSettingsConfirmationDialog.ShowAsync();
+    }
+
     private async Task ShowWindowsOnlyModifierWarningIfNeededAsync(object sender)
     {
         if (_isSynchronizingViewModel || !_isInitialSettingsLoadCompleted || ViewModel.IsWindowsOnlyModifierWarningSuppressed)
@@ -673,6 +690,36 @@ public sealed partial class SettingsPage : Page
         finally { SetSettingsTransferInProgress(false); }
     }
 
+    private async Task ResetSettingsAsync()
+    {
+        if (_isSettingsTransferInProgress)
+            return;
+
+        if (await ShowResetSettingsConfirmationDialogAsync() != ContentDialogResult.Primary)
+        {
+            ShowSettingsImportExportResult(
+                LocalizedResourceAccessor.GetString("Settings.Reset.CancelledTitle"),
+                LocalizedResourceAccessor.GetString("Settings.Reset.CancelledMessage"),
+                InfoBarSeverity.Informational);
+            return;
+        }
+
+        SetSettingsTransferInProgress(true);
+        try
+        {
+            await _settingsService.ResetAsync();
+            ApplySettingsToViewModel();
+            ShowSettingsImportExportResult(
+                LocalizedResourceAccessor.GetString("Settings.Reset.SuccessTitle"),
+                LocalizedResourceAccessor.GetString("Settings.Reset.SuccessMessage"),
+                InfoBarSeverity.Success);
+        }
+        catch (ArgumentException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Reset.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
+        catch (InvalidOperationException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Reset.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
+        catch (UnauthorizedAccessException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Reset.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
+        finally { SetSettingsTransferInProgress(false); }
+    }
+
     private void QueueSettingsSave()
     {
         if (DispatcherQueue.TryEnqueue(async () => await SaveSettingsAsync()))
@@ -764,6 +811,7 @@ public sealed partial class SettingsPage : Page
         _isSettingsTransferInProgress = isSettingsTransferInProgress;
         ExportSettingsButton.IsEnabled = !isSettingsTransferInProgress;
         ImportSettingsButton.IsEnabled = !isSettingsTransferInProgress;
+        ResetSettingsButton.IsEnabled = !isSettingsTransferInProgress;
     }
 
     private void ShowStoreUpdateCheckFailedStatus()

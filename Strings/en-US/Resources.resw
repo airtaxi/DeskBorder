@@ -498,6 +498,33 @@
   <data name="Settings.Import.SuccessTitle" xml:space="preserve">
     <value>Import complete</value>
   </data>
+  <data name="Settings.Reset.CancelledMessage" xml:space="preserve">
+    <value>Settings reset was cancelled.</value>
+  </data>
+  <data name="Settings.Reset.CancelledTitle" xml:space="preserve">
+    <value>Reset cancelled</value>
+  </data>
+  <data name="Settings.Reset.Dialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Settings.Reset.Dialog.Content" xml:space="preserve">
+    <value>All current settings will be restored to their default values. This action cannot be undone.</value>
+  </data>
+  <data name="Settings.Reset.Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Settings.Reset.Dialog.Title" xml:space="preserve">
+    <value>Reset settings?</value>
+  </data>
+  <data name="Settings.Reset.FailedTitle" xml:space="preserve">
+    <value>Reset failed</value>
+  </data>
+  <data name="Settings.Reset.SuccessMessage" xml:space="preserve">
+    <value>Restored all settings to their default values.</value>
+  </data>
+  <data name="Settings.Reset.SuccessTitle" xml:space="preserve">
+    <value>Settings reset</value>
+  </data>
   <data name="Settings.Status.ApplyFailedTitle" xml:space="preserve">
     <value>Failed to apply settings</value>
   </data>
@@ -894,6 +921,9 @@
   </data>
   <data name="SettingsPage_RemoveWhitelistedProcessNameButtonToolTip.Content" xml:space="preserve">
     <value>Remove</value>
+  </data>
+  <data name="SettingsPage_ResetSettingsButton.Content" xml:space="preserve">
+    <value>Reset settings</value>
   </data>
   <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
     <value>Check for Store updates automatically</value>

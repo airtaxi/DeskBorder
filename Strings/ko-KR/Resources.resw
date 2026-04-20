@@ -498,6 +498,33 @@
   <data name="Settings.Import.SuccessTitle" xml:space="preserve">
     <value>불러오기 완료</value>
   </data>
+  <data name="Settings.Reset.CancelledMessage" xml:space="preserve">
+    <value>설정 초기화를 취소했습니다.</value>
+  </data>
+  <data name="Settings.Reset.CancelledTitle" xml:space="preserve">
+    <value>설정 초기화 취소</value>
+  </data>
+  <data name="Settings.Reset.Dialog.CloseButtonText" xml:space="preserve">
+    <value>취소</value>
+  </data>
+  <data name="Settings.Reset.Dialog.Content" xml:space="preserve">
+    <value>현재 설정을 모두 기본값으로 되돌립니다. 이 작업은 되돌릴 수 없습니다.</value>
+  </data>
+  <data name="Settings.Reset.Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>초기화</value>
+  </data>
+  <data name="Settings.Reset.Dialog.Title" xml:space="preserve">
+    <value>설정을 초기화할까요?</value>
+  </data>
+  <data name="Settings.Reset.FailedTitle" xml:space="preserve">
+    <value>설정 초기화 실패</value>
+  </data>
+  <data name="Settings.Reset.SuccessMessage" xml:space="preserve">
+    <value>모든 설정을 기본값으로 되돌렸습니다.</value>
+  </data>
+  <data name="Settings.Reset.SuccessTitle" xml:space="preserve">
+    <value>설정 초기화 완료</value>
+  </data>
   <data name="Settings.Status.ApplyFailedTitle" xml:space="preserve">
     <value>설정 적용 실패</value>
   </data>
@@ -775,6 +802,9 @@
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
     <value>설정 불러오기</value>
+  </data>
+  <data name="SettingsPage_ResetSettingsButton.Content" xml:space="preserve">
+    <value>설정 초기화</value>
   </data>
   <data name="SettingsPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
     <value>시스템 시작 시 자동 실행</value>

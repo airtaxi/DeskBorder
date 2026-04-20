@@ -18,6 +18,8 @@ public interface ISettingsService
 
     Task<bool> RefreshLaunchOnStartupEnabledAsync();
 
+    Task ResetAsync();
+
     Task SetLaunchOnStartupEnabledAsync(bool isEnabled);
 
     Task UpdateSettingsAsync(DeskBorderSettings settings);
