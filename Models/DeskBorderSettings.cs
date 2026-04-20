@@ -161,6 +161,8 @@ public sealed record DeskBorderSettings
 
     public ModifierGateSettings CreateDesktopModifierSettings { get; init; } = new();
 
+    public ModifierGateSettings SwitchDesktopWhileMouseButtonsArePressedModifierSettings { get; init; } = new();
+
     public bool IsDesktopCreationEnabled { get; init; } = true;
 
     public bool IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty { get; init; }

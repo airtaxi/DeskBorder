@@ -169,7 +169,7 @@
     <value>DeskBorder の切り替え: {0}</value>
   </data>
   <data name="Dashboard.HotkeyModifiers.Format" xml:space="preserve">
-    <value>デスクトップ切り替え: {0} / 作成: {1}</value>
+    <value>デスクトップ切り替え: {0} / 作成: {1} / クリックやドラッグ中に許可: {2}</value>
   </data>
   <data name="Dashboard.HotkeyService.Initializing" xml:space="preserve">
     <value>グローバル ホットキー サービスは初期化中です。</value>
@@ -936,6 +936,9 @@
   </data>
   <data name="SettingsPage_SwitchDesktopModifierTitleTextBlock.Text" xml:space="preserve">
     <value>デスクトップ切り替え修飾キー</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedModifierTitleTextBlock.Text" xml:space="preserve">
+    <value>クリックやドラッグ中の切り替え許可修飾キー</value>
   </data>
   <data name="SettingsPage_SwitchDesktopShiftCheckBox.Content" xml:space="preserve">
     <value>Shift</value>

@@ -143,6 +143,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             MultiDisplayBehavior = settings.MultiDisplayBehavior,
             SwitchDesktopModifierSettings = NormalizeModifierGateSettings(settings.SwitchDesktopModifierSettings),
             CreateDesktopModifierSettings = NormalizeModifierGateSettings(settings.CreateDesktopModifierSettings),
+            SwitchDesktopWhileMouseButtonsArePressedModifierSettings = NormalizeModifierGateSettings(settings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings),
             IsDesktopCreationEnabled = settings.IsDesktopCreationEnabled,
             IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = settings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty,
             IsAutoDeleteEnabled = settings.IsAutoDeleteEnabled,

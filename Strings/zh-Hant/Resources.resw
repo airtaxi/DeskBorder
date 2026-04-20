@@ -169,7 +169,7 @@
     <value>切換 DeskBorder：{0}</value>
   </data>
   <data name="Dashboard.HotkeyModifiers.Format" xml:space="preserve">
-    <value>切換桌面：{0} / 建立：{1}</value>
+    <value>切換桌面：{0} / 建立：{1} / 點擊或拖曳時允許：{2}</value>
   </data>
   <data name="Dashboard.HotkeyService.Initializing" xml:space="preserve">
     <value>全域熱鍵服務正在初始化。</value>
@@ -936,6 +936,9 @@
   </data>
   <data name="SettingsPage_SwitchDesktopModifierTitleTextBlock.Text" xml:space="preserve">
     <value>切換桌面修飾鍵</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedModifierTitleTextBlock.Text" xml:space="preserve">
+    <value>點擊或拖曳時允許切換的修飾鍵</value>
   </data>
   <data name="SettingsPage_SwitchDesktopShiftCheckBox.Content" xml:space="preserve">
     <value>Shift</value>

@@ -36,6 +36,10 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         var foregroundProcessSnapshot = MouseHelper.GetForegroundProcessSnapshot();
         var modifierKeySnapshot = MouseHelper.GetModifierKeySnapshot();
         var mouseButtonSnapshot = MouseHelper.GetMouseButtonSnapshot();
+        var isSwitchDesktopModifierSatisfied = MouseHelper.AreRequiredKeyboardModifierKeysPressed(currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys);
+        var isCreateDesktopModifierSatisfied = MouseHelper.AreRequiredKeyboardModifierKeysPressed(currentSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys);
+        var isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied = currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None
+            && MouseHelper.AreRequiredKeyboardModifierKeysPressed(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys);
         var pendingHorizontalMovement = _mouseMovementTrackingService.ConsumePendingHorizontalMovement();
         var displayMonitors = MouseHelper.GetDisplayMonitors();
         var currentDisplayMonitor = FindCurrentDisplayMonitor(displayMonitors, currentCursorPosition);
@@ -53,6 +57,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             currentDisplayMonitor is not null,
             cursorClippingState.IsCursorClipped,
             mouseButtonSnapshot.IsAnyButtonPressed,
+            isSwitchDesktopModifierSatisfied && isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied,
             isForegroundProcessBlacklisted);
         var touchedDesktopEdge = desktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.Enabled
             ? GetTouchedDesktopEdge(displayMonitors, currentDisplayMonitor, currentCursorPosition, currentSettings.DesktopEdgeIgnoreZoneSettings)
@@ -79,8 +84,9 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             ActiveDesktopEdge = activeDesktopEdge,
             HasCursorEnteredDesktopEdge = hasActiveDesktopEdgeChanged && activeDesktopEdge != DesktopEdgeKind.None,
             HasCursorLeftDesktopEdge = hasActiveDesktopEdgeChanged && previousState.ActiveDesktopEdge != DesktopEdgeKind.None,
-            IsSwitchDesktopModifierSatisfied = MouseHelper.AreRequiredKeyboardModifierKeysPressed(currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys),
-            IsCreateDesktopModifierSatisfied = MouseHelper.AreRequiredKeyboardModifierKeysPressed(currentSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys),
+            IsSwitchDesktopModifierSatisfied = isSwitchDesktopModifierSatisfied,
+            IsCreateDesktopModifierSatisfied = isCreateDesktopModifierSatisfied,
+            IsSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied = isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied,
             NavigatorTriggerState = navigatorTriggerState
         };
     }
@@ -282,6 +288,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         bool hasCurrentDisplayMonitor,
         bool isCursorClipped,
         bool isAnyMouseButtonPressed,
+        bool isDesktopSwitchAllowedWhileMouseButtonsArePressed,
         bool isForegroundProcessBlacklisted)
     {
         if (!settings.IsDeskBorderEnabled)
@@ -290,7 +297,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         if (isCursorClipped)
             return DesktopEdgeAvailabilityStatus.DisabledByCursorClipping;
 
-        if (isAnyMouseButtonPressed)
+        if (isAnyMouseButtonPressed && !isDesktopSwitchAllowedWhileMouseButtonsArePressed)
             return DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton;
 
         if (!hasCurrentDisplayMonitor)

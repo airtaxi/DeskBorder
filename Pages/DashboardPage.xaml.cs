@@ -294,7 +294,8 @@ public sealed partial class DashboardPage : Page
                 SettingsDisplayFormatter.FormatKeyboardModifierKeys(currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys),
                 currentSettings.IsDesktopCreationEnabled
                     ? SettingsDisplayFormatter.FormatKeyboardModifierKeys(currentSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys)
-                    : LocalizedResourceAccessor.GetString("Common.Disabled")),
+                    : LocalizedResourceAccessor.GetString("Common.Disabled"),
+                SettingsDisplayFormatter.FormatKeyboardModifierKeys(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings.RequiredKeyboardModifierKeys)),
             LocalizedResourceAccessor.GetString(_hotkeyService.IsInitialized ? "Dashboard.HotkeyService.Ready" : "Dashboard.HotkeyService.Initializing")
         ]);
     }

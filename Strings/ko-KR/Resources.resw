@@ -169,7 +169,7 @@
     <value>DeskBorder 토글: {0}</value>
   </data>
   <data name="Dashboard.HotkeyModifiers.Format" xml:space="preserve">
-    <value>데스크톱 전환: {0} / 생성: {1}</value>
+    <value>데스크톱 전환: {0} / 생성: {1} / 클릭·드래그 중 허용: {2}</value>
   </data>
   <data name="Dashboard.HotkeyService.Initializing" xml:space="preserve">
     <value>전역 단축키 서비스 초기화 전입니다.</value>
@@ -936,6 +936,9 @@
   </data>
   <data name="SettingsPage_SwitchDesktopModifierTitleTextBlock.Text" xml:space="preserve">
     <value>데스크톱 전환 보조키</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedModifierTitleTextBlock.Text" xml:space="preserve">
+    <value>전환 시 클릭/드래그 허용 보조키</value>
   </data>
   <data name="SettingsPage_SwitchDesktopShiftCheckBox.Content" xml:space="preserve">
     <value>Shift</value>

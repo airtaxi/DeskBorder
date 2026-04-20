@@ -25,6 +25,7 @@ public sealed partial class SettingsPage : Page
     private const string LogFileExtension = ".txt";
     private const string LogSuggestedFileNamePrefix = "DeskBorder_Logs";
     private const string CreateDesktopModifierSelectionTag = "CreateDesktopModifierSelection";
+    private const string SwitchDesktopWhileMouseButtonsArePressedModifierSelectionTag = "SwitchDesktopWhileMouseButtonsArePressedModifierSelection";
     private const string SwitchToNextDesktopHotkeyEditorTag = "SwitchToNextDesktopHotkeyEditor";
     private const string SwitchToPreviousDesktopHotkeyEditorTag = "SwitchToPreviousDesktopHotkeyEditor";
     private const string MoveFocusedWindowToNextDesktopHotkeyEditorTag = "MoveFocusedWindowToNextDesktopHotkeyEditor";
@@ -156,6 +157,7 @@ public sealed partial class SettingsPage : Page
     {
         SwitchDesktopModifierSelectionTag => settingsPageViewModel.SwitchDesktopModifierSelection,
         CreateDesktopModifierSelectionTag => settingsPageViewModel.CreateDesktopModifierSelection,
+        SwitchDesktopWhileMouseButtonsArePressedModifierSelectionTag => settingsPageViewModel.SwitchDesktopWhileMouseButtonsArePressedModifierSelection,
         ToggleDeskBorderEnabledHotkeyEditorTag => settingsPageViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection,
         SwitchToPreviousDesktopHotkeyEditorTag => settingsPageViewModel.SwitchToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
         SwitchToNextDesktopHotkeyEditorTag => settingsPageViewModel.SwitchToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection,

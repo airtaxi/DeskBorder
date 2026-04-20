@@ -127,6 +127,8 @@ public sealed record DesktopEdgeMonitoringState
 
     public bool IsCreateDesktopModifierSatisfied { get; init; }
 
+    public bool IsSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied { get; init; }
+
     public NavigatorTriggerState NavigatorTriggerState { get; init; } = new();
 
     public bool IsMultiDisplayEnvironment => DisplayMonitors.Length > 1;

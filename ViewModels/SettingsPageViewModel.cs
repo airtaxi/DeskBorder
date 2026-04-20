@@ -158,6 +158,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public ModifierKeySelectionViewModel CreateDesktopModifierSelection { get; } = new();
 
+    public ModifierKeySelectionViewModel SwitchDesktopWhileMouseButtonsArePressedModifierSelection { get; } = new();
+
     [ObservableProperty]
     public partial double BottomDesktopEdgeIgnorePercentage { get; set; }
 
@@ -397,6 +399,10 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         {
             RequiredKeyboardModifierKeys = CreateDesktopModifierSelection.CreateKeyboardModifierKeys()
         },
+        SwitchDesktopWhileMouseButtonsArePressedModifierSettings = new ModifierGateSettings
+        {
+            RequiredKeyboardModifierKeys = SwitchDesktopWhileMouseButtonsArePressedModifierSelection.CreateKeyboardModifierKeys()
+        },
         IsDesktopCreationEnabled = IsDesktopCreationEnabled,
         IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty,
         IsAutoDeleteEnabled = IsAutoDeleteEnabled,
@@ -479,6 +485,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             deskBorderSettings.DesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption);
         SwitchDesktopModifierSelection.Load(deskBorderSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
         CreateDesktopModifierSelection.Load(deskBorderSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys);
+        SwitchDesktopWhileMouseButtonsArePressedModifierSelection.Load(deskBorderSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings.RequiredKeyboardModifierKeys);
         ToggleDeskBorderEnabledHotkeyEditor.Load(deskBorderSettings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey);
         SwitchToPreviousDesktopHotkeyEditor.Load(deskBorderSettings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey);
         SwitchToNextDesktopHotkeyEditor.Load(deskBorderSettings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey);

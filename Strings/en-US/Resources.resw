@@ -169,7 +169,7 @@
     <value>Toggle DeskBorder: {0}</value>
   </data>
   <data name="Dashboard.HotkeyModifiers.Format" xml:space="preserve">
-    <value>Switch desktop: {0} / Create: {1}</value>
+    <value>Switch desktop: {0} / Create: {1} / Allow while clicking or dragging: {2}</value>
   </data>
   <data name="Dashboard.HotkeyService.Initializing" xml:space="preserve">
     <value>The global hotkey service is still initializing.</value>
@@ -936,6 +936,9 @@
   </data>
   <data name="SettingsPage_SwitchDesktopModifierTitleTextBlock.Text" xml:space="preserve">
     <value>Desktop switch modifiers</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedModifierTitleTextBlock.Text" xml:space="preserve">
+    <value>Allow switching while clicking or dragging</value>
   </data>
   <data name="SettingsPage_SwitchDesktopShiftCheckBox.Content" xml:space="preserve">
     <value>Shift</value>
