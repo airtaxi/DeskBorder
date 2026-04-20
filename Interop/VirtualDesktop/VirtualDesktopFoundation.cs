@@ -133,6 +133,23 @@ internal static partial class VirtualDesktopFoundation
         return virtualDesktop;
     }
 
+    public static void MoveDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IVirtualDesktop virtualDesktop, int desktopIndex) => ThrowIfFailed(virtualDesktopManagerInternal.MoveDesktop(virtualDesktop, desktopIndex));
+
+    public static void SwapDesktops(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, IVirtualDesktop firstVirtualDesktop, int firstDesktopIndex, IVirtualDesktop secondVirtualDesktop, int secondDesktopIndex)
+    {
+        if (firstDesktopIndex == secondDesktopIndex)
+            return;
+
+        if (firstDesktopIndex > secondDesktopIndex)
+        {
+            (firstVirtualDesktop, secondVirtualDesktop) = (secondVirtualDesktop, firstVirtualDesktop);
+            (firstDesktopIndex, secondDesktopIndex) = (secondDesktopIndex, firstDesktopIndex);
+        }
+
+        MoveDesktop(virtualDesktopManagerInternal, firstVirtualDesktop, secondDesktopIndex);
+        MoveDesktop(virtualDesktopManagerInternal, secondVirtualDesktop, firstDesktopIndex);
+    }
+
     public static IVirtualDesktop FindDesktop(IVirtualDesktopManagerInternal virtualDesktopManagerInternal, VirtualDesktopIdentifier desktopIdentifier)
     {
         ThrowIfFailed(virtualDesktopManagerInternal.FindDesktop(desktopIdentifier, out var virtualDesktop));

@@ -18,24 +18,29 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
 
     public DesktopNavigationResult CreateDesktopAndSwitch(DesktopSwitchDirection desktopSwitchDirection)
     {
-        if (desktopSwitchDirection != DesktopSwitchDirection.Next)
-        {
-            var workspaceSnapshot = GetWorkspaceSnapshot();
-            _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"CreateDesktopAndSwitch does not support direction {desktopSwitchDirection}.");
-            return new()
-            {
-                OperationStatus = VirtualDesktopOperationStatus.UnsupportedDirection,
-                PreviousWorkspaceSnapshot = workspaceSnapshot,
-                CurrentWorkspaceSnapshot = workspaceSnapshot
-            };
-        }
+        if (desktopSwitchDirection is not (DesktopSwitchDirection.Previous or DesktopSwitchDirection.Next))
+            return CreateFailedNavigationResult(VirtualDesktopOperationStatus.UnsupportedDirection, GetWorkspaceSnapshot());
 
         using var virtualDesktopShellConnection = CreateVirtualDesktopShellConnection();
         var previousWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
+        var currentVirtualDesktop = VirtualDesktopFoundation.GetCurrentDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal);
         var createdVirtualDesktop = VirtualDesktopFoundation.CreateDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal);
+        if (desktopSwitchDirection == DesktopSwitchDirection.Previous)
+        {
+            if (previousWorkspaceSnapshot.CurrentDesktopNumber != 1)
+                return CreateFailedNavigationResult(VirtualDesktopOperationStatus.NoAdjacentDesktop, previousWorkspaceSnapshot);
+
+            VirtualDesktopFoundation.SwapDesktops(
+                virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal,
+                currentVirtualDesktop,
+                previousWorkspaceSnapshot.CurrentDesktopNumber - 1,
+                createdVirtualDesktop,
+                previousWorkspaceSnapshot.DesktopCount);
+        }
+
         VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManagerInternal, createdVirtualDesktop);
         var currentWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
-        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Created and switched to desktop {currentWorkspaceSnapshot.CurrentDesktopIdentifier}.");
+        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Created a desktop for direction {desktopSwitchDirection}, swapped it with the current desktop when needed, and switched to desktop {currentWorkspaceSnapshot.CurrentDesktopIdentifier}.");
         return new()
         {
             OperationStatus = VirtualDesktopOperationStatus.Success,

@@ -123,6 +123,8 @@ public sealed class DesktopLifecycleService(
         return false;
     }
 
+    private static bool IsCurrentDesktopLeftOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.CurrentDesktopNumber == 1;
+
     private static bool IsCurrentDesktopRightOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.DesktopEntries.Length > 0
         && workspaceSnapshot.CurrentDesktopNumber == workspaceSnapshot.DesktopEntries.Length;
 
@@ -195,10 +197,10 @@ public sealed class DesktopLifecycleService(
         var currentSettings = _settingsService.Settings;
         var desktopSwitchDirection = ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge);
         var currentWorkspaceSnapshot = _virtualDesktopService.GetWorkspaceSnapshot();
-        var canCreateDesktop = desktopSwitchDirection == DesktopSwitchDirection.Next
-            && currentSettings.IsDesktopCreationEnabled
+        var canCreateDesktop = currentSettings.IsDesktopCreationEnabled
             && currentState.IsCreateDesktopModifierSatisfied
-            && IsCurrentDesktopRightOuter(currentWorkspaceSnapshot);
+            && (desktopSwitchDirection == DesktopSwitchDirection.Next && IsCurrentDesktopRightOuter(currentWorkspaceSnapshot)
+                || desktopSwitchDirection == DesktopSwitchDirection.Previous && IsCurrentDesktopLeftOuter(currentWorkspaceSnapshot));
 
         if (currentState.IsSwitchDesktopModifierSatisfied)
         {
