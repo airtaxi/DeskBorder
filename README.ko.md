@@ -28,6 +28,7 @@ DeskBorder는 가상 데스크톱을 자주 사용하는 사용자를 위한 Win
 ## 감사의 글 (Acknowledgement)
 
 이 프로젝트는 [GitHub Copilot](https://github.com/features/copilot)의 부분적인 도움으로 작성되었습니다.
+가상 데스크톱 인터롭 지원 구현에는 [MScholtes/VirtualDesktop](https://github.com/MScholtes/VirtualDesktop)를 참고하였습니다.
 
 ## 작성자
 

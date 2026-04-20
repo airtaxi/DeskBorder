@@ -28,6 +28,7 @@ This project is distributed under the [MIT License](LICENSE.txt).
 ## Acknowledgement
 
 This project was written with partial assistance from [GitHub Copilot](https://github.com/features/copilot).
+Virtual desktop interoperability support was implemented with reference to [MScholtes/VirtualDesktop](https://github.com/MScholtes/VirtualDesktop).
 
 ## Author
 
