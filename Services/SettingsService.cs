@@ -13,9 +13,12 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private const string SettingsKey = "DeskBorderSettings";
     private const int CurrentSchemaVersion = 1;
     private const double DefaultAutoDeleteWarningTimeoutSeconds = 3.0;
+    private const double DefaultDesktopEdgeAdditionalTriggerDistancePercentage = 5.0;
     private const double MaximumAutoDeleteWarningTimeoutSeconds = 10.0;
+    private const double MaximumDesktopEdgeAdditionalTriggerDistancePercentage = 50.0;
     private const double MaximumDesktopEdgeIgnorePercentage = 49.0;
     private const double MinimumAutoDeleteWarningTimeoutSeconds = 0.5;
+    private const double MinimumDesktopEdgeAdditionalTriggerDistancePercentage = 0.1;
 
     private static readonly ApplicationDataContainer s_localSettings =
         ApplicationData.Current.LocalSettings;
@@ -149,6 +152,8 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             IsAutoDeleteEnabled = settings.IsAutoDeleteEnabled,
             IsAutoDeleteWarningEnabled = settings.IsAutoDeleteWarningEnabled,
             IsAutoDeleteCompletionToastEnabled = settings.IsAutoDeleteCompletionToastEnabled,
+            IsDesktopEdgeAdditionalTriggerDistanceEnabled = settings.IsDesktopEdgeAdditionalTriggerDistanceEnabled,
+            DesktopEdgeAdditionalTriggerDistancePercentage = ClampDesktopEdgeAdditionalTriggerDistancePercentage(settings.DesktopEdgeAdditionalTriggerDistancePercentage),
             AutoDeleteWarningTimeoutSeconds = ClampAutoDeleteWarningTimeoutSeconds(settings.AutoDeleteWarningTimeoutSeconds),
             DesktopEdgeIgnoreZoneSettings = NormalizeDesktopEdgeIgnoreZoneSettings(settings.DesktopEdgeIgnoreZoneSettings),
             ApplicationHotkeySettings = NormalizeApplicationHotkeySettings(settings.ApplicationHotkeySettings),
@@ -235,6 +240,10 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private static double ClampAutoDeleteWarningTimeoutSeconds(double value) => double.IsFinite(value)
         ? Math.Clamp(value, MinimumAutoDeleteWarningTimeoutSeconds, MaximumAutoDeleteWarningTimeoutSeconds)
         : DefaultAutoDeleteWarningTimeoutSeconds;
+
+    private static double ClampDesktopEdgeAdditionalTriggerDistancePercentage(double value) => double.IsFinite(value)
+        ? Math.Clamp(value, MinimumDesktopEdgeAdditionalTriggerDistancePercentage, MaximumDesktopEdgeAdditionalTriggerDistancePercentage)
+        : DefaultDesktopEdgeAdditionalTriggerDistancePercentage;
 
     private static double ClampDesktopEdgeIgnorePercentage(double value) => double.IsFinite(value) ? Math.Clamp(value, 0.0, MaximumDesktopEdgeIgnorePercentage) : 0.0;
 

@@ -1,5 +1,6 @@
 using DeskBorder.Navigation;
 using DeskBorder.Services;
+using DeskBorder.Interop;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -19,6 +20,7 @@ public sealed partial class ManageWindow : WindowEx
     private readonly IManageNavigationService _manageNavigationService;
     private readonly INavigatorService _navigatorService;
     private readonly ILocalizationService _localizationService;
+    private readonly IMouseMovementTrackingService _mouseMovementTrackingService;
     private readonly ISettingsService _settingsService;
     private readonly IThemeService _themeService;
     private readonly ITrayIconService _trayIconService;
@@ -39,6 +41,7 @@ public sealed partial class ManageWindow : WindowEx
         IManageNavigationService manageNavigationService,
         IDeskBorderRuntimeService deskBorderRuntimeService,
         INavigatorService navigatorService,
+        IMouseMovementTrackingService mouseMovementTrackingService,
         ITrayIconService trayIconService,
         ISettingsService settingsService,
         ILocalizationService localizationService,
@@ -47,6 +50,7 @@ public sealed partial class ManageWindow : WindowEx
         _manageNavigationService = manageNavigationService;
         _deskBorderRuntimeService = deskBorderRuntimeService;
         _navigatorService = navigatorService;
+        _mouseMovementTrackingService = mouseMovementTrackingService;
         _trayIconService = trayIconService;
         _settingsService = settingsService;
         _localizationService = localizationService;
@@ -61,7 +65,9 @@ public sealed partial class ManageWindow : WindowEx
         SetTitleBar(ApplicationTitleBar);
 
         _windowSubclassProcedure = OnWindowSubclassProcedure;
-        _ = SetWindowSubclass(this.GetWindowHandle(), _windowSubclassProcedure, 1, 0);
+        var windowHandle = this.GetWindowHandle();
+        _ = SetWindowSubclass(windowHandle, _windowSubclassProcedure, 1, 0);
+        _mouseMovementTrackingService.RegisterWindowHandle(windowHandle);
 
         _manageNavigationService.RegisterFrame(AppFrame);
         AppFrame.Navigated += OnAppFrameNavigated;
@@ -191,6 +197,10 @@ public sealed partial class ManageWindow : WindowEx
 
                 AppWindow.Hide();
                 return 0;
+
+            case Win32.WindowInputMessage:
+                _mouseMovementTrackingService.ProcessRawInputMessage(lParam);
+                break;
         }
 
         return DefSubclassProc(windowHandle, message, wParam, lParam);

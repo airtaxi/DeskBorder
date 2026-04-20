@@ -155,6 +155,12 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial bool IsDesktopCreationEnabled { get; set; }
 
     [ObservableProperty]
+    public partial bool IsDesktopEdgeAdditionalTriggerDistanceEnabled { get; set; }
+
+    [ObservableProperty]
+    public partial double DesktopEdgeAdditionalTriggerDistancePercentage { get; set; } = 5.0;
+
+    [ObservableProperty]
     public partial bool IsDeskBorderEnabled { get; set; }
 
     [ObservableProperty]
@@ -318,6 +324,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsAutoDeleteEnabled = IsAutoDeleteEnabled,
         IsAutoDeleteWarningEnabled = IsAutoDeleteWarningEnabled,
         IsAutoDeleteCompletionToastEnabled = IsAutoDeleteCompletionToastEnabled,
+        IsDesktopEdgeAdditionalTriggerDistanceEnabled = IsDesktopEdgeAdditionalTriggerDistanceEnabled,
+        DesktopEdgeAdditionalTriggerDistancePercentage = DesktopEdgeAdditionalTriggerDistancePercentage,
         AutoDeleteWarningTimeoutSeconds = AutoDeleteWarningTimeoutSeconds,
         DesktopEdgeIgnoreZoneSettings = new DesktopEdgeIgnoreZoneSettings
         {
@@ -358,6 +366,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsAutoDeleteEnabled = deskBorderSettings.IsAutoDeleteEnabled;
         IsAutoDeleteWarningEnabled = deskBorderSettings.IsAutoDeleteWarningEnabled;
         IsAutoDeleteCompletionToastEnabled = deskBorderSettings.IsAutoDeleteCompletionToastEnabled;
+        IsDesktopEdgeAdditionalTriggerDistanceEnabled = deskBorderSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
+        DesktopEdgeAdditionalTriggerDistancePercentage = deskBorderSettings.DesktopEdgeAdditionalTriggerDistancePercentage;
         AutoDeleteWarningTimeoutSeconds = deskBorderSettings.AutoDeleteWarningTimeoutSeconds;
         TopDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.TopIgnorePercentage;
         BottomDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage;

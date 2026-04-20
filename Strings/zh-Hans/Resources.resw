@@ -507,6 +507,15 @@
   <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
     <value>只有在关闭删除警告时才能使用。空桌面被立即删除后，会通过 ToastWindow 告知结果。</value>
   </data>
+  <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistanceToggleSwitch.Header" xml:space="preserve">
+    <value>使用边缘额外移动距离</value>
+  </data>
+  <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistanceDescriptionTextBlock.Text" xml:space="preserve">
+    <value>只有在到达边缘后，继续向外推动鼠标的距离达到当前显示器宽度指定比例时，才会执行切换或创建。</value>
+  </data>
+  <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistancePercentageNumberBox.Header" xml:space="preserve">
+    <value>额外移动距离 (%)</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>管理要从边缘处理中排除的正在运行的前台进程。</value>
   </data>

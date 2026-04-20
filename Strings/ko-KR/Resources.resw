@@ -507,6 +507,15 @@
   <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
     <value>삭제 경고를 끈 경우에만 사용할 수 있습니다. 빈 데스크톱이 바로 삭제되었을 때 ToastWindow로 결과를 알려줍니다.</value>
   </data>
+  <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistanceToggleSwitch.Header" xml:space="preserve">
+    <value>가장자리 추가 이동 거리 사용</value>
+  </data>
+  <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistanceDescriptionTextBlock.Text" xml:space="preserve">
+    <value>가장자리에 닿은 뒤에도 바깥쪽으로 마우스를 더 민 거리가 현재 모니터 너비의 지정 비율 이상일 때만 전환 또는 생성합니다.</value>
+  </data>
+  <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistancePercentageNumberBox.Header" xml:space="preserve">
+    <value>추가 이동 거리 (%)</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>가장자리 처리에서 제외할 실행 중 포그라운드 프로세스를 관리합니다.</value>
   </data>

@@ -507,6 +507,15 @@
   <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
     <value>削除前の警告をオフにした場合のみ使用できます。空のデスクトップがすぐ削除されたとき、ToastWindow で結果を通知します。</value>
   </data>
+  <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistanceToggleSwitch.Header" xml:space="preserve">
+    <value>端の追加移動距離を使用</value>
+  </data>
+  <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistanceDescriptionTextBlock.Text" xml:space="preserve">
+    <value>端に達したあとも外側へマウスを押し込んだ距離が、現在のモニター幅の指定割合以上になったときだけ切り替えまたは作成します。</value>
+  </data>
+  <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistancePercentageNumberBox.Header" xml:space="preserve">
+    <value>追加移動距離 (%)</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>エッジ処理から除外する実行中のフォアグラウンド プロセスを管理します。</value>
   </data>

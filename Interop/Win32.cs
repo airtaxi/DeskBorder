@@ -17,8 +17,15 @@ internal static partial class Win32
     public const nuint KeyUpWindowMessage = 0x0101;
     public const nuint SystemKeyUpWindowMessage = 0x0105;
     public const uint WindowApplicationMessage = 0x8000;
+    public const uint WindowInputMessage = 0x00FF;
     public const uint WindowHotkeyMessage = 0x0312;
     public const uint WindowGetIconMessage = 0x007F;
+    public const uint RawInputDataCommandInput = 0x10000003;
+    public const uint RawInputDeviceInputSinkFlag = 0x00000100;
+    public const uint RawInputTypeMouse = 0;
+    public const ushort GenericDesktopControlsUsagePage = 0x01;
+    public const ushort GenericDesktopMouseUsage = 0x02;
+    public const ushort RawMouseMoveAbsoluteFlag = 0x0001;
     public const uint DesktopWindowManagerCloakedAttribute = 14;
     public const uint DesktopWindowManagerExtendedFrameBoundsAttribute = 9;
     public const uint DesktopWindowManagerWindowCornerPreferenceAttribute = 33;
@@ -146,6 +153,13 @@ internal static partial class Win32
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool RegisterRawInputDevices([In] NativeRawInputDevice[] rawInputDevices, uint deviceCount, uint rawInputDeviceSize);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    public static partial uint GetRawInputData(nint rawInputHandle, uint command, nint dataPointer, ref uint dataSize, uint headerSize);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool UnregisterHotKey(nint windowHandle, int identifier);
 
     [LibraryImport("user32.dll", EntryPoint = "GetMessageW", SetLastError = true)]
@@ -255,6 +269,51 @@ internal static partial class Win32
         public uint Flags;
         public uint Time;
         public nuint ExtraInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct NativeRawInputDevice
+    {
+        public ushort UsagePage;
+        public ushort Usage;
+        public uint Flags;
+        public nint WindowHandle;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct NativeRawInputHeader
+    {
+        public uint Type;
+        public uint Size;
+        public nint DeviceHandle;
+        public nuint WParam;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct NativeRawMouse
+    {
+        public ushort Flags;
+        public uint Buttons;
+        public uint RawButtons;
+        public int LastX;
+        public int LastY;
+        public uint ExtraInformation;
+    }
+
+    [StructLayout(LayoutKind.Explicit)]
+    public struct NativeRawInputData
+    {
+        [FieldOffset(0)]
+        public NativeRawMouse Mouse;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct NativeRawInput
+    {
+        public NativeRawInputHeader Header;
+        public NativeRawInputData Data;
+
+        public readonly NativeRawMouse Mouse => Data.Mouse;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IDeskBorderRuntimeService, DeskBorderRuntimeService>();
         serviceCollection.AddSingleton<IDesktopLifecycleService, DesktopLifecycleService>();
         serviceCollection.AddSingleton<IDesktopEdgeMonitorService, DesktopEdgeMonitorService>();
+        serviceCollection.AddSingleton<IMouseMovementTrackingService, MouseMovementTrackingService>();
         serviceCollection.AddSingleton<IHotkeyService, HotkeyService>();
         serviceCollection.AddSingleton<INavigatorService, NavigatorService>();
         serviceCollection.AddSingleton<IStartupRegistrationService, StartupRegistrationService>();
@@ -26,7 +27,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IVirtualDesktopService, VirtualDesktopService>();
         serviceCollection.AddSingleton<IApplicationBootstrapService, ApplicationBootstrapService>();
         serviceCollection.AddSingleton(provider => new NavigatorWindow(provider.GetRequiredService<INavigatorService>(), provider.GetRequiredService<ILocalizationService>(), provider.GetRequiredService<IThemeService>()));
-        serviceCollection.AddSingleton(provider => new ManageWindow(provider.GetRequiredService<IManageNavigationService>(), provider.GetRequiredService<IDeskBorderRuntimeService>(), provider.GetRequiredService<INavigatorService>(), provider.GetRequiredService<ITrayIconService>(), provider.GetRequiredService<ISettingsService>(), provider.GetRequiredService<ILocalizationService>(), provider.GetRequiredService<IThemeService>()));
+        serviceCollection.AddSingleton(provider => new ManageWindow(provider.GetRequiredService<IManageNavigationService>(), provider.GetRequiredService<IDeskBorderRuntimeService>(), provider.GetRequiredService<INavigatorService>(), provider.GetRequiredService<IMouseMovementTrackingService>(), provider.GetRequiredService<ITrayIconService>(), provider.GetRequiredService<ISettingsService>(), provider.GetRequiredService<ILocalizationService>(), provider.GetRequiredService<IThemeService>()));
 
         return serviceCollection;
     }

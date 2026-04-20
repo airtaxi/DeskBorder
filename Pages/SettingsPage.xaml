@@ -260,6 +260,37 @@
                             Text="삭제 경고를 끈 경우에만 사용할 수 있습니다. 빈 데스크톱이 바로 삭제되었을 때 ToastWindow로 결과를 알려줍니다."
                             TextWrapping="WrapWholeWords" />
 
+                        <ToggleSwitch
+                            x:Name="DesktopEdgeAdditionalTriggerDistanceToggleSwitch"
+                            x:Uid="SettingsPage_DesktopEdgeAdditionalTriggerDistanceToggleSwitch"
+                            Header="가장자리 추가 이동 거리 사용"
+                            IsOn="{x:Bind ViewModel.IsDesktopEdgeAdditionalTriggerDistanceEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <Border
+                            Padding="12"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="10"
+                            Visibility="{x:Bind GetDesktopEdgeAdditionalTriggerDistanceVisibility(ViewModel.IsDesktopEdgeAdditionalTriggerDistanceEnabled), Mode=OneWay}">
+                            <StackPanel Spacing="8">
+                                <TextBlock
+                                    x:Uid="SettingsPage_DesktopEdgeAdditionalTriggerDistanceDescriptionTextBlock"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="가장자리에 닿은 뒤에도 바깥쪽으로 마우스를 더 민 거리가 현재 모니터 너비의 지정 비율 이상일 때만 전환 또는 생성합니다."
+                                    TextWrapping="WrapWholeWords" />
+                                <NumberBox
+                                    x:Name="DesktopEdgeAdditionalTriggerDistancePercentageNumberBox"
+                                    x:Uid="SettingsPage_DesktopEdgeAdditionalTriggerDistancePercentageNumberBox"
+                                    Header="추가 이동 거리 (%)"
+                                    Maximum="50"
+                                    Minimum="0.1"
+                                    SmallChange="0.5"
+                                    SpinButtonPlacementMode="Inline"
+                                    Value="{x:Bind ViewModel.DesktopEdgeAdditionalTriggerDistancePercentage, Mode=TwoWay}"
+                                    ValueChanged="OnSettingNumberBoxValueChanged" />
+                            </StackPanel>
+                        </Border>
+
                         <Border
                             Padding="12"
                             Background="{ThemeResource LayerFillColorDefaultBrush}"

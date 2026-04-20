@@ -126,6 +126,10 @@ public sealed record DeskBorderSettings
 
     public bool IsAutoDeleteCompletionToastEnabled { get; init; }
 
+    public bool IsDesktopEdgeAdditionalTriggerDistanceEnabled { get; init; }
+
+    public double DesktopEdgeAdditionalTriggerDistancePercentage { get; init; } = 5.0;
+
     public double AutoDeleteWarningTimeoutSeconds { get; init; } = 3.0;
 
     public DesktopEdgeIgnoreZoneSettings DesktopEdgeIgnoreZoneSettings { get; init; } = new();
