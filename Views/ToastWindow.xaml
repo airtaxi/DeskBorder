@@ -11,6 +11,7 @@
     IsMaximizable="False"
     IsMinimizable="False"
     IsResizable="False"
+    IsShownInSwitchers="False"
     IsTitleBarVisible="False"
     IsVisibleInTray="False"
     mc:Ignorable="d">
