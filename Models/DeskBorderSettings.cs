@@ -44,6 +44,16 @@ public enum KeyboardShortcutTriggerType
     MouseRightButton,
 }
 
+public enum DesktopSwitchMouseLocationOption
+{
+    OppositeSide,
+    VirtualScreenCenter,
+    PrimaryMonitorCenter,
+    TargetMonitorCenter,
+    InputMonitorCenter,
+    DoNotMove,
+}
+
 public sealed record ModifierGateSettings
 {
     public KeyboardModifierKeys RequiredKeyboardModifierKeys { get; init; } = KeyboardModifierKeys.None;
@@ -82,6 +92,13 @@ public sealed record DesktopSwitchHotkeySettings
         RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Windows,
         TriggerType = KeyboardShortcutTriggerType.MouseWheelDown
     };
+}
+
+public sealed record DesktopSwitchMouseLocationSettings
+{
+    public DesktopSwitchMouseLocationOption HotkeyTriggeredMouseLocationOption { get; init; } = DesktopSwitchMouseLocationOption.DoNotMove;
+
+    public DesktopSwitchMouseLocationOption DesktopEdgeTriggeredMouseLocationOption { get; init; } = DesktopSwitchMouseLocationOption.OppositeSide;
 }
 
 public sealed record TriggerRectangleSettings
@@ -163,6 +180,8 @@ public sealed record DeskBorderSettings
     public ApplicationHotkeySettings ApplicationHotkeySettings { get; init; } = new();
 
     public DesktopSwitchHotkeySettings DesktopSwitchHotkeySettings { get; init; } = new();
+
+    public DesktopSwitchMouseLocationSettings DesktopSwitchMouseLocationSettings { get; init; } = new();
 
     public FocusedWindowMoveHotkeySettings FocusedWindowMoveHotkeySettings { get; init; } = new();
 

@@ -267,6 +267,24 @@
   <data name="DesktopEdgeKind.RightOuterDisplayEdge" xml:space="preserve">
     <value>右側の外側エッジ</value>
   </data>
+  <data name="DesktopSwitchMouseLocationOption.DoNotMove" xml:space="preserve">
+    <value>移動しない</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.InputMonitorCenter" xml:space="preserve">
+    <value>切り替えイベント入力モニター中央</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.OppositeSide" xml:space="preserve">
+    <value>反対側</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.PrimaryMonitorCenter" xml:space="preserve">
+    <value>プライマリ モニター中央</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.TargetMonitorCenter" xml:space="preserve">
+    <value>切り替えイベント対象モニター中央</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.VirtualScreenCenter" xml:space="preserve">
+    <value>モニター全体の中央</value>
+  </data>
   <data name="EmptyDesktopDetectionMode.CountAllTopLevelWindows" xml:space="preserve">
     <value>すべてのトップレベル ウィンドウを含める</value>
   </data>
@@ -679,6 +697,12 @@
   </data>
   <data name="SettingsPage_OpenStoreDownloadsAndUpdatesButton.Content" xml:space="preserve">
     <value>Microsoft Store で更新を確認</value>
+  </data>
+  <data name="SettingsPage_DesktopEdgeTriggeredDesktopSwitchMouseLocationComboBox.Header" xml:space="preserve">
+    <value>画面端でデスクトップ切り替え後のマウス位置</value>
+  </data>
+  <data name="SettingsPage_HotkeyTriggeredDesktopSwitchMouseLocationComboBox.Header" xml:space="preserve">
+    <value>ホットキーでデスクトップ切り替え後のマウス位置</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>DeskBorder、デスクトップ切り替え、ウィンドウ移動、Navigator を直接制御するホットキーを設定します。</value>

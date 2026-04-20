@@ -267,6 +267,24 @@
   <data name="DesktopEdgeKind.RightOuterDisplayEdge" xml:space="preserve">
     <value>右側外邊緣</value>
   </data>
+  <data name="DesktopSwitchMouseLocationOption.DoNotMove" xml:space="preserve">
+    <value>不移動</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.InputMonitorCenter" xml:space="preserve">
+    <value>切換事件輸入顯示器中央</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.OppositeSide" xml:space="preserve">
+    <value>反對側</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.PrimaryMonitorCenter" xml:space="preserve">
+    <value>主顯示器中央</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.TargetMonitorCenter" xml:space="preserve">
+    <value>切換事件目標顯示器中央</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.VirtualScreenCenter" xml:space="preserve">
+    <value>整個顯示區域中央</value>
+  </data>
   <data name="EmptyDesktopDetectionMode.CountAllTopLevelWindows" xml:space="preserve">
     <value>計算所有最上層視窗</value>
   </data>
@@ -679,6 +697,12 @@
   </data>
   <data name="SettingsPage_OpenStoreDownloadsAndUpdatesButton.Content" xml:space="preserve">
     <value>在 Microsoft Store 中檢查更新</value>
+  </data>
+  <data name="SettingsPage_DesktopEdgeTriggeredDesktopSwitchMouseLocationComboBox.Header" xml:space="preserve">
+    <value>越過邊緣切換桌面後的滑鼠位置</value>
+  </data>
+  <data name="SettingsPage_HotkeyTriggeredDesktopSwitchMouseLocationComboBox.Header" xml:space="preserve">
+    <value>快捷鍵切換桌面後的滑鼠位置</value>
   </data>
   <data name="SettingsPage_HotkeysSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>設定可直接控制 DeskBorder、桌面切換、視窗移動與 Navigator 的熱鍵。</value>

@@ -43,6 +43,16 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         MultiDisplayBehavior.UseOuterDisplayEdges
     ];
 
+    private static readonly DesktopSwitchMouseLocationOption[] s_desktopSwitchMouseLocationOptions =
+    [
+        DesktopSwitchMouseLocationOption.OppositeSide,
+        DesktopSwitchMouseLocationOption.VirtualScreenCenter,
+        DesktopSwitchMouseLocationOption.PrimaryMonitorCenter,
+        DesktopSwitchMouseLocationOption.TargetMonitorCenter,
+        DesktopSwitchMouseLocationOption.InputMonitorCenter,
+        DesktopSwitchMouseLocationOption.DoNotMove
+    ];
+
     private static readonly VirtualKey[] s_virtualKeys =
     [
         VirtualKey.None,
@@ -122,6 +132,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         var keyboardShortcutTriggerOptions = CreateKeyboardShortcutTriggerOptions();
         ApplicationThemePreferenceOptions = CreateSelectionOptions(s_applicationThemePreferences, SettingsDisplayFormatter.FormatApplicationThemePreference);
         AppLanguagePreferenceOptions = CreateSelectionOptions(s_appLanguagePreferences, SettingsDisplayFormatter.FormatAppLanguagePreference);
+        DesktopSwitchMouseLocationOptions = CreateSelectionOptions(s_desktopSwitchMouseLocationOptions, SettingsDisplayFormatter.FormatDesktopSwitchMouseLocationOption);
         MultiDisplayBehaviorOptions = CreateSelectionOptions(s_multiDisplayBehaviors, SettingsDisplayFormatter.FormatMultiDisplayBehavior);
         ToggleDeskBorderEnabledHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
         SwitchToPreviousDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
@@ -187,6 +198,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool IsWindowsOnlyModifierWarningSuppressed { get; set; }
+
+    public List<SelectionOption<DesktopSwitchMouseLocationOption>> DesktopSwitchMouseLocationOptions { get; }
 
     public KeyboardShortcutEditorViewModel SwitchToNextDesktopHotkeyEditor { get; }
 
@@ -301,6 +314,12 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial SelectionOption<ApplicationThemePreference>? SelectedApplicationThemePreferenceOption { get; set; }
 
     [ObservableProperty]
+    public partial SelectionOption<DesktopSwitchMouseLocationOption>? SelectedDesktopEdgeTriggeredMouseLocationOption { get; set; }
+
+    [ObservableProperty]
+    public partial SelectionOption<DesktopSwitchMouseLocationOption>? SelectedHotkeyTriggeredMouseLocationOption { get; set; }
+
+    [ObservableProperty]
     public partial SelectionOption<MultiDisplayBehavior>? SelectedMultiDisplayBehaviorOption { get; set; }
 
     public ModifierKeySelectionViewModel SwitchDesktopModifierSelection { get; } = new();
@@ -396,6 +415,11 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             SwitchToPreviousDesktopHotkey = SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             SwitchToNextDesktopHotkey = SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings()
         },
+        DesktopSwitchMouseLocationSettings = new DesktopSwitchMouseLocationSettings
+        {
+            HotkeyTriggeredMouseLocationOption = SelectedHotkeyTriggeredMouseLocationOption?.Value ?? DesktopSwitchMouseLocationOption.DoNotMove,
+            DesktopEdgeTriggeredMouseLocationOption = SelectedDesktopEdgeTriggeredMouseLocationOption?.Value ?? DesktopSwitchMouseLocationOption.OppositeSide
+        },
         FocusedWindowMoveHotkeySettings = new FocusedWindowMoveHotkeySettings
         {
             MoveToPreviousDesktopHotkey = MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
@@ -442,6 +466,12 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         SelectedApplicationThemePreferenceOption = FindSelectionOption(
             ApplicationThemePreferenceOptions,
             deskBorderSettings.ApplicationThemePreference);
+        SelectedHotkeyTriggeredMouseLocationOption = FindSelectionOption(
+            DesktopSwitchMouseLocationOptions,
+            deskBorderSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption);
+        SelectedDesktopEdgeTriggeredMouseLocationOption = FindSelectionOption(
+            DesktopSwitchMouseLocationOptions,
+            deskBorderSettings.DesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption);
         SwitchDesktopModifierSelection.Load(deskBorderSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
         CreateDesktopModifierSelection.Load(deskBorderSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys);
         ToggleDeskBorderEnabledHotkeyEditor.Load(deskBorderSettings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey);

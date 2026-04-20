@@ -153,6 +153,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             DesktopEdgeIgnoreZoneSettings = NormalizeDesktopEdgeIgnoreZoneSettings(settings.DesktopEdgeIgnoreZoneSettings),
             ApplicationHotkeySettings = NormalizeApplicationHotkeySettings(settings.ApplicationHotkeySettings),
             DesktopSwitchHotkeySettings = NormalizeDesktopSwitchHotkeySettings(settings.DesktopSwitchHotkeySettings),
+            DesktopSwitchMouseLocationSettings = NormalizeDesktopSwitchMouseLocationSettings(settings.DesktopSwitchMouseLocationSettings),
             FocusedWindowMoveHotkeySettings = NormalizeFocusedWindowMoveHotkeySettings(settings.FocusedWindowMoveHotkeySettings),
             NavigatorSettings = NormalizeNavigatorSettings(settings.NavigatorSettings),
             BlacklistedProcessNames = NormalizeBlacklistedProcessNames(settings.BlacklistedProcessNames)
@@ -207,6 +208,20 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             SwitchToNextDesktopHotkey = NormalizeKeyboardShortcutSettings(actualDesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey)
         };
     }
+
+    private static DesktopSwitchMouseLocationSettings NormalizeDesktopSwitchMouseLocationSettings(DesktopSwitchMouseLocationSettings? desktopSwitchMouseLocationSettings)
+    {
+        var actualDesktopSwitchMouseLocationSettings = desktopSwitchMouseLocationSettings ?? new();
+        return actualDesktopSwitchMouseLocationSettings with
+        {
+            HotkeyTriggeredMouseLocationOption = NormalizeDesktopSwitchMouseLocationOption(actualDesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption),
+            DesktopEdgeTriggeredMouseLocationOption = NormalizeDesktopSwitchMouseLocationOption(actualDesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption)
+        };
+    }
+
+    private static DesktopSwitchMouseLocationOption NormalizeDesktopSwitchMouseLocationOption(DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption) => Enum.IsDefined(typeof(DesktopSwitchMouseLocationOption), desktopSwitchMouseLocationOption)
+        ? desktopSwitchMouseLocationOption
+        : DesktopSwitchMouseLocationOption.OppositeSide;
 
     private static KeyboardShortcutSettings NormalizeKeyboardShortcutSettings(KeyboardShortcutSettings? keyboardShortcutSettings)
     {

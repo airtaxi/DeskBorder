@@ -436,6 +436,30 @@
                             </Grid>
 
                         </Grid>
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox
+                                x:Uid="SettingsPage_HotkeyTriggeredDesktopSwitchMouseLocationComboBox"
+                                HorizontalAlignment="Stretch"
+                                Header="단축키 데스크톱 전환 후 마우스 위치"
+                                ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                                ItemsSource="{x:Bind ViewModel.DesktopSwitchMouseLocationOptions, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedHotkeyTriggeredMouseLocationOption, Mode=TwoWay}"
+                                SelectionChanged="OnSettingSelectionChanged" />
+                            <ComboBox
+                                x:Uid="SettingsPage_DesktopEdgeTriggeredDesktopSwitchMouseLocationComboBox"
+                                Grid.Column="1"
+                                HorizontalAlignment="Stretch"
+                                Header="가장자리 데스크톱 전환 후 마우스 위치"
+                                ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                                ItemsSource="{x:Bind ViewModel.DesktopSwitchMouseLocationOptions, Mode=OneWay}"
+                                SelectedItem="{x:Bind ViewModel.SelectedDesktopEdgeTriggeredMouseLocationOption, Mode=TwoWay}"
+                                SelectionChanged="OnSettingSelectionChanged" />
+                        </Grid>
                     </StackPanel>
                 </Border>
 
