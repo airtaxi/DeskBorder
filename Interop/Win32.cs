@@ -5,9 +5,17 @@ namespace DeskBorder.Interop;
 internal static partial class Win32
 {
     public const short AsyncKeyDownMask = unchecked((short)0x8000);
+    public const int InputKeyboard = 1;
     public const int ShowWindowRestore = 9;
+    public const int LowLevelKeyboardHookId = 13;
+    public const ushort VirtualKeyF24 = 0x87;
+    public const uint KeyboardEventExtendedKeyFlag = 0x0001;
     public const uint MonitorInfoPrimary = 0x00000001;
+    public const uint KeyboardEventKeyUpFlag = 0x0002;
+    public const uint LowLevelKeyboardHookInjectedFlag = 0x00000010;
     public const uint PeekMessageNoRemove = 0x0000;
+    public const nuint KeyUpWindowMessage = 0x0101;
+    public const nuint SystemKeyUpWindowMessage = 0x0105;
     public const uint WindowApplicationMessage = 0x8000;
     public const uint WindowHotkeyMessage = 0x0312;
     public const uint WindowGetIconMessage = 0x007F;
@@ -37,6 +45,7 @@ internal static partial class Win32
 
     public delegate bool MonitorEnumerationProcedure(nint monitorHandle, nint deviceContextHandle, nint monitorRectanglePointer, nint applicationData);
     public delegate bool WindowEnumerationProcedure(nint windowHandle, nint applicationData);
+    public delegate nint LowLevelKeyboardHookProcedure(int code, nuint wParam, nint lParam);
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -56,6 +65,19 @@ internal static partial class Win32
 
     [LibraryImport("user32.dll")]
     public static partial short GetAsyncKeyState(int virtualKey);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern uint SendInput(uint inputCount, NativeInput[] inputs, int inputSize);
+
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    public static extern nint SetWindowsHookEx(int hookIdentifier, LowLevelKeyboardHookProcedure hookProcedure, nint moduleHandle, uint threadIdentifier);
+
+    [DllImport("user32.dll")]
+    public static extern nint CallNextHookEx(nint hookHandle, int code, nuint wParam, nint lParam);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool UnhookWindowsHookEx(nint hookHandle);
 
     [LibraryImport("user32.dll")]
     public static partial nint GetForegroundWindow();
@@ -169,6 +191,16 @@ internal static partial class Win32
     public static partial int DwmSetWindowInt32Attribute(nint windowHandle, uint attribute, in int attributeValue, uint attributeSize);
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct NativeLowLevelKeyboardHookData
+    {
+        public uint VirtualKey;
+        public uint ScanCode;
+        public uint Flags;
+        public uint Time;
+        public nuint ExtraInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct NativePoint
     {
         public int X;
@@ -199,6 +231,30 @@ internal static partial class Win32
         public uint Time;
         public NativePoint Point;
         public uint Private;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct NativeInput
+    {
+        public int Type;
+        public NativeInputUnion Data;
+    }
+
+    [StructLayout(LayoutKind.Explicit)]
+    public struct NativeInputUnion
+    {
+        [FieldOffset(0)]
+        public NativeKeyboardInput KeyboardInput;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct NativeKeyboardInput
+    {
+        public ushort VirtualKey;
+        public ushort ScanCode;
+        public uint Flags;
+        public uint Time;
+        public nuint ExtraInfo;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

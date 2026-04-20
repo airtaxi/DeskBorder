@@ -1,5 +1,6 @@
 using DeskBorder.Dialogs;
 using DeskBorder.Helpers;
+using DeskBorder.Models;
 using DeskBorder.Services;
 using DeskBorder.ViewModels;
 using DeskBorder.Views;
@@ -20,10 +21,17 @@ namespace DeskBorder.Pages;
 
 public sealed partial class SettingsPage : Page
 {
+    private const KeyboardModifierKeys WindowsOnlyKeyboardModifierKeys = KeyboardModifierKeys.Windows;
     private const string LogFileExtension = ".txt";
     private const string LogSuggestedFileNamePrefix = "DeskBorder_Logs";
+    private const string CreateDesktopModifierSelectionTag = "CreateDesktopModifierSelection";
+    private const string MoveFocusedWindowToNextDesktopHotkeyEditorTag = "MoveFocusedWindowToNextDesktopHotkeyEditor";
+    private const string MoveFocusedWindowToPreviousDesktopHotkeyEditorTag = "MoveFocusedWindowToPreviousDesktopHotkeyEditor";
+    private const string NavigatorToggleHotkeyEditorTag = "NavigatorToggleHotkeyEditor";
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsSuggestedFileName = "DeskBorder_Settings";
+    private const string SwitchDesktopModifierSelectionTag = "SwitchDesktopModifierSelection";
+    private const string ToggleDeskBorderEnabledHotkeyEditorTag = "ToggleDeskBorderEnabledHotkeyEditor";
     private static readonly TimeSpan s_infoBarAutoHideDelay = TimeSpan.FromSeconds(4);
     private static bool s_shouldShowPendingLanguageRestartRecommendedStatus;
 
@@ -130,6 +138,19 @@ public sealed partial class SettingsPage : Page
         ViewModel.UpdateHotkeyRegistrationFailureMessage(HotkeyActionType.MoveFocusedWindowToNextDesktop, _hotkeyService.GetRegistrationFailureMessage(HotkeyActionType.MoveFocusedWindowToNextDesktop));
         ViewModel.UpdateHotkeyRegistrationFailureMessage(HotkeyActionType.ToggleNavigator, _hotkeyService.GetRegistrationFailureMessage(HotkeyActionType.ToggleNavigator));
     }
+
+    private static ModifierKeySelectionViewModel? GetModifierSelectionViewModel(SettingsPageViewModel settingsPageViewModel, string modifierSelectionTag) => modifierSelectionTag switch
+    {
+        SwitchDesktopModifierSelectionTag => settingsPageViewModel.SwitchDesktopModifierSelection,
+        CreateDesktopModifierSelectionTag => settingsPageViewModel.CreateDesktopModifierSelection,
+        ToggleDeskBorderEnabledHotkeyEditorTag => settingsPageViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection,
+        MoveFocusedWindowToPreviousDesktopHotkeyEditorTag => settingsPageViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
+        MoveFocusedWindowToNextDesktopHotkeyEditorTag => settingsPageViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
+        NavigatorToggleHotkeyEditorTag => settingsPageViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection,
+        _ => null
+    };
+
+    private static bool IsWindowsOnlyModifierSelection(ModifierKeySelectionViewModel modifierKeySelectionViewModel) => modifierKeySelectionViewModel.CreateKeyboardModifierKeys() == WindowsOnlyKeyboardModifierKeys;
 
     private nint GetManageWindowHandle() => WindowNative.GetWindowHandle(_manageWindow);
 
@@ -291,7 +312,12 @@ public sealed partial class SettingsPage : Page
         RefreshStoreUpdateVisualState();
     }
 
-    private void OnModifierSelectionCheckBoxClicked(object sender, RoutedEventArgs routedEventArgs) => QueueSettingsSave();
+    private async void OnModifierSelectionCheckBoxClicked(object sender, RoutedEventArgs routedEventArgs)
+    {
+        _ = routedEventArgs;
+        await ShowWindowsOnlyModifierWarningIfNeededAsync(sender);
+        QueueSettingsSave();
+    }
 
     private async void OnCheckStoreUpdateButtonClicked(object sender, RoutedEventArgs routedEventArgs)
     {
@@ -463,6 +489,39 @@ public sealed partial class SettingsPage : Page
         };
         _themeService.RegisterFrameworkElement(storeUpdateAvailableDialog);
         return await storeUpdateAvailableDialog.ShowAsync();
+    }
+
+    private async Task<ContentDialogResult> ShowWindowsOnlyModifierWarningDialogAsync()
+    {
+        var windowsOnlyModifierWarningDialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = LocalizedResourceAccessor.GetString("Settings.WindowsOnlyModifierWarning.Dialog.Title"),
+            Content = LocalizedResourceAccessor.GetString("Settings.WindowsOnlyModifierWarning.Dialog.Content"),
+            PrimaryButtonText = LocalizedResourceAccessor.GetString("Settings.WindowsOnlyModifierWarning.Dialog.PrimaryButtonText"),
+            SecondaryButtonText = LocalizedResourceAccessor.GetString("Settings.WindowsOnlyModifierWarning.Dialog.SecondaryButtonText"),
+            DefaultButton = ContentDialogButton.Primary
+        };
+        _themeService.RegisterFrameworkElement(windowsOnlyModifierWarningDialog);
+        return await windowsOnlyModifierWarningDialog.ShowAsync();
+    }
+
+    private async Task ShowWindowsOnlyModifierWarningIfNeededAsync(object sender)
+    {
+        if (_isSynchronizingViewModel || !_isInitialSettingsLoadCompleted || ViewModel.IsWindowsOnlyModifierWarningSuppressed)
+            return;
+
+        if (sender is not FrameworkElement { Tag: string modifierSelectionTag })
+            return;
+
+        var modifierKeySelectionViewModel = GetModifierSelectionViewModel(ViewModel, modifierSelectionTag);
+        if (modifierKeySelectionViewModel is null || !IsWindowsOnlyModifierSelection(modifierKeySelectionViewModel))
+            return;
+
+        if (await ShowWindowsOnlyModifierWarningDialogAsync() != ContentDialogResult.Secondary)
+            return;
+
+        ViewModel.IsWindowsOnlyModifierWarningSuppressed = true;
     }
 
     private async Task ShowForegroundProcessSelectionDialogAsync()

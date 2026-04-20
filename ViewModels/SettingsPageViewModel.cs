@@ -159,6 +159,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsStoreUpdateCheckEnabled { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsWindowsOnlyModifierWarningSuppressed { get; set; }
+
     public KeyboardShortcutEditorViewModel MoveFocusedWindowToNextDesktopHotkeyEditor { get; }
 
     [ObservableProperty]
@@ -312,6 +315,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         BlacklistedProcessNames = [.. BlacklistedProcessNames],
         IsLaunchOnStartupEnabled = IsLaunchOnStartupEnabled,
         IsStoreUpdateCheckEnabled = IsStoreUpdateCheckEnabled,
+        IsWindowsOnlyModifierWarningSuppressed = IsWindowsOnlyModifierWarningSuppressed,
         AppLanguagePreference = SelectedAppLanguagePreferenceOption?.Value ?? AppLanguagePreference.System,
         ApplicationThemePreference = SelectedApplicationThemePreferenceOption?.Value ?? ApplicationThemePreference.System
     };
@@ -321,6 +325,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsDeskBorderEnabled = deskBorderSettings.IsDeskBorderEnabled;
         IsLaunchOnStartupEnabled = deskBorderSettings.IsLaunchOnStartupEnabled;
         IsStoreUpdateCheckEnabled = deskBorderSettings.IsStoreUpdateCheckEnabled;
+        IsWindowsOnlyModifierWarningSuppressed = deskBorderSettings.IsWindowsOnlyModifierWarningSuppressed;
         IsDesktopCreationEnabled = deskBorderSettings.IsDesktopCreationEnabled;
         IsAutoDeleteEnabled = deskBorderSettings.IsAutoDeleteEnabled;
         IsAutoDeleteWarningEnabled = deskBorderSettings.IsAutoDeleteWarningEnabled;

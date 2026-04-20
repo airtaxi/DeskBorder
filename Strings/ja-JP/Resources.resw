@@ -998,4 +998,16 @@
   <data name="Dashboard.StorePatchNotes.Dialog.CloseButtonText" xml:space="preserve">
     <value>閉じる</value>
   </data>
+  <data name="Settings.WindowsOnlyModifierWarning.Dialog.Content" xml:space="preserve">
+    <value>Windows キーだけを設定すると、スタート メニューも開くことがあります。Ctrl、Shift、Alt のいずれかを一緒に設定することをおすすめします。</value>
+  </data>
+  <data name="Settings.WindowsOnlyModifierWarning.Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>確認</value>
+  </data>
+  <data name="Settings.WindowsOnlyModifierWarning.Dialog.SecondaryButtonText" xml:space="preserve">
+    <value>今後は表示しない</value>
+  </data>
+  <data name="Settings.WindowsOnlyModifierWarning.Dialog.Title" xml:space="preserve">
+    <value>Windows 単独修飾キーの注意</value>
+  </data>
 </root>

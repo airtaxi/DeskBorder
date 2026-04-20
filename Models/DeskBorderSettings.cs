@@ -140,6 +140,8 @@ public sealed record DeskBorderSettings
 
     public bool IsStoreUpdateCheckEnabled { get; init; } = true;
 
+    public bool IsWindowsOnlyModifierWarningSuppressed { get; init; }
+
     public AppLanguagePreference AppLanguagePreference { get; init; } = AppLanguagePreference.System;
 
     public ApplicationThemePreference ApplicationThemePreference { get; init; } = ApplicationThemePreference.System;

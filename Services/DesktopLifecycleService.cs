@@ -170,6 +170,21 @@ public sealed class DesktopLifecycleService(
         await _toastService.DismissAsync();
     }
 
+    private void ConsumeKeyboardModifiersAfterDesktopAction(DesktopNavigationResult desktopNavigationResult, KeyboardModifierKeys keyboardModifierKeys)
+    {
+        if (!desktopNavigationResult.IsSuccessful
+            || desktopNavigationResult.NavigationActionKind is not (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched)
+            || keyboardModifierKeys == KeyboardModifierKeys.None)
+            return;
+
+        try
+        {
+            MouseHelper.ConsumePressedKeyboardModifierKeys(keyboardModifierKeys);
+            _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Consumed modifier keys after desktop action. ModifierKeys={keyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.");
+        }
+        catch (InvalidOperationException exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to consume modifier keys after desktop action. ModifierKeys={keyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.", exception); }
+    }
+
     private DesktopNavigationResult HandleEdgeActivation(DesktopEdgeMonitoringState currentState)
     {
         if (!currentState.IsDesktopEdgeAvailable || currentState.ActiveDesktopEdge == DesktopEdgeKind.None)
@@ -187,13 +202,22 @@ public sealed class DesktopLifecycleService(
         {
             var switchResult = _virtualDesktopService.SwitchDesktop(desktopSwitchDirection);
             if (switchResult.OperationStatus != VirtualDesktopOperationStatus.NoAdjacentDesktop || !canCreateDesktop)
+            {
+                ConsumeKeyboardModifiersAfterDesktopAction(switchResult, currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
                 return switchResult;
+            }
 
-            return _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
+            var createDesktopAndSwitchResult = _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
+            ConsumeKeyboardModifiersAfterDesktopAction(createDesktopAndSwitchResult, currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
+            return createDesktopAndSwitchResult;
         }
 
         if (canCreateDesktop)
-            return _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
+        {
+            var createDesktopAndSwitchResult = _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
+            ConsumeKeyboardModifiersAfterDesktopAction(createDesktopAndSwitchResult, currentSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys);
+            return createDesktopAndSwitchResult;
+        }
 
         return CreateNoOperationNavigationResult(currentWorkspaceSnapshot);
     }

@@ -137,6 +137,63 @@ public static class MouseHelper
         };
     }
 
+    private static nint s_windowsKeyHookHandle;
+    private static Win32.LowLevelKeyboardHookProcedure? s_windowsKeyHookCallback;
+
+    public static void ConsumePressedKeyboardModifierKeys(KeyboardModifierKeys keyboardModifierKeys)
+    {
+        if (keyboardModifierKeys == KeyboardModifierKeys.None) return;
+
+        var keyboardInputs = new List<Win32.NativeInput>();
+
+        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows)
+            && (IsVirtualKeyPressed(LeftWindowsVirtualKey) || IsVirtualKeyPressed(RightWindowsVirtualKey)))
+        {
+            InstallWindowsKeyUpConsumeHook();
+            keyboardModifierKeys &= ~KeyboardModifierKeys.Windows;
+        }
+
+        AddKeyboardModifierKeyUpInputs(keyboardInputs, keyboardModifierKeys);
+        if (keyboardInputs.Count == 0) return;
+
+        var sentInputCount = Win32.SendInput((uint)keyboardInputs.Count, [.. keyboardInputs], Marshal.SizeOf<Win32.NativeInput>());
+        if (sentInputCount != keyboardInputs.Count) throw new InvalidOperationException("Unable to consume the pressed keyboard modifier input.");
+    }
+
+    private static void InstallWindowsKeyUpConsumeHook()
+    {
+        if (s_windowsKeyHookHandle != 0) return;
+        s_windowsKeyHookCallback = OnWindowsKeyLowLevelHook;
+        s_windowsKeyHookHandle = Win32.SetWindowsHookEx(Win32.LowLevelKeyboardHookId, s_windowsKeyHookCallback, 0, 0);
+    }
+
+    private static nint OnWindowsKeyLowLevelHook(int code, nuint wParam, nint lParam)
+    {
+        if (code >= 0 && (wParam == Win32.KeyUpWindowMessage || wParam == Win32.SystemKeyUpWindowMessage))
+        {
+            var hookData = Marshal.PtrToStructure<Win32.NativeLowLevelKeyboardHookData>(lParam);
+            var isPhysical = (hookData.Flags & Win32.LowLevelKeyboardHookInjectedFlag) == 0;
+            var isWindowsKey = hookData.VirtualKey == (uint)LeftWindowsVirtualKey || hookData.VirtualKey == (uint)RightWindowsVirtualKey;
+
+            if (isPhysical && isWindowsKey)
+            {
+                var hookHandle = s_windowsKeyHookHandle;
+                s_windowsKeyHookHandle = 0;
+                s_windowsKeyHookCallback = null;
+                Win32.UnhookWindowsHookEx(hookHandle);
+
+                // Send synthetic (injected) key-up to keep OS key state in sync.
+                // Explorer ignores injected events for Start menu activation.
+                var syntheticKeyUp = CreateKeyboardInput((ushort)hookData.VirtualKey, Win32.KeyboardEventKeyUpFlag | GetKeyboardEventFlags((int)hookData.VirtualKey));
+                Win32.SendInput(1, [syntheticKeyUp], Marshal.SizeOf<Win32.NativeInput>());
+
+                return 1;
+            }
+        }
+
+        return Win32.CallNextHookEx(0, code, wParam, lParam);
+    }
+
     public static string? TryGetForegroundProcessName()
     {
         var foregroundWindowHandle = Win32.GetForegroundWindow();
@@ -172,6 +229,58 @@ public static class MouseHelper
     }
 
     private static ScreenRectangle CreateScreenRectangle(Win32.NativeRectangle nativeRectangle) => new(nativeRectangle.Left, nativeRectangle.Top, nativeRectangle.Right, nativeRectangle.Bottom);
+
+    private static void AddKeyboardInputIfPressed(List<Win32.NativeInput> keyboardInputs, int virtualKey)
+    {
+        if (IsVirtualKeyPressed(virtualKey))
+            keyboardInputs.Add(CreateKeyboardInput((ushort)virtualKey, Win32.KeyboardEventKeyUpFlag | GetKeyboardEventFlags(virtualKey)));
+    }
+
+    private static void AddKeyboardModifierKeyUpInputs(List<Win32.NativeInput> keyboardInputs, KeyboardModifierKeys keyboardModifierKeys)
+    {
+        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Shift))
+        {
+            AddKeyboardInputIfPressed(keyboardInputs, LeftShiftVirtualKey);
+            AddKeyboardInputIfPressed(keyboardInputs, RightShiftVirtualKey);
+        }
+
+        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Control))
+        {
+            AddKeyboardInputIfPressed(keyboardInputs, LeftControlVirtualKey);
+            AddKeyboardInputIfPressed(keyboardInputs, RightControlVirtualKey);
+        }
+
+        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Alternate))
+        {
+            AddKeyboardInputIfPressed(keyboardInputs, LeftAlternateVirtualKey);
+            AddKeyboardInputIfPressed(keyboardInputs, RightAlternateVirtualKey);
+        }
+
+        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows))
+        {
+            AddKeyboardInputIfPressed(keyboardInputs, LeftWindowsVirtualKey);
+            AddKeyboardInputIfPressed(keyboardInputs, RightWindowsVirtualKey);
+        }
+    }
+
+    private static Win32.NativeInput CreateKeyboardInput(ushort virtualKey, uint flags = 0) => new()
+    {
+        Type = Win32.InputKeyboard,
+        Data = new Win32.NativeInputUnion
+        {
+            KeyboardInput = new Win32.NativeKeyboardInput
+            {
+                VirtualKey = virtualKey,
+                Flags = flags
+            }
+        }
+    };
+
+    private static uint GetKeyboardEventFlags(int virtualKey) => virtualKey switch
+    {
+        RightControlVirtualKey or RightAlternateVirtualKey or LeftWindowsVirtualKey or RightWindowsVirtualKey => Win32.KeyboardEventExtendedKeyFlag,
+        _ => 0
+    };
 
     private static int GetIntersectionArea(ScreenRectangle firstRectangle, ScreenRectangle secondRectangle)
     {

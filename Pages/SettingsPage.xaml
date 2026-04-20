@@ -319,21 +319,25 @@
                                         x:Uid="SettingsPage_SwitchDesktopControlCheckBox"
                                         Click="OnModifierSelectionCheckBoxClicked"
                                         Content="Ctrl"
+                                        Tag="SwitchDesktopModifierSelection"
                                         IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsControlEnabled, Mode=TwoWay}" />
                                     <CheckBox
                                         x:Uid="SettingsPage_SwitchDesktopShiftCheckBox"
                                         Click="OnModifierSelectionCheckBoxClicked"
                                         Content="Shift"
+                                        Tag="SwitchDesktopModifierSelection"
                                         IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsShiftEnabled, Mode=TwoWay}" />
                                     <CheckBox
                                         x:Uid="SettingsPage_SwitchDesktopAltCheckBox"
                                         Click="OnModifierSelectionCheckBoxClicked"
                                         Content="Alt"
+                                        Tag="SwitchDesktopModifierSelection"
                                         IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsAlternateEnabled, Mode=TwoWay}" />
                                     <CheckBox
                                         x:Uid="SettingsPage_SwitchDesktopWindowsCheckBox"
                                         Click="OnModifierSelectionCheckBoxClicked"
                                         Content="Windows"
+                                        Tag="SwitchDesktopModifierSelection"
                                         IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsWindowsEnabled, Mode=TwoWay}" />
                                 </StackPanel>
                             </Border>
@@ -361,21 +365,25 @@
                                                 x:Uid="SettingsPage_CreateDesktopControlCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Ctrl"
+                                                Tag="CreateDesktopModifierSelection"
                                                 IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsControlEnabled, Mode=TwoWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_CreateDesktopShiftCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Shift"
+                                                Tag="CreateDesktopModifierSelection"
                                                 IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsShiftEnabled, Mode=TwoWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_CreateDesktopAltCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Alt"
+                                                Tag="CreateDesktopModifierSelection"
                                                 IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsAlternateEnabled, Mode=TwoWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_CreateDesktopWindowsCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Windows"
+                                                Tag="CreateDesktopModifierSelection"
                                                 IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsWindowsEnabled, Mode=TwoWay}" />
                                         </StackPanel>
                                     </Frame>
@@ -501,24 +509,28 @@
                                                 x:Uid="SettingsPage_ToggleDeskBorderHotkeyControlCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Ctrl"
+                                                Tag="ToggleDeskBorderEnabledHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_ToggleDeskBorderHotkeyShiftCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Shift"
+                                                Tag="ToggleDeskBorderEnabledHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_ToggleDeskBorderHotkeyAltCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Alt"
+                                                Tag="ToggleDeskBorderEnabledHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_ToggleDeskBorderHotkeyWindowsCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Windows"
+                                                Tag="ToggleDeskBorderEnabledHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                         </StackPanel>
@@ -581,24 +593,28 @@
                                                 x:Uid="SettingsPage_MovePreviousHotkeyControlCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Ctrl"
+                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_MovePreviousHotkeyShiftCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Shift"
+                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_MovePreviousHotkeyAltCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Alt"
+                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_MovePreviousHotkeyWindowsCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Windows"
+                                                Tag="MoveFocusedWindowToPreviousDesktopHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                         </StackPanel>
@@ -661,24 +677,28 @@
                                                 x:Uid="SettingsPage_MoveNextHotkeyControlCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Ctrl"
+                                                Tag="MoveFocusedWindowToNextDesktopHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_MoveNextHotkeyShiftCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Shift"
+                                                Tag="MoveFocusedWindowToNextDesktopHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_MoveNextHotkeyAltCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Alt"
+                                                Tag="MoveFocusedWindowToNextDesktopHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_MoveNextHotkeyWindowsCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Windows"
+                                                Tag="MoveFocusedWindowToNextDesktopHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                         </StackPanel>
@@ -741,24 +761,28 @@
                                                 x:Uid="SettingsPage_NavigatorToggleHotkeyControlCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Ctrl"
+                                                Tag="NavigatorToggleHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_NavigatorToggleHotkeyShiftCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Shift"
+                                                Tag="NavigatorToggleHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_NavigatorToggleHotkeyAltCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Alt"
+                                                Tag="NavigatorToggleHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                             <CheckBox
                                                 x:Uid="SettingsPage_NavigatorToggleHotkeyWindowsCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="Windows"
+                                                Tag="NavigatorToggleHotkeyEditor"
                                                 IsChecked="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
                                                 IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}" />
                                         </StackPanel>

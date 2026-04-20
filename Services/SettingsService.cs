@@ -148,6 +148,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             BlacklistedProcessNames = NormalizeBlacklistedProcessNames(settings.BlacklistedProcessNames),
             IsLaunchOnStartupEnabled = settings.IsLaunchOnStartupEnabled,
             IsStoreUpdateCheckEnabled = settings.IsStoreUpdateCheckEnabled,
+            IsWindowsOnlyModifierWarningSuppressed = settings.IsWindowsOnlyModifierWarningSuppressed,
             AppLanguagePreference = settings.AppLanguagePreference,
             ApplicationThemePreference = settings.ApplicationThemePreference
         };

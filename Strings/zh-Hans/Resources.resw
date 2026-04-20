@@ -998,4 +998,16 @@
   <data name="Dashboard.StorePatchNotes.Dialog.CloseButtonText" xml:space="preserve">
     <value>关闭</value>
   </data>
+  <data name="Settings.WindowsOnlyModifierWarning.Dialog.Content" xml:space="preserve">
+    <value>如果只设置 Windows 键，开始菜单也可能会一起弹出。建议同时设置 Ctrl、Shift 或 Alt 中的一个。</value>
+  </data>
+  <data name="Settings.WindowsOnlyModifierWarning.Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="Settings.WindowsOnlyModifierWarning.Dialog.SecondaryButtonText" xml:space="preserve">
+    <value>不再显示</value>
+  </data>
+  <data name="Settings.WindowsOnlyModifierWarning.Dialog.Title" xml:space="preserve">
+    <value>仅使用 Windows 修饰键提醒</value>
+  </data>
 </root>
