@@ -130,6 +130,10 @@ public sealed partial class SettingsPage : Page
         _ => "Settings.HotkeyValidation.Disabled"
     });
 
+    private Visibility GetAutoDeleteCompletionToastVisibility(bool isAutoDeleteEnabled, bool isAutoDeleteWarningEnabled) => isAutoDeleteEnabled && !isAutoDeleteWarningEnabled
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
     private Visibility GetAutoDeleteWarningTimeoutVisibility(bool isAutoDeleteEnabled, bool isAutoDeleteWarningEnabled) => isAutoDeleteEnabled && isAutoDeleteWarningEnabled
         ? Visibility.Visible
         : Visibility.Collapsed;

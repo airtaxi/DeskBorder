@@ -579,9 +579,6 @@
   <data name="SettingsPage_AutoDeleteCompletionToastToggleSwitch.Header" xml:space="preserve">
     <value>显示自动删除完成通知</value>
   </data>
-  <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
-    <value>仅在关闭删除警告时可用。空桌面被立即删除后，会显示完成通知。</value>
-  </data>
   <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistanceToggleSwitch.Header" xml:space="preserve">
     <value>使用边缘额外移动距离</value>
   </data>

@@ -164,14 +164,12 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial double BottomDesktopEdgeIgnorePercentage { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsAutoDeleteCompletionToastToggleEnabled))]
     public partial bool IsAutoDeleteEnabled { get; set; }
 
     [ObservableProperty]
     public partial double AutoDeleteWarningTimeoutSeconds { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsAutoDeleteCompletionToastToggleEnabled))]
     public partial bool IsAutoDeleteWarningEnabled { get; set; }
 
     [ObservableProperty]
@@ -347,8 +345,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         ToggleDeskBorderEnabledHotkeyRegistrationFailureMessage);
 
     public string NavigatorTriggerAreaSummary => SettingsDisplayFormatter.FormatTriggerRectangle(CreateNavigatorTriggerRectangleSettings());
-
-    public bool IsAutoDeleteCompletionToastToggleEnabled => IsAutoDeleteEnabled && !IsAutoDeleteWarningEnabled;
 
     public bool AddBlacklistedProcessNames(IEnumerable<string> processNames)
     {
