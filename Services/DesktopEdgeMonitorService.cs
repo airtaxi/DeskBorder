@@ -425,6 +425,9 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         if (previousState.DesktopEdgeAvailabilityStatus == currentState.DesktopEdgeAvailabilityStatus)
             return;
 
+        if (ShouldSuppressAvailabilityStatusChangeInformationLogging(previousState.DesktopEdgeAvailabilityStatus, currentState.DesktopEdgeAvailabilityStatus))
+            return;
+
         if (currentState.DesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByBlacklistedProcess
             && !string.IsNullOrWhiteSpace(currentState.ForegroundProcessSnapshot.ExecutablePath))
         {
@@ -442,6 +445,11 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             nameof(DesktopEdgeMonitorService),
             $"Desktop edge monitoring availability changed from {previousState.DesktopEdgeAvailabilityStatus} to {currentState.DesktopEdgeAvailabilityStatus}.");
     }
+
+    private static bool ShouldSuppressAvailabilityStatusChangeInformationLogging(
+        DesktopEdgeAvailabilityStatus previousDesktopEdgeAvailabilityStatus,
+        DesktopEdgeAvailabilityStatus currentDesktopEdgeAvailabilityStatus) => previousDesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton
+            || currentDesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton;
 
     private bool IsForegroundProcessBlacklisted(
         IReadOnlyList<string> blacklistedProcessNames,
