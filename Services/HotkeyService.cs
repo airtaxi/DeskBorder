@@ -17,6 +17,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     private const int ToggleNavigatorHotkeyIdentifier = 6;
     private const uint RefreshRegisteredHotkeysMessage = Win32.WindowApplicationMessage + 1;
     private const uint ShutdownMessage = Win32.WindowApplicationMessage + 2;
+    private const uint InvokeMouseHotkeyActionMessage = Win32.WindowApplicationMessage + 3;
 
     private readonly IFileLogService _fileLogService = fileLogService;
     private readonly ISettingsService _settingsService = settingsService;
@@ -271,7 +272,8 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
             && TryGetKeyboardShortcutTriggerTypeFromMouseMessage(wParam, lParam, out var keyboardShortcutTriggerType)
             && TryGetRegisteredMouseHotkey(MouseHelper.GetModifierKeySnapshot().PressedKeyboardModifierKeys, keyboardShortcutTriggerType, out var registeredMouseHotkey))
         {
-            HandleHotkeyAction(registeredMouseHotkey.HotkeyActionType);
+            if (!TryPostHotkeyActionMessage(registeredMouseHotkey.HotkeyActionType))
+                _fileLogService.WriteWarning(nameof(HotkeyService), $"Failed to queue mouse hotkey action. Action={registeredMouseHotkey.HotkeyActionType}.");
         }
 
         return Win32.CallNextHookEx(_mouseHookHandle, code, wParam, lParam);
@@ -340,6 +342,15 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
             {
                 if (TryGetRegisteredKeyboardHotkey((int)nativeMessage.WParam, out var registeredKeyboardHotkey))
                     HandleHotkeyAction(registeredKeyboardHotkey.HotkeyActionType);
+
+                continue;
+            }
+
+            if (nativeMessage.Message == InvokeMouseHotkeyActionMessage)
+            {
+                var hotkeyActionTypeValue = (int)nativeMessage.WParam;
+                if (Enum.IsDefined(typeof(HotkeyActionType), hotkeyActionTypeValue))
+                    HandleHotkeyAction((HotkeyActionType)hotkeyActionTypeValue);
 
                 continue;
             }
@@ -433,6 +444,8 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     }
 
     private bool TryPostControlMessage(uint message) => _messageLoopThreadIdentifier != 0 && Win32.PostThreadMessage(_messageLoopThreadIdentifier, message, 0, 0);
+
+    private bool TryPostHotkeyActionMessage(HotkeyActionType hotkeyActionType) => _messageLoopThreadIdentifier != 0 && Win32.PostThreadMessage(_messageLoopThreadIdentifier, InvokeMouseHotkeyActionMessage, (nuint)hotkeyActionType, 0);
 
     private void TryRefreshRegisteredHotkeysCore()
     {

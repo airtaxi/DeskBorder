@@ -385,7 +385,11 @@ public sealed class DesktopLifecycleService(
         finally { _operationSemaphore.Release(); }
     }
 
-    private void OnHotkeyServiceHotkeyInvoked(object? sender, HotkeyInvokedEventArgs hotkeyInvokedEventArgs) => _ = HandleHotkeyServiceHotkeyInvokedAsync(hotkeyInvokedEventArgs);
+    private async void OnHotkeyServiceHotkeyInvoked(object? sender, HotkeyInvokedEventArgs hotkeyInvokedEventArgs)
+    {
+        try { await HandleHotkeyServiceHotkeyInvokedAsync(hotkeyInvokedEventArgs); }
+        catch (Exception exception) { _fileLogService.WriteError(nameof(DesktopLifecycleService), $"Handling hotkey action failed. Action={hotkeyInvokedEventArgs.HotkeyActionType}.", exception); }
+    }
 
     private async Task HandleHotkeyServiceHotkeyInvokedAsync(HotkeyInvokedEventArgs hotkeyInvokedEventArgs)
     {
