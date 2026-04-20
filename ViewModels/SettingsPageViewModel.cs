@@ -130,6 +130,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public ObservableCollection<string> BlacklistedProcessNames { get; } = [];
 
+    public ObservableCollection<string> WhitelistedProcessNames { get; } = [];
+
     public ModifierKeySelectionViewModel CreateDesktopModifierSelection { get; } = new();
 
     [ObservableProperty]
@@ -259,10 +261,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public bool AddBlacklistedProcessNames(IEnumerable<string> processNames)
     {
         var blacklistedProcessNameSet = BlacklistedProcessNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var normalizedProcessNames = processNames
-            .Where(processName => !string.IsNullOrWhiteSpace(processName))
-            .Select(processName => processName.Trim())
-            .Distinct(StringComparer.OrdinalIgnoreCase)
+        var normalizedProcessNames = NormalizeProcessNames(processNames)
             .Where(blacklistedProcessNameSet.Add)
             .ToArray();
         if (normalizedProcessNames.Length == 0)
@@ -272,6 +271,26 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             BlacklistedProcessNames.Add(normalizedProcessName);
 
         SortBlacklistedProcessNames();
+        return true;
+    }
+
+    public bool AddWhitelistedProcessNames(IEnumerable<string> processNames)
+    {
+        var whitelistedProcessNameSet = WhitelistedProcessNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var normalizedProcessNames = NormalizeProcessNames(processNames)
+            .Where(whitelistedProcessNameSet.Add)
+            .ToArray();
+        if (normalizedProcessNames.Length == 0)
+            return false;
+
+        foreach (var normalizedProcessName in normalizedProcessNames)
+        {
+            _ = BlacklistedProcessNames.Remove(normalizedProcessName);
+            WhitelistedProcessNames.Add(normalizedProcessName);
+        }
+
+        SortBlacklistedProcessNames();
+        SortWhitelistedProcessNames();
         return true;
     }
 
@@ -313,6 +332,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             TriggerRectangle = CreateNavigatorTriggerRectangleSettings()
         },
         BlacklistedProcessNames = [.. BlacklistedProcessNames],
+        WhitelistedProcessNames = [.. WhitelistedProcessNames],
         IsLaunchOnStartupEnabled = IsLaunchOnStartupEnabled,
         IsStoreUpdateCheckEnabled = IsStoreUpdateCheckEnabled,
         IsWindowsOnlyModifierWarningSuppressed = IsWindowsOnlyModifierWarningSuppressed,
@@ -354,11 +374,18 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         foreach (var blacklistedProcessName in deskBorderSettings.BlacklistedProcessNames)
             BlacklistedProcessNames.Add(blacklistedProcessName);
 
+        WhitelistedProcessNames.Clear();
+        foreach (var whitelistedProcessName in deskBorderSettings.WhitelistedProcessNames)
+            WhitelistedProcessNames.Add(whitelistedProcessName);
+
         SortBlacklistedProcessNames();
+        SortWhitelistedProcessNames();
         NotifyKeyboardShortcutValidationStatesChanged();
     }
 
     public bool RemoveBlacklistedProcessName(string processName) => BlacklistedProcessNames.Remove(processName);
+
+    public bool RemoveWhitelistedProcessName(string processName) => WhitelistedProcessNames.Remove(processName);
 
     public void SetNavigatorTriggerRectangle(TriggerRectangleSettings triggerRectangleSettings)
     {
@@ -470,6 +497,11 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         keyboardShortcutEditor.RequiredKeyboardModifierSelection.PropertyChanged += OnKeyboardShortcutEditorPropertyChanged;
     }
 
+    private static IEnumerable<string> NormalizeProcessNames(IEnumerable<string> processNames) => processNames
+        .Where(processName => !string.IsNullOrWhiteSpace(processName))
+        .Select(processName => processName.Trim())
+        .Distinct(StringComparer.OrdinalIgnoreCase);
+
     private void SortBlacklistedProcessNames()
     {
         var sortedBlacklistedProcessNames = BlacklistedProcessNames
@@ -478,5 +510,15 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         BlacklistedProcessNames.Clear();
         foreach (var blacklistedProcessName in sortedBlacklistedProcessNames)
             BlacklistedProcessNames.Add(blacklistedProcessName);
+    }
+
+    private void SortWhitelistedProcessNames()
+    {
+        var sortedWhitelistedProcessNames = WhitelistedProcessNames
+            .Order(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        WhitelistedProcessNames.Clear();
+        foreach (var whitelistedProcessName in sortedWhitelistedProcessNames)
+            WhitelistedProcessNames.Add(whitelistedProcessName);
     }
 }

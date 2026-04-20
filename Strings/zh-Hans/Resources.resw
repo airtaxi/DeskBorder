@@ -399,6 +399,18 @@
   <data name="Settings.Blacklist.NoAvailableForegroundProcessesTitle" xml:space="preserve">
     <value>没有可添加的进程</value>
   </data>
+  <data name="Settings.Whitelist.NoAvailableProcessesMessage" xml:space="preserve">
+    <value>没有可添加到白名单的正在运行进程或黑名单进程。</value>
+  </data>
+  <data name="Settings.Whitelist.NoAvailableProcessesTitle" xml:space="preserve">
+    <value>没有可添加的进程</value>
+  </data>
+  <data name="Settings.Whitelist.Dialog.Title" xml:space="preserve">
+    <value>从正在运行的进程和黑名单中添加</value>
+  </data>
+  <data name="Settings.Whitelist.Dialog.Description" xml:space="preserve">
+    <value>请选择当前正在运行的进程和黑名单进程中尚未加入白名单的项目。</value>
+  </data>
   <data name="Settings.Export.CancelledMessage" xml:space="preserve">
     <value>已取消设置导出。</value>
   </data>
@@ -506,6 +518,9 @@
   </data>
   <data name="SettingsPage_BlacklistSectionTitleTextBlock.Text" xml:space="preserve">
     <value>黑名单</value>
+  </data>
+  <data name="SettingsPage_AddWhitelistedProcessNameButton.Content" xml:space="preserve">
+    <value>从正在运行的进程和黑名单中添加</value>
   </data>
   <data name="SettingsPage_CreateDesktopAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -806,6 +821,9 @@
   <data name="SettingsPage_RemoveBlacklistedProcessNameButtonToolTip.Content" xml:space="preserve">
     <value>移除</value>
   </data>
+  <data name="SettingsPage_RemoveWhitelistedProcessNameButtonToolTip.Content" xml:space="preserve">
+    <value>移除</value>
+  </data>
   <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
     <value>自动检查 Store 更新</value>
   </data>
@@ -816,6 +834,12 @@
     <value>• 从运行中的进程添加：只显示当前正在运行且尚未注册的进程供选择。
 • 已列出的进程会从边缘切换、桌面创建和自动删除处理中排除。
 • 可将不希望 DeskBorder 干预的游戏或全屏应用保存在这里。</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>白名单</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>管理始终允许的进程名称，以防止被识别为游戏的程序自动加入后发生误判。</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>边缘与自动整理说明</value>

@@ -112,6 +112,13 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         .Order(StringComparer.OrdinalIgnoreCase)
         .ToArray();
 
+    private static string[] NormalizeWhitelistedProcessNames(string[]? whitelistedProcessNames) => (whitelistedProcessNames ?? [])
+        .Where(processName => !string.IsNullOrWhiteSpace(processName))
+        .Select(processName => processName.Trim())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .Order(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+
     private static TriggerRectangleSettings NormalizeTriggerRectangleSettings(TriggerRectangleSettings? triggerRectangleSettings)
     {
         var actualTriggerRectangleSettings = triggerRectangleSettings ?? new();
@@ -130,6 +137,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     private static DeskBorderSettings NormalizeSettings(DeskBorderSettings settings)
     {
+        var normalizedWhitelistedProcessNames = NormalizeWhitelistedProcessNames(settings.WhitelistedProcessNames);
         var normalizedSettings = new DeskBorderSettings
         {
             SchemaVersion = CurrentSchemaVersion,
@@ -145,7 +153,10 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             ApplicationHotkeySettings = NormalizeApplicationHotkeySettings(settings.ApplicationHotkeySettings),
             FocusedWindowMoveHotkeySettings = NormalizeFocusedWindowMoveHotkeySettings(settings.FocusedWindowMoveHotkeySettings),
             NavigatorSettings = NormalizeNavigatorSettings(settings.NavigatorSettings),
-            BlacklistedProcessNames = NormalizeBlacklistedProcessNames(settings.BlacklistedProcessNames),
+            BlacklistedProcessNames = NormalizeBlacklistedProcessNames(settings.BlacklistedProcessNames)
+                .Except(normalizedWhitelistedProcessNames, StringComparer.OrdinalIgnoreCase)
+                .ToArray(),
+            WhitelistedProcessNames = normalizedWhitelistedProcessNames,
             IsLaunchOnStartupEnabled = settings.IsLaunchOnStartupEnabled,
             IsStoreUpdateCheckEnabled = settings.IsStoreUpdateCheckEnabled,
             IsWindowsOnlyModifierWarningSuppressed = settings.IsWindowsOnlyModifierWarningSuppressed,

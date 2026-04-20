@@ -154,10 +154,18 @@ public sealed partial class SettingsPage : Page
 
     private nint GetManageWindowHandle() => WindowNative.GetWindowHandle(_manageWindow);
 
-    private IReadOnlyList<string> GetAvailableForegroundProcessNames()
+    private IReadOnlyList<string> GetAvailableBlacklistedProcessNames()
     {
         var blacklistedProcessNameSet = ViewModel.BlacklistedProcessNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var availableForegroundProcessNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var whitelistedProcessNameSet = ViewModel.WhitelistedProcessNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        return [.. GetAvailableRunningProcessNames()
+            .Where(processName => !blacklistedProcessNameSet.Contains(processName) && !whitelistedProcessNameSet.Contains(processName))
+            .Order(StringComparer.OrdinalIgnoreCase)];
+    }
+
+    private IReadOnlyList<string> GetAvailableRunningProcessNames()
+    {
+        var availableProcessNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var runningProcess in Process.GetProcesses())
         {
             using (runningProcess)
@@ -166,14 +174,26 @@ public sealed partial class SettingsPage : Page
                     continue;
 
                 var processName = TryGetForegroundProcessName(runningProcess);
-                if (string.IsNullOrWhiteSpace(processName) || blacklistedProcessNameSet.Contains(processName))
+                if (string.IsNullOrWhiteSpace(processName))
                     continue;
 
-                _ = availableForegroundProcessNames.Add(processName);
+                _ = availableProcessNames.Add(processName);
             }
         }
 
-        return [.. availableForegroundProcessNames.Order(StringComparer.OrdinalIgnoreCase)];
+        return [.. availableProcessNames.Order(StringComparer.OrdinalIgnoreCase)];
+    }
+
+    private IReadOnlyList<string> GetAvailableWhitelistedProcessNames()
+    {
+        var whitelistedProcessNameSet = ViewModel.WhitelistedProcessNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var availableProcessNames = new HashSet<string>(GetAvailableRunningProcessNames(), StringComparer.OrdinalIgnoreCase);
+        foreach (var blacklistedProcessName in ViewModel.BlacklistedProcessNames)
+            _ = availableProcessNames.Add(blacklistedProcessName);
+
+        return [.. availableProcessNames
+            .Where(processName => !whitelistedProcessNameSet.Contains(processName))
+            .Order(StringComparer.OrdinalIgnoreCase)];
     }
 
     private static string FormatCurrentApplicationVersion(PackageVersion packageVersion) => $"v{packageVersion.Major}.{packageVersion.Minor}.{packageVersion.Build}";
@@ -276,7 +296,14 @@ public sealed partial class SettingsPage : Page
     {
         _ = sender;
         _ = routedEventArgs;
-        await ShowForegroundProcessSelectionDialogAsync();
+        await ShowBlacklistedProcessSelectionDialogAsync();
+    }
+
+    private async void OnAddWhitelistedProcessNameButtonClicked(object sender, RoutedEventArgs routedEventArgs)
+    {
+        _ = sender;
+        _ = routedEventArgs;
+        await ShowWhitelistedProcessSelectionDialogAsync();
     }
 
     private async void OnExportSettingsButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ExportSettingsAsync();
@@ -332,6 +359,17 @@ public sealed partial class SettingsPage : Page
             return;
 
         if (!ViewModel.RemoveBlacklistedProcessName(blacklistedProcessName))
+            return;
+
+        await SaveSettingsAsync();
+    }
+
+    private async void OnRemoveWhitelistedProcessNameButtonClicked(object sender, RoutedEventArgs routedEventArgs)
+    {
+        if (sender is not Button { Tag: string whitelistedProcessName })
+            return;
+
+        if (!ViewModel.RemoveWhitelistedProcessName(whitelistedProcessName))
             return;
 
         await SaveSettingsAsync();
@@ -524,10 +562,10 @@ public sealed partial class SettingsPage : Page
         ViewModel.IsWindowsOnlyModifierWarningSuppressed = true;
     }
 
-    private async Task ShowForegroundProcessSelectionDialogAsync()
+    private async Task ShowBlacklistedProcessSelectionDialogAsync()
     {
-        var availableForegroundProcessNames = GetAvailableForegroundProcessNames();
-        if (availableForegroundProcessNames.Count == 0)
+        var availableBlacklistedProcessNames = GetAvailableBlacklistedProcessNames();
+        if (availableBlacklistedProcessNames.Count == 0)
         {
             ShowSettingsStatus(
                 LocalizedResourceAccessor.GetString("Settings.Blacklist.NoAvailableForegroundProcessesTitle"),
@@ -536,14 +574,52 @@ public sealed partial class SettingsPage : Page
             return;
         }
 
-        var foregroundProcessSelectionDialog = new ForegroundProcessSelectionDialog(availableForegroundProcessNames, _themeService)
-        {
-            XamlRoot = XamlRoot
-        };
-        if (await foregroundProcessSelectionDialog.ShowAsync() != ContentDialogResult.Primary)
+        var selectedProcessNames = await ShowProcessSelectionDialogAsync(
+            availableBlacklistedProcessNames,
+            "ForegroundProcessSelectionDialog.Title",
+            "ForegroundProcessSelectionDialog_DescriptionTextBlock.Text");
+        if (selectedProcessNames.Count == 0 || !ViewModel.AddBlacklistedProcessNames(selectedProcessNames))
             return;
 
-        if (!ViewModel.AddBlacklistedProcessNames(foregroundProcessSelectionDialog.SelectedProcessNames))
+        await SaveSettingsAsync();
+    }
+
+    private async Task<IReadOnlyList<string>> ShowProcessSelectionDialogAsync(
+        IReadOnlyList<string> availableProcessNames,
+        string titleResourceName,
+        string descriptionResourceName)
+    {
+        var foregroundProcessSelectionDialog = new ForegroundProcessSelectionDialog(
+            availableProcessNames,
+            LocalizedResourceAccessor.GetString(titleResourceName),
+            LocalizedResourceAccessor.GetString(descriptionResourceName),
+            LocalizedResourceAccessor.GetString("ForegroundProcessSelectionDialog.PrimaryButtonText"),
+            _themeService)
+        {
+            XamlRoot = XamlRoot,
+        };
+        return await foregroundProcessSelectionDialog.ShowAsync() == ContentDialogResult.Primary
+            ? foregroundProcessSelectionDialog.SelectedProcessNames
+            : [];
+    }
+
+    private async Task ShowWhitelistedProcessSelectionDialogAsync()
+    {
+        var availableWhitelistedProcessNames = GetAvailableWhitelistedProcessNames();
+        if (availableWhitelistedProcessNames.Count == 0)
+        {
+            ShowSettingsStatus(
+                LocalizedResourceAccessor.GetString("Settings.Whitelist.NoAvailableProcessesTitle"),
+                LocalizedResourceAccessor.GetString("Settings.Whitelist.NoAvailableProcessesMessage"),
+                InfoBarSeverity.Informational);
+            return;
+        }
+
+        var selectedProcessNames = await ShowProcessSelectionDialogAsync(
+            availableWhitelistedProcessNames,
+            "Settings.Whitelist.Dialog.Title",
+            "Settings.Whitelist.Dialog.Description");
+        if (selectedProcessNames.Count == 0 || !ViewModel.AddWhitelistedProcessNames(selectedProcessNames))
             return;
 
         await SaveSettingsAsync();

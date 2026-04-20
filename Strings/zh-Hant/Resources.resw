@@ -399,6 +399,18 @@
   <data name="Settings.Blacklist.NoAvailableForegroundProcessesTitle" xml:space="preserve">
     <value>沒有可加入的處理程序</value>
   </data>
+  <data name="Settings.Whitelist.NoAvailableProcessesMessage" xml:space="preserve">
+    <value>沒有可加入白名單的執行中處理程序或黑名單處理程序。</value>
+  </data>
+  <data name="Settings.Whitelist.NoAvailableProcessesTitle" xml:space="preserve">
+    <value>沒有可加入的處理程序</value>
+  </data>
+  <data name="Settings.Whitelist.Dialog.Title" xml:space="preserve">
+    <value>從執行中的處理程序與黑名單加入</value>
+  </data>
+  <data name="Settings.Whitelist.Dialog.Description" xml:space="preserve">
+    <value>請從目前執行中的處理程序與黑名單處理程序中，選擇尚未加入白名單的項目。</value>
+  </data>
   <data name="Settings.Export.CancelledMessage" xml:space="preserve">
     <value>已取消設定匯出。</value>
   </data>
@@ -506,6 +518,9 @@
   </data>
   <data name="SettingsPage_BlacklistSectionTitleTextBlock.Text" xml:space="preserve">
     <value>黑名單</value>
+  </data>
+  <data name="SettingsPage_AddWhitelistedProcessNameButton.Content" xml:space="preserve">
+    <value>從執行中的處理程序與黑名單加入</value>
   </data>
   <data name="SettingsPage_CreateDesktopAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -806,6 +821,9 @@
   <data name="SettingsPage_RemoveBlacklistedProcessNameButtonToolTip.Content" xml:space="preserve">
     <value>移除</value>
   </data>
+  <data name="SettingsPage_RemoveWhitelistedProcessNameButtonToolTip.Content" xml:space="preserve">
+    <value>移除</value>
+  </data>
   <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
     <value>自動檢查 Store 更新</value>
   </data>
@@ -816,6 +834,12 @@
     <value>• 從執行中的處理程序新增：只會顯示目前正在執行且尚未註冊的處理程序供你挑選。
 • 已列出的處理程序會從邊緣切換、桌面建立與自動刪除處理中排除。
 • 可將不希望 DeskBorder 干預的遊戲或全螢幕應用程式放在這裡。</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>白名單</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>管理永遠允許的處理程序名稱，以避免被辨識為遊戲的程式自動加入後造成誤判。</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>邊緣與自動整理說明</value>

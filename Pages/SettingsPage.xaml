@@ -978,6 +978,64 @@
                     <StackPanel Spacing="16">
                         <StackPanel Spacing="6">
                             <TextBlock
+                                x:Uid="SettingsPage_WhitelistSectionTitleTextBlock"
+                                FontWeight="SemiBold"
+                                Text="화이트리스트" />
+                            <TextBlock
+                                x:Uid="SettingsPage_WhitelistSectionDescriptionTextBlock"
+                                Text="게임으로 인식되는 프로그램이 자동 추가되어 오작동하는 경우를 방지하기 위해 항상 허용할 프로세스 이름을 관리합니다."
+                                TextWrapping="WrapWholeWords" />
+                        </StackPanel>
+
+                        <Button
+                            x:Uid="SettingsPage_AddWhitelistedProcessNameButton"
+                            HorizontalAlignment="Left"
+                            Click="OnAddWhitelistedProcessNameButtonClicked"
+                            Content="실행된 프로세스와 블랙리스트에서 추가" />
+
+                        <ListView
+                            x:Name="WhitelistedProcessNamesListView"
+                            ItemsSource="{x:Bind ViewModel.WhitelistedProcessNames, Mode=OneWay}"
+                            SelectionMode="None">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnSpacing="12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock VerticalAlignment="Center" Text="{Binding}" />
+                                        <Button
+                                            Grid.Column="1"
+                                            MinWidth="0"
+                                            Padding="8"
+                                            Background="Transparent"
+                                            BorderBrush="Transparent"
+                                            Click="OnRemoveWhitelistedProcessNameButtonClicked"
+                                            Tag="{Binding}">
+                                            <Button.Content>
+                                                <SymbolIcon Symbol="Delete" />
+                                            </Button.Content>
+                                            <ToolTipService.ToolTip>
+                                                <ToolTip x:Uid="SettingsPage_RemoveWhitelistedProcessNameButtonToolTip" Content="제거" />
+                                            </ToolTipService.ToolTip>
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="6">
+                            <TextBlock
                                 x:Uid="SettingsPage_DeveloperSectionTitleTextBlock"
                                 FontWeight="SemiBold"
                                 Text="개발자" />

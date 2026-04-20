@@ -9,10 +9,13 @@ public sealed partial class ForegroundProcessSelectionDialog : ContentDialog
 
     public IReadOnlyList<string> SelectedProcessNames => [.. AvailableProcessNamesListView.SelectedItems.Cast<string>()];
 
-    public ForegroundProcessSelectionDialog(IEnumerable<string> availableProcessNames, IThemeService themeService)
+    public ForegroundProcessSelectionDialog(IEnumerable<string> availableProcessNames, string title, string description, string primaryButtonText, IThemeService themeService)
     {
         AvailableProcessNames = [.. availableProcessNames];
         InitializeComponent();
+        Title = title;
+        DescriptionTextBlock.Text = description;
+        PrimaryButtonText = primaryButtonText;
         themeService.RegisterFrameworkElement(this);
         IsPrimaryButtonEnabled = false;
     }

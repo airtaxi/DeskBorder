@@ -1,6 +1,8 @@
 using DeskBorder.Interop;
 using DeskBorder.Models;
+using Microsoft.Win32;
 using System.ComponentModel;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -8,6 +10,7 @@ namespace DeskBorder.Helpers;
 
 public static class MouseHelper
 {
+    private const string GameBarRegistryPath = @"System\GameConfigStore\Children";
     private const int VirtualScreenLeftSystemMetricIndex = 76;
     private const int VirtualScreenTopSystemMetricIndex = 77;
     private const int VirtualScreenWidthSystemMetricIndex = 78;
@@ -23,6 +26,7 @@ public static class MouseHelper
     private const int MiddleMouseButtonVirtualKey = 0x04;
     private const int RightMouseButtonVirtualKey = 0x02;
     private const int RightWindowsVirtualKey = 0x5C;
+    private static readonly ConcurrentDictionary<string, bool> s_gameBarRecognizedGameCache = new(StringComparer.OrdinalIgnoreCase);
 
     public static bool AreRequiredKeyboardModifierKeysPressed(KeyboardModifierKeys requiredKeyboardModifierKeys, KeyboardModifierKeys pressedKeyboardModifierKeys) => (pressedKeyboardModifierKeys & requiredKeyboardModifierKeys) == requiredKeyboardModifierKeys;
 
@@ -147,6 +151,67 @@ public static class MouseHelper
         IsMiddleButtonPressed = IsVirtualKeyPressed(MiddleMouseButtonVirtualKey)
     };
 
+    public static ForegroundProcessSnapshot GetForegroundProcessSnapshot()
+    {
+        var foregroundWindowHandle = Win32.GetForegroundWindow();
+        if (foregroundWindowHandle == 0)
+            return new();
+
+        _ = Win32.GetWindowThreadProcessId(foregroundWindowHandle, out var processIdentifier);
+        if (processIdentifier == 0)
+            return new();
+
+        try
+        {
+            using var foregroundProcess = Process.GetProcessById((int)processIdentifier);
+            var processName = foregroundProcess.ProcessName.Trim();
+            string? executablePath;
+            try { executablePath = foregroundProcess.MainModule?.FileName?.Trim(); }
+            catch (InvalidOperationException) { executablePath = null; }
+            catch (NotSupportedException) { executablePath = null; }
+            catch (Win32Exception) { executablePath = null; }
+            return new()
+            {
+                ProcessName = string.IsNullOrWhiteSpace(processName) ? null : processName,
+                ExecutablePath = string.IsNullOrWhiteSpace(executablePath) ? null : executablePath
+            };
+        }
+        catch (ArgumentException) { return new(); }
+        catch (InvalidOperationException) { return new(); }
+        catch (NotSupportedException) { return new(); }
+        catch (Win32Exception) { return new(); }
+    }
+
+    public static bool IsGameBarRecognizedGame(string targetExecutablePath)
+    {
+        if (string.IsNullOrWhiteSpace(targetExecutablePath))
+            return false;
+
+        return s_gameBarRecognizedGameCache.GetOrAdd(targetExecutablePath, static executablePath =>
+        {
+            using var gameConfigStoreKey = Registry.CurrentUser.OpenSubKey(GameBarRegistryPath);
+            if (gameConfigStoreKey is null)
+                return false;
+
+            foreach (var subKeyName in gameConfigStoreKey.GetSubKeyNames())
+            {
+                using var childKey = gameConfigStoreKey.OpenSubKey(subKeyName);
+                if (childKey is null)
+                    continue;
+
+                var matchedExecutablePath = childKey.GetValue("MatchedExeFullPath") as string;
+                if (!string.Equals(matchedExecutablePath, executablePath, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var flagsValue = childKey.GetValue("Flags");
+                if (flagsValue is int flags)
+                    return flags > 0;
+            }
+
+            return false;
+        });
+    }
+
     private static nint s_windowsKeyHookHandle;
     private static Win32.LowLevelKeyboardHookProcedure? s_windowsKeyHookCallback;
 
@@ -206,24 +271,8 @@ public static class MouseHelper
 
     public static string? TryGetForegroundProcessName()
     {
-        var foregroundWindowHandle = Win32.GetForegroundWindow();
-        if (foregroundWindowHandle == 0)
-            return null;
-
-        _ = Win32.GetWindowThreadProcessId(foregroundWindowHandle, out var processIdentifier);
-        if (processIdentifier == 0)
-            return null;
-
-        try
-        {
-            using var foregroundProcess = Process.GetProcessById((int)processIdentifier);
-            var processName = foregroundProcess.ProcessName.Trim();
-            return string.IsNullOrWhiteSpace(processName) ? null : processName;
-        }
-        catch (ArgumentException) { return null; }
-        catch (InvalidOperationException) { return null; }
-        catch (NotSupportedException) { return null; }
-        catch (Win32Exception) { return null; }
+        var foregroundProcessSnapshot = GetForegroundProcessSnapshot();
+        return foregroundProcessSnapshot.ProcessName;
     }
 
     public static ScreenRectangle GetVirtualScreenBounds()

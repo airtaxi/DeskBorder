@@ -66,6 +66,13 @@ public sealed record MouseButtonSnapshot
     public bool IsAnyButtonPressed => IsLeftButtonPressed || IsRightButtonPressed || IsMiddleButtonPressed;
 }
 
+public sealed record ForegroundProcessSnapshot
+{
+    public string? ProcessName { get; init; }
+
+    public string? ExecutablePath { get; init; }
+}
+
 public sealed record DisplayMonitorInfo
 {
     public nint MonitorHandle { get; init; }
@@ -101,6 +108,8 @@ public sealed record DesktopEdgeMonitoringState
     public ModifierKeySnapshot ModifierKeySnapshot { get; init; } = new();
 
     public MouseButtonSnapshot MouseButtonSnapshot { get; init; } = new();
+
+    public ForegroundProcessSnapshot ForegroundProcessSnapshot { get; init; } = new();
 
     public DisplayMonitorInfo[] DisplayMonitors { get; init; } = [];
 

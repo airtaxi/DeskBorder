@@ -399,6 +399,18 @@
   <data name="Settings.Blacklist.NoAvailableForegroundProcessesTitle" xml:space="preserve">
     <value>추가 가능한 프로세스 없음</value>
   </data>
+  <data name="Settings.Whitelist.NoAvailableProcessesMessage" xml:space="preserve">
+    <value>화이트리스트에 추가할 실행 중 프로세스나 블랙리스트 프로세스가 없습니다.</value>
+  </data>
+  <data name="Settings.Whitelist.NoAvailableProcessesTitle" xml:space="preserve">
+    <value>추가 가능한 프로세스 없음</value>
+  </data>
+  <data name="Settings.Whitelist.Dialog.Title" xml:space="preserve">
+    <value>실행된 프로세스와 블랙리스트에서 추가</value>
+  </data>
+  <data name="Settings.Whitelist.Dialog.Description" xml:space="preserve">
+    <value>현재 실행 중인 프로세스와 블랙리스트에 등록된 프로세스 중 화이트리스트에 없는 항목을 선택하세요.</value>
+  </data>
   <data name="Settings.Export.CancelledMessage" xml:space="preserve">
     <value>설정 내보내기가 취소되었습니다.</value>
   </data>
@@ -506,6 +518,9 @@
   </data>
   <data name="SettingsPage_BlacklistSectionTitleTextBlock.Text" xml:space="preserve">
     <value>블랙리스트</value>
+  </data>
+  <data name="SettingsPage_AddWhitelistedProcessNameButton.Content" xml:space="preserve">
+    <value>실행된 프로세스와 블랙리스트에서 추가</value>
   </data>
   <data name="SettingsPage_CreateDesktopAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -806,6 +821,9 @@
   <data name="SettingsPage_RemoveBlacklistedProcessNameButtonToolTip.Content" xml:space="preserve">
     <value>제거</value>
   </data>
+  <data name="SettingsPage_RemoveWhitelistedProcessNameButtonToolTip.Content" xml:space="preserve">
+    <value>제거</value>
+  </data>
   <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
     <value>스토어 업데이트 자동 확인</value>
   </data>
@@ -816,6 +834,12 @@
     <value>• 실행된 프로세스에서 추가: 현재 실행 중이고 아직 등록되지 않은 프로세스만 골라 블랙리스트에 넣습니다.
 • 등록된 프로세스는 가장자리 전환, 생성, 자동 삭제 처리에서 제외됩니다.
 • 게임이나 전체 화면 앱처럼 DeskBorder가 개입하면 안 되는 프로세스를 여기에 보관하면 됩니다.</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>화이트리스트</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>게임으로 인식되는 프로그램이 자동 추가되어 오작동하는 경우를 방지하기 위해 항상 허용할 프로세스 이름을 관리합니다.</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>가장자리 및 자동 정리 안내</value>

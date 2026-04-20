@@ -136,6 +136,8 @@ public sealed record DeskBorderSettings
 
     public string[] BlacklistedProcessNames { get; init; } = [];
 
+    public string[] WhitelistedProcessNames { get; init; } = [];
+
     public bool IsLaunchOnStartupEnabled { get; init; } = true;
 
     public bool IsStoreUpdateCheckEnabled { get; init; } = true;

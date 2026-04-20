@@ -399,6 +399,18 @@
   <data name="Settings.Blacklist.NoAvailableForegroundProcessesTitle" xml:space="preserve">
     <value>追加できるプロセスがありません</value>
   </data>
+  <data name="Settings.Whitelist.NoAvailableProcessesMessage" xml:space="preserve">
+    <value>ホワイトリストに追加できる実行中プロセスまたはブラックリスト登録済みプロセスがありません。</value>
+  </data>
+  <data name="Settings.Whitelist.NoAvailableProcessesTitle" xml:space="preserve">
+    <value>追加できるプロセスがありません</value>
+  </data>
+  <data name="Settings.Whitelist.Dialog.Title" xml:space="preserve">
+    <value>実行中のプロセスとブラックリストから追加</value>
+  </data>
+  <data name="Settings.Whitelist.Dialog.Description" xml:space="preserve">
+    <value>現在実行中のプロセスとブラックリスト登録済みプロセスのうち、まだホワイトリストにない項目を選択してください。</value>
+  </data>
   <data name="Settings.Export.CancelledMessage" xml:space="preserve">
     <value>設定のエクスポートはキャンセルされました。</value>
   </data>
@@ -506,6 +518,9 @@
   </data>
   <data name="SettingsPage_BlacklistSectionTitleTextBlock.Text" xml:space="preserve">
     <value>ブラックリスト</value>
+  </data>
+  <data name="SettingsPage_AddWhitelistedProcessNameButton.Content" xml:space="preserve">
+    <value>実行中のプロセスとブラックリストから追加</value>
   </data>
   <data name="SettingsPage_CreateDesktopAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
@@ -806,6 +821,9 @@
   <data name="SettingsPage_RemoveBlacklistedProcessNameButtonToolTip.Content" xml:space="preserve">
     <value>削除</value>
   </data>
+  <data name="SettingsPage_RemoveWhitelistedProcessNameButtonToolTip.Content" xml:space="preserve">
+    <value>削除</value>
+  </data>
   <data name="SettingsPage_StoreUpdateCheckToggleSwitch.Header" xml:space="preserve">
     <value>Store 更新を自動確認</value>
   </data>
@@ -816,6 +834,12 @@
     <value>• 実行中のプロセスから追加: 現在実行中で、まだ登録されていないプロセスだけを選んで追加できます。
 • 登録済みプロセスは、エッジ切り替え、デスクトップ作成、自動削除の処理対象から除外されます。
 • DeskBorder が干渉してほしくないゲームや全画面アプリをここに登録してください。</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>ホワイトリスト</value>
+  </data>
+  <data name="SettingsPage_WhitelistSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>ゲームとして認識されたプログラムが自動追加されて誤動作する場合を防ぐため、常に許可するプロセス名を管理します。</value>
   </data>
   <data name="SettingsPage_EdgeSectionTeachingTip.Title" xml:space="preserve">
     <value>エッジと自動整理ガイド</value>
