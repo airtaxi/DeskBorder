@@ -553,7 +553,7 @@
     <value>Show auto-delete completion notification</value>
   </data>
   <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
-    <value>Available only when the deletion warning is turned off. Shows the result in ToastWindow when an empty desktop is deleted immediately.</value>
+    <value>Available only when the deletion warning is turned off. Shows a completion notification when an empty desktop is deleted immediately.</value>
   </data>
   <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistanceToggleSwitch.Header" xml:space="preserve">
     <value>Require extra movement past the edge</value>

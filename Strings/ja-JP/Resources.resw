@@ -553,7 +553,7 @@
     <value>自動削除完了通知を表示</value>
   </data>
   <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
-    <value>削除前の警告をオフにした場合のみ使用できます。空のデスクトップがすぐ削除されたとき、ToastWindow で結果を通知します。</value>
+    <value>削除前の警告をオフにした場合のみ使用できます。空のデスクトップがすぐ削除されたとき、完了通知を表示します。</value>
   </data>
   <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistanceToggleSwitch.Header" xml:space="preserve">
     <value>端の追加移動距離を使用</value>

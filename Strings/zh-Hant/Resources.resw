@@ -553,7 +553,7 @@
     <value>顯示自動刪除完成通知</value>
   </data>
   <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
-    <value>只有在關閉刪除警告時才能使用。空白桌面被立即刪除後，會透過 ToastWindow 告知結果。</value>
+    <value>僅在關閉刪除警告時可用。空白桌面被立即刪除後，會顯示完成通知。</value>
   </data>
   <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistanceToggleSwitch.Header" xml:space="preserve">
     <value>使用邊緣額外移動距離</value>
