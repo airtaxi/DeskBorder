@@ -66,9 +66,15 @@ public sealed class DeskBorderRuntimeService(IDesktopLifecycleService desktopLif
             return;
 
         if (shouldRunLifecycle)
-            await _desktopLifecycleService.StartAsync();
+        {
+            try { await _desktopLifecycleService.StartAsync(); }
+            catch { return; }
+        }
         else
-            await _desktopLifecycleService.StopAsync();
+        {
+            try { await _desktopLifecycleService.StopAsync(); }
+            catch { }
+        }
 
         _isLifecycleRunning = shouldRunLifecycle;
     }

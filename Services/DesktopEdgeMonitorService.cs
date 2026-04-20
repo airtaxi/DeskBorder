@@ -92,7 +92,8 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
             return Task.CompletedTask;
 
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
-        Refresh();
+        try { Refresh(); }
+        catch { }
         _monitoringCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _monitoringTask = RunMonitoringLoopAsync(_monitoringCancellationTokenSource.Token);
         return Task.CompletedTask;
@@ -107,7 +108,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
         _monitoringCancellationTokenSource?.Cancel();
 
         try { await _monitoringTask; }
-        catch (OperationCanceledException) { }
+        catch { }
         finally
         {
             _monitoringCancellationTokenSource?.Dispose();
@@ -295,13 +296,17 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService) 
     {
         using var periodicTimer = new PeriodicTimer(s_defaultPollingInterval);
         while (await periodicTimer.WaitForNextTickAsync(cancellationToken))
-            Refresh();
+        {
+            try { Refresh(); }
+            catch { }
+        }
     }
 
     private void OnSettingsServiceSettingsChanged(object? sender, EventArgs eventArguments)
     {
         _ = sender;
         _ = eventArguments;
-        Refresh();
+        try { Refresh(); }
+        catch { }
     }
 }
