@@ -501,6 +501,12 @@
   <data name="SettingsPage_AutoDeleteWarningToggleSwitch.Header" xml:space="preserve">
     <value>削除前の警告を表示</value>
   </data>
+  <data name="SettingsPage_AutoDeleteCompletionToastToggleSwitch.Header" xml:space="preserve">
+    <value>自動削除完了通知を表示</value>
+  </data>
+  <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
+    <value>削除前の警告をオフにした場合のみ使用できます。空のデスクトップがすぐ削除されたとき、ToastWindow で結果を通知します。</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>エッジ処理から除外する実行中のフォアグラウンド プロセスを管理します。</value>
   </data>
@@ -910,6 +916,12 @@
   </data>
   <data name="Toast.AutoDelete.Title" xml:space="preserve">
     <value>外側のデスクトップは削除予定です</value>
+  </data>
+  <data name="Toast.AutoDelete.Completed.Title" xml:space="preserve">
+    <value>空のデスクトップを自動削除しました</value>
+  </data>
+  <data name="Toast.AutoDelete.Completed.MessageFormat" xml:space="preserve">
+    <value>{0} を自動で削除しました。</value>
   </data>
   <data name="Toast.WindowTitle" xml:space="preserve">
     <value>トースト</value>

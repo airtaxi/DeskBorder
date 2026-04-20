@@ -501,6 +501,12 @@
   <data name="SettingsPage_AutoDeleteWarningToggleSwitch.Header" xml:space="preserve">
     <value>顯示刪除警告</value>
   </data>
+  <data name="SettingsPage_AutoDeleteCompletionToastToggleSwitch.Header" xml:space="preserve">
+    <value>顯示自動刪除完成通知</value>
+  </data>
+  <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
+    <value>只有在關閉刪除警告時才能使用。空白桌面被立即刪除後，會透過 ToastWindow 告知結果。</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>管理要從邊緣處理中排除的執行中前景處理程序。</value>
   </data>
@@ -910,6 +916,12 @@
   </data>
   <data name="Toast.AutoDelete.Title" xml:space="preserve">
     <value>外側桌面已排定刪除</value>
+  </data>
+  <data name="Toast.AutoDelete.Completed.Title" xml:space="preserve">
+    <value>空白桌面已自動刪除</value>
+  </data>
+  <data name="Toast.AutoDelete.Completed.MessageFormat" xml:space="preserve">
+    <value>{0} 已自動刪除。</value>
   </data>
   <data name="Toast.WindowTitle" xml:space="preserve">
     <value>通知</value>

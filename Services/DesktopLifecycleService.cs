@@ -266,7 +266,7 @@ public sealed class DesktopLifecycleService(
                 return;
 
             _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Deleting desktop immediately without warning. DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}.");
-            await DeleteDesktopAsync(pendingDesktopDeletion);
+            await DeleteDesktopAsync(pendingDesktopDeletion, _settingsService.Settings.IsAutoDeleteCompletionToastEnabled);
             return;
         }
 
@@ -306,17 +306,33 @@ public sealed class DesktopLifecycleService(
         finally { _operationSemaphore.Release(); }
     }
 
-    private async Task DeleteDesktopAsync(PendingDesktopDeletion pendingDesktopDeletion)
+    private async Task DeleteDesktopAsync(PendingDesktopDeletion pendingDesktopDeletion, bool shouldShowCompletionToast = false)
     {
         var desktopDeletionResult = _virtualDesktopService.DeleteDesktop(pendingDesktopDeletion.DesktopIdentifier, pendingDesktopDeletion.FallbackDesktopIdentifier);
         if (desktopDeletionResult.IsSuccessful)
         {
             _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Deleted desktop. DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}, FallbackDesktopIdentifier={pendingDesktopDeletion.FallbackDesktopIdentifier}.");
             await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
+            if (shouldShowCompletionToast)
+                _ = ShowAutoDeleteCompletionToastAsync(pendingDesktopDeletion);
+
             return;
         }
 
         _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Desktop deletion failed. Status={desktopDeletionResult.OperationStatus}, DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}.");
+    }
+
+    private async Task ShowAutoDeleteCompletionToastAsync(PendingDesktopDeletion pendingDesktopDeletion)
+    {
+        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Showing auto-delete completion toast. DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}.");
+        await _toastService.ShowToastAsync(new HotkeyToastPresentationOptions
+        {
+            Title = LocalizedResourceAccessor.GetString("Toast.AutoDelete.Completed.Title"),
+            Message = LocalizedResourceAccessor.GetFormattedString("Toast.AutoDelete.Completed.MessageFormat", pendingDesktopDeletion.DesktopDisplayName),
+            Duration = TimeSpan.FromSeconds(1),
+            WindowWidth = 360,
+            WindowHeight = 100
+        });
     }
 
     private async Task SchedulePendingDesktopDeletionAsync(PendingDesktopDeletion pendingDesktopDeletion, CancellationToken cancellationToken)

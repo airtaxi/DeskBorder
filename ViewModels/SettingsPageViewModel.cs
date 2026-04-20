@@ -138,13 +138,18 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial double BottomDesktopEdgeIgnorePercentage { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsAutoDeleteCompletionToastToggleEnabled))]
     public partial bool IsAutoDeleteEnabled { get; set; }
 
     [ObservableProperty]
     public partial double AutoDeleteWarningTimeoutSeconds { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsAutoDeleteCompletionToastToggleEnabled))]
     public partial bool IsAutoDeleteWarningEnabled { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsAutoDeleteCompletionToastEnabled { get; set; }
 
     [ObservableProperty]
     public partial bool IsDesktopCreationEnabled { get; set; }
@@ -258,6 +263,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public string NavigatorTriggerAreaSummary => SettingsDisplayFormatter.FormatTriggerRectangle(CreateNavigatorTriggerRectangleSettings());
 
+    public bool IsAutoDeleteCompletionToastToggleEnabled => IsAutoDeleteEnabled && !IsAutoDeleteWarningEnabled;
+
     public bool AddBlacklistedProcessNames(IEnumerable<string> processNames)
     {
         var blacklistedProcessNameSet = BlacklistedProcessNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -310,6 +317,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsDesktopCreationEnabled = IsDesktopCreationEnabled,
         IsAutoDeleteEnabled = IsAutoDeleteEnabled,
         IsAutoDeleteWarningEnabled = IsAutoDeleteWarningEnabled,
+        IsAutoDeleteCompletionToastEnabled = IsAutoDeleteCompletionToastEnabled,
         AutoDeleteWarningTimeoutSeconds = AutoDeleteWarningTimeoutSeconds,
         DesktopEdgeIgnoreZoneSettings = new DesktopEdgeIgnoreZoneSettings
         {
@@ -349,6 +357,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsDesktopCreationEnabled = deskBorderSettings.IsDesktopCreationEnabled;
         IsAutoDeleteEnabled = deskBorderSettings.IsAutoDeleteEnabled;
         IsAutoDeleteWarningEnabled = deskBorderSettings.IsAutoDeleteWarningEnabled;
+        IsAutoDeleteCompletionToastEnabled = deskBorderSettings.IsAutoDeleteCompletionToastEnabled;
         AutoDeleteWarningTimeoutSeconds = deskBorderSettings.AutoDeleteWarningTimeoutSeconds;
         TopDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.TopIgnorePercentage;
         BottomDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage;

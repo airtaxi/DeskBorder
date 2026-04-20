@@ -124,6 +124,8 @@ public sealed record DeskBorderSettings
 
     public bool IsAutoDeleteWarningEnabled { get; init; }
 
+    public bool IsAutoDeleteCompletionToastEnabled { get; init; }
+
     public double AutoDeleteWarningTimeoutSeconds { get; init; } = 3.0;
 
     public DesktopEdgeIgnoreZoneSettings DesktopEdgeIgnoreZoneSettings { get; init; } = new();

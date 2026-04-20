@@ -501,6 +501,12 @@
   <data name="SettingsPage_AutoDeleteWarningToggleSwitch.Header" xml:space="preserve">
     <value>삭제 경고 표시</value>
   </data>
+  <data name="SettingsPage_AutoDeleteCompletionToastToggleSwitch.Header" xml:space="preserve">
+    <value>자동 삭제 완료 알림 표시</value>
+  </data>
+  <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
+    <value>삭제 경고를 끈 경우에만 사용할 수 있습니다. 빈 데스크톱이 바로 삭제되었을 때 ToastWindow로 결과를 알려줍니다.</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>가장자리 처리에서 제외할 실행 중 포그라운드 프로세스를 관리합니다.</value>
   </data>
@@ -910,6 +916,12 @@
   </data>
   <data name="Toast.AutoDelete.Title" xml:space="preserve">
     <value>바깥쪽 데스크톱 삭제 예정</value>
+  </data>
+  <data name="Toast.AutoDelete.Completed.Title" xml:space="preserve">
+    <value>빈 데스크톱 자동 삭제됨</value>
+  </data>
+  <data name="Toast.AutoDelete.Completed.MessageFormat" xml:space="preserve">
+    <value>{0}이(가) 자동으로 삭제되었습니다.</value>
   </data>
   <data name="Toast.WindowTitle" xml:space="preserve">
     <value>토스트</value>

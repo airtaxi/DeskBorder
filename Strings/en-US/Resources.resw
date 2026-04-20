@@ -501,6 +501,12 @@
   <data name="SettingsPage_AutoDeleteWarningToggleSwitch.Header" xml:space="preserve">
     <value>Show deletion warning</value>
   </data>
+  <data name="SettingsPage_AutoDeleteCompletionToastToggleSwitch.Header" xml:space="preserve">
+    <value>Show auto-delete completion notification</value>
+  </data>
+  <data name="SettingsPage_AutoDeleteCompletionToastDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Available only when the deletion warning is turned off. Shows the result in ToastWindow when an empty desktop is deleted immediately.</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>Manage running foreground processes to exclude from edge handling.</value>
   </data>
@@ -910,6 +916,12 @@
   </data>
   <data name="Toast.AutoDelete.Title" xml:space="preserve">
     <value>Outer desktop scheduled for deletion</value>
+  </data>
+  <data name="Toast.AutoDelete.Completed.Title" xml:space="preserve">
+    <value>Empty desktop deleted automatically</value>
+  </data>
+  <data name="Toast.AutoDelete.Completed.MessageFormat" xml:space="preserve">
+    <value>{0} was deleted automatically.</value>
   </data>
   <data name="Toast.WindowTitle" xml:space="preserve">
     <value>Toast</value>
