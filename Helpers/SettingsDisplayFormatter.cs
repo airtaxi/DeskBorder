@@ -45,6 +45,17 @@ public static class SettingsDisplayFormatter
         _ => desktopEdgeKind.ToString()
     };
 
+    public static string FormatDesktopSwitchMouseLocationOption(DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption) => desktopSwitchMouseLocationOption switch
+    {
+        DesktopSwitchMouseLocationOption.OppositeSide => LocalizedResourceAccessor.GetString("DesktopSwitchMouseLocationOption.OppositeSide"),
+        DesktopSwitchMouseLocationOption.VirtualScreenCenter => LocalizedResourceAccessor.GetString("DesktopSwitchMouseLocationOption.VirtualScreenCenter"),
+        DesktopSwitchMouseLocationOption.PrimaryMonitorCenter => LocalizedResourceAccessor.GetString("DesktopSwitchMouseLocationOption.PrimaryMonitorCenter"),
+        DesktopSwitchMouseLocationOption.TargetMonitorCenter => LocalizedResourceAccessor.GetString("DesktopSwitchMouseLocationOption.TargetMonitorCenter"),
+        DesktopSwitchMouseLocationOption.InputMonitorCenter => LocalizedResourceAccessor.GetString("DesktopSwitchMouseLocationOption.InputMonitorCenter"),
+        DesktopSwitchMouseLocationOption.DoNotMove => LocalizedResourceAccessor.GetString("DesktopSwitchMouseLocationOption.DoNotMove"),
+        _ => desktopSwitchMouseLocationOption.ToString()
+    };
+
     public static string FormatKeyboardModifierKeys(KeyboardModifierKeys keyboardModifierKeys)
     {
         if (keyboardModifierKeys == KeyboardModifierKeys.None)

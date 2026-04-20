@@ -267,6 +267,24 @@
   <data name="DesktopEdgeKind.RightOuterDisplayEdge" xml:space="preserve">
     <value>오른쪽 바깥쪽 가장자리</value>
   </data>
+  <data name="DesktopSwitchMouseLocationOption.DoNotMove" xml:space="preserve">
+    <value>이동 안함</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.InputMonitorCenter" xml:space="preserve">
+    <value>전환 이벤트 입력 모니터 중앙</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.OppositeSide" xml:space="preserve">
+    <value>반대편</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.PrimaryMonitorCenter" xml:space="preserve">
+    <value>주모니터 중앙</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.TargetMonitorCenter" xml:space="preserve">
+    <value>전환 이벤트 대상 모니터 중앙</value>
+  </data>
+  <data name="DesktopSwitchMouseLocationOption.VirtualScreenCenter" xml:space="preserve">
+    <value>모니터 전체 중앙</value>
+  </data>
   <data name="EmptyDesktopDetectionMode.CountAllTopLevelWindows" xml:space="preserve">
     <value>모든 최상위 창 포함</value>
   </data>
@@ -658,6 +676,12 @@
   </data>
   <data name="SettingsPage_CheckStoreUpdateButton.Content" xml:space="preserve">
     <value>확인하기</value>
+  </data>
+  <data name="SettingsPage_DesktopEdgeTriggeredDesktopSwitchMouseLocationComboBox.Header" xml:space="preserve">
+    <value>가장자리 데스크톱 전환 후 마우스 위치</value>
+  </data>
+  <data name="SettingsPage_HotkeyTriggeredDesktopSwitchMouseLocationComboBox.Header" xml:space="preserve">
+    <value>단축키 데스크톱 전환 후 마우스 위치</value>
   </data>
   <data name="SettingsPage_StoreUpdateStatusTitleTextBlock.Text" xml:space="preserve">
     <value>지금 업데이트 확인</value>
