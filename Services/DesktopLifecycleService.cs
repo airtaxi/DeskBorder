@@ -548,12 +548,30 @@ public sealed class DesktopLifecycleService(
 
                 case HotkeyActionType.MoveFocusedWindowToPreviousDesktop:
                     await CancelPendingDesktopDeletionAsync();
-                    await HandleNavigationResultAsync(_virtualDesktopService.MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection.Previous));
+                    var moveFocusedWindowToPreviousDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove
+                        ? null
+                        : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Previous);
+                    var moveFocusedWindowToPreviousDesktopNavigationResult = _virtualDesktopService.MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection.Previous);
+                    TryApplyMouseLocationAfterDesktopSwitch(
+                        moveFocusedWindowToPreviousDesktopNavigationResult,
+                        currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
+                        moveFocusedWindowToPreviousDesktopMouseLocationContext,
+                        "Hotkey");
+                    await HandleNavigationResultAsync(moveFocusedWindowToPreviousDesktopNavigationResult);
                     return;
 
                 case HotkeyActionType.MoveFocusedWindowToNextDesktop:
                     await CancelPendingDesktopDeletionAsync();
-                    await HandleNavigationResultAsync(_virtualDesktopService.MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection.Next));
+                    var moveFocusedWindowToNextDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove
+                        ? null
+                        : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Next);
+                    var moveFocusedWindowToNextDesktopNavigationResult = _virtualDesktopService.MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection.Next);
+                    TryApplyMouseLocationAfterDesktopSwitch(
+                        moveFocusedWindowToNextDesktopNavigationResult,
+                        currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
+                        moveFocusedWindowToNextDesktopMouseLocationContext,
+                        "Hotkey");
+                    await HandleNavigationResultAsync(moveFocusedWindowToNextDesktopNavigationResult);
                     return;
 
                 case HotkeyActionType.ToggleNavigator:
