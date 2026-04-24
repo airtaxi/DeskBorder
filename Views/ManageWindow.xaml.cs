@@ -129,21 +129,6 @@ public sealed partial class ManageWindow : WindowEx
         HandleLocalizationChanged();
     }
 
-    private void OnManageNavigationViewBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs navigationViewBackRequestedEventArgs)
-    {
-        _manageNavigationService.GoBack();
-        UpdateNavigationChrome();
-    }
-
-    private void OnManageNavigationViewSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs navigationViewSelectionChangedEventArgs)
-    {
-        if (!TryParseManageNavigationTarget(navigationViewSelectionChangedEventArgs.SelectedItemContainer?.Tag, out var manageNavigationTarget))
-            return;
-
-        _manageNavigationService.NavigateTo(manageNavigationTarget);
-        UpdateNavigationChrome();
-    }
-
     private void OnAppFrameNavigated(object sender, NavigationEventArgs navigationEventArgs) => UpdateNavigationChrome();
 
     private void OnManageWindowClosed(object sender, WindowEventArgs windowEventArguments)
