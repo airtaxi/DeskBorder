@@ -23,7 +23,8 @@
             x:Name="ApplicationTaskbarIcon"
             ContextMenuMode="SecondWindow"
             MenuActivation="RightClick"
-            NoLeftClickDelay="True">
+            NoLeftClickDelay="True"
+            ToolTipText="DeskBorder">
             <tb:TaskbarIcon.IconSource>
                 <tb:GeneratedIconSource BackgroundSource="ms-appx:///Assets/Icon.png" />
             </tb:TaskbarIcon.IconSource>
