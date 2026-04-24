@@ -128,6 +128,13 @@ public sealed class DesktopLifecycleService(
     private static bool IsCurrentDesktopRightOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.DesktopEntries.Length > 0
         && workspaceSnapshot.CurrentDesktopNumber == workspaceSnapshot.DesktopEntries.Length;
 
+    private static bool IsCurrentDesktopOuterForDesktopSwitchDirection(VirtualDesktopWorkspaceSnapshot workspaceSnapshot, DesktopSwitchDirection desktopSwitchDirection) => desktopSwitchDirection switch
+    {
+        DesktopSwitchDirection.Previous => IsCurrentDesktopLeftOuter(workspaceSnapshot),
+        DesktopSwitchDirection.Next => IsCurrentDesktopRightOuter(workspaceSnapshot),
+        _ => false
+    };
+
     private static ScreenRectangle CreateCombinedMonitorBounds(DisplayMonitorInfo[] displayMonitors)
     {
         var left = displayMonitors.Min(displayMonitor => displayMonitor.MonitorBounds.Left);
@@ -298,6 +305,36 @@ public sealed class DesktopLifecycleService(
         return true;
     }
 
+    private bool ShouldCreateDesktopAfterFailedSwitch(
+        DeskBorderSettings currentSettings,
+        DesktopNavigationResult switchDesktopNavigationResult,
+        DesktopSwitchDirection desktopSwitchDirection,
+        bool isDesktopCreationRequested)
+    {
+        if (!isDesktopCreationRequested
+            || !currentSettings.IsDesktopCreationEnabled
+            || switchDesktopNavigationResult.OperationStatus != VirtualDesktopOperationStatus.NoAdjacentDesktop)
+        {
+            return false;
+        }
+
+        var currentWorkspaceSnapshot = switchDesktopNavigationResult.PreviousWorkspaceSnapshot;
+        return IsCurrentDesktopOuterForDesktopSwitchDirection(currentWorkspaceSnapshot, desktopSwitchDirection)
+            && !ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(currentSettings, currentWorkspaceSnapshot);
+    }
+
+    private DesktopNavigationResult SwitchDesktopWithOptionalCreation(
+        DeskBorderSettings currentSettings,
+        DesktopSwitchDirection desktopSwitchDirection,
+        bool isDesktopCreationRequested)
+    {
+        var switchDesktopNavigationResult = _virtualDesktopService.SwitchDesktop(desktopSwitchDirection);
+        if (!ShouldCreateDesktopAfterFailedSwitch(currentSettings, switchDesktopNavigationResult, desktopSwitchDirection, isDesktopCreationRequested))
+            return switchDesktopNavigationResult;
+
+        return _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
+    }
+
     private DesktopNavigationResult HandleEdgeActivation(DesktopEdgeMonitoringState currentState)
     {
         if (!currentState.IsDesktopEdgeAvailable || currentState.ActiveDesktopEdge == DesktopEdgeKind.None)
@@ -306,24 +343,16 @@ public sealed class DesktopLifecycleService(
         var currentSettings = _settingsService.Settings;
         var desktopSwitchDirection = ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge);
         var currentWorkspaceSnapshot = _virtualDesktopService.GetWorkspaceSnapshot();
-        var canCreateDesktop = currentSettings.IsDesktopCreationEnabled
-            && currentState.IsCreateDesktopModifierSatisfied
-            && (desktopSwitchDirection == DesktopSwitchDirection.Next && IsCurrentDesktopRightOuter(currentWorkspaceSnapshot)
-                || desktopSwitchDirection == DesktopSwitchDirection.Previous && IsCurrentDesktopLeftOuter(currentWorkspaceSnapshot))
+        var canCreateDesktop = currentState.IsCreateDesktopModifierSatisfied
+            && currentSettings.IsDesktopCreationEnabled
+            && IsCurrentDesktopOuterForDesktopSwitchDirection(currentWorkspaceSnapshot, desktopSwitchDirection)
             && !ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(currentSettings, currentWorkspaceSnapshot);
 
         if (currentState.IsSwitchDesktopModifierSatisfied)
         {
-            var switchResult = _virtualDesktopService.SwitchDesktop(desktopSwitchDirection);
-            if (switchResult.OperationStatus != VirtualDesktopOperationStatus.NoAdjacentDesktop || !canCreateDesktop)
-            {
-                ConsumeKeyboardModifiersAfterDesktopAction(switchResult, currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
-                return switchResult;
-            }
-
-            var createDesktopAndSwitchResult = _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
-            ConsumeKeyboardModifiersAfterDesktopAction(createDesktopAndSwitchResult, currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
-            return createDesktopAndSwitchResult;
+            var switchOrCreateDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, desktopSwitchDirection, currentState.IsCreateDesktopModifierSatisfied);
+            ConsumeKeyboardModifiersAfterDesktopAction(switchOrCreateDesktopNavigationResult, currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
+            return switchOrCreateDesktopNavigationResult;
         }
 
         if (canCreateDesktop)
@@ -523,7 +552,7 @@ public sealed class DesktopLifecycleService(
                     var switchToPreviousDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove
                         ? null
                         : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Previous);
-                    var switchToPreviousDesktopNavigationResult = _virtualDesktopService.SwitchDesktop(DesktopSwitchDirection.Previous);
+                    var switchToPreviousDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, DesktopSwitchDirection.Previous, true);
                     TryApplyMouseLocationAfterDesktopSwitch(
                         switchToPreviousDesktopNavigationResult,
                         currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
@@ -537,7 +566,7 @@ public sealed class DesktopLifecycleService(
                     var switchToNextDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove
                         ? null
                         : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Next);
-                    var switchToNextDesktopNavigationResult = _virtualDesktopService.SwitchDesktop(DesktopSwitchDirection.Next);
+                    var switchToNextDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, DesktopSwitchDirection.Next, true);
                     TryApplyMouseLocationAfterDesktopSwitch(
                         switchToNextDesktopNavigationResult,
                         currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
