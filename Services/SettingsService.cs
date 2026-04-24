@@ -11,7 +11,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 {
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsKey = "DeskBorderSettings";
-    private const int CurrentSchemaVersion = 1;
+    private const int CurrentSchemaVersion = 2;
     private const int DesktopEdgeAdditionalTriggerDistancePercentageDecimalPlaces = 1;
     private const double DefaultAutoDeleteWarningTimeoutSeconds = 3.0;
     private const double DefaultDesktopEdgeAdditionalTriggerDistancePercentage = 5.0;
@@ -43,14 +43,26 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         _fileLogService.WriteInformation(nameof(SettingsService), $"Exported settings to '{destinationFilePath}'.");
     }
 
-    public async Task ImportAsync(string sourceFilePath)
+    public async Task<SettingsImportResult> ImportAsync(string sourceFilePath)
     {
         if (!_isInitialized) await InitializeAsync();
 
         ValidateSettingsFilePath(sourceFilePath, nameof(sourceFilePath));
         var serializedSettings = await File.ReadAllTextAsync(sourceFilePath);
-        await UpdateSettingsAsync(LoadDeserializedSettings(serializedSettings));
-        _fileLogService.WriteInformation(nameof(SettingsService), $"Imported settings from '{sourceFilePath}'.");
+        var importedSettings = LoadDeserializedSettings(serializedSettings);
+        var wasAlwaysRunAsAdministratorSettingExcluded = importedSettings.IsAlwaysRunAsAdministratorEnabled;
+        var settingsToImport = importedSettings with
+        {
+            IsAlwaysRunAsAdministratorEnabled = _settings.IsAlwaysRunAsAdministratorEnabled
+        };
+        await UpdateSettingsAsync(settingsToImport);
+        _fileLogService.WriteInformation(
+            nameof(SettingsService),
+            $"Imported settings from '{sourceFilePath}'. AlwaysRunAsAdministratorExcluded={wasAlwaysRunAsAdministratorSettingExcluded}.");
+        return new()
+        {
+            WasAlwaysRunAsAdministratorSettingExcluded = wasAlwaysRunAsAdministratorSettingExcluded
+        };
     }
 
     public async Task InitializeAsync()
@@ -103,11 +115,19 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         if (!_isInitialized) await InitializeAsync();
 
         var normalizedSettings = NormalizeSettings(settings);
-        if (normalizedSettings.IsLaunchOnStartupEnabled != _settings.IsLaunchOnStartupEnabled) await _startupRegistrationService.SetIsEnabledAsync(normalizedSettings.IsLaunchOnStartupEnabled);
+        if (normalizedSettings.IsLaunchOnStartupEnabled != _settings.IsLaunchOnStartupEnabled
+            || normalizedSettings.IsAlwaysRunAsAdministratorEnabled != _settings.IsAlwaysRunAsAdministratorEnabled)
+            await _startupRegistrationService.SetStateAsync(CreateStartupRegistrationState(normalizedSettings));
 
         await ApplySettingsAsync(normalizedSettings);
         _fileLogService.WriteInformation(nameof(SettingsService), "Applied updated settings.");
     }
+
+    private static StartupRegistrationState CreateStartupRegistrationState(DeskBorderSettings settings) => new()
+    {
+        IsLaunchOnStartupEnabled = settings.IsLaunchOnStartupEnabled,
+        IsAlwaysRunAsAdministratorEnabled = settings.IsAlwaysRunAsAdministratorEnabled
+    };
 
     private static DeskBorderSettings CloneSettings(DeskBorderSettings settings) => NormalizeSettings(settings);
 
@@ -171,6 +191,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
                 .ToArray(),
             WhitelistedProcessNames = normalizedWhitelistedProcessNames,
             IsLaunchOnStartupEnabled = settings.IsLaunchOnStartupEnabled,
+            IsAlwaysRunAsAdministratorEnabled = settings.IsAlwaysRunAsAdministratorEnabled,
             IsStoreUpdateCheckEnabled = settings.IsStoreUpdateCheckEnabled,
             IsWindowsOnlyModifierWarningSuppressed = settings.IsWindowsOnlyModifierWarningSuppressed,
             AppLanguagePreference = settings.AppLanguagePreference,
@@ -375,20 +396,26 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private async Task ApplySettingsAsync(DeskBorderSettings settings)
     {
         var normalizedSettings = NormalizeSettings(settings);
-        var isLaunchOnStartupEnabled = await _startupRegistrationService.GetIsEnabledAsync();
-        _settings = normalizedSettings with { IsLaunchOnStartupEnabled = isLaunchOnStartupEnabled };
+        var startupRegistrationState = await _startupRegistrationService.GetStateAsync();
+        _settings = normalizedSettings with
+        {
+            IsLaunchOnStartupEnabled = startupRegistrationState.IsLaunchOnStartupEnabled,
+            IsAlwaysRunAsAdministratorEnabled = startupRegistrationState.IsAlwaysRunAsAdministratorEnabled
+        };
         SaveSettings(_settings);
         _localizationService.ApplyLanguagePreference(_settings.AppLanguagePreference);
         _themeService.ApplyApplicationThemePreference(_settings.ApplicationThemePreference);
-        _fileLogService.WriteInformation(nameof(SettingsService), $"Persisted settings. LaunchOnStartup={_settings.IsLaunchOnStartupEnabled}, StoreUpdateChecks={_settings.IsStoreUpdateCheckEnabled}, Language={_settings.AppLanguagePreference}, Theme={_settings.ApplicationThemePreference}.");
+        _fileLogService.WriteInformation(nameof(SettingsService), $"Persisted settings. LaunchOnStartup={_settings.IsLaunchOnStartupEnabled}, AlwaysRunAsAdministrator={_settings.IsAlwaysRunAsAdministratorEnabled}, StoreUpdateChecks={_settings.IsStoreUpdateCheckEnabled}, Language={_settings.AppLanguagePreference}, Theme={_settings.ApplicationThemePreference}.");
         SettingsChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private async Task ReloadStoredSettingsAsync(bool shouldApplyDefaultLaunchOnStartupWhenMissing)
     {
         var hasStoredSettings = TryLoadStoredSettings(out var storedSettings);
-        if (!hasStoredSettings && shouldApplyDefaultLaunchOnStartupWhenMissing && storedSettings.IsLaunchOnStartupEnabled)
-            await _startupRegistrationService.SetIsEnabledAsync(true);
+        if (!hasStoredSettings && !shouldApplyDefaultLaunchOnStartupWhenMissing)
+            storedSettings = storedSettings with { IsLaunchOnStartupEnabled = false };
+
+        await _startupRegistrationService.SetStateAsync(CreateStartupRegistrationState(storedSettings));
 
         await ApplySettingsAsync(storedSettings);
     }

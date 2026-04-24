@@ -498,6 +498,12 @@
   <data name="Settings.Import.SuccessTitle" xml:space="preserve">
     <value>匯入完成</value>
   </data>
+  <data name="Settings.Import.AlwaysRunAsAdministratorExcludedTitle" xml:space="preserve">
+    <value>已從匯入中排除的設定</value>
+  </data>
+  <data name="Settings.Import.AlwaysRunAsAdministratorExcludedMessage" xml:space="preserve">
+    <value>由於商店政策，'一律以 Administrator 身分執行' 設定不會被匯入，並保留目前的值。</value>
+  </data>
   <data name="Settings.Reset.CancelledMessage" xml:space="preserve">
     <value>已取消重設設定。</value>
   </data>
@@ -548,6 +554,9 @@
   </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>請輸入處理程序名稱。</value>
+  </data>
+  <data name="Settings.Validation.PrivilegedProcessRequiredForAlwaysRunAsAdministrator" xml:space="preserve">
+    <value>此設定僅能在以系統管理員身分執行時變更。</value>
   </data>
   <data name="SettingsPage_AddBlacklistedProcessNameButton.Content" xml:space="preserve">
     <value>從執行中的處理程序加入</value>
@@ -814,6 +823,18 @@
   </data>
   <data name="SettingsPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
     <value>系統啟動時執行</value>
+  </data>
+  <data name="SettingsPage_AdministratorModeTitleTextBlock.Text" xml:space="preserve">
+    <value>以系統管理員身分執行</value>
+  </data>
+  <data name="SettingsPage_AdministratorModeDescriptionTextBlock.Text" xml:space="preserve">
+    <value>可在需要時將 DeskBorder 設定為以系統管理員權限執行。</value>
+  </data>
+  <data name="SettingsPage_AlwaysRunAsAdministratorToggleSwitch.Header" xml:space="preserve">
+    <value>一律以 Administrator 身分執行</value>
+  </data>
+  <data name="SettingsPage_AlwaysRunAsAdministratorDescriptionTextBlock.Text" xml:space="preserve">
+    <value>以系統管理員權限執行有助於解決某些環境下桌面切換無法正常運作的情況。此設定會在應用程式下次啟動時生效。</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>

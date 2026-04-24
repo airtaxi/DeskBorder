@@ -151,7 +151,7 @@ public sealed record NavigatorSettings
 
 public sealed record DeskBorderSettings
 {
-    public int SchemaVersion { get; init; } = 1;
+    public int SchemaVersion { get; init; } = 2;
 
     public bool IsDeskBorderEnabled { get; init; } = true;
 
@@ -196,6 +196,8 @@ public sealed record DeskBorderSettings
     public string[] WhitelistedProcessNames { get; init; } = [];
 
     public bool IsLaunchOnStartupEnabled { get; init; } = true;
+
+    public bool IsAlwaysRunAsAdministratorEnabled { get; init; }
 
     public bool IsStoreUpdateCheckEnabled { get; init; } = true;
 

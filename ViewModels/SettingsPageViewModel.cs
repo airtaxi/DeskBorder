@@ -194,6 +194,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial bool IsLaunchOnStartupEnabled { get; set; }
 
     [ObservableProperty]
+    public partial bool IsAlwaysRunAsAdministratorEnabled { get; set; }
+
+    [ObservableProperty]
     public partial bool IsNavigatorTriggerAreaEnabled { get; set; }
 
     [ObservableProperty]
@@ -384,7 +387,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public DeskBorderSettings CreateSettings() => new()
     {
-        SchemaVersion = 1,
+        SchemaVersion = 2,
         IsDeskBorderEnabled = IsDeskBorderEnabled,
         MultiDisplayBehavior = SelectedMultiDisplayBehaviorOption?.Value ?? MultiDisplayBehavior.DisableInMultiDisplayEnvironment,
         SwitchDesktopModifierSettings = new ModifierGateSettings
@@ -440,6 +443,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         BlacklistedProcessNames = [.. BlacklistedProcessNames],
         WhitelistedProcessNames = [.. WhitelistedProcessNames],
         IsLaunchOnStartupEnabled = IsLaunchOnStartupEnabled,
+        IsAlwaysRunAsAdministratorEnabled = IsAlwaysRunAsAdministratorEnabled,
         IsStoreUpdateCheckEnabled = IsStoreUpdateCheckEnabled,
         IsWindowsOnlyModifierWarningSuppressed = IsWindowsOnlyModifierWarningSuppressed,
         AppLanguagePreference = SelectedAppLanguagePreferenceOption?.Value ?? AppLanguagePreference.System,
@@ -450,6 +454,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     {
         IsDeskBorderEnabled = deskBorderSettings.IsDeskBorderEnabled;
         IsLaunchOnStartupEnabled = deskBorderSettings.IsLaunchOnStartupEnabled;
+        IsAlwaysRunAsAdministratorEnabled = deskBorderSettings.IsAlwaysRunAsAdministratorEnabled;
         IsStoreUpdateCheckEnabled = deskBorderSettings.IsStoreUpdateCheckEnabled;
         IsWindowsOnlyModifierWarningSuppressed = deskBorderSettings.IsWindowsOnlyModifierWarningSuppressed;
         IsDesktopCreationEnabled = deskBorderSettings.IsDesktopCreationEnabled;

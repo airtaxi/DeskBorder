@@ -498,6 +498,12 @@
   <data name="Settings.Import.SuccessTitle" xml:space="preserve">
     <value>Import complete</value>
   </data>
+  <data name="Settings.Import.AlwaysRunAsAdministratorExcludedTitle" xml:space="preserve">
+    <value>Import-excluded setting</value>
+  </data>
+  <data name="Settings.Import.AlwaysRunAsAdministratorExcludedMessage" xml:space="preserve">
+    <value>Because of Store policy, the 'Always run as administrator' setting was excluded from import and the current value was kept.</value>
+  </data>
   <data name="Settings.Reset.CancelledMessage" xml:space="preserve">
     <value>Settings reset was cancelled.</value>
   </data>
@@ -548,6 +554,9 @@
   </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>Enter a process name.</value>
+  </data>
+  <data name="Settings.Validation.PrivilegedProcessRequiredForAlwaysRunAsAdministrator" xml:space="preserve">
+    <value>This setting can only be changed while running as administrator.</value>
   </data>
   <data name="SettingsPage_AddBlacklistedProcessNameButton.Content" xml:space="preserve">
     <value>Add from running processes</value>
@@ -811,6 +820,18 @@
   </data>
   <data name="SettingsPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
     <value>Run at system startup</value>
+  </data>
+  <data name="SettingsPage_AdministratorModeTitleTextBlock.Text" xml:space="preserve">
+    <value>Running as administrator</value>
+  </data>
+  <data name="SettingsPage_AdministratorModeDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Configure DeskBorder to run with administrator privileges when needed.</value>
+  </data>
+  <data name="SettingsPage_AlwaysRunAsAdministratorToggleSwitch.Header" xml:space="preserve">
+    <value>Always run as administrator</value>
+  </data>
+  <data name="SettingsPage_AlwaysRunAsAdministratorDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Running as administrator can help resolve cases where desktop switching does not work correctly in some environments. This takes effect the next time the app launches.</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>

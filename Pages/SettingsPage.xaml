@@ -110,6 +110,56 @@
                             IsOn="{x:Bind ViewModel.IsLaunchOnStartupEnabled, Mode=TwoWay}"
                             Toggled="OnSettingToggleSwitchToggled" />
 
+                        <Border
+                            Padding="14"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="10">
+                            <StackPanel Spacing="14">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border
+                                        Width="36"
+                                        Height="36"
+                                        Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                        CornerRadius="10">
+                                        <FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                            Glyph="&#xE72E;" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock
+                                            x:Uid="SettingsPage_AdministratorModeTitleTextBlock"
+                                            FontWeight="SemiBold"
+                                            Text="관리자 권한으로 실행" />
+                                        <TextBlock
+                                            x:Uid="SettingsPage_AdministratorModeDescriptionTextBlock"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="필요한 경우 DeskBorder가 관리자 권한으로 실행되도록 설정합니다."
+                                            TextWrapping="WrapWholeWords" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <StackPanel Spacing="6">
+                                    <ToggleSwitch
+                                        x:Name="AlwaysRunAsAdministratorToggleSwitch"
+                                        x:Uid="SettingsPage_AlwaysRunAsAdministratorToggleSwitch"
+                                        Header="항상 Administrator 로 실행"
+                                        IsOn="{x:Bind ViewModel.IsAlwaysRunAsAdministratorEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <TextBlock
+                                        x:Uid="SettingsPage_AlwaysRunAsAdministratorDescriptionTextBlock"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="관리자 권한으로 실행하면 일부 환경에서 데스크톱 전환이 동작하지 않는 문제를 해결하는 데 도움이 될 수 있습니다. 설정 후 다음 실행부터 적용됩니다."
+                                        TextWrapping="WrapWholeWords" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
                         <ToggleSwitch
                             x:Name="StoreUpdateCheckToggleSwitch"
                             x:Uid="SettingsPage_StoreUpdateCheckToggleSwitch"
@@ -228,12 +278,14 @@
                         </Grid>
 
                         <ToggleSwitch
+                            x:Name="CreateDesktopEnabledToggleSwitch"
                             x:Uid="SettingsPage_CreateDesktopEnabledToggleSwitch"
                             Header="데스크톱 생성"
                             IsOn="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=TwoWay}"
                             Toggled="OnSettingToggleSwitchToggled" />
 
                         <ToggleSwitch
+                            x:Name="DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch"
                             x:Uid="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch"
                             Header="현재 데스크톱이 비어 있으면 생성 안 함"
                             IsOn="{x:Bind ViewModel.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty, Mode=TwoWay}"
@@ -582,6 +634,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <ToggleSwitch
+                                        x:Name="ToggleDeskBorderEnabledHotkeyToggleSwitch"
                                         x:Uid="SettingsPage_ToggleDeskBorderHotkeyToggleSwitch"
                                         Grid.Column="0"
                                         Margin="0,-8"
@@ -666,6 +719,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <ToggleSwitch
+                                        x:Name="SwitchToPreviousDesktopHotkeyToggleSwitch"
                                         x:Uid="SettingsPage_SwitchPreviousHotkeyToggleSwitch"
                                         Grid.Column="0"
                                         Margin="0,-8"
@@ -750,6 +804,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <ToggleSwitch
+                                        x:Name="SwitchToNextDesktopHotkeyToggleSwitch"
                                         x:Uid="SettingsPage_SwitchNextHotkeyToggleSwitch"
                                         Grid.Column="0"
                                         Margin="0,-8"
@@ -834,6 +889,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <ToggleSwitch
+                                        x:Name="MoveFocusedWindowToNextDesktopHotkeyToggleSwitch"
                                         x:Uid="SettingsPage_MoveNextHotkeyToggleSwitch"
                                         Grid.Column="0"
                                         Margin="0,-8"
@@ -918,6 +974,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <ToggleSwitch
+                                        x:Name="MoveFocusedWindowToPreviousDesktopHotkeyToggleSwitch"
                                         x:Uid="SettingsPage_MovePreviousHotkeyToggleSwitch"
                                         Grid.Column="0"
                                         Margin="0,-8"
@@ -1002,6 +1059,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <ToggleSwitch
+                                        x:Name="NavigatorToggleHotkeyToggleSwitch"
                                         x:Uid="SettingsPage_NavigatorToggleHotkeyToggleSwitch"
                                         Grid.Column="0"
                                         Margin="0,-8"
@@ -1115,6 +1173,7 @@
                         </Grid>
 
                         <ToggleSwitch
+                            x:Name="NavigatorTriggerAreaToggleSwitch"
                             x:Uid="SettingsPage_NavigatorTriggerAreaToggleSwitch"
                             Header="트리거 영역 사용"
                             IsOn="{x:Bind ViewModel.IsNavigatorTriggerAreaEnabled, Mode=TwoWay}"

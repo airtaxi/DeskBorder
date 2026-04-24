@@ -10,7 +10,7 @@ public interface ISettingsService
 
     Task ExportAsync(string destinationFilePath);
 
-    Task ImportAsync(string sourceFilePath);
+    Task<SettingsImportResult> ImportAsync(string sourceFilePath);
 
     Task InitializeAsync();
 

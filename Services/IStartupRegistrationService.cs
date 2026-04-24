@@ -2,7 +2,9 @@ namespace DeskBorder.Services;
 
 public interface IStartupRegistrationService
 {
-    Task<bool> GetIsEnabledAsync();
+    bool IsCurrentProcessElevated { get; }
 
-    Task SetIsEnabledAsync(bool isEnabled);
+    Task<StartupRegistrationState> GetStateAsync();
+
+    Task SetStateAsync(StartupRegistrationState startupRegistrationState);
 }

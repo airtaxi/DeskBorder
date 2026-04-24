@@ -36,6 +36,7 @@ public sealed partial class SettingsPage : Page
     private const string SwitchDesktopModifierSelectionTag = "SwitchDesktopModifierSelection";
     private const string ToggleDeskBorderEnabledHotkeyEditorTag = "ToggleDeskBorderEnabledHotkeyEditor";
     private static readonly TimeSpan s_infoBarAutoHideDelay = TimeSpan.FromSeconds(4);
+    private static bool s_shouldShowPendingAlwaysRunAsAdministratorImportExcludedStatus;
     private static bool s_shouldShowPendingLanguageRestartRecommendedStatus;
 
     private readonly DispatcherQueueTimer _developerLogInfoBarAutoHideTimer;
@@ -239,8 +240,14 @@ public sealed partial class SettingsPage : Page
                 return;
             }
 
-            await _settingsService.ImportAsync(selectedSettingsFile.Path);
+            var settingsImportResult = await _settingsService.ImportAsync(selectedSettingsFile.Path);
             ApplySettingsToViewModel();
+            if (settingsImportResult.WasAlwaysRunAsAdministratorSettingExcluded)
+            {
+                s_shouldShowPendingAlwaysRunAsAdministratorImportExcludedStatus = true;
+                ShowAlwaysRunAsAdministratorImportExcludedStatus();
+            }
+
             ShowSettingsImportExportResult(
                 LocalizedResourceAccessor.GetString("Settings.Import.SuccessTitle"),
                 LocalizedResourceAccessor.GetFormattedString("Settings.Import.SuccessMessageFormat", Path.GetFileName(selectedSettingsFile.Path)),
@@ -310,6 +317,7 @@ public sealed partial class SettingsPage : Page
     private async Task LoadSettingsAsync()
     {
         await _settingsService.ReloadAsync();
+        ShowPendingAlwaysRunAsAdministratorImportExcludedStatusIfNeeded();
         ShowPendingLanguageRestartRecommendedStatusIfNeeded();
     }
 
@@ -419,7 +427,17 @@ public sealed partial class SettingsPage : Page
 
     private void OnSettingSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs) => QueueSettingsSave();
 
-    private void OnSettingToggleSwitchToggled(object sender, RoutedEventArgs routedEventArgs) => QueueSettingsSave();
+    private void OnSettingToggleSwitchToggled(object sender, RoutedEventArgs routedEventArgs)
+    {
+        _ = routedEventArgs;
+        if (_isSynchronizingViewModel || !_isInitialSettingsLoadCompleted || sender is not ToggleSwitch settingToggleSwitch)
+            return;
+
+        if (ShouldRejectAlwaysRunAsAdministratorToggleChange(settingToggleSwitch))
+            return;
+
+        QueueSettingsSave(settingToggleSwitch);
+    }
 
     private void OnSettingsPageUnloaded(object sender, RoutedEventArgs routedEventArgs)
     {
@@ -724,12 +742,104 @@ public sealed partial class SettingsPage : Page
         finally { SetSettingsTransferInProgress(false); }
     }
 
-    private void QueueSettingsSave()
+    private void QueueSettingsSave(ToggleSwitch? sourceToggleSwitch = null)
     {
-        if (DispatcherQueue.TryEnqueue(async () => await SaveSettingsAsync()))
+        if (DispatcherQueue.TryEnqueue(async () => await SaveSettingsAsync(sourceToggleSwitch)))
             return;
 
-        _ = SaveSettingsAsync();
+        _ = SaveSettingsAsync(sourceToggleSwitch);
+    }
+
+    private bool ShouldRejectAlwaysRunAsAdministratorToggleChange(ToggleSwitch settingToggleSwitch)
+    {
+        if (!ReferenceEquals(settingToggleSwitch, AlwaysRunAsAdministratorToggleSwitch))
+            return false;
+
+        var currentSettings = _settingsService.Settings;
+        if (currentSettings.IsAlwaysRunAsAdministratorEnabled == settingToggleSwitch.IsOn)
+            return false;
+
+        if (Environment.IsPrivilegedProcess)
+            return false;
+
+        _fileLogService.WriteWarning(nameof(SettingsPage), "Rejected an AlwaysRunAsAdministrator toggle change because the current process is not privileged.");
+        RestoreToggleSwitchState(settingToggleSwitch, currentSettings);
+        ApplySettingsToViewModel();
+        ShowSettingsStatus(
+            LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"),
+            LocalizedResourceAccessor.GetString("Settings.Validation.PrivilegedProcessRequiredForAlwaysRunAsAdministrator"),
+            InfoBarSeverity.Error);
+        return true;
+    }
+
+    private void RestoreToggleSwitchState(ToggleSwitch settingToggleSwitch, DeskBorderSettings currentSettings)
+    {
+        var expectedToggleSwitchState = TryGetToggleSwitchState(settingToggleSwitch, currentSettings);
+        if (!expectedToggleSwitchState.HasValue || settingToggleSwitch.IsOn == expectedToggleSwitchState.Value)
+            return;
+
+        _isSynchronizingViewModel = true;
+        settingToggleSwitch.IsOn = expectedToggleSwitchState.Value;
+        if (DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => _isSynchronizingViewModel = false))
+            return;
+
+        _isSynchronizingViewModel = false;
+    }
+
+    private bool? TryGetToggleSwitchState(ToggleSwitch settingToggleSwitch, DeskBorderSettings currentSettings)
+    {
+        if (ReferenceEquals(settingToggleSwitch, DeskBorderEnabledToggleSwitch))
+            return currentSettings.IsDeskBorderEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, LaunchOnStartupToggleSwitch))
+            return currentSettings.IsLaunchOnStartupEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, AlwaysRunAsAdministratorToggleSwitch))
+            return currentSettings.IsAlwaysRunAsAdministratorEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, StoreUpdateCheckToggleSwitch))
+            return currentSettings.IsStoreUpdateCheckEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, CreateDesktopEnabledToggleSwitch))
+            return currentSettings.IsDesktopCreationEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch))
+            return currentSettings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty;
+
+        if (ReferenceEquals(settingToggleSwitch, AutoDeleteToggleSwitch))
+            return currentSettings.IsAutoDeleteEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, AutoDeleteWarningToggleSwitch))
+            return currentSettings.IsAutoDeleteWarningEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, AutoDeleteCompletionToastToggleSwitch))
+            return currentSettings.IsAutoDeleteCompletionToastEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, DesktopEdgeAdditionalTriggerDistanceToggleSwitch))
+            return currentSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, ToggleDeskBorderEnabledHotkeyToggleSwitch))
+            return currentSettings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey.IsEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, SwitchToPreviousDesktopHotkeyToggleSwitch))
+            return currentSettings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey.IsEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, SwitchToNextDesktopHotkeyToggleSwitch))
+            return currentSettings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey.IsEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, MoveFocusedWindowToNextDesktopHotkeyToggleSwitch))
+            return currentSettings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey.IsEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, MoveFocusedWindowToPreviousDesktopHotkeyToggleSwitch))
+            return currentSettings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey.IsEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, NavigatorToggleHotkeyToggleSwitch))
+            return currentSettings.NavigatorSettings.ToggleHotkey.IsEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, NavigatorTriggerAreaToggleSwitch))
+            return currentSettings.NavigatorSettings.IsTriggerAreaEnabled;
+
+        return null;
     }
 
     private static void RestartInfoBarAutoHideTimer(DispatcherQueueTimer infoBarAutoHideTimer)
@@ -738,7 +848,7 @@ public sealed partial class SettingsPage : Page
         infoBarAutoHideTimer.Start();
     }
 
-    private async Task SaveSettingsAsync()
+    private async Task SaveSettingsAsync(ToggleSwitch? sourceToggleSwitch = null)
     {
         if (!_isInitialSettingsLoadCompleted || _isSynchronizingViewModel || _isSettingsTransferInProgress)
             return;
@@ -765,8 +875,8 @@ public sealed partial class SettingsPage : Page
             else
                 ClearSettingsStatus();
         }
-        catch (ArgumentException exception) { HandleSaveSettingsFailure(exception.Message); }
-        catch (InvalidOperationException exception) { HandleSaveSettingsFailure(exception.Message); }
+        catch (ArgumentException exception) { HandleSaveSettingsFailure(exception.Message, sourceToggleSwitch); }
+        catch (InvalidOperationException exception) { HandleSaveSettingsFailure(exception.Message, sourceToggleSwitch); }
         finally { _settingsUpdateSemaphore.Release(); }
     }
 
@@ -780,6 +890,20 @@ public sealed partial class SettingsPage : Page
             LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedTitle"),
             LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedMessage"),
             InfoBarSeverity.Informational);
+    }
+
+    private void ShowAlwaysRunAsAdministratorImportExcludedStatus() => ShowSettingsStatus(
+        LocalizedResourceAccessor.GetString("Settings.Import.AlwaysRunAsAdministratorExcludedTitle"),
+        LocalizedResourceAccessor.GetString("Settings.Import.AlwaysRunAsAdministratorExcludedMessage"),
+        InfoBarSeverity.Informational);
+
+    private void ShowPendingAlwaysRunAsAdministratorImportExcludedStatusIfNeeded()
+    {
+        if (!s_shouldShowPendingAlwaysRunAsAdministratorImportExcludedStatus)
+            return;
+
+        s_shouldShowPendingAlwaysRunAsAdministratorImportExcludedStatus = false;
+        ShowAlwaysRunAsAdministratorImportExcludedStatus();
     }
 
     private async Task SelectNavigatorTriggerAreaAsync()
@@ -842,9 +966,11 @@ public sealed partial class SettingsPage : Page
 
     private void ShowSettingsStatus(string title, string message, InfoBarSeverity infoBarSeverity) => ShowInfoBar(SettingsStatusInfoBar, _settingsStatusInfoBarAutoHideTimer, title, message, infoBarSeverity);
 
-    private void HandleSaveSettingsFailure(string message)
+    private void HandleSaveSettingsFailure(string message, ToggleSwitch? sourceToggleSwitch = null)
     {
         s_shouldShowPendingLanguageRestartRecommendedStatus = false;
+        if (sourceToggleSwitch is not null)
+            RestoreToggleSwitchState(sourceToggleSwitch, _settingsService.Settings);
         ApplySettingsToViewModel();
         ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), message, InfoBarSeverity.Error);
     }

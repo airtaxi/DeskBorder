@@ -1,4 +1,5 @@
 using DeskBorder.DependencyInjection;
+using DeskBorder.Helpers;
 using DeskBorder.Models;
 using DeskBorder.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,15 +8,11 @@ using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.AppLifecycle;
 using System.Diagnostics;
 using System.Text;
-using System.Text.Json;
-using Windows.Storage;
 
 namespace DeskBorder;
 
 public partial class App : Application
 {
-    private const string SettingsKey = "DeskBorderSettings";
-
     private static IServiceProvider? s_services;
 
     public static ResourceLoader ResourceLoader { get; set; } = null!;
@@ -55,9 +52,8 @@ public partial class App : Application
 
     protected override async void OnLaunched(LaunchActivatedEventArgs launchActivatedEventArgs)
     {
-        var appActivationArguments = AppInstance.GetCurrent().GetActivatedEventArgs();
-        var shouldActivateManageWindow = appActivationArguments.Kind != ExtendedActivationKind.StartupTask;
-        await GetRequiredService<IApplicationBootstrapService>().InitializeAsync(shouldActivateManageWindow);
+        _ = launchActivatedEventArgs;
+        await InitializeApplicationAsync(AppInstance.GetCurrent().GetActivatedEventArgs());
     }
 
     private static IServiceProvider ConfigureServices()
@@ -71,13 +67,14 @@ public partial class App : Application
 
     private async void OnRedirectedActivation(AppActivationArguments appActivationArguments)
     {
-        var shouldActivateManageWindow = appActivationArguments.Kind != ExtendedActivationKind.StartupTask;
-        await GetRequiredService<IApplicationBootstrapService>().InitializeAsync(shouldActivateManageWindow);
+        await InitializeApplicationAsync(appActivationArguments);
     }
+
+    private async Task InitializeApplicationAsync(AppActivationArguments appActivationArguments) => await GetRequiredService<IApplicationBootstrapService>().InitializeAsync(StartupRegistrationHelper.ShouldActivateManageWindow(appActivationArguments));
 
     private static AppLanguagePreference LoadInitialLanguagePreference()
     {
-        var storedSettings = LoadInitialSettings();
+        var storedSettings = StartupRegistrationHelper.TryLoadStoredSettings();
         return storedSettings?.AppLanguagePreference ?? AppLanguagePreference.System;
     }
 
@@ -96,21 +93,8 @@ public partial class App : Application
 
     private static ApplicationThemePreference LoadInitialApplicationThemePreference()
     {
-        var storedSettings = LoadInitialSettings();
+        var storedSettings = StartupRegistrationHelper.TryLoadStoredSettings();
         return storedSettings?.ApplicationThemePreference ?? ApplicationThemePreference.System;
-    }
-
-    private static DeskBorderSettings? LoadInitialSettings()
-    {
-        if (ApplicationData.Current.LocalSettings.Values[SettingsKey] is not string serializedSettings)
-            return null;
-
-        try
-        {
-            return JsonSerializer.Deserialize(serializedSettings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings);
-        }
-        catch (JsonException) { return null; }
-        catch (NotSupportedException) { return null; }
     }
 
     private static void OnApplicationUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs unhandledExceptionEventArgs)

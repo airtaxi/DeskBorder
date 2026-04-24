@@ -1,3 +1,4 @@
+using DeskBorder.Helpers;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
@@ -13,6 +14,10 @@ public static class Program
     public static void Main()
     {
         WinRT.ComWrappersSupport.InitializeComWrappers();
+        var currentAppActivationArguments = AppInstance.GetCurrent().GetActivatedEventArgs();
+        if (StartupRegistrationHelper.ShouldTryLaunchAsAdministratorFromStoredSettings(currentAppActivationArguments)
+            && StartupRegistrationHelper.TryLaunchAsAdministratorAsync().GetAwaiter().GetResult())
+            return;
 
         if (TryRedirectToExistingInstance())
             return;

@@ -498,6 +498,12 @@
   <data name="Settings.Import.SuccessTitle" xml:space="preserve">
     <value>インポート完了</value>
   </data>
+  <data name="Settings.Import.AlwaysRunAsAdministratorExcludedTitle" xml:space="preserve">
+    <value>インポートから除外された設定</value>
+  </data>
+  <data name="Settings.Import.AlwaysRunAsAdministratorExcludedMessage" xml:space="preserve">
+    <value>ストアのポリシーにより、「常に Administrator として実行」設定はインポート対象から除外され、現在の値が維持されました。</value>
+  </data>
   <data name="Settings.Reset.CancelledMessage" xml:space="preserve">
     <value>設定のリセットをキャンセルしました。</value>
   </data>
@@ -548,6 +554,9 @@
   </data>
   <data name="Settings.Validation.ProcessNameRequired" xml:space="preserve">
     <value>プロセス名を入力してください。</value>
+  </data>
+  <data name="Settings.Validation.PrivilegedProcessRequiredForAlwaysRunAsAdministrator" xml:space="preserve">
+    <value>この設定は管理者権限で実行中の場合にのみ変更できます。</value>
   </data>
   <data name="SettingsPage_AddBlacklistedProcessNameButton.Content" xml:space="preserve">
     <value>実行中のプロセスから追加</value>
@@ -814,6 +823,18 @@
   </data>
   <data name="SettingsPage_LaunchOnStartupToggleSwitch.Header" xml:space="preserve">
     <value>システム起動時に実行</value>
+  </data>
+  <data name="SettingsPage_AdministratorModeTitleTextBlock.Text" xml:space="preserve">
+    <value>管理者として実行</value>
+  </data>
+  <data name="SettingsPage_AdministratorModeDescriptionTextBlock.Text" xml:space="preserve">
+    <value>必要に応じて DeskBorder を管理者権限で実行するよう設定します。</value>
+  </data>
+  <data name="SettingsPage_AlwaysRunAsAdministratorToggleSwitch.Header" xml:space="preserve">
+    <value>常に Administrator として実行</value>
+  </data>
+  <data name="SettingsPage_AlwaysRunAsAdministratorDescriptionTextBlock.Text" xml:space="preserve">
+    <value>管理者権限で実行すると、一部の環境でデスクトップ切り替えが正しく動作しない問題の改善に役立つ場合があります。設定は次回起動時から適用されます。</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>

@@ -1,45 +1,43 @@
-using Windows.ApplicationModel;
+using DeskBorder.Helpers;
 
 namespace DeskBorder.Services;
 
 public sealed class StartupRegistrationService(IFileLogService fileLogService) : IStartupRegistrationService
 {
-    private const string StartupTaskIdentifier = "DeskBorderStartup";
     private readonly IFileLogService _fileLogService = fileLogService;
 
-    public async Task<bool> GetIsEnabledAsync()
+    public bool IsCurrentProcessElevated => StartupRegistrationHelper.IsCurrentProcessElevated();
+
+    public async Task<StartupRegistrationState> GetStateAsync()
     {
         try
         {
-            var startupTask = await StartupTask.GetAsync(StartupTaskIdentifier);
-            return startupTask.State is StartupTaskState.Enabled or StartupTaskState.EnabledByPolicy;
+            return await StartupRegistrationHelper.GetStartupRegistrationStateAsync();
         }
         catch (Exception exception)
         {
             _fileLogService.WriteWarning(nameof(StartupRegistrationService), "Failed to read startup registration state.", exception);
-            return false;
+            return default;
         }
     }
 
-    public async Task SetIsEnabledAsync(bool isEnabled)
+    public async Task SetStateAsync(StartupRegistrationState startupRegistrationState)
     {
         try
         {
-            var startupTask = await StartupTask.GetAsync(StartupTaskIdentifier);
-            if (isEnabled)
-            {
-                var startupTaskState = await startupTask.RequestEnableAsync();
-                _fileLogService.WriteInformation(nameof(StartupRegistrationService), $"Requested startup registration enable. Result={startupTaskState}.");
-            }
-            else
-            {
-                startupTask.Disable();
-                _fileLogService.WriteInformation(nameof(StartupRegistrationService), "Disabled startup registration.");
-            }
+            await StartupRegistrationHelper.SetStartupRegistrationStateAsync(
+                startupRegistrationState.IsLaunchOnStartupEnabled,
+                startupRegistrationState.IsAlwaysRunAsAdministratorEnabled);
+            _fileLogService.WriteInformation(
+                nameof(StartupRegistrationService),
+                $"Applied startup registration state. LaunchOnStartup={startupRegistrationState.IsLaunchOnStartupEnabled}, AlwaysRunAsAdministrator={startupRegistrationState.IsAlwaysRunAsAdministratorEnabled}.");
         }
         catch (Exception exception)
         {
-            _fileLogService.WriteWarning(nameof(StartupRegistrationService), $"Failed to set startup registration state to {isEnabled}.", exception);
+            _fileLogService.WriteWarning(
+                nameof(StartupRegistrationService),
+                $"Failed to set startup registration state. LaunchOnStartup={startupRegistrationState.IsLaunchOnStartupEnabled}, AlwaysRunAsAdministrator={startupRegistrationState.IsAlwaysRunAsAdministratorEnabled}.",
+                exception);
         }
     }
 }
