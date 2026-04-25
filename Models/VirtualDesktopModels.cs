@@ -15,6 +15,7 @@ public enum VirtualDesktopOperationStatus
     WindowNotFound,
     WindowCannotMove,
     UnsupportedDirection,
+    UnexpectedError,
 }
 
 public enum DesktopNavigationActionKind

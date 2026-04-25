@@ -1,5 +1,6 @@
 using DeskBorder.Helpers;
 using DeskBorder.Models;
+using System.ComponentModel;
 
 namespace DeskBorder.Services;
 
@@ -240,6 +241,8 @@ public sealed class DesktopLifecycleService(
         _ => null
     };
 
+    private static string FormatLastWindowsErrorDetails(int lastWindowsErrorCode) => $"LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {new Win32Exception(lastWindowsErrorCode).Message})";
+
     private DesktopSwitchMouseLocationContext? TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection desktopSwitchDirection)
     {
         try
@@ -281,9 +284,9 @@ public sealed class DesktopLifecycleService(
             return;
         }
 
-        if (!MouseHelper.TrySetCursorPosition(targetMouseLocation.Value))
+        if (!MouseHelper.TrySetCursorPosition(targetMouseLocation.Value, out var lastWindowsErrorCode))
         {
-            _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to apply mouse location after desktop switch. TriggerSource={triggerSource}, Option={desktopSwitchMouseLocationOption}, X={targetMouseLocation.Value.X}, Y={targetMouseLocation.Value.Y}.");
+            _fileLogService.WriteError(nameof(DesktopLifecycleService), $"Failed to apply mouse location after desktop switch. TriggerSource={triggerSource}, Option={desktopSwitchMouseLocationOption}, X={targetMouseLocation.Value.X}, Y={targetMouseLocation.Value.Y}, {FormatLastWindowsErrorDetails(lastWindowsErrorCode)}.");
             return;
         }
 

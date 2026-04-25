@@ -40,11 +40,26 @@ public static class MouseHelper
 
     public static void SetCursorPosition(ScreenPoint position)
     {
-        if (!Win32.SetCursorPos(position.X, position.Y))
-            throw new InvalidOperationException("Unable to set the cursor position.");
+        if (TrySetCursorPosition(position, out var lastWindowsErrorCode))
+            return;
+
+        var lastWindowsErrorMessage = new Win32Exception(lastWindowsErrorCode).Message;
+        throw new InvalidOperationException($"Unable to set the cursor position. LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {lastWindowsErrorMessage}).");
     }
 
-    public static bool TrySetCursorPosition(ScreenPoint position) => Win32.SetCursorPos(position.X, position.Y);
+    public static bool TrySetCursorPosition(ScreenPoint position) => TrySetCursorPosition(position, out _);
+
+    public static bool TrySetCursorPosition(ScreenPoint position, out int lastWindowsErrorCode)
+    {
+        if (Win32.SetCursorPos(position.X, position.Y))
+        {
+            lastWindowsErrorCode = 0;
+            return true;
+        }
+
+        lastWindowsErrorCode = Marshal.GetLastWin32Error();
+        return false;
+    }
 
     public static CursorClippingState GetCursorClippingState()
     {

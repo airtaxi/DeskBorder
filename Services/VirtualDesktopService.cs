@@ -32,7 +32,10 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             VirtualDesktopFoundation.MoveDesktop(virtualDesktopShellConnection.VirtualDesktopShell, createdVirtualDesktop, previousWorkspaceSnapshot.CurrentDesktopNumber - 1);
         }
 
-        VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell, createdVirtualDesktop);
+        var createdDesktopIdentifier = VirtualDesktopFoundation.GetDesktopIdentifier(createdVirtualDesktop).ToString();
+        try { VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell, createdVirtualDesktop); }
+        catch (Exception exception) { return CreateFailedDesktopSwitchNavigationResult(previousWorkspaceSnapshot, $"CreateDesktopAndSwitch could not switch to desktop '{createdDesktopIdentifier}' for direction {desktopSwitchDirection}.", exception); }
+
         var currentWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
         _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Created a desktop for direction {desktopSwitchDirection}, inserted it before the current desktop when needed, and switched to desktop {currentWorkspaceSnapshot.CurrentDesktopIdentifier}.");
         return new()
@@ -271,7 +274,9 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
 
         var targetDesktopIdentifier = VirtualDesktopFoundation.GetDesktopIdentifier(adjacentVirtualDesktop);
         VirtualDesktopFoundation.MoveViewToDesktop(virtualDesktopShellConnection.VirtualDesktopShell, applicationView, adjacentVirtualDesktop);
-        VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell, adjacentVirtualDesktop);
+        try { VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell, adjacentVirtualDesktop); }
+        catch (Exception exception) { return CreateFailedDesktopSwitchNavigationResult(previousWorkspaceSnapshot, $"MoveFocusedWindowToAdjacentDesktop could not switch to desktop '{targetDesktopIdentifier}' for direction {desktopSwitchDirection}.", exception); }
+
         FocusWindowOnTargetDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManager, focusedWindowHandle, targetDesktopIdentifier);
         _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Moved the focused window and switched desktop to '{targetDesktopIdentifier}'.");
         return new()
@@ -307,7 +312,9 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         }
 
         var targetDesktopIdentifier = VirtualDesktopFoundation.GetDesktopIdentifier(adjacentVirtualDesktop).ToString();
-        VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell, adjacentVirtualDesktop);
+        try { VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell, adjacentVirtualDesktop); }
+        catch (Exception exception) { return CreateFailedDesktopSwitchNavigationResult(previousWorkspaceSnapshot, $"SwitchDesktop could not switch to desktop '{targetDesktopIdentifier}' for direction {desktopSwitchDirection}.", exception); }
+
         _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Switched desktop to '{targetDesktopIdentifier}'.");
         return new()
         {
@@ -348,7 +355,9 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             };
         }
 
-        VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell, targetVirtualDesktop.Value);
+        try { VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShellConnection.VirtualDesktopShell, targetVirtualDesktop.Value); }
+        catch (Exception exception) { return CreateFailedDesktopSwitchNavigationResult(previousWorkspaceSnapshot, $"SwitchToDesktop could not switch to desktop '{desktopIdentifier}'.", exception); }
+
         _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Switched directly to desktop '{desktopIdentifier}'.");
         return new()
         {
@@ -390,6 +399,15 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         SourceDesktopIdentifier = workspaceSnapshot.CurrentDesktopIdentifier
     };
 
+    private static string FormatLastWindowsErrorDetails(int lastWindowsErrorCode) => $"LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {new Win32Exception(lastWindowsErrorCode).Message})";
+
+    private DesktopNavigationResult CreateFailedDesktopSwitchNavigationResult(VirtualDesktopWorkspaceSnapshot previousWorkspaceSnapshot, string message, Exception exception)
+    {
+        var lastWindowsErrorCode = Marshal.GetLastWin32Error();
+        _fileLogService.WriteError(nameof(VirtualDesktopService), $"{message} ExceptionHResult=0x{exception.HResult:X8}, {FormatLastWindowsErrorDetails(lastWindowsErrorCode)}.", exception);
+        return CreateFailedNavigationResult(VirtualDesktopOperationStatus.UnexpectedError, previousWorkspaceSnapshot);
+    }
+
     private DesktopNavigationResult MoveFocusedWindowToCreatedDesktop(
         VirtualDesktopShell virtualDesktopShell,
         VirtualDesktopWorkspaceSnapshot previousWorkspaceSnapshot,
@@ -403,7 +421,9 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
 
         var targetDesktopIdentifier = VirtualDesktopFoundation.GetDesktopIdentifier(createdVirtualDesktop);
         VirtualDesktopFoundation.MoveViewToDesktop(virtualDesktopShell, applicationView, createdVirtualDesktop);
-        VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShell, createdVirtualDesktop);
+        try { VirtualDesktopFoundation.SwitchDesktop(virtualDesktopShell, createdVirtualDesktop); }
+        catch (Exception exception) { return CreateFailedDesktopSwitchNavigationResult(previousWorkspaceSnapshot, $"MoveFocusedWindowToCreatedDesktop could not switch to desktop '{targetDesktopIdentifier}' for direction {desktopSwitchDirection}.", exception); }
+
         FocusWindowOnTargetDesktop(virtualDesktopShell.VirtualDesktopManager, focusedWindowHandle, targetDesktopIdentifier);
         var currentWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShell);
         _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Created a desktop for direction {desktopSwitchDirection}, moved the focused window, and switched to desktop '{targetDesktopIdentifier}'.");
