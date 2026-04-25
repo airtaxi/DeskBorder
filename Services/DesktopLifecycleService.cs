@@ -241,6 +241,17 @@ public sealed class DesktopLifecycleService(
         _ => null
     };
 
+    private static bool HasActivationModifierBecomeSatisfiedWhileRemainingOnDesktopEdge(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState)
+        => previousState.ActiveDesktopEdge == currentState.ActiveDesktopEdge
+        && currentState.ActiveDesktopEdge != DesktopEdgeKind.None
+        && ((!previousState.IsSwitchDesktopModifierSatisfied && currentState.IsSwitchDesktopModifierSatisfied)
+            || (!previousState.IsCreateDesktopModifierSatisfied && currentState.IsCreateDesktopModifierSatisfied));
+
+    private static bool ShouldHandleDesktopEdgeActivation(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState, bool isDesktopEdgeActivationArmed)
+        => isDesktopEdgeActivationArmed
+        && currentState.ActiveDesktopEdge != DesktopEdgeKind.None
+        && (currentState.HasCursorEnteredDesktopEdge || HasActivationModifierBecomeSatisfiedWhileRemainingOnDesktopEdge(previousState, currentState));
+
     private static string FormatLastWindowsErrorDetails(int lastWindowsErrorCode) => $"LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {new Win32Exception(lastWindowsErrorCode).Message})";
 
     private DesktopSwitchMouseLocationContext? TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection desktopSwitchDirection)
@@ -341,6 +352,21 @@ public sealed class DesktopLifecycleService(
         return true;
     }
 
+    private DesktopEdgeActivationEvaluation EvaluateDesktopEdgeActivation(DesktopEdgeMonitoringState currentState, DeskBorderSettings currentSettings)
+    {
+        if (!currentState.IsDesktopEdgeAvailable || currentState.ActiveDesktopEdge == DesktopEdgeKind.None)
+            return new(false, false, CreateNoOperationNavigationResult(_virtualDesktopService.GetWorkspaceSnapshot()), DesktopSwitchDirection.Previous);
+
+        var desktopSwitchDirection = ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge, currentSettings.IsVerticalDesktopSwitchDirectionReversed);
+        var currentWorkspaceSnapshot = _virtualDesktopService.GetWorkspaceSnapshot();
+        var canCreateDesktop = currentState.IsCreateDesktopModifierSatisfied
+            && currentSettings.IsDesktopCreationEnabled
+            && IsCurrentDesktopOuterForDesktopSwitchDirection(currentWorkspaceSnapshot, desktopSwitchDirection)
+            && !ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(currentSettings, currentWorkspaceSnapshot);
+        var shouldAttemptActivation = currentState.IsSwitchDesktopModifierSatisfied || canCreateDesktop;
+        return new(shouldAttemptActivation, canCreateDesktop, CreateNoOperationNavigationResult(currentWorkspaceSnapshot), desktopSwitchDirection);
+    }
+
     private bool ShouldCreateDesktopAfterFailedSwitch(
         DeskBorderSettings currentSettings,
         DesktopNavigationResult switchDesktopNavigationResult,
@@ -371,33 +397,26 @@ public sealed class DesktopLifecycleService(
         return _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
     }
 
-    private DesktopNavigationResult HandleEdgeActivation(DesktopEdgeMonitoringState currentState, DeskBorderSettings currentSettings)
+    private DesktopNavigationResult HandleEdgeActivation(DesktopEdgeMonitoringState currentState, DeskBorderSettings currentSettings, DesktopEdgeActivationEvaluation desktopEdgeActivationEvaluation)
     {
-        if (!currentState.IsDesktopEdgeAvailable || currentState.ActiveDesktopEdge == DesktopEdgeKind.None)
-            return CreateNoOperationNavigationResult(_virtualDesktopService.GetWorkspaceSnapshot());
-
-        var desktopSwitchDirection = ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge, currentSettings.IsVerticalDesktopSwitchDirectionReversed);
-        var currentWorkspaceSnapshot = _virtualDesktopService.GetWorkspaceSnapshot();
-        var canCreateDesktop = currentState.IsCreateDesktopModifierSatisfied
-            && currentSettings.IsDesktopCreationEnabled
-            && IsCurrentDesktopOuterForDesktopSwitchDirection(currentWorkspaceSnapshot, desktopSwitchDirection)
-            && !ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(currentSettings, currentWorkspaceSnapshot);
+        if (!desktopEdgeActivationEvaluation.ShouldAttemptActivation)
+            return desktopEdgeActivationEvaluation.NoOperationNavigationResult;
 
         if (currentState.IsSwitchDesktopModifierSatisfied)
         {
-            var switchOrCreateDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, desktopSwitchDirection, currentState.IsCreateDesktopModifierSatisfied);
+            var switchOrCreateDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, desktopEdgeActivationEvaluation.DesktopSwitchDirection, currentState.IsCreateDesktopModifierSatisfied);
             ConsumeKeyboardModifiersAfterDesktopAction(switchOrCreateDesktopNavigationResult, currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
             return switchOrCreateDesktopNavigationResult;
         }
 
-        if (canCreateDesktop)
+        if (desktopEdgeActivationEvaluation.CanCreateDesktop)
         {
-            var createDesktopAndSwitchResult = _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
+            var createDesktopAndSwitchResult = _virtualDesktopService.CreateDesktopAndSwitch(desktopEdgeActivationEvaluation.DesktopSwitchDirection);
             ConsumeKeyboardModifiersAfterDesktopAction(createDesktopAndSwitchResult, currentSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys);
             return createDesktopAndSwitchResult;
         }
 
-        return CreateNoOperationNavigationResult(currentWorkspaceSnapshot);
+        return desktopEdgeActivationEvaluation.NoOperationNavigationResult;
     }
 
     private async Task HandleNavigationResultAsync(DesktopNavigationResult desktopNavigationResult, CancellationToken cancellationToken = default)
@@ -529,9 +548,10 @@ public sealed class DesktopLifecycleService(
         if (!IsRunning)
             return;
 
+        var previousState = desktopEdgeMonitoringStateChangedEventArgs.PreviousState;
         var currentState = desktopEdgeMonitoringStateChangedEventArgs.CurrentState;
         if (_navigatorService.IsVisible
-            && HaveDisplayMonitorsChanged(desktopEdgeMonitoringStateChangedEventArgs.PreviousState.DisplayMonitors, currentState.DisplayMonitors))
+            && HaveDisplayMonitorsChanged(previousState.DisplayMonitors, currentState.DisplayMonitors))
         {
             await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
         }
@@ -543,25 +563,28 @@ public sealed class DesktopLifecycleService(
             _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
         }
 
-        if (!currentState.HasCursorEnteredDesktopEdge || !_isDesktopEdgeActivationArmed)
+        if (!ShouldHandleDesktopEdgeActivation(previousState, currentState, _isDesktopEdgeActivationArmed))
             return;
 
-        _isDesktopEdgeActivationArmed = false;
-        _lastTriggeredDesktopEdge = currentState.ActiveDesktopEdge;
         await _operationSemaphore.WaitAsync();
         try
         {
             await CancelPendingDesktopDeletionAsync();
             var currentSettings = _settingsService.Settings;
-            var desktopNavigationResult = HandleEdgeActivation(currentState, currentSettings);
+            var desktopEdgeActivationEvaluation = EvaluateDesktopEdgeActivation(currentState, currentSettings);
+            if (!desktopEdgeActivationEvaluation.ShouldAttemptActivation)
+                return;
+
+            _isDesktopEdgeActivationArmed = false;
+            _lastTriggeredDesktopEdge = currentState.ActiveDesktopEdge;
+            var desktopNavigationResult = HandleEdgeActivation(currentState, currentSettings, desktopEdgeActivationEvaluation);
             if (desktopNavigationResult.NavigationActionKind != DesktopNavigationActionKind.None)
             {
                 _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Handled desktop edge activation. Action={desktopNavigationResult.NavigationActionKind}, Status={desktopNavigationResult.OperationStatus}.");
-                var desktopSwitchDirection = ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge, currentSettings.IsVerticalDesktopSwitchDirectionReversed);
                 TryApplyMouseLocationAfterDesktopSwitch(
                     desktopNavigationResult,
                     currentSettings.DesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption,
-                    CreateDesktopSwitchMouseLocationContext(currentState, desktopSwitchDirection),
+                    CreateDesktopSwitchMouseLocationContext(currentState, desktopEdgeActivationEvaluation.DesktopSwitchDirection),
                     "DesktopEdge");
             }
             await HandleNavigationResultAsync(desktopNavigationResult);
@@ -679,4 +702,10 @@ public sealed class DesktopLifecycleService(
         ScreenPoint InputCursorPosition,
         DesktopSwitchDirection DesktopSwitchDirection,
         DesktopEdgeKind TriggeredDesktopEdge);
+
+    private readonly record struct DesktopEdgeActivationEvaluation(
+        bool ShouldAttemptActivation,
+        bool CanCreateDesktop,
+        DesktopNavigationResult NoOperationNavigationResult,
+        DesktopSwitchDirection DesktopSwitchDirection);
 }
