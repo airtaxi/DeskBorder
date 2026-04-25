@@ -1,8 +1,10 @@
 namespace DeskBorder.Services;
 
+public readonly record struct MouseMovementDelta(int HorizontalPixels, int VerticalPixels);
+
 public interface IMouseMovementTrackingService
 {
-    int ConsumePendingHorizontalMovement();
+    MouseMovementDelta ConsumePendingMouseMovementDelta();
 
     void ProcessRawInputMessage(nint rawInputHandle);
 

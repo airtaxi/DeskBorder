@@ -143,7 +143,15 @@ public sealed partial class SettingsPage : Page
         ? Visibility.Visible
         : Visibility.Collapsed;
 
+    private bool GetDesktopEdgeIgnoreZoneControlsEnabled(bool isVerticalDesktopSwitchingEnabled) => !isVerticalDesktopSwitchingEnabled;
+
     private Visibility GetDesktopCreationSkippedWhenCurrentDesktopIsEmptyVisibility(bool isDesktopCreationEnabled) => isDesktopCreationEnabled
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
+    private bool GetMultiDisplayBehaviorSelectionEnabled(bool isVerticalDesktopSwitchingEnabled) => !isVerticalDesktopSwitchingEnabled;
+
+    private Visibility GetVerticalDesktopSwitchingOptionsVisibility(bool areVerticalDesktopSwitchingOptionControlsVisible) => areVerticalDesktopSwitchingOptionControlsVisible
         ? Visibility.Visible
         : Visibility.Collapsed;
 #pragma warning restore CA1822 // Mark members as static => Used on XAML bindings
@@ -373,6 +381,9 @@ public sealed partial class SettingsPage : Page
     private async void OnModifierSelectionCheckBoxClicked(object sender, RoutedEventArgs routedEventArgs)
     {
         _ = routedEventArgs;
+        if (ShouldRejectVerticalDesktopSwitchingModifierSelectionChange(sender))
+            return;
+
         await ShowWindowsOnlyModifierWarningIfNeededAsync(sender);
         QueueSettingsSave();
     }
@@ -434,6 +445,9 @@ public sealed partial class SettingsPage : Page
             return;
 
         if (ShouldRejectAlwaysRunAsAdministratorToggleChange(settingToggleSwitch))
+            return;
+
+        if (ShouldRejectVerticalDesktopSwitchingToggleChange(settingToggleSwitch))
             return;
 
         QueueSettingsSave(settingToggleSwitch);
@@ -818,6 +832,15 @@ public sealed partial class SettingsPage : Page
         if (ReferenceEquals(settingToggleSwitch, DesktopEdgeAdditionalTriggerDistanceToggleSwitch))
             return currentSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
 
+        if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch))
+            return currentSettings.IsVerticalDesktopSwitchingEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchDirectionReversedToggleSwitch))
+            return currentSettings.IsVerticalDesktopSwitchDirectionReversed;
+
+        if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch))
+            return currentSettings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment;
+
         if (ReferenceEquals(settingToggleSwitch, ToggleDeskBorderEnabledHotkeyToggleSwitch))
             return currentSettings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey.IsEnabled;
 
@@ -846,6 +869,80 @@ public sealed partial class SettingsPage : Page
     {
         infoBarAutoHideTimer.Stop();
         infoBarAutoHideTimer.Start();
+    }
+
+    private bool ShouldRejectVerticalDesktopSwitchingModifierSelectionChange(object sender)
+    {
+        if (!ViewModel.IsVerticalDesktopSwitchingEnabled || sender is not FrameworkElement { Tag: string modifierSelectionTag })
+            return false;
+
+        var modifierKeySelectionViewModel = GetModifierSelectionViewModel(ViewModel, modifierSelectionTag);
+        if (modifierKeySelectionViewModel is null || modifierKeySelectionViewModel.CreateKeyboardModifierKeys() != KeyboardModifierKeys.None)
+            return false;
+
+        var validationMessage = modifierSelectionTag switch
+        {
+            SwitchDesktopModifierSelectionTag => LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingSwitchDesktopModifier"),
+            CreateDesktopModifierSelectionTag when ViewModel.IsDesktopCreationEnabled => LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingCreateDesktopModifier"),
+            _ => null
+        };
+        if (string.IsNullOrWhiteSpace(validationMessage))
+            return false;
+
+        ApplySettingsToViewModel();
+        ShowSettingsStatus(
+            LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"),
+            validationMessage,
+            InfoBarSeverity.Error);
+        return true;
+    }
+
+    private bool ShouldRejectVerticalDesktopSwitchingToggleChange(ToggleSwitch settingToggleSwitch)
+    {
+        var currentSettings = _settingsService.Settings;
+        if (ReferenceEquals(settingToggleSwitch, CreateDesktopEnabledToggleSwitch)
+            && settingToggleSwitch.IsOn
+            && ViewModel.IsVerticalDesktopSwitchingEnabled
+            && ViewModel.CreateDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None)
+        {
+            RestoreToggleSwitchState(settingToggleSwitch, currentSettings);
+            ApplySettingsToViewModel();
+            ShowSettingsStatus(
+                LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"),
+                LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier"),
+                InfoBarSeverity.Error);
+            return true;
+        }
+
+        if (!ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch) || !settingToggleSwitch.IsOn)
+            return false;
+
+        if (currentSettings.IsVerticalDesktopSwitchingEnabled == settingToggleSwitch.IsOn)
+            return false;
+
+        if (ViewModel.SwitchDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None)
+        {
+            RestoreToggleSwitchState(settingToggleSwitch, currentSettings);
+            ApplySettingsToViewModel();
+            ShowSettingsStatus(
+                LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"),
+                LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingEnableRequiresSwitchDesktopModifier"),
+                InfoBarSeverity.Error);
+            return true;
+        }
+
+        if (ViewModel.IsDesktopCreationEnabled && ViewModel.CreateDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None)
+        {
+            RestoreToggleSwitchState(settingToggleSwitch, currentSettings);
+            ApplySettingsToViewModel();
+            ShowSettingsStatus(
+                LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"),
+                LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier"),
+                InfoBarSeverity.Error);
+            return true;
+        }
+
+        return false;
     }
 
     private async Task SaveSettingsAsync(ToggleSwitch? sourceToggleSwitch = null)

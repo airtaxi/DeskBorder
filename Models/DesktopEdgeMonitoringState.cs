@@ -5,6 +5,8 @@ public enum DesktopEdgeKind
     None,
     LeftOuterDisplayEdge,
     RightOuterDisplayEdge,
+    TopDisplayEdge,
+    BottomDisplayEdge,
 }
 
 public enum DesktopEdgeAvailabilityStatus

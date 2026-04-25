@@ -27,6 +27,7 @@ public sealed class DesktopLifecycleService(
     private CancellationTokenSource? _pendingDesktopDeletionCancellationTokenSource;
     private Task? _pendingDesktopDeletionTask;
     private bool _isDesktopEdgeActivationArmed = true;
+    private DesktopEdgeKind _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
 
     public bool IsRunning { get; private set; }
 
@@ -37,6 +38,7 @@ public sealed class DesktopLifecycleService(
 
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Starting desktop lifecycle service.");
         _isDesktopEdgeActivationArmed = true;
+        _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
         if (!_hotkeyService.IsInitialized)
             _hotkeyService.Initialize();
 
@@ -59,6 +61,7 @@ public sealed class DesktopLifecycleService(
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Stopping desktop lifecycle service.");
         IsRunning = false;
         _isDesktopEdgeActivationArmed = true;
+        _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
         _desktopEdgeMonitorService.MonitoringStateChanged -= OnDesktopEdgeMonitorServiceMonitoringStateChanged;
         _hotkeyService.HotkeyInvoked -= OnHotkeyServiceHotkeyInvoked;
         _localizationService.LanguageChanged -= OnLocalizationServiceLanguageChanged;
@@ -70,10 +73,12 @@ public sealed class DesktopLifecycleService(
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Desktop lifecycle service stopped.");
     }
 
-    private static DesktopSwitchDirection ConvertToDesktopSwitchDirection(DesktopEdgeKind desktopEdgeKind) => desktopEdgeKind switch
+    private static DesktopSwitchDirection ConvertToDesktopSwitchDirection(DesktopEdgeKind desktopEdgeKind, bool isVerticalDesktopSwitchDirectionReversed) => desktopEdgeKind switch
     {
         DesktopEdgeKind.LeftOuterDisplayEdge => DesktopSwitchDirection.Previous,
         DesktopEdgeKind.RightOuterDisplayEdge => DesktopSwitchDirection.Next,
+        DesktopEdgeKind.TopDisplayEdge => isVerticalDesktopSwitchDirectionReversed ? DesktopSwitchDirection.Next : DesktopSwitchDirection.Previous,
+        DesktopEdgeKind.BottomDisplayEdge => isVerticalDesktopSwitchDirectionReversed ? DesktopSwitchDirection.Previous : DesktopSwitchDirection.Next,
         _ => throw new InvalidOperationException("The requested desktop edge kind is not supported.")
     };
 
@@ -95,15 +100,19 @@ public sealed class DesktopLifecycleService(
             || sourceDesktopEntry.IsRightOuterDesktop && targetDesktopEntry.DesktopNumber == sourceDesktopEntry.DesktopNumber - 1;
     }
 
-    private static bool HasPointerMovedAwayFromDesktopEdge(DesktopEdgeMonitoringState currentState)
+    private static bool HasPointerMovedAwayFromDesktopEdge(DesktopEdgeMonitoringState currentState, DesktopEdgeKind lastTriggeredDesktopEdge)
     {
         if (currentState.CurrentDisplayMonitor is null || currentState.DisplayMonitors.Length == 0)
             return false;
 
-        var leftmostDisplayEdge = currentState.DisplayMonitors.Min(displayMonitor => displayMonitor.MonitorBounds.Left);
-        var rightmostDisplayEdge = currentState.DisplayMonitors.Max(displayMonitor => displayMonitor.MonitorBounds.Right) - 1;
-        return currentState.CursorPosition.X >= leftmostDisplayEdge + DesktopEdgeTriggerRearmDistanceInPixels
-            && currentState.CursorPosition.X <= rightmostDisplayEdge - DesktopEdgeTriggerRearmDistanceInPixels;
+        return lastTriggeredDesktopEdge switch
+        {
+            DesktopEdgeKind.LeftOuterDisplayEdge => currentState.CursorPosition.X >= currentState.DisplayMonitors.Min(displayMonitor => displayMonitor.MonitorBounds.Left) + DesktopEdgeTriggerRearmDistanceInPixels,
+            DesktopEdgeKind.RightOuterDisplayEdge => currentState.CursorPosition.X <= currentState.DisplayMonitors.Max(displayMonitor => displayMonitor.MonitorBounds.Right) - DesktopEdgeTriggerRearmDistanceInPixels - 1,
+            DesktopEdgeKind.TopDisplayEdge => currentState.CursorPosition.Y >= currentState.CurrentDisplayMonitor.MonitorBounds.Top + DesktopEdgeTriggerRearmDistanceInPixels,
+            DesktopEdgeKind.BottomDisplayEdge => currentState.CursorPosition.Y <= currentState.CurrentDisplayMonitor.MonitorBounds.Bottom - DesktopEdgeTriggerRearmDistanceInPixels - 1,
+            _ => false
+        };
     }
 
     private static bool HaveDisplayMonitorsChanged(DisplayMonitorInfo[] previousDisplayMonitors, DisplayMonitorInfo[] currentDisplayMonitors)
@@ -144,11 +153,12 @@ public sealed class DesktopLifecycleService(
         return new(left, top, right, bottom);
     }
 
-    private static DesktopSwitchMouseLocationContext CreateDesktopSwitchMouseLocationContext(DesktopEdgeMonitoringState currentState) => new(
+    private static DesktopSwitchMouseLocationContext CreateDesktopSwitchMouseLocationContext(DesktopEdgeMonitoringState currentState, DesktopSwitchDirection desktopSwitchDirection) => new(
         currentState.DisplayMonitors,
         currentState.CurrentDisplayMonitor,
         currentState.CursorPosition,
-        ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge));
+        desktopSwitchDirection,
+        currentState.ActiveDesktopEdge);
 
     private static ScreenPoint CreateScreenRectangleCenterPoint(ScreenRectangle screenRectangle) => new(
         screenRectangle.Left + screenRectangle.Width / 2,
@@ -158,7 +168,7 @@ public sealed class DesktopLifecycleService(
 
     private static DisplayMonitorInfo? FindPrimaryDisplayMonitor(DisplayMonitorInfo[] displayMonitors) => displayMonitors.FirstOrDefault(displayMonitor => displayMonitor.IsPrimaryDisplay);
 
-    private static ScreenPoint? TryCreateOppositeSideMouseLocation(DesktopSwitchMouseLocationContext desktopSwitchMouseLocationContext)
+    private static ScreenPoint? TryCreateHorizontalOppositeSideMouseLocation(DesktopSwitchMouseLocationContext desktopSwitchMouseLocationContext)
     {
         if (desktopSwitchMouseLocationContext.DisplayMonitors.Length == 0)
             return null;
@@ -176,6 +186,13 @@ public sealed class DesktopLifecycleService(
         return new(newX, newY);
     }
 
+    private static ScreenPoint? TryCreateOppositeSideMouseLocation(DesktopSwitchMouseLocationContext desktopSwitchMouseLocationContext) => desktopSwitchMouseLocationContext.TriggeredDesktopEdge switch
+    {
+        DesktopEdgeKind.TopDisplayEdge => TryCreateVerticalOppositeSideMouseLocation(desktopSwitchMouseLocationContext, isTopEdgeTriggered: true),
+        DesktopEdgeKind.BottomDisplayEdge => TryCreateVerticalOppositeSideMouseLocation(desktopSwitchMouseLocationContext, isTopEdgeTriggered: false),
+        _ => TryCreateHorizontalOppositeSideMouseLocation(desktopSwitchMouseLocationContext)
+    };
+
     private static int MapCursorVerticalPosition(DisplayMonitorInfo[] displayMonitors, DisplayMonitorInfo? sourceMonitor, int cursorY, int targetX)
     {
         if (sourceMonitor is null) return cursorY;
@@ -186,6 +203,21 @@ public sealed class DesktopLifecycleService(
         var relativeVerticalPosition = (double)(cursorY - sourceMonitor.MonitorBounds.Top) / sourceMonitor.MonitorBounds.Height;
         var mappedY = targetMonitor.MonitorBounds.Top + (int)Math.Round(relativeVerticalPosition * targetMonitor.MonitorBounds.Height, MidpointRounding.AwayFromZero);
         return Math.Clamp(mappedY, targetMonitor.MonitorBounds.Top, targetMonitor.MonitorBounds.Bottom - 1);
+    }
+
+    private static ScreenPoint? TryCreateVerticalOppositeSideMouseLocation(DesktopSwitchMouseLocationContext desktopSwitchMouseLocationContext, bool isTopEdgeTriggered)
+    {
+        if (desktopSwitchMouseLocationContext.InputDisplayMonitor is not { } inputDisplayMonitor)
+            return null;
+
+        var newY = isTopEdgeTriggered
+            ? Math.Max(inputDisplayMonitor.MonitorBounds.Top, inputDisplayMonitor.MonitorBounds.Bottom - DesktopEdgeTriggerRearmDistanceInPixels)
+            : Math.Min(inputDisplayMonitor.MonitorBounds.Bottom - 1, inputDisplayMonitor.MonitorBounds.Top + DesktopEdgeTriggerRearmDistanceInPixels);
+        var newX = Math.Clamp(
+            desktopSwitchMouseLocationContext.InputCursorPosition.X,
+            inputDisplayMonitor.MonitorBounds.Left,
+            inputDisplayMonitor.MonitorBounds.Right - 1);
+        return new(newX, newY);
     }
 
     private static ScreenPoint? TryResolveMouseLocationAfterDesktopSwitch(DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption, DesktopSwitchMouseLocationContext desktopSwitchMouseLocationContext) => desktopSwitchMouseLocationOption switch
@@ -218,7 +250,8 @@ public sealed class DesktopLifecycleService(
                 displayMonitors,
                 FindDisplayMonitor(displayMonitors, inputCursorPosition),
                 inputCursorPosition,
-                desktopSwitchDirection);
+                desktopSwitchDirection,
+                DesktopEdgeKind.None);
         }
         catch (InvalidOperationException exception)
         {
@@ -335,13 +368,12 @@ public sealed class DesktopLifecycleService(
         return _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
     }
 
-    private DesktopNavigationResult HandleEdgeActivation(DesktopEdgeMonitoringState currentState)
+    private DesktopNavigationResult HandleEdgeActivation(DesktopEdgeMonitoringState currentState, DeskBorderSettings currentSettings)
     {
         if (!currentState.IsDesktopEdgeAvailable || currentState.ActiveDesktopEdge == DesktopEdgeKind.None)
             return CreateNoOperationNavigationResult(_virtualDesktopService.GetWorkspaceSnapshot());
 
-        var currentSettings = _settingsService.Settings;
-        var desktopSwitchDirection = ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge);
+        var desktopSwitchDirection = ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge, currentSettings.IsVerticalDesktopSwitchDirectionReversed);
         var currentWorkspaceSnapshot = _virtualDesktopService.GetWorkspaceSnapshot();
         var canCreateDesktop = currentState.IsCreateDesktopModifierSatisfied
             && currentSettings.IsDesktopCreationEnabled
@@ -502,26 +534,31 @@ public sealed class DesktopLifecycleService(
         }
 
         await UiThreadHelper.ExecuteAsync(() => _navigatorService.UpdateTriggerAreaPointerState(currentState.NavigatorTriggerState.IsCursorInsideTriggerRectangle));
-        if (!_isDesktopEdgeActivationArmed && HasPointerMovedAwayFromDesktopEdge(currentState))
+        if (!_isDesktopEdgeActivationArmed && HasPointerMovedAwayFromDesktopEdge(currentState, _lastTriggeredDesktopEdge))
+        {
             _isDesktopEdgeActivationArmed = true;
+            _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
+        }
 
         if (!currentState.HasCursorEnteredDesktopEdge || !_isDesktopEdgeActivationArmed)
             return;
 
         _isDesktopEdgeActivationArmed = false;
+        _lastTriggeredDesktopEdge = currentState.ActiveDesktopEdge;
         await _operationSemaphore.WaitAsync();
         try
         {
             await CancelPendingDesktopDeletionAsync();
             var currentSettings = _settingsService.Settings;
-            var desktopNavigationResult = HandleEdgeActivation(currentState);
+            var desktopNavigationResult = HandleEdgeActivation(currentState, currentSettings);
             if (desktopNavigationResult.NavigationActionKind != DesktopNavigationActionKind.None)
             {
                 _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Handled desktop edge activation. Action={desktopNavigationResult.NavigationActionKind}, Status={desktopNavigationResult.OperationStatus}.");
+                var desktopSwitchDirection = ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge, currentSettings.IsVerticalDesktopSwitchDirectionReversed);
                 TryApplyMouseLocationAfterDesktopSwitch(
                     desktopNavigationResult,
                     currentSettings.DesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption,
-                    CreateDesktopSwitchMouseLocationContext(currentState),
+                    CreateDesktopSwitchMouseLocationContext(currentState, desktopSwitchDirection),
                     "DesktopEdge");
             }
             await HandleNavigationResultAsync(desktopNavigationResult);
@@ -637,5 +674,6 @@ public sealed class DesktopLifecycleService(
         DisplayMonitorInfo[] DisplayMonitors,
         DisplayMonitorInfo? InputDisplayMonitor,
         ScreenPoint InputCursorPosition,
-        DesktopSwitchDirection DesktopSwitchDirection);
+        DesktopSwitchDirection DesktopSwitchDirection,
+        DesktopEdgeKind TriggeredDesktopEdge);
 }

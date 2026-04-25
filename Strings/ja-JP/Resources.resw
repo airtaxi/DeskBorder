@@ -1228,4 +1228,40 @@
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Title" xml:space="preserve">
     <value>Windows 単独修飾キーの注意</value>
   </data>
+  <data name="DesktopEdgeKind.TopDisplayEdge" xml:space="preserve">
+    <value>上端エッジ</value>
+  </data>
+  <data name="DesktopEdgeKind.BottomDisplayEdge" xml:space="preserve">
+    <value>下端エッジ</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresSwitchDesktopModifier" xml:space="preserve">
+    <value>上下エッジのデスクトップ切り替えを使うには、デスクトップ切り替え修飾キーを設定してください。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresCreateDesktopModifier" xml:space="preserve">
+    <value>上下エッジのデスクトップ切り替えを使うには、デスクトップ作成修飾キーを設定してください。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresSwitchDesktopModifier" xml:space="preserve">
+    <value>上下エッジのデスクトップ切り替えを有効にするには、先にデスクトップ切り替え修飾キーを設定してください。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier" xml:space="preserve">
+    <value>上下エッジのデスクトップ切り替えを有効にするには、先にデスクトップ作成修飾キーを設定してください。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingSwitchDesktopModifier" xml:space="preserve">
+    <value>上下エッジのデスクトップ切り替えが有効な間は、デスクトップ切り替え修飾キーを解除できません。先にこの機能を無効にしてください。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingCreateDesktopModifier" xml:space="preserve">
+    <value>上下エッジのデスクトップ切り替えが有効な間は、デスクトップ作成修飾キーを解除できません。先にこの機能を無効にしてください。</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingToggleSwitch.Header" xml:space="preserve">
+    <value>上下エッジでもデスクトップを切り替える</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock.Text" xml:space="preserve">
+    <value>左右エッジの切り替えはそのまま維持されます。この機能を有効にすると、上端/下端の無視領域とマルチディスプレイ動作コンボボックスは適用されません。</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchDirectionReversedToggleSwitch.Header" xml:space="preserve">
+    <value>方向を反転: 上=次、下=前</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch.Header" xml:space="preserve">
+    <value>マルチディスプレイ環境でのみ上下エッジを使用</value>
+  </data>
 </root>

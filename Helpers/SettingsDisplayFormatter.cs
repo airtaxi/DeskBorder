@@ -42,6 +42,8 @@ public static class SettingsDisplayFormatter
         DesktopEdgeKind.None => LocalizedResourceAccessor.GetString("DesktopEdgeKind.None"),
         DesktopEdgeKind.LeftOuterDisplayEdge => LocalizedResourceAccessor.GetString("DesktopEdgeKind.LeftOuterDisplayEdge"),
         DesktopEdgeKind.RightOuterDisplayEdge => LocalizedResourceAccessor.GetString("DesktopEdgeKind.RightOuterDisplayEdge"),
+        DesktopEdgeKind.TopDisplayEdge => LocalizedResourceAccessor.GetString("DesktopEdgeKind.TopDisplayEdge"),
+        DesktopEdgeKind.BottomDisplayEdge => LocalizedResourceAccessor.GetString("DesktopEdgeKind.BottomDisplayEdge"),
         _ => desktopEdgeKind.ToString()
     };
 

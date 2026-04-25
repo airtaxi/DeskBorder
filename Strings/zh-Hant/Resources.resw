@@ -1228,4 +1228,40 @@
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Title" xml:space="preserve">
     <value>僅使用 Windows 輔助鍵提醒</value>
   </data>
+  <data name="DesktopEdgeKind.TopDisplayEdge" xml:space="preserve">
+    <value>頂部邊緣</value>
+  </data>
+  <data name="DesktopEdgeKind.BottomDisplayEdge" xml:space="preserve">
+    <value>底部邊緣</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresSwitchDesktopModifier" xml:space="preserve">
+    <value>若要使用上下邊緣切換桌面，必須先設定桌面切換輔助鍵。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresCreateDesktopModifier" xml:space="preserve">
+    <value>若要使用上下邊緣切換桌面，必須先設定桌面建立輔助鍵。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresSwitchDesktopModifier" xml:space="preserve">
+    <value>若要啟用上下邊緣切換桌面，請先設定桌面切換輔助鍵。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier" xml:space="preserve">
+    <value>若要啟用上下邊緣切換桌面，請先設定桌面建立輔助鍵。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingSwitchDesktopModifier" xml:space="preserve">
+    <value>啟用上下邊緣切換桌面時，無法清除桌面切換輔助鍵。請先關閉此功能。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingCreateDesktopModifier" xml:space="preserve">
+    <value>啟用上下邊緣切換桌面時，無法清除桌面建立輔助鍵。請先關閉此功能。</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingToggleSwitch.Header" xml:space="preserve">
+    <value>也用上/下邊緣切換桌面</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock.Text" xml:space="preserve">
+    <value>左右邊緣切換會維持不變。啟用此功能後，上方/下方忽略區域與多顯示器行為下拉方塊將不再套用。</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchDirectionReversedToggleSwitch.Header" xml:space="preserve">
+    <value>反轉方向：上=下一個，下=上一個</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch.Header" xml:space="preserve">
+    <value>僅在多顯示器環境中使用上/下邊緣</value>
+  </data>
 </root>

@@ -11,7 +11,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 {
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsKey = "DeskBorderSettings";
-    private const int CurrentSchemaVersion = 2;
+    private const int CurrentSchemaVersion = 3;
     private const int DesktopEdgeAdditionalTriggerDistancePercentageDecimalPlaces = 1;
     private const double DefaultAutoDeleteWarningTimeoutSeconds = 3.0;
     private const double DefaultDesktopEdgeAdditionalTriggerDistancePercentage = 5.0;
@@ -179,6 +179,9 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             IsAutoDeleteCompletionToastEnabled = settings.IsAutoDeleteCompletionToastEnabled,
             IsDesktopEdgeAdditionalTriggerDistanceEnabled = settings.IsDesktopEdgeAdditionalTriggerDistanceEnabled,
             DesktopEdgeAdditionalTriggerDistancePercentage = ClampDesktopEdgeAdditionalTriggerDistancePercentage(settings.DesktopEdgeAdditionalTriggerDistancePercentage),
+            IsVerticalDesktopSwitchingEnabled = settings.IsVerticalDesktopSwitchingEnabled,
+            IsVerticalDesktopSwitchDirectionReversed = settings.IsVerticalDesktopSwitchDirectionReversed,
+            IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment = settings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment,
             AutoDeleteWarningTimeoutSeconds = ClampAutoDeleteWarningTimeoutSeconds(settings.AutoDeleteWarningTimeoutSeconds),
             DesktopEdgeIgnoreZoneSettings = NormalizeDesktopEdgeIgnoreZoneSettings(settings.DesktopEdgeIgnoreZoneSettings),
             ApplicationHotkeySettings = NormalizeApplicationHotkeySettings(settings.ApplicationHotkeySettings),
@@ -321,6 +324,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     private static void ValidateSettings(DeskBorderSettings settings)
     {
+        ValidateVerticalDesktopSwitchingSettings(settings);
         ValidateKeyboardShortcutSettings(settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey, "SettingsPage_ToggleDeskBorderHotkeyToggleSwitch.Header");
         ValidateKeyboardShortcutSettings(settings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey, "SettingsPage_SwitchPreviousHotkeyToggleSwitch.Header");
         ValidateKeyboardShortcutSettings(settings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey, "SettingsPage_SwitchNextHotkeyToggleSwitch.Header");
@@ -354,6 +358,19 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
             registeredKeyboardShortcuts.Add(keyboardShortcutIdentity, keyboardShortcutEntry.KeyboardShortcutDisplayNameResourceKey);
         }
+    }
+
+    private static void ValidateVerticalDesktopSwitchingSettings(DeskBorderSettings settings)
+    {
+        if (!settings.IsVerticalDesktopSwitchingEnabled)
+            return;
+
+        if (settings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys == KeyboardModifierKeys.None)
+            throw new InvalidOperationException(LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingRequiresSwitchDesktopModifier"));
+
+        if (settings.IsDesktopCreationEnabled
+            && settings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys == KeyboardModifierKeys.None)
+            throw new InvalidOperationException(LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingRequiresCreateDesktopModifier"));
     }
 
     private static void ValidateSettingsFilePath(string filePath, string parameterName)

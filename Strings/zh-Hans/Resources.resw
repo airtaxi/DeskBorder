@@ -1228,4 +1228,40 @@
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Title" xml:space="preserve">
     <value>仅使用 Windows 修饰键提醒</value>
   </data>
+  <data name="DesktopEdgeKind.TopDisplayEdge" xml:space="preserve">
+    <value>顶部边缘</value>
+  </data>
+  <data name="DesktopEdgeKind.BottomDisplayEdge" xml:space="preserve">
+    <value>底部边缘</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresSwitchDesktopModifier" xml:space="preserve">
+    <value>要使用上下边缘切换桌面，必须先设置桌面切换修饰键。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresCreateDesktopModifier" xml:space="preserve">
+    <value>要使用上下边缘切换桌面，必须先设置桌面创建修饰键。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresSwitchDesktopModifier" xml:space="preserve">
+    <value>要启用上下边缘切换桌面，请先设置桌面切换修饰键。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier" xml:space="preserve">
+    <value>要启用上下边缘切换桌面，请先设置桌面创建修饰键。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingSwitchDesktopModifier" xml:space="preserve">
+    <value>启用上下边缘切换桌面时，不能清除桌面切换修饰键。请先关闭此功能。</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingCreateDesktopModifier" xml:space="preserve">
+    <value>启用上下边缘切换桌面时，不能清除桌面创建修饰键。请先关闭此功能。</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingToggleSwitch.Header" xml:space="preserve">
+    <value>也用上/下边缘切换桌面</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock.Text" xml:space="preserve">
+    <value>左右边缘切换会保持不变。启用此功能后，上方/下方忽略区域和多显示器行为下拉框将不再生效。</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchDirectionReversedToggleSwitch.Header" xml:space="preserve">
+    <value>反转方向：上=下一个，下=上一个</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch.Header" xml:space="preserve">
+    <value>仅在多显示器环境中使用上/下边缘</value>
+  </data>
 </root>

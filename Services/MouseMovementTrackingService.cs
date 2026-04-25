@@ -7,9 +7,12 @@ public sealed class MouseMovementTrackingService(IFileLogService fileLogService)
 {
     private readonly IFileLogService _fileLogService = fileLogService;
     private int _pendingHorizontalMovement;
+    private int _pendingVerticalMovement;
     private nint _registeredWindowHandle;
 
-    public int ConsumePendingHorizontalMovement() => Interlocked.Exchange(ref _pendingHorizontalMovement, 0);
+    public MouseMovementDelta ConsumePendingMouseMovementDelta() => new(
+        Interlocked.Exchange(ref _pendingHorizontalMovement, 0),
+        Interlocked.Exchange(ref _pendingVerticalMovement, 0));
 
     public void ProcessRawInputMessage(nint rawInputHandle)
     {
@@ -17,12 +20,16 @@ public sealed class MouseMovementTrackingService(IFileLogService fileLogService)
         if (rawInput is null
             || rawInput.Value.Header.Type != Win32.RawInputTypeMouse
             || (rawInput.Value.Mouse.Flags & Win32.RawMouseMoveAbsoluteFlag) != 0
-            || rawInput.Value.Mouse.LastX == 0)
+            || (rawInput.Value.Mouse.LastX == 0 && rawInput.Value.Mouse.LastY == 0))
         {
             return;
         }
 
-        _ = Interlocked.Add(ref _pendingHorizontalMovement, rawInput.Value.Mouse.LastX);
+        if (rawInput.Value.Mouse.LastX != 0)
+            _ = Interlocked.Add(ref _pendingHorizontalMovement, rawInput.Value.Mouse.LastX);
+
+        if (rawInput.Value.Mouse.LastY != 0)
+            _ = Interlocked.Add(ref _pendingVerticalMovement, rawInput.Value.Mouse.LastY);
     }
 
     public void RegisterWindowHandle(nint windowHandle)

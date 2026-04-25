@@ -1228,4 +1228,40 @@
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Title" xml:space="preserve">
     <value>Windows 단독 보조키 주의</value>
   </data>
+  <data name="DesktopEdgeKind.TopDisplayEdge" xml:space="preserve">
+    <value>상단 경계</value>
+  </data>
+  <data name="DesktopEdgeKind.BottomDisplayEdge" xml:space="preserve">
+    <value>하단 경계</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresSwitchDesktopModifier" xml:space="preserve">
+    <value>위/아래 경계 데스크톱 전환 기능을 사용하려면 데스크톱 전환 보조키를 설정해야 합니다.</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresCreateDesktopModifier" xml:space="preserve">
+    <value>위/아래 경계 데스크톱 전환 기능을 사용하려면 데스크톱 생성 보조키를 설정해야 합니다.</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresSwitchDesktopModifier" xml:space="preserve">
+    <value>위/아래 경계 데스크톱 전환 기능을 켜려면 먼저 데스크톱 전환 보조키를 설정하세요.</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier" xml:space="preserve">
+    <value>위/아래 경계 데스크톱 전환 기능을 켜려면 먼저 데스크톱 생성 보조키를 설정하세요.</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingSwitchDesktopModifier" xml:space="preserve">
+    <value>위/아래 경계 데스크톱 전환 기능이 켜져 있으면 데스크톱 전환 보조키를 해제할 수 없습니다. 먼저 기능을 끄세요.</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingCreateDesktopModifier" xml:space="preserve">
+    <value>위/아래 경계 데스크톱 전환 기능이 켜져 있으면 데스크톱 생성 보조키를 해제할 수 없습니다. 먼저 기능을 끄세요.</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingToggleSwitch.Header" xml:space="preserve">
+    <value>위/아래 경계로도 데스크톱 전환</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock.Text" xml:space="preserve">
+    <value>위/아래 경계를 사용해도 기존 좌우 전환은 그대로 유지됩니다. 이 기능이 켜지면 상단/하단 무시 영역과 다중 디스플레이 동작 콤보는 적용되지 않습니다.</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchDirectionReversedToggleSwitch.Header" xml:space="preserve">
+    <value>위=다음, 아래=이전으로 방향 반전</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch.Header" xml:space="preserve">
+    <value>다중 디스플레이에서만 위/아래 경계 사용</value>
+  </data>
 </root>

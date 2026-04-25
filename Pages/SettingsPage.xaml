@@ -202,6 +202,7 @@
                             x:Name="MultiDisplayBehaviorComboBox"
                             x:Uid="SettingsPage_MultiDisplayBehaviorComboBox"
                             Header="다중 디스플레이 동작"
+                            IsEnabled="{x:Bind GetMultiDisplayBehaviorSelectionEnabled(ViewModel.IsVerticalDesktopSwitchingEnabled), Mode=OneWay}"
                             ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
                             ItemsSource="{x:Bind ViewModel.MultiDisplayBehaviorOptions, Mode=OneWay}"
                             SelectedItem="{x:Bind ViewModel.SelectedMultiDisplayBehaviorOption, Mode=TwoWay}"
@@ -343,6 +344,39 @@
                                     SpinButtonPlacementMode="Inline"
                                     ValueChanged="OnSettingNumberBoxValueChanged"
                                     Value="{x:Bind ViewModel.DesktopEdgeAdditionalTriggerDistancePercentage, Mode=TwoWay}" />
+                                </StackPanel>
+                        </Border>
+
+                        <ToggleSwitch
+                            x:Name="VerticalDesktopSwitchingToggleSwitch"
+                            x:Uid="SettingsPage_VerticalDesktopSwitchingToggleSwitch"
+                            Header="위/아래 경계로도 데스크톱 전환"
+                            IsOn="{x:Bind ViewModel.IsVerticalDesktopSwitchingEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <Border
+                            Padding="12"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="10"
+                            Visibility="{x:Bind GetVerticalDesktopSwitchingOptionsVisibility(ViewModel.AreVerticalDesktopSwitchingOptionControlsVisible), Mode=OneWay}">
+                            <StackPanel Spacing="12">
+                                <TextBlock
+                                    x:Uid="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="위/아래 경계를 사용해도 기존 좌우 전환은 그대로 유지됩니다. 이 기능이 켜지면 상단/하단 무시 영역과 다중 디스플레이 동작 콤보는 적용되지 않습니다."
+                                    TextWrapping="WrapWholeWords" />
+                                <ToggleSwitch
+                                    x:Name="VerticalDesktopSwitchDirectionReversedToggleSwitch"
+                                    x:Uid="SettingsPage_VerticalDesktopSwitchDirectionReversedToggleSwitch"
+                                    Header="위=다음, 아래=이전으로 방향 반전"
+                                    IsOn="{x:Bind ViewModel.IsVerticalDesktopSwitchDirectionReversed, Mode=TwoWay}"
+                                    Toggled="OnSettingToggleSwitchToggled" />
+                                <ToggleSwitch
+                                    x:Name="VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch"
+                                    x:Uid="SettingsPage_VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch"
+                                    Header="다중 디스플레이에서만 위/아래 경계 사용"
+                                    IsOn="{x:Bind ViewModel.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment, Mode=TwoWay}"
+                                    Toggled="OnSettingToggleSwitchToggled" />
                             </StackPanel>
                         </Border>
 
@@ -380,6 +414,7 @@
                                 x:Name="TopDesktopEdgeIgnorePercentageNumberBox"
                                 x:Uid="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox"
                                 Header="상단 무시 영역 (%)"
+                                IsEnabled="{x:Bind GetDesktopEdgeIgnoreZoneControlsEnabled(ViewModel.IsVerticalDesktopSwitchingEnabled), Mode=OneWay}"
                                 Maximum="49"
                                 Minimum="0"
                                 SmallChange="1"
@@ -392,6 +427,7 @@
                                 x:Uid="SettingsPage_BottomDesktopEdgeIgnorePercentageNumberBox"
                                 Grid.Column="1"
                                 Header="하단 무시 영역 (%)"
+                                IsEnabled="{x:Bind GetDesktopEdgeIgnoreZoneControlsEnabled(ViewModel.IsVerticalDesktopSwitchingEnabled), Mode=OneWay}"
                                 Maximum="49"
                                 Minimum="0"
                                 SmallChange="1"

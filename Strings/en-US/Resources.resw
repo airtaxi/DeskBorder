@@ -1228,4 +1228,40 @@
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Title" xml:space="preserve">
     <value>Windows-only modifier warning</value>
   </data>
+  <data name="DesktopEdgeKind.TopDisplayEdge" xml:space="preserve">
+    <value>Top edge</value>
+  </data>
+  <data name="DesktopEdgeKind.BottomDisplayEdge" xml:space="preserve">
+    <value>Bottom edge</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresSwitchDesktopModifier" xml:space="preserve">
+    <value>To use vertical desktop edge switching, set desktop switching modifiers.</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresCreateDesktopModifier" xml:space="preserve">
+    <value>To use vertical desktop edge switching, set desktop creation modifiers.</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresSwitchDesktopModifier" xml:space="preserve">
+    <value>To enable vertical desktop edge switching, set desktop switching modifiers first.</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier" xml:space="preserve">
+    <value>To enable vertical desktop edge switching, set desktop creation modifiers first.</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingSwitchDesktopModifier" xml:space="preserve">
+    <value>You cannot clear desktop switching modifiers while vertical desktop edge switching is enabled. Disable the feature first.</value>
+  </data>
+  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingCreateDesktopModifier" xml:space="preserve">
+    <value>You cannot clear desktop creation modifiers while vertical desktop edge switching is enabled. Disable the feature first.</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingToggleSwitch.Header" xml:space="preserve">
+    <value>Switch desktops with top and bottom edges too</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Left and right edge switching stays unchanged. When this feature is enabled, the top and bottom ignore zones and the multi-display behavior combo box are not applied.</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchDirectionReversedToggleSwitch.Header" xml:space="preserve">
+    <value>Reverse direction: top=next, bottom=previous</value>
+  </data>
+  <data name="SettingsPage_VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch.Header" xml:space="preserve">
+    <value>Use top and bottom edges only in multi-display environments</value>
+  </data>
 </root>

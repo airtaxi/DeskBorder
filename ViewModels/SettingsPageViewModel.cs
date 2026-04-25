@@ -188,6 +188,18 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial double DesktopEdgeAdditionalTriggerDistancePercentage { get; set; } = 5.0;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsMultiDisplayBehaviorSelectionEnabled))]
+    [NotifyPropertyChangedFor(nameof(AreDesktopEdgeIgnoreZoneControlsEnabled))]
+    [NotifyPropertyChangedFor(nameof(AreVerticalDesktopSwitchingOptionControlsVisible))]
+    public partial bool IsVerticalDesktopSwitchingEnabled { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsVerticalDesktopSwitchDirectionReversed { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment { get; set; }
+
+    [ObservableProperty]
     public partial bool IsDeskBorderEnabled { get; set; }
 
     [ObservableProperty]
@@ -347,6 +359,12 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         ],
         ToggleDeskBorderEnabledHotkeyRegistrationFailureMessage);
 
+    public bool AreDesktopEdgeIgnoreZoneControlsEnabled => !IsVerticalDesktopSwitchingEnabled;
+
+    public bool AreVerticalDesktopSwitchingOptionControlsVisible => IsVerticalDesktopSwitchingEnabled;
+
+    public bool IsMultiDisplayBehaviorSelectionEnabled => !IsVerticalDesktopSwitchingEnabled;
+
     public string NavigatorTriggerAreaSummary => SettingsDisplayFormatter.FormatTriggerRectangle(CreateNavigatorTriggerRectangleSettings());
 
     public bool AddBlacklistedProcessNames(IEnumerable<string> processNames)
@@ -387,7 +405,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public DeskBorderSettings CreateSettings() => new()
     {
-        SchemaVersion = 2,
+        SchemaVersion = 3,
         IsDeskBorderEnabled = IsDeskBorderEnabled,
         MultiDisplayBehavior = SelectedMultiDisplayBehaviorOption?.Value ?? MultiDisplayBehavior.DisableInMultiDisplayEnvironment,
         SwitchDesktopModifierSettings = new ModifierGateSettings
@@ -409,6 +427,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsAutoDeleteCompletionToastEnabled = IsAutoDeleteCompletionToastEnabled,
         IsDesktopEdgeAdditionalTriggerDistanceEnabled = IsDesktopEdgeAdditionalTriggerDistanceEnabled,
         DesktopEdgeAdditionalTriggerDistancePercentage = DesktopEdgeAdditionalTriggerDistancePercentage,
+        IsVerticalDesktopSwitchingEnabled = IsVerticalDesktopSwitchingEnabled,
+        IsVerticalDesktopSwitchDirectionReversed = IsVerticalDesktopSwitchDirectionReversed,
+        IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment = IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment,
         AutoDeleteWarningTimeoutSeconds = AutoDeleteWarningTimeoutSeconds,
         DesktopEdgeIgnoreZoneSettings = new DesktopEdgeIgnoreZoneSettings
         {
@@ -464,6 +485,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsAutoDeleteCompletionToastEnabled = deskBorderSettings.IsAutoDeleteCompletionToastEnabled;
         IsDesktopEdgeAdditionalTriggerDistanceEnabled = deskBorderSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
         DesktopEdgeAdditionalTriggerDistancePercentage = deskBorderSettings.DesktopEdgeAdditionalTriggerDistancePercentage;
+        IsVerticalDesktopSwitchingEnabled = deskBorderSettings.IsVerticalDesktopSwitchingEnabled;
+        IsVerticalDesktopSwitchDirectionReversed = deskBorderSettings.IsVerticalDesktopSwitchDirectionReversed;
+        IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment = deskBorderSettings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment;
         AutoDeleteWarningTimeoutSeconds = deskBorderSettings.AutoDeleteWarningTimeoutSeconds;
         TopDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.TopIgnorePercentage;
         BottomDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage;
