@@ -131,11 +131,15 @@ public sealed partial class SettingsPage : Page
         _ => "Settings.HotkeyValidation.Disabled"
     });
 
-    private Visibility GetAutoDeleteCompletionToastVisibility(bool isAutoDeleteEnabled, bool isAutoDeleteWarningEnabled) => isAutoDeleteEnabled && !isAutoDeleteWarningEnabled
+    private Visibility GetAutoDeleteCompletionToastVisibility(bool isAutoDeleteWarningEnabled) => !isAutoDeleteWarningEnabled
         ? Visibility.Visible
         : Visibility.Collapsed;
 
-    private Visibility GetAutoDeleteWarningTimeoutVisibility(bool isAutoDeleteEnabled, bool isAutoDeleteWarningEnabled) => isAutoDeleteEnabled && isAutoDeleteWarningEnabled
+    private Visibility GetAutoDeleteOptionControlsVisibility(bool isAutoDeleteEnabled) => isAutoDeleteEnabled
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
+    private Visibility GetAutoDeleteWarningTimeoutVisibility(bool isAutoDeleteWarningEnabled) => isAutoDeleteWarningEnabled
         ? Visibility.Visible
         : Visibility.Collapsed;
 
@@ -145,7 +149,7 @@ public sealed partial class SettingsPage : Page
 
     private bool GetDesktopEdgeIgnoreZoneControlsEnabled(bool isVerticalDesktopSwitchingEnabled) => !isVerticalDesktopSwitchingEnabled;
 
-    private Visibility GetDesktopCreationSkippedWhenCurrentDesktopIsEmptyVisibility(bool isDesktopCreationEnabled) => isDesktopCreationEnabled
+    private Visibility GetDesktopCreationOptionControlsVisibility(bool isDesktopCreationEnabled) => isDesktopCreationEnabled
         ? Visibility.Visible
         : Visibility.Collapsed;
 

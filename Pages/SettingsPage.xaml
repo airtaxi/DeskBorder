@@ -285,13 +285,20 @@
                             IsOn="{x:Bind ViewModel.IsDesktopCreationEnabled, Mode=TwoWay}"
                             Toggled="OnSettingToggleSwitchToggled" />
 
-                        <ToggleSwitch
-                            x:Name="DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch"
-                            x:Uid="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch"
-                            Header="현재 데스크톱이 비어 있으면 생성 안 함"
-                            IsOn="{x:Bind ViewModel.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty, Mode=TwoWay}"
-                            Toggled="OnSettingToggleSwitchToggled"
-                            Visibility="{x:Bind GetDesktopCreationSkippedWhenCurrentDesktopIsEmptyVisibility(ViewModel.IsDesktopCreationEnabled), Mode=OneWay}" />
+                        <Border
+                            Padding="12"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="10"
+                            Visibility="{x:Bind GetDesktopCreationOptionControlsVisibility(ViewModel.IsDesktopCreationEnabled), Mode=OneWay}">
+                            <StackPanel Spacing="12">
+                                <ToggleSwitch
+                                    x:Name="DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch"
+                                    x:Uid="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch"
+                                    Header="현재 데스크톱이 비어 있으면 생성 안 함"
+                                    IsOn="{x:Bind ViewModel.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty, Mode=TwoWay}"
+                                    Toggled="OnSettingToggleSwitchToggled" />
+                            </StackPanel>
+                        </Border>
 
                         <ToggleSwitch
                             x:Name="AutoDeleteToggleSwitch"
@@ -300,21 +307,52 @@
                             IsOn="{x:Bind ViewModel.IsAutoDeleteEnabled, Mode=TwoWay}"
                             Toggled="OnSettingToggleSwitchToggled" />
 
-                        <ToggleSwitch
-                            x:Name="AutoDeleteWarningToggleSwitch"
-                            x:Uid="SettingsPage_AutoDeleteWarningToggleSwitch"
-                            Header="삭제 경고 표시"
-                            IsEnabled="{x:Bind ViewModel.IsAutoDeleteEnabled, Mode=OneWay}"
-                            IsOn="{x:Bind ViewModel.IsAutoDeleteWarningEnabled, Mode=TwoWay}"
-                            Toggled="OnSettingToggleSwitchToggled" />
+                        <Border
+                            Padding="12"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="10"
+                            Visibility="{x:Bind GetAutoDeleteOptionControlsVisibility(ViewModel.IsAutoDeleteEnabled), Mode=OneWay}">
+                            <StackPanel Spacing="12">
+                                <ToggleSwitch
+                                    x:Name="AutoDeleteWarningToggleSwitch"
+                                    x:Uid="SettingsPage_AutoDeleteWarningToggleSwitch"
+                                    Header="삭제 경고 표시"
+                                    IsOn="{x:Bind ViewModel.IsAutoDeleteWarningEnabled, Mode=TwoWay}"
+                                    Toggled="OnSettingToggleSwitchToggled" />
 
-                        <ToggleSwitch
-                            x:Name="AutoDeleteCompletionToastToggleSwitch"
-                            x:Uid="SettingsPage_AutoDeleteCompletionToastToggleSwitch"
-                            Header="자동 삭제 완료 알림 표시"
-                            IsOn="{x:Bind ViewModel.IsAutoDeleteCompletionToastEnabled, Mode=TwoWay}"
-                            Toggled="OnSettingToggleSwitchToggled"
-                            Visibility="{x:Bind GetAutoDeleteCompletionToastVisibility(ViewModel.IsAutoDeleteEnabled, ViewModel.IsAutoDeleteWarningEnabled), Mode=OneWay}" />
+                                <ToggleSwitch
+                                    x:Name="AutoDeleteCompletionToastToggleSwitch"
+                                    x:Uid="SettingsPage_AutoDeleteCompletionToastToggleSwitch"
+                                    Header="자동 삭제 완료 알림 표시"
+                                    IsOn="{x:Bind ViewModel.IsAutoDeleteCompletionToastEnabled, Mode=TwoWay}"
+                                    Toggled="OnSettingToggleSwitchToggled"
+                                    Visibility="{x:Bind GetAutoDeleteCompletionToastVisibility(ViewModel.IsAutoDeleteWarningEnabled), Mode=OneWay}" />
+
+                                <Border
+                                    Padding="12"
+                                    Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                                    CornerRadius="10"
+                                    Visibility="{x:Bind GetAutoDeleteWarningTimeoutVisibility(ViewModel.IsAutoDeleteWarningEnabled), Mode=OneWay}">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock
+                                            x:Uid="SettingsPage_AutoDeleteWarningTimeoutDescriptionTextBlock"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="삭제 경고가 켜져 있을 때 실행 취소를 기다리는 시간을 조절합니다."
+                                            TextWrapping="WrapWholeWords" />
+                                        <NumberBox
+                                            x:Name="AutoDeleteWarningTimeoutSecondsNumberBox"
+                                            x:Uid="SettingsPage_AutoDeleteWarningTimeoutSecondsNumberBox"
+                                            Header="삭제 경고 타임아웃 (초)"
+                                            Maximum="10"
+                                            Minimum="0.5"
+                                            SmallChange="0.5"
+                                            SpinButtonPlacementMode="Inline"
+                                            ValueChanged="OnSettingNumberBoxValueChanged"
+                                            Value="{x:Bind ViewModel.AutoDeleteWarningTimeoutSeconds, Mode=TwoWay}" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
 
                         <ToggleSwitch
                             x:Name="DesktopEdgeAdditionalTriggerDistanceToggleSwitch"
@@ -377,30 +415,6 @@
                                     Header="다중 디스플레이에서만 위/아래 경계 사용"
                                     IsOn="{x:Bind ViewModel.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment, Mode=TwoWay}"
                                     Toggled="OnSettingToggleSwitchToggled" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border
-                            Padding="12"
-                            Background="{ThemeResource LayerFillColorDefaultBrush}"
-                            CornerRadius="10"
-                            Visibility="{x:Bind GetAutoDeleteWarningTimeoutVisibility(ViewModel.IsAutoDeleteEnabled, ViewModel.IsAutoDeleteWarningEnabled), Mode=OneWay}">
-                            <StackPanel Spacing="8">
-                                <TextBlock
-                                    x:Uid="SettingsPage_AutoDeleteWarningTimeoutDescriptionTextBlock"
-                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="삭제 경고가 켜져 있을 때 실행 취소를 기다리는 시간을 조절합니다."
-                                    TextWrapping="WrapWholeWords" />
-                                <NumberBox
-                                    x:Name="AutoDeleteWarningTimeoutSecondsNumberBox"
-                                    x:Uid="SettingsPage_AutoDeleteWarningTimeoutSecondsNumberBox"
-                                    Header="삭제 경고 타임아웃 (초)"
-                                    Maximum="10"
-                                    Minimum="0.5"
-                                    SmallChange="0.5"
-                                    SpinButtonPlacementMode="Inline"
-                                    ValueChanged="OnSettingNumberBoxValueChanged"
-                                    Value="{x:Bind ViewModel.AutoDeleteWarningTimeoutSeconds, Mode=TwoWay}" />
                             </StackPanel>
                         </Border>
 
