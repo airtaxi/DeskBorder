@@ -1256,7 +1256,7 @@
     <value>위/아래 경계로도 데스크톱 전환</value>
   </data>
   <data name="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock.Text" xml:space="preserve">
-    <value>위/아래 경계를 사용해도 기존 좌우 전환은 그대로 유지됩니다. 이 기능이 켜지면 상단/하단 무시 영역과 다중 디스플레이 동작 콤보는 적용되지 않습니다.</value>
+    <value>위/아래 경계를 사용해도 기존 좌우 전환은 그대로 유지됩니다. 다중 디스플레이 동작 콤보는 적용되지 않습니다.</value>
   </data>
   <data name="SettingsPage_VerticalDesktopSwitchDirectionReversedToggleSwitch.Header" xml:space="preserve">
     <value>위=다음, 아래=이전으로 방향 반전</value>

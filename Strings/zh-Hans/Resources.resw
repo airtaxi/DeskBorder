@@ -1256,7 +1256,7 @@
     <value>也用上/下边缘切换桌面</value>
   </data>
   <data name="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock.Text" xml:space="preserve">
-    <value>左右边缘切换会保持不变。启用此功能后，上方/下方忽略区域和多显示器行为下拉框将不再生效。</value>
+    <value>左右边缘切换会保持不变。多显示器行为下拉框将不再生效。</value>
   </data>
   <data name="SettingsPage_VerticalDesktopSwitchDirectionReversedToggleSwitch.Header" xml:space="preserve">
     <value>反转方向：上=下一个，下=上一个</value>

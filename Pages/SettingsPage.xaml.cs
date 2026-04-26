@@ -147,8 +147,6 @@ public sealed partial class SettingsPage : Page
         ? Visibility.Visible
         : Visibility.Collapsed;
 
-    private bool GetDesktopEdgeIgnoreZoneControlsEnabled(bool isVerticalDesktopSwitchingEnabled) => !isVerticalDesktopSwitchingEnabled;
-
     private Visibility GetDesktopCreationOptionControlsVisibility(bool isDesktopCreationEnabled) => isDesktopCreationEnabled
         ? Visibility.Visible
         : Visibility.Collapsed;

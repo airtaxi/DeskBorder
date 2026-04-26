@@ -1256,7 +1256,7 @@
     <value>Switch desktops with top and bottom edges too</value>
   </data>
   <data name="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock.Text" xml:space="preserve">
-    <value>Left and right edge switching stays unchanged. When this feature is enabled, the top and bottom ignore zones and the multi-display behavior combo box are not applied.</value>
+    <value>Left and right edge switching stays unchanged. The multi-display behavior combo box is not applied.</value>
   </data>
   <data name="SettingsPage_VerticalDesktopSwitchDirectionReversedToggleSwitch.Header" xml:space="preserve">
     <value>Reverse direction: top=next, bottom=previous</value>

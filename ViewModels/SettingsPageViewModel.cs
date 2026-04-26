@@ -189,7 +189,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsMultiDisplayBehaviorSelectionEnabled))]
-    [NotifyPropertyChangedFor(nameof(AreDesktopEdgeIgnoreZoneControlsEnabled))]
     [NotifyPropertyChangedFor(nameof(AreVerticalDesktopSwitchingOptionControlsVisible))]
     public partial bool IsVerticalDesktopSwitchingEnabled { get; set; }
 
@@ -358,8 +357,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
         ToggleDeskBorderEnabledHotkeyRegistrationFailureMessage);
-
-    public bool AreDesktopEdgeIgnoreZoneControlsEnabled => !IsVerticalDesktopSwitchingEnabled;
 
     public bool AreVerticalDesktopSwitchingOptionControlsVisible => IsVerticalDesktopSwitchingEnabled;
 

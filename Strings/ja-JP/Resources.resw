@@ -1256,7 +1256,7 @@
     <value>上下エッジでもデスクトップを切り替える</value>
   </data>
   <data name="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock.Text" xml:space="preserve">
-    <value>左右エッジの切り替えはそのまま維持されます。この機能を有効にすると、上端/下端の無視領域とマルチディスプレイ動作コンボボックスは適用されません。</value>
+    <value>左右エッジの切り替えはそのまま維持されます。マルチディスプレイ動作コンボボックスは適用されません。</value>
   </data>
   <data name="SettingsPage_VerticalDesktopSwitchDirectionReversedToggleSwitch.Header" xml:space="preserve">
     <value>方向を反転: 上=次、下=前</value>

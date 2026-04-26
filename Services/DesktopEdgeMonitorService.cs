@@ -8,11 +8,6 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
 {
     private static readonly TimeSpan s_defaultPollingInterval = TimeSpan.FromMilliseconds(40);
     private static readonly TimeSpan s_refreshFailureLoggingWindow = TimeSpan.FromSeconds(2);
-    private static readonly DesktopEdgeIgnoreZoneSettings s_disabledDesktopEdgeIgnoreZoneSettings = new()
-    {
-        TopIgnorePercentage = 0.0,
-        BottomIgnorePercentage = 0.0
-    };
     private static readonly ConcurrentDictionary<string, string> s_autoBlacklistedGameBarExecutablePaths = new(StringComparer.OrdinalIgnoreCase);
     private static readonly ConcurrentDictionary<string, byte> s_persistingGameBarExecutablePaths = new(StringComparer.OrdinalIgnoreCase);
 
@@ -259,7 +254,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             displayMonitors,
             currentDisplayMonitor,
             currentCursorPosition,
-            GetEffectiveDesktopEdgeIgnoreZoneSettings(currentSettings));
+            currentSettings.DesktopEdgeIgnoreZoneSettings);
         var touchedVerticalDesktopEdge = GetTouchedVerticalDesktopEdge(displayMonitors, currentDisplayMonitor, currentCursorPosition, currentSettings);
         return ResolveTouchedDesktopEdge(touchedHorizontalDesktopEdge, touchedVerticalDesktopEdge, pendingMouseMovementDelta);
     }
@@ -375,10 +370,6 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         _trackedDesktopEdge = DesktopEdgeKind.None;
         _desktopEdgeAdditionalTriggerDistanceAccumulatedPixels = 0;
     }
-
-    private static DesktopEdgeIgnoreZoneSettings GetEffectiveDesktopEdgeIgnoreZoneSettings(DeskBorderSettings currentSettings) => currentSettings.IsVerticalDesktopSwitchingEnabled
-        ? s_disabledDesktopEdgeIgnoreZoneSettings
-        : currentSettings.DesktopEdgeIgnoreZoneSettings;
 
     private static int GetSignedOutwardMovement(DesktopEdgeKind touchedDesktopEdge, MouseMovementDelta pendingMouseMovementDelta) => touchedDesktopEdge switch
     {

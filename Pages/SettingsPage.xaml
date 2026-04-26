@@ -401,7 +401,7 @@
                                 <TextBlock
                                     x:Uid="SettingsPage_VerticalDesktopSwitchingDescriptionTextBlock"
                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                    Text="위/아래 경계를 사용해도 기존 좌우 전환은 그대로 유지됩니다. 이 기능이 켜지면 상단/하단 무시 영역과 다중 디스플레이 동작 콤보는 적용되지 않습니다."
+                                    Text="위/아래 경계를 사용해도 기존 좌우 전환은 그대로 유지됩니다. 다중 디스플레이 동작 콤보는 적용되지 않습니다."
                                     TextWrapping="WrapWholeWords" />
                                 <ToggleSwitch
                                     x:Name="VerticalDesktopSwitchDirectionReversedToggleSwitch"
@@ -428,7 +428,6 @@
                                 x:Name="TopDesktopEdgeIgnorePercentageNumberBox"
                                 x:Uid="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox"
                                 Header="상단 무시 영역 (%)"
-                                IsEnabled="{x:Bind GetDesktopEdgeIgnoreZoneControlsEnabled(ViewModel.IsVerticalDesktopSwitchingEnabled), Mode=OneWay}"
                                 Maximum="49"
                                 Minimum="0"
                                 SmallChange="1"
@@ -441,7 +440,6 @@
                                 x:Uid="SettingsPage_BottomDesktopEdgeIgnorePercentageNumberBox"
                                 Grid.Column="1"
                                 Header="하단 무시 영역 (%)"
-                                IsEnabled="{x:Bind GetDesktopEdgeIgnoreZoneControlsEnabled(ViewModel.IsVerticalDesktopSwitchingEnabled), Mode=OneWay}"
                                 Maximum="49"
                                 Minimum="0"
                                 SmallChange="1"
