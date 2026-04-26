@@ -277,7 +277,24 @@ internal static partial class Win32
     public struct NativeInputUnion
     {
         [FieldOffset(0)]
+        public NativeMouseInput MouseInput;
+
+        [FieldOffset(0)]
         public NativeKeyboardInput KeyboardInput;
+
+        [FieldOffset(0)]
+        public NativeHardwareInput HardwareInput;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct NativeMouseInput
+    {
+        public int RelativeX;
+        public int RelativeY;
+        public uint MouseData;
+        public uint Flags;
+        public uint Time;
+        public nuint ExtraInfo;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -288,6 +305,14 @@ internal static partial class Win32
         public uint Flags;
         public uint Time;
         public nuint ExtraInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct NativeHardwareInput
+    {
+        public uint Message;
+        public ushort ParameterLow;
+        public ushort ParameterHigh;
     }
 
     [StructLayout(LayoutKind.Sequential)]

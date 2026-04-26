@@ -246,20 +246,27 @@ public static class MouseHelper
     {
         if (keyboardModifierKeys == KeyboardModifierKeys.None) return;
 
+        var requestedKeyboardModifierKeys = keyboardModifierKeys;
+        var pressedKeyboardModifierKeysBeforeConsume = GetPressedKeyboardModifierKeys();
+        var pressedKeyboardModifierKeyStateSummaryBeforeConsume = CreatePressedKeyboardModifierKeyStateSummary();
+        var isWindowsKeyHookInstalled = false;
         var keyboardInputs = new List<Win32.NativeInput>();
 
         if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows)
             && (IsVirtualKeyPressed(LeftWindowsVirtualKey) || IsVirtualKeyPressed(RightWindowsVirtualKey)))
         {
             InstallWindowsKeyUpConsumeHook();
+            isWindowsKeyHookInstalled = true;
             keyboardModifierKeys &= ~KeyboardModifierKeys.Windows;
         }
 
+        var sendInputKeyboardModifierKeys = keyboardModifierKeys;
         AddKeyboardModifierKeyUpInputs(keyboardInputs, keyboardModifierKeys);
         if (keyboardInputs.Count == 0) return;
 
-        var sentInputCount = Win32.SendInput((uint)keyboardInputs.Count, [.. keyboardInputs], Marshal.SizeOf<Win32.NativeInput>());
-        if (sentInputCount != keyboardInputs.Count) throw new InvalidOperationException("Unable to consume the pressed keyboard modifier input.");
+        var nativeInputSize = Marshal.SizeOf<Win32.NativeInput>();
+        var sentInputCount = Win32.SendInput((uint)keyboardInputs.Count, [.. keyboardInputs], nativeInputSize);
+        if (sentInputCount != keyboardInputs.Count) throw CreateKeyboardModifierConsumeException(requestedKeyboardModifierKeys, sendInputKeyboardModifierKeys, pressedKeyboardModifierKeysBeforeConsume, pressedKeyboardModifierKeyStateSummaryBeforeConsume, isWindowsKeyHookInstalled, keyboardInputs, sentInputCount, nativeInputSize);
     }
 
     private static void InstallWindowsKeyUpConsumeHook()
@@ -366,6 +373,68 @@ public static class MouseHelper
     {
         RightControlVirtualKey or RightAlternateVirtualKey or LeftWindowsVirtualKey or RightWindowsVirtualKey => Win32.KeyboardEventExtendedKeyFlag,
         _ => 0
+    };
+
+    private static InvalidOperationException CreateKeyboardModifierConsumeException(
+        KeyboardModifierKeys requestedKeyboardModifierKeys,
+        KeyboardModifierKeys sendInputKeyboardModifierKeys,
+        KeyboardModifierKeys pressedKeyboardModifierKeysBeforeConsume,
+        string pressedKeyboardModifierKeyStateSummaryBeforeConsume,
+        bool isWindowsKeyHookInstalled,
+        List<Win32.NativeInput> keyboardInputs,
+        uint sentInputCount,
+        int nativeInputSize)
+    {
+        var lastWindowsErrorCode = Marshal.GetLastWin32Error();
+        var lastWindowsErrorMessage = new Win32Exception(lastWindowsErrorCode).Message;
+        var pressedKeyboardModifierKeysAfterConsume = GetPressedKeyboardModifierKeys();
+        var pressedKeyboardModifierKeyStateSummaryAfterConsume = CreatePressedKeyboardModifierKeyStateSummary();
+        var foregroundWindowSummary = CreateForegroundWindowSummary();
+        var keyboardInputSummaries = string.Join(", ", keyboardInputs.Select(CreateKeyboardInputSummary));
+
+        return new($"Unable to consume the pressed keyboard modifier input. RequestedModifierKeys={requestedKeyboardModifierKeys}, SendInputModifierKeys={sendInputKeyboardModifierKeys}, PressedModifierKeysBeforeConsume={pressedKeyboardModifierKeysBeforeConsume}, PressedModifierKeysAfterConsume={pressedKeyboardModifierKeysAfterConsume}, PressedModifierKeyStatesBeforeConsume=[{pressedKeyboardModifierKeyStateSummaryBeforeConsume}], PressedModifierKeyStatesAfterConsume=[{pressedKeyboardModifierKeyStateSummaryAfterConsume}], WindowsKeyHookInstalled={isWindowsKeyHookInstalled}, RequestedInputCount={keyboardInputs.Count}, SentInputCount={sentInputCount}, NativeInputSize={nativeInputSize}, LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {lastWindowsErrorMessage}), ForegroundWindow=[{foregroundWindowSummary}], KeyboardInputs=[{keyboardInputSummaries}].");
+    }
+
+    private static string CreateKeyboardInputSummary(Win32.NativeInput keyboardInput)
+    {
+        var keyboardInputData = keyboardInput.Data.KeyboardInput;
+        var isExtendedKey = (keyboardInputData.Flags & Win32.KeyboardEventExtendedKeyFlag) != 0;
+        var isKeyUp = (keyboardInputData.Flags & Win32.KeyboardEventKeyUpFlag) != 0;
+        return $"VirtualKey={GetKeyboardVirtualKeyName(keyboardInputData.VirtualKey)}(0x{keyboardInputData.VirtualKey:X2}), ScanCode=0x{keyboardInputData.ScanCode:X2}, Flags=0x{keyboardInputData.Flags:X4}, IsExtendedKey={isExtendedKey}, IsKeyUp={isKeyUp}, Time={keyboardInputData.Time}, ExtraInfo={keyboardInputData.ExtraInfo}";
+    }
+
+    private static string CreatePressedKeyboardModifierKeyStateSummary() => string.Join(", ", [
+        $"LeftShift={IsVirtualKeyPressed(LeftShiftVirtualKey)}",
+        $"RightShift={IsVirtualKeyPressed(RightShiftVirtualKey)}",
+        $"LeftControl={IsVirtualKeyPressed(LeftControlVirtualKey)}",
+        $"RightControl={IsVirtualKeyPressed(RightControlVirtualKey)}",
+        $"LeftAlternate={IsVirtualKeyPressed(LeftAlternateVirtualKey)}",
+        $"RightAlternate={IsVirtualKeyPressed(RightAlternateVirtualKey)}",
+        $"LeftWindows={IsVirtualKeyPressed(LeftWindowsVirtualKey)}",
+        $"RightWindows={IsVirtualKeyPressed(RightWindowsVirtualKey)}"
+    ]);
+
+    private static string CreateForegroundWindowSummary()
+    {
+        var foregroundWindowHandle = Win32.GetForegroundWindow();
+        if (foregroundWindowHandle == 0) return "WindowHandle=0";
+
+        var foregroundThreadIdentifier = Win32.GetWindowThreadProcessId(foregroundWindowHandle, out var foregroundProcessIdentifier);
+        var foregroundProcessSnapshot = GetForegroundProcessSnapshot();
+        return $"WindowHandle={foregroundWindowHandle}, ThreadIdentifier={foregroundThreadIdentifier}, ProcessIdentifier={foregroundProcessIdentifier}, ProcessName={foregroundProcessSnapshot.ProcessName ?? "<null>"}, ExecutablePath={foregroundProcessSnapshot.ExecutablePath ?? "<null>"}";
+    }
+
+    private static string GetKeyboardVirtualKeyName(int virtualKey) => virtualKey switch
+    {
+        LeftShiftVirtualKey => nameof(LeftShiftVirtualKey),
+        RightShiftVirtualKey => nameof(RightShiftVirtualKey),
+        LeftControlVirtualKey => nameof(LeftControlVirtualKey),
+        RightControlVirtualKey => nameof(RightControlVirtualKey),
+        LeftAlternateVirtualKey => nameof(LeftAlternateVirtualKey),
+        RightAlternateVirtualKey => nameof(RightAlternateVirtualKey),
+        LeftWindowsVirtualKey => nameof(LeftWindowsVirtualKey),
+        RightWindowsVirtualKey => nameof(RightWindowsVirtualKey),
+        _ => "Unknown"
     };
 
     private static int GetIntersectionArea(ScreenRectangle firstRectangle, ScreenRectangle secondRectangle)
