@@ -7,11 +7,10 @@ using DeskBorder.Helpers;
 
 namespace DeskBorder.Services;
 
-public sealed class SettingsService(IStartupRegistrationService startupRegistrationService, ILocalizationService localizationService, IThemeService themeService, IFileLogService fileLogService) : ISettingsService
+public sealed class SettingsService(IStartupRegistrationService startupRegistrationService, ILocalizationService localizationService, IThemeService themeService, IFileLogService fileLogService, ISettingsMigrationService settingsMigrationService) : ISettingsService
 {
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsKey = "DeskBorderSettings";
-    private const int CurrentSchemaVersion = 5;
     private const int DesktopEdgeAdditionalTriggerDistancePercentageDecimalPlaces = 1;
     private const double DefaultAutoDeleteWarningTimeoutSeconds = 3.0;
     private const double DefaultDesktopEdgeAdditionalTriggerDistancePercentage = 5.0;
@@ -24,6 +23,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private static readonly ApplicationDataContainer s_localSettings = ApplicationData.Current.LocalSettings;
 
     private readonly IFileLogService _fileLogService = fileLogService;
+    private readonly ISettingsMigrationService _settingsMigrationService = settingsMigrationService;
     private readonly IStartupRegistrationService _startupRegistrationService = startupRegistrationService;
     private readonly ILocalizationService _localizationService = localizationService;
     private readonly IThemeService _themeService = themeService;
@@ -129,7 +129,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         IsAlwaysRunAsAdministratorEnabled = settings.IsAlwaysRunAsAdministratorEnabled
     };
 
-    private static DeskBorderSettings CloneSettings(DeskBorderSettings settings) => NormalizeSettings(settings);
+    private DeskBorderSettings CloneSettings(DeskBorderSettings settings) => NormalizeSettings(settings);
 
     private static string[] NormalizeBlacklistedProcessNames(string[]? blacklistedProcessNames) => (blacklistedProcessNames ?? [])
         .Where(processName => !string.IsNullOrWhiteSpace(processName))
@@ -161,12 +161,12 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         };
     }
 
-    private static DeskBorderSettings NormalizeSettings(DeskBorderSettings settings)
+    private DeskBorderSettings NormalizeSettings(DeskBorderSettings settings)
     {
         var normalizedWhitelistedProcessNames = NormalizeWhitelistedProcessNames(settings.WhitelistedProcessNames);
         var normalizedSettings = new DeskBorderSettings
         {
-            SchemaVersion = CurrentSchemaVersion,
+            SchemaVersion = _settingsMigrationService.CurrentSchemaVersion,
             IsDeskBorderEnabled = settings.IsDeskBorderEnabled,
             MultiDisplayBehavior = settings.MultiDisplayBehavior,
             SwitchDesktopModifierSettings = NormalizeModifierGateSettings(settings.SwitchDesktopModifierSettings),
@@ -375,7 +375,8 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         try
         {
             var deserializedSettings = JsonSerializer.Deserialize(serializedSettings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings);
-            return deserializedSettings is null ? throw new InvalidOperationException("Stored settings payload was empty.") : NormalizeSettings(deserializedSettings);
+            var migratedSettings = deserializedSettings is null ? throw new InvalidOperationException("Stored settings payload was empty.") : _settingsMigrationService.MigrateSettings(deserializedSettings);
+            return NormalizeSettings(migratedSettings);
         }
         catch (JsonException exception)
         {

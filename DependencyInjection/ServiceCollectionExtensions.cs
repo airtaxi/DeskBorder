@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IHotkeyService, HotkeyService>();
         serviceCollection.AddSingleton<INavigatorService, NavigatorService>();
         serviceCollection.AddSingleton<IStartupRegistrationService, StartupRegistrationService>();
+        serviceCollection.AddSingleton<ISettingsMigrationService, SettingsMigrationService>();
         serviceCollection.AddSingleton<ISettingsService, SettingsService>();
         serviceCollection.AddSingleton<IStoreUpdateService, StoreUpdateService>();
         serviceCollection.AddSingleton<IThemeService, ThemeService>();

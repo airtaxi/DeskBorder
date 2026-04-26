@@ -84,6 +84,7 @@ Prefer ARM64 for primary validation because that is the main development machine
 
 - Treat `DeskBorderSettings` as immutable. Update settings through `SettingsService.UpdateSettingsAsync(...)` rather than mutating nested values in place.
 - Let `SettingsService.NormalizeSettings(...)` own defaulting, clamping, blacklist/whitelist reconciliation, and hotkey validation.
+- When increasing the settings schema version, also update `Services\SettingsMigrationService.cs` so existing persisted settings and imported older settings are migrated intentionally.
 - Settings persistence uses source-generated `System.Text.Json` metadata via `DeskBorderSettingsSerializationContext`.
 
 ### Runtime and logging conventions
