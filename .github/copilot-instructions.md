@@ -78,6 +78,7 @@ Prefer ARM64 for primary validation because that is the main development machine
 - For click handlers, use `Clicked` rather than `Click` in the handler name.
 - Prefer `Spacing`, `RowSpacing`, and `ColumnSpacing` for layout spacing.
 - Use `Margin` only for per-element positional adjustment, not as a substitute for container spacing.
+- When adding a new setting item to the settings UI, also update the help tip for the section containing the new item so the new behavior is explained there.
 
 ### Settings and persistence conventions
 
