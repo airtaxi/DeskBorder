@@ -11,7 +11,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 {
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsKey = "DeskBorderSettings";
-    private const int CurrentSchemaVersion = 4;
+    private const int CurrentSchemaVersion = 5;
     private const int DesktopEdgeAdditionalTriggerDistancePercentageDecimalPlaces = 1;
     private const double DefaultAutoDeleteWarningTimeoutSeconds = 3.0;
     private const double DefaultDesktopEdgeAdditionalTriggerDistancePercentage = 5.0;
@@ -212,6 +212,8 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         var actualDesktopEdgeIgnoreZoneSettings = desktopEdgeIgnoreZoneSettings ?? new();
         return actualDesktopEdgeIgnoreZoneSettings with
         {
+            LeftIgnorePercentage = ClampDesktopEdgeIgnorePercentage(actualDesktopEdgeIgnoreZoneSettings.LeftIgnorePercentage),
+            RightIgnorePercentage = ClampDesktopEdgeIgnorePercentage(actualDesktopEdgeIgnoreZoneSettings.RightIgnorePercentage),
             TopIgnorePercentage = ClampDesktopEdgeIgnorePercentage(actualDesktopEdgeIgnoreZoneSettings.TopIgnorePercentage),
             BottomIgnorePercentage = ClampDesktopEdgeIgnorePercentage(actualDesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage)
         };

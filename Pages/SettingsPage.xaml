@@ -411,7 +411,7 @@
                                     SpinButtonPlacementMode="Inline"
                                     ValueChanged="OnSettingNumberBoxValueChanged"
                                     Value="{x:Bind ViewModel.DesktopEdgeAdditionalTriggerDistancePercentage, Mode=TwoWay}" />
-                                </StackPanel>
+                            </StackPanel>
                         </Border>
 
                         <ToggleSwitch
@@ -444,6 +444,36 @@
                                     Header="다중 디스플레이에서만 위/아래 경계 사용"
                                     IsOn="{x:Bind ViewModel.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment, Mode=TwoWay}"
                                     Toggled="OnSettingToggleSwitchToggled" />
+
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <NumberBox
+                                        x:Name="LeftDesktopEdgeIgnorePercentageNumberBox"
+                                        x:Uid="SettingsPage_LeftDesktopEdgeIgnorePercentageNumberBox"
+                                        Header="좌측 무시 영역 (%)"
+                                        Maximum="49"
+                                        Minimum="0"
+                                        SmallChange="1"
+                                        SpinButtonPlacementMode="Inline"
+                                        ValueChanged="OnSettingNumberBoxValueChanged"
+                                        Value="{x:Bind ViewModel.LeftDesktopEdgeIgnorePercentage, Mode=TwoWay}" />
+
+                                    <NumberBox
+                                        x:Name="RightDesktopEdgeIgnorePercentageNumberBox"
+                                        x:Uid="SettingsPage_RightDesktopEdgeIgnorePercentageNumberBox"
+                                        Grid.Column="1"
+                                        Header="우측 무시 영역 (%)"
+                                        Maximum="49"
+                                        Minimum="0"
+                                        SmallChange="1"
+                                        SpinButtonPlacementMode="Inline"
+                                        ValueChanged="OnSettingNumberBoxValueChanged"
+                                        Value="{x:Bind ViewModel.RightDesktopEdgeIgnorePercentage, Mode=TwoWay}" />
+                                </Grid>
                             </StackPanel>
                         </Border>
 

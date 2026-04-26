@@ -164,6 +164,12 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial double BottomDesktopEdgeIgnorePercentage { get; set; }
 
     [ObservableProperty]
+    public partial double LeftDesktopEdgeIgnorePercentage { get; set; }
+
+    [ObservableProperty]
+    public partial double RightDesktopEdgeIgnorePercentage { get; set; }
+
+    [ObservableProperty]
     public partial bool IsAutoDeleteEnabled { get; set; }
 
     [ObservableProperty]
@@ -411,7 +417,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public DeskBorderSettings CreateSettings() => new()
     {
-        SchemaVersion = 4,
+        SchemaVersion = 5,
         IsDeskBorderEnabled = IsDeskBorderEnabled,
         MultiDisplayBehavior = SelectedMultiDisplayBehaviorOption?.Value ?? MultiDisplayBehavior.DisableInMultiDisplayEnvironment,
         SwitchDesktopModifierSettings = new ModifierGateSettings
@@ -442,6 +448,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         AutoDeleteWarningTimeoutSeconds = AutoDeleteWarningTimeoutSeconds,
         DesktopEdgeIgnoreZoneSettings = new DesktopEdgeIgnoreZoneSettings
         {
+            LeftIgnorePercentage = LeftDesktopEdgeIgnorePercentage,
+            RightIgnorePercentage = RightDesktopEdgeIgnorePercentage,
             TopIgnorePercentage = TopDesktopEdgeIgnorePercentage,
             BottomIgnorePercentage = BottomDesktopEdgeIgnorePercentage
         },
@@ -501,6 +509,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsVerticalDesktopSwitchDirectionReversed = deskBorderSettings.IsVerticalDesktopSwitchDirectionReversed;
         IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment = deskBorderSettings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment;
         AutoDeleteWarningTimeoutSeconds = deskBorderSettings.AutoDeleteWarningTimeoutSeconds;
+        LeftDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.LeftIgnorePercentage;
+        RightDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.RightIgnorePercentage;
         TopDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.TopIgnorePercentage;
         BottomDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage;
         IsNavigatorTriggerAreaEnabled = deskBorderSettings.NavigatorSettings.IsTriggerAreaEnabled;

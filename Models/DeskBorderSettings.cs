@@ -114,6 +114,10 @@ public sealed record TriggerRectangleSettings
 
 public sealed record DesktopEdgeIgnoreZoneSettings
 {
+    public double LeftIgnorePercentage { get; init; } = 20.0;
+
+    public double RightIgnorePercentage { get; init; } = 20.0;
+
     public double TopIgnorePercentage { get; init; } = 20.0;
 
     public double BottomIgnorePercentage { get; init; } = 20.0;
@@ -151,7 +155,7 @@ public sealed record NavigatorSettings
 
 public sealed record DeskBorderSettings
 {
-    public int SchemaVersion { get; init; } = 4;
+    public int SchemaVersion { get; init; } = 5;
 
     public bool IsDeskBorderEnabled { get; init; } = true;
 

@@ -663,6 +663,12 @@
   <data name="SettingsPage_BottomDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>하단 무시 영역 (%)</value>
   </data>
+  <data name="SettingsPage_LeftDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>좌측 무시 영역 (%)</value>
+  </data>
+  <data name="SettingsPage_RightDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>우측 무시 영역 (%)</value>
+  </data>
   <data name="SettingsPage_ExportSettingsButton.Content" xml:space="preserve">
     <value>설정 내보내기</value>
   </data>
@@ -1010,6 +1016,7 @@
 • 창모드 전체화면 포함: 모니터 전체를 덮는 창모드 전체화면도 전체화면으로 취급합니다.
 • 위/아래 경계로도 데스크톱 전환: 좌우 가장자리 외에 상단과 하단 경계에서도 이전/다음 데스크톱 전환을 허용합니다.
 • 위/아래 방향 반전 / 다중 디스플레이에서만 위/아래 경계 사용: 상단/하단 경계의 전환 방향을 바꾸거나 다중 디스플레이 환경에서만 위/아래 경계를 사용합니다.
+• 좌측 무시 영역 / 우측 무시 영역: 위/아래 경계로도 데스크톱 전환을 켰을 때 사용할 수 있으며, 화면 좌우에서 위/아래 경계 전환과 데스크톱 생성을 무시할 범위를 퍼센트로 조절합니다.
 • 빈 데스크톱 자동 삭제: 양 끝 데스크톱에서 안쪽으로 이동할 때 창이 없으면 해당 데스크톱을 삭제합니다.
 • 삭제 경고 표시: 켜면 잠시 기다리며 실행 취소할 수 있고, 끄면 빈 데스크톱을 바로 삭제합니다.
 • 자동 삭제 완료 알림 표시: 삭제 경고를 끈 경우에만 사용할 수 있으며, 빈 데스크톱이 바로 삭제된 뒤 완료 알림을 표시합니다.

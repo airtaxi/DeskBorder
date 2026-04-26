@@ -282,6 +282,18 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         return currentCursorPosition.Y >= activeTopBoundary && currentCursorPosition.Y < activeBottomBoundary;
     }
 
+    private static bool IsCursorWithinDesktopEdgeActiveHorizontalRange(
+        ScreenRectangle monitorBounds,
+        ScreenPoint currentCursorPosition,
+        DesktopEdgeIgnoreZoneSettings desktopEdgeIgnoreZoneSettings)
+    {
+        var leftIgnoreWidth = (int)Math.Round(monitorBounds.Width * (desktopEdgeIgnoreZoneSettings.LeftIgnorePercentage / 100d), MidpointRounding.AwayFromZero);
+        var rightIgnoreWidth = (int)Math.Round(monitorBounds.Width * (desktopEdgeIgnoreZoneSettings.RightIgnorePercentage / 100d), MidpointRounding.AwayFromZero);
+        var activeLeftBoundary = Math.Clamp(monitorBounds.Left + leftIgnoreWidth, monitorBounds.Left, monitorBounds.Right - 1);
+        var activeRightBoundary = Math.Clamp(monitorBounds.Right - rightIgnoreWidth, monitorBounds.Left + 1, monitorBounds.Right);
+        return currentCursorPosition.X >= activeLeftBoundary && currentCursorPosition.X < activeRightBoundary;
+    }
+
     private static DesktopEdgeAvailabilityStatus GetDesktopEdgeAvailabilityStatus(
         DeskBorderSettings settings,
         int displayMonitorCount,
@@ -427,6 +439,9 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             return DesktopEdgeKind.None;
 
         if (currentSettings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment && displayMonitors.Length <= 1)
+            return DesktopEdgeKind.None;
+
+        if (!IsCursorWithinDesktopEdgeActiveHorizontalRange(currentDisplayMonitor.MonitorBounds, currentCursorPosition, currentSettings.DesktopEdgeIgnoreZoneSettings))
             return DesktopEdgeKind.None;
 
         if (currentCursorPosition.Y == currentDisplayMonitor.MonitorBounds.Top)

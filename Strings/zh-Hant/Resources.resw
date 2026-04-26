@@ -663,6 +663,12 @@
   <data name="SettingsPage_BottomDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>底部忽略區域 (%)</value>
   </data>
+  <data name="SettingsPage_LeftDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>左側忽略區域 (%)</value>
+  </data>
+  <data name="SettingsPage_RightDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>右側忽略區域 (%)</value>
+  </data>
   <data name="SettingsPage_ExportSettingsButton.Content" xml:space="preserve">
     <value>匯出設定</value>
   </data>
@@ -1010,6 +1016,7 @@
 • 包含視窗化全螢幕：將覆蓋整個顯示器的視窗化全螢幕也視為全螢幕。
 • 也用上/下邊緣切換桌面：除左/右邊緣外，也允許透過頂部和底部邊緣切換到上一個/下一個桌面。
 • 反轉上下方向 / 僅在多顯示器環境中使用上/下邊緣：變更頂部/底部邊緣的方向對應，或將上下邊緣切換限制在多顯示器環境中。
+• 左側忽略區域 / 右側忽略區域：僅在啟用上/下邊緣切換時可用，以百分比調整螢幕左右兩側忽略上/下邊緣切換和桌面建立的範圍。
 • 自動刪除空桌面：當你從最外側桌面往內移動時，如果該桌面沒有視窗就會刪除它。
 • 顯示刪除警告：開啟時會先短暫等待以便復原，關閉時會立即刪除空桌面。
 • 顯示自動刪除完成通知：僅在關閉刪除警告時可用，會在空桌面被立即刪除後顯示完成通知。

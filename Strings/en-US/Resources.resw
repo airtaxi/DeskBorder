@@ -663,6 +663,12 @@
   <data name="SettingsPage_BottomDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>Bottom ignore zone (%)</value>
   </data>
+  <data name="SettingsPage_LeftDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>Left ignore zone (%)</value>
+  </data>
+  <data name="SettingsPage_RightDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>Right ignore zone (%)</value>
+  </data>
   <data name="SettingsPage_ExportSettingsButton.Content" xml:space="preserve">
     <value>Export settings</value>
   </data>
@@ -1010,6 +1016,7 @@
 • Include windowed fullscreen: treats windowed fullscreen apps that cover the entire monitor as fullscreen too.
 • Switch desktops with top and bottom edges too: allows previous/next desktop switching from the top and bottom edges in addition to the left and right edges.
 • Reverse vertical direction / use top and bottom edges only in multi-display environments: changes the top/bottom direction mapping or limits vertical edge switching to multi-display setups.
+• Left and right ignore zones: available with top/bottom edge switching and adjusts how much of the left and right screen area should ignore top/bottom edge switching and desktop creation.
 • Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.
 • Show deletion warning: when enabled, deletion waits briefly so you can undo it; when disabled, empty desktops are deleted immediately.
 • Show auto-delete completion notification: available only when the deletion warning is off, and shows a completion notification after an empty desktop is deleted immediately.

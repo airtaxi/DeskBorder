@@ -663,6 +663,12 @@
   <data name="SettingsPage_BottomDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>下側の無視領域 (%)</value>
   </data>
+  <data name="SettingsPage_LeftDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>左側の無視領域 (%)</value>
+  </data>
+  <data name="SettingsPage_RightDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
+    <value>右側の無視領域 (%)</value>
+  </data>
   <data name="SettingsPage_ExportSettingsButton.Content" xml:space="preserve">
     <value>設定をエクスポート</value>
   </data>
@@ -1010,6 +1016,7 @@
 • ウィンドウ全画面を含める: モニター全体を覆うウィンドウ全画面も全画面として扱います。
 • 上下エッジでもデスクトップを切り替える: 左右エッジに加えて、上端と下端からも前/次のデスクトップへ切り替えられるようにします。
 • 上下方向を反転 / マルチディスプレイ環境でのみ上下エッジを使用: 上端/下端の方向割り当てを変更するか、上下エッジ切り替えをマルチディスプレイ環境だけに制限します。
+• 左側の無視領域 / 右側の無視領域: 上下エッジ切り替えが有効な場合に使用でき、画面の左右で上下エッジの切り替えとデスクトップ作成を無視する範囲を割合で調整します。
 • 空のデスクトップを自動削除: 外側デスクトップから内側へ移動するとき、ウィンドウが無ければそのデスクトップを削除します。
 • 削除前の警告を表示: 有効時は少し待って取り消せます。無効時は空のデスクトップをすぐ削除します。
 • 自動削除完了通知を表示: 削除前の警告をオフにしたときのみ使え、空のデスクトップがすぐ削除された後に完了通知を表示します。
