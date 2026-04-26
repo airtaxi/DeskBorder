@@ -831,7 +831,7 @@
     <value>Always run as administrator</value>
   </data>
   <data name="SettingsPage_AlwaysRunAsAdministratorDescriptionTextBlock.Text" xml:space="preserve">
-    <value>Running as administrator can help resolve cases where desktop switching does not work correctly in some environments. This takes effect the next time the app launches.</value>
+    <value>Running as administrator can help resolve cases where desktop switching or mouse movement does not work correctly in some environments. This takes effect the next time the app launches.</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>

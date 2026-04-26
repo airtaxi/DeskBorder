@@ -834,7 +834,7 @@
     <value>一律以 Administrator 身分執行</value>
   </data>
   <data name="SettingsPage_AlwaysRunAsAdministratorDescriptionTextBlock.Text" xml:space="preserve">
-    <value>以系統管理員權限執行有助於解決某些環境下桌面切換無法正常運作的情況。此設定會在應用程式下次啟動時生效。</value>
+    <value>以系統管理員權限執行有助於解決某些環境下桌面切換或滑鼠移動無法正常運作的情況。此設定會在應用程式下次啟動時生效。</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>

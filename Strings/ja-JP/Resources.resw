@@ -834,7 +834,7 @@
     <value>常に Administrator として実行</value>
   </data>
   <data name="SettingsPage_AlwaysRunAsAdministratorDescriptionTextBlock.Text" xml:space="preserve">
-    <value>管理者権限で実行すると、一部の環境でデスクトップ切り替えが正しく動作しない問題の改善に役立つ場合があります。設定は次回起動時から適用されます。</value>
+    <value>管理者権限で実行すると、一部の環境でデスクトップ切り替えやマウス移動が正しく動作しない問題の改善に役立つ場合があります。設定は次回起動時から適用されます。</value>
   </data>
   <data name="SettingsPage_MoveNextHotkeyAltCheckBox.Content" xml:space="preserve">
     <value>Alt</value>
