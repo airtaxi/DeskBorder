@@ -32,16 +32,28 @@ public static class MouseHelper
 
     public static ScreenPoint GetCurrentCursorPosition()
     {
-        if (!Win32.GetCursorPos(out var currentCursorPosition))
-            throw new InvalidOperationException("Unable to retrieve the current cursor position.");
+        if (!TryGetCurrentCursorPosition(out var currentCursorPosition, out _)) throw new InvalidOperationException("Unable to retrieve the current cursor position.");
 
-        return new(currentCursorPosition.X, currentCursorPosition.Y);
+        return currentCursorPosition;
+    }
+
+    public static bool TryGetCurrentCursorPosition(out ScreenPoint currentCursorPosition, out int lastWindowsErrorCode)
+    {
+        if (Win32.GetCursorPos(out var nativeCursorPosition))
+        {
+            currentCursorPosition = new(nativeCursorPosition.X, nativeCursorPosition.Y);
+            lastWindowsErrorCode = 0;
+            return true;
+        }
+
+        currentCursorPosition = default;
+        lastWindowsErrorCode = Marshal.GetLastWin32Error();
+        return false;
     }
 
     public static void SetCursorPosition(ScreenPoint position)
     {
-        if (TrySetCursorPosition(position, out var lastWindowsErrorCode))
-            return;
+        if (TrySetCursorPosition(position, out var lastWindowsErrorCode)) return;
 
         var lastWindowsErrorMessage = new Win32Exception(lastWindowsErrorCode).Message;
         throw new InvalidOperationException($"Unable to set the cursor position. LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {lastWindowsErrorMessage}).");

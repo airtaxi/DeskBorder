@@ -15,6 +15,9 @@ public sealed class DesktopLifecycleService(
     IVirtualDesktopService virtualDesktopService) : IDesktopLifecycleService
 {
     private const int DesktopEdgeTriggerRearmDistanceInPixels = 24;
+    private const int DesktopSwitchMouseLocationApplyAttemptCount = 5;
+    private static readonly TimeSpan s_desktopSwitchMouseLocationApplyRetryDelay = TimeSpan.FromMilliseconds(40);
+    private static readonly TimeSpan s_desktopSwitchMouseLocationVerificationDelay = TimeSpan.FromMilliseconds(40);
 
     private readonly IDesktopEdgeMonitorService _desktopEdgeMonitorService = desktopEdgeMonitorService;
     private readonly IFileLogService _fileLogService = fileLogService;
@@ -254,6 +257,16 @@ public sealed class DesktopLifecycleService(
 
     private static string FormatLastWindowsErrorDetails(int lastWindowsErrorCode) => $"LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {new Win32Exception(lastWindowsErrorCode).Message})";
 
+    private static string FormatCursorClippingDetails()
+    {
+        try
+        {
+            var cursorClippingState = MouseHelper.GetCursorClippingState();
+            return $"CursorClipped={cursorClippingState.IsCursorClipped}, ClippingLeft={cursorClippingState.ClippingRectangle.Left}, ClippingTop={cursorClippingState.ClippingRectangle.Top}, ClippingRight={cursorClippingState.ClippingRectangle.Right}, ClippingBottom={cursorClippingState.ClippingRectangle.Bottom}, VirtualScreenLeft={cursorClippingState.VirtualScreenBounds.Left}, VirtualScreenTop={cursorClippingState.VirtualScreenBounds.Top}, VirtualScreenRight={cursorClippingState.VirtualScreenBounds.Right}, VirtualScreenBottom={cursorClippingState.VirtualScreenBounds.Bottom}";
+        }
+        catch (InvalidOperationException exception) { return $"CursorClippingStateUnavailable={exception.Message}"; }
+    }
+
     private DesktopSwitchMouseLocationContext? TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection desktopSwitchDirection)
     {
         try
@@ -274,7 +287,32 @@ public sealed class DesktopLifecycleService(
         }
     }
 
-    private void TryApplyMouseLocationAfterDesktopSwitch(
+    private static async Task<DesktopSwitchMouseLocationApplyResult> ApplyResolvedMouseLocationAfterDesktopSwitchAsync(ScreenPoint targetMouseLocation)
+    {
+        var lastMouseLocationApplyResult = default(DesktopSwitchMouseLocationApplyResult);
+        for (var attemptNumber = 1; attemptNumber <= DesktopSwitchMouseLocationApplyAttemptCount; attemptNumber++)
+        {
+            if (!MouseHelper.TrySetCursorPosition(targetMouseLocation, out var setCursorPositionLastWindowsErrorCode))
+                lastMouseLocationApplyResult = new(attemptNumber, false, false, false, null, setCursorPositionLastWindowsErrorCode, 0);
+            else
+            {
+                await Task.Delay(s_desktopSwitchMouseLocationVerificationDelay);
+                if (!MouseHelper.TryGetCurrentCursorPosition(out var actualMouseLocation, out var getCursorPositionLastWindowsErrorCode))
+                    lastMouseLocationApplyResult = new(attemptNumber, true, false, false, null, 0, getCursorPositionLastWindowsErrorCode);
+                else
+                {
+                    lastMouseLocationApplyResult = new(attemptNumber, true, true, actualMouseLocation == targetMouseLocation, actualMouseLocation, 0, 0);
+                    if (lastMouseLocationApplyResult.IsSuccessful) return lastMouseLocationApplyResult;
+                }
+            }
+
+            if (attemptNumber < DesktopSwitchMouseLocationApplyAttemptCount) await Task.Delay(s_desktopSwitchMouseLocationApplyRetryDelay);
+        }
+
+        return lastMouseLocationApplyResult;
+    }
+
+    private async Task TryApplyMouseLocationAfterDesktopSwitchAsync(
         DesktopNavigationResult desktopNavigationResult,
         DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption,
         DesktopSwitchMouseLocationContext? desktopSwitchMouseLocationContext,
@@ -295,13 +333,26 @@ public sealed class DesktopLifecycleService(
             return;
         }
 
-        if (!MouseHelper.TrySetCursorPosition(targetMouseLocation.Value, out var lastWindowsErrorCode))
+        var mouseLocationApplyResult = await ApplyResolvedMouseLocationAfterDesktopSwitchAsync(targetMouseLocation.Value);
+        if (mouseLocationApplyResult.IsSuccessful)
         {
-            _fileLogService.WriteError(nameof(DesktopLifecycleService), $"Failed to apply mouse location after desktop switch. TriggerSource={triggerSource}, Option={desktopSwitchMouseLocationOption}, X={targetMouseLocation.Value.X}, Y={targetMouseLocation.Value.Y}, {FormatLastWindowsErrorDetails(lastWindowsErrorCode)}.");
+            _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Applied mouse location after desktop switch. TriggerSource={triggerSource}, Option={desktopSwitchMouseLocationOption}, RequestedX={targetMouseLocation.Value.X}, RequestedY={targetMouseLocation.Value.Y}, ActualX={mouseLocationApplyResult.ActualMouseLocation!.Value.X}, ActualY={mouseLocationApplyResult.ActualMouseLocation!.Value.Y}, AttemptNumber={mouseLocationApplyResult.AttemptNumber}.");
             return;
         }
 
-        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Applied mouse location after desktop switch. TriggerSource={triggerSource}, Option={desktopSwitchMouseLocationOption}, X={targetMouseLocation.Value.X}, Y={targetMouseLocation.Value.Y}.");
+        if (!mouseLocationApplyResult.DidSetCursorPosition)
+        {
+            _fileLogService.WriteError(nameof(DesktopLifecycleService), $"Failed to apply mouse location after desktop switch. TriggerSource={triggerSource}, Option={desktopSwitchMouseLocationOption}, RequestedX={targetMouseLocation.Value.X}, RequestedY={targetMouseLocation.Value.Y}, AttemptNumber={mouseLocationApplyResult.AttemptNumber}, {FormatLastWindowsErrorDetails(mouseLocationApplyResult.SetCursorPositionLastWindowsErrorCode)}, {FormatCursorClippingDetails()}.");
+            return;
+        }
+
+        if (!mouseLocationApplyResult.DidReadActualMouseLocation)
+        {
+            _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Could not verify mouse location after desktop switch. TriggerSource={triggerSource}, Option={desktopSwitchMouseLocationOption}, RequestedX={targetMouseLocation.Value.X}, RequestedY={targetMouseLocation.Value.Y}, AttemptNumber={mouseLocationApplyResult.AttemptNumber}, GetCurrentCursorPosition{FormatLastWindowsErrorDetails(mouseLocationApplyResult.GetCursorPositionLastWindowsErrorCode)}, {FormatCursorClippingDetails()}.");
+            return;
+        }
+
+        _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Mouse location after desktop switch was constrained or changed after SetCursorPos. TriggerSource={triggerSource}, Option={desktopSwitchMouseLocationOption}, RequestedX={targetMouseLocation.Value.X}, RequestedY={targetMouseLocation.Value.Y}, ActualX={mouseLocationApplyResult.ActualMouseLocation!.Value.X}, ActualY={mouseLocationApplyResult.ActualMouseLocation!.Value.Y}, AttemptNumber={mouseLocationApplyResult.AttemptNumber}, {FormatCursorClippingDetails()}.");
     }
 
     private async Task CancelPendingDesktopDeletionAsync()
@@ -581,7 +632,7 @@ public sealed class DesktopLifecycleService(
             if (desktopNavigationResult.NavigationActionKind != DesktopNavigationActionKind.None)
             {
                 _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Handled desktop edge activation. Action={desktopNavigationResult.NavigationActionKind}, Status={desktopNavigationResult.OperationStatus}.");
-                TryApplyMouseLocationAfterDesktopSwitch(
+                await TryApplyMouseLocationAfterDesktopSwitchAsync(
                     desktopNavigationResult,
                     currentSettings.DesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption,
                     CreateDesktopSwitchMouseLocationContext(currentState, desktopEdgeActivationEvaluation.DesktopSwitchDirection),
@@ -616,7 +667,7 @@ public sealed class DesktopLifecycleService(
                         ? null
                         : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Previous);
                     var switchToPreviousDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, DesktopSwitchDirection.Previous, true);
-                    TryApplyMouseLocationAfterDesktopSwitch(
+                    await TryApplyMouseLocationAfterDesktopSwitchAsync(
                         switchToPreviousDesktopNavigationResult,
                         currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
                         switchToPreviousDesktopMouseLocationContext,
@@ -630,7 +681,7 @@ public sealed class DesktopLifecycleService(
                         ? null
                         : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Next);
                     var switchToNextDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, DesktopSwitchDirection.Next, true);
-                    TryApplyMouseLocationAfterDesktopSwitch(
+                    await TryApplyMouseLocationAfterDesktopSwitchAsync(
                         switchToNextDesktopNavigationResult,
                         currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
                         switchToNextDesktopMouseLocationContext,
@@ -644,7 +695,7 @@ public sealed class DesktopLifecycleService(
                         ? null
                         : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Previous);
                     var moveFocusedWindowToPreviousDesktopNavigationResult = _virtualDesktopService.MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection.Previous);
-                    TryApplyMouseLocationAfterDesktopSwitch(
+                    await TryApplyMouseLocationAfterDesktopSwitchAsync(
                         moveFocusedWindowToPreviousDesktopNavigationResult,
                         currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
                         moveFocusedWindowToPreviousDesktopMouseLocationContext,
@@ -658,7 +709,7 @@ public sealed class DesktopLifecycleService(
                         ? null
                         : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Next);
                     var moveFocusedWindowToNextDesktopNavigationResult = _virtualDesktopService.MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection.Next);
-                    TryApplyMouseLocationAfterDesktopSwitch(
+                    await TryApplyMouseLocationAfterDesktopSwitchAsync(
                         moveFocusedWindowToNextDesktopNavigationResult,
                         currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
                         moveFocusedWindowToNextDesktopMouseLocationContext,
@@ -702,6 +753,18 @@ public sealed class DesktopLifecycleService(
         ScreenPoint InputCursorPosition,
         DesktopSwitchDirection DesktopSwitchDirection,
         DesktopEdgeKind TriggeredDesktopEdge);
+
+    private readonly record struct DesktopSwitchMouseLocationApplyResult(
+        int AttemptNumber,
+        bool DidSetCursorPosition,
+        bool DidReadActualMouseLocation,
+        bool WasTargetMouseLocationApplied,
+        ScreenPoint? ActualMouseLocation,
+        int SetCursorPositionLastWindowsErrorCode,
+        int GetCursorPositionLastWindowsErrorCode)
+    {
+        public bool IsSuccessful => DidSetCursorPosition && DidReadActualMouseLocation && WasTargetMouseLocationApplied;
+    }
 
     private readonly record struct DesktopEdgeActivationEvaluation(
         bool ShouldAttemptActivation,
