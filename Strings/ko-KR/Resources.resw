@@ -255,6 +255,9 @@
   <data name="DesktopEdgeAvailability.DisabledByPressedMouseButton" xml:space="preserve">
     <value>마우스 버튼이 눌려 있어 비활성화됨</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByFullscreenWindow" xml:space="preserve">
+    <value>전경 창이 전체화면이라 비활성화됨</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>가장자리 감시 가능</value>
   </data>
@@ -578,6 +581,12 @@
   </data>
   <data name="SettingsPage_DesktopCreationCompletionToastToggleSwitch.Header" xml:space="preserve">
     <value>자동 생성 완료 알림 표시</value>
+  </data>
+  <data name="SettingsPage_DesktopSwitchingAndCreationDisabledWhenFullscreenToggleSwitch.Header" xml:space="preserve">
+    <value>전체화면일 때 전환 및 생성 비활성화</value>
+  </data>
+  <data name="SettingsPage_WindowedFullscreenIncludedToggleSwitch.Header" xml:space="preserve">
+    <value>창모드 전체화면 포함</value>
   </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>빈 데스크톱 자동 삭제</value>
@@ -997,6 +1006,8 @@
     <value>• 데스크톱 생성: 마지막 데스크톱의 오른쪽 가장자리에서 새 데스크톱을 만들지 결정합니다.
 • 현재 데스크톱이 비어 있으면 생성 안 함: 떠나려는 현재 데스크톱에 창이 없을 때는 새 데스크톱을 추가로 만들지 않습니다.
 • 자동 생성 완료 알림 표시: 새 데스크톱이 자동으로 생성된 뒤 완료 알림을 표시합니다.
+• 전체화면일 때 전환 및 생성 비활성화: 전경 창이 전체화면이면 가장자리와 단축키로 인한 데스크톱 전환/생성을 막습니다.
+• 창모드 전체화면 포함: 모니터 전체를 덮는 창모드 전체화면도 전체화면으로 취급합니다.
 • 위/아래 경계로도 데스크톱 전환: 좌우 가장자리 외에 상단과 하단 경계에서도 이전/다음 데스크톱 전환을 허용합니다.
 • 위/아래 방향 반전 / 다중 디스플레이에서만 위/아래 경계 사용: 상단/하단 경계의 전환 방향을 바꾸거나 다중 디스플레이 환경에서만 위/아래 경계를 사용합니다.
 • 빈 데스크톱 자동 삭제: 양 끝 데스크톱에서 안쪽으로 이동할 때 창이 없으면 해당 데스크톱을 삭제합니다.

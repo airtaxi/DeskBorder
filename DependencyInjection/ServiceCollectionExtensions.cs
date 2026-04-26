@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IDeskBorderRuntimeService, DeskBorderRuntimeService>();
         serviceCollection.AddSingleton<IDesktopLifecycleService, DesktopLifecycleService>();
         serviceCollection.AddSingleton<IDesktopEdgeMonitorService, DesktopEdgeMonitorService>();
+        serviceCollection.AddSingleton<IForegroundWindowFullscreenService, ForegroundWindowFullscreenService>();
         serviceCollection.AddSingleton<IMouseMovementTrackingService, MouseMovementTrackingService>();
         serviceCollection.AddSingleton<IHotkeyService, HotkeyService>();
         serviceCollection.AddSingleton<INavigatorService, NavigatorService>();

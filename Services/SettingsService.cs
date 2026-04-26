@@ -11,7 +11,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 {
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsKey = "DeskBorderSettings";
-    private const int CurrentSchemaVersion = 3;
+    private const int CurrentSchemaVersion = 4;
     private const int DesktopEdgeAdditionalTriggerDistancePercentageDecimalPlaces = 1;
     private const double DefaultAutoDeleteWarningTimeoutSeconds = 3.0;
     private const double DefaultDesktopEdgeAdditionalTriggerDistancePercentage = 5.0;
@@ -175,6 +175,8 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             IsDesktopCreationEnabled = settings.IsDesktopCreationEnabled,
             IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = settings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty,
             IsDesktopCreationCompletionToastEnabled = settings.IsDesktopCreationCompletionToastEnabled,
+            IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen = settings.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen,
+            IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation = settings.IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation,
             IsAutoDeleteEnabled = settings.IsAutoDeleteEnabled,
             IsAutoDeleteWarningEnabled = settings.IsAutoDeleteWarningEnabled,
             IsAutoDeleteCompletionToastEnabled = settings.IsAutoDeleteCompletionToastEnabled,
@@ -409,7 +411,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         SaveSettings(_settings);
         _localizationService.ApplyLanguagePreference(_settings.AppLanguagePreference);
         _themeService.ApplyApplicationThemePreference(_settings.ApplicationThemePreference);
-        _fileLogService.WriteInformation(nameof(SettingsService), $"Persisted settings. LaunchOnStartup={_settings.IsLaunchOnStartupEnabled}, AlwaysRunAsAdministrator={_settings.IsAlwaysRunAsAdministratorEnabled}, StoreUpdateChecks={_settings.IsStoreUpdateCheckEnabled}, Language={_settings.AppLanguagePreference}, Theme={_settings.ApplicationThemePreference}.");
+        _fileLogService.WriteInformation(nameof(SettingsService), $"Persisted settings. LaunchOnStartup={_settings.IsLaunchOnStartupEnabled}, AlwaysRunAsAdministrator={_settings.IsAlwaysRunAsAdministratorEnabled}, StoreUpdateChecks={_settings.IsStoreUpdateCheckEnabled}, FullscreenDesktopSwitchingAndCreationGuard={_settings.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen}, WindowedFullscreenIncluded={_settings.IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation}, Language={_settings.AppLanguagePreference}, Theme={_settings.ApplicationThemePreference}.");
         SettingsChanged?.Invoke(this, EventArgs.Empty);
     }
 

@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 
 namespace DeskBorder.Services;
 
-public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, IFileLogService fileLogService, IMouseMovementTrackingService mouseMovementTrackingService) : IDesktopEdgeMonitorService, IDisposable
+public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, IFileLogService fileLogService, IForegroundWindowFullscreenService foregroundWindowFullscreenService, IMouseMovementTrackingService mouseMovementTrackingService) : IDesktopEdgeMonitorService, IDisposable
 {
     private static readonly TimeSpan s_defaultPollingInterval = TimeSpan.FromMilliseconds(40);
     private static readonly TimeSpan s_refreshFailureLoggingWindow = TimeSpan.FromSeconds(2);
@@ -12,6 +12,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
     private static readonly ConcurrentDictionary<string, byte> s_persistingGameBarExecutablePaths = new(StringComparer.OrdinalIgnoreCase);
 
     private readonly IFileLogService _fileLogService = fileLogService;
+    private readonly IForegroundWindowFullscreenService _foregroundWindowFullscreenService = foregroundWindowFullscreenService;
     private readonly IMouseMovementTrackingService _mouseMovementTrackingService = mouseMovementTrackingService;
     private readonly ISettingsService _settingsService = settingsService;
     private CancellationTokenSource? _monitoringCancellationTokenSource;
@@ -42,6 +43,9 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             && MouseHelper.AreRequiredKeyboardModifierKeysPressed(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys);
         var pendingMouseMovementDelta = _mouseMovementTrackingService.ConsumePendingMouseMovementDelta();
         var displayMonitors = MouseHelper.GetDisplayMonitors();
+        var foregroundWindowFullscreenState = currentSettings.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen
+            ? _foregroundWindowFullscreenService.GetForegroundWindowFullscreenState(displayMonitors)
+            : new();
         var currentDisplayMonitor = FindCurrentDisplayMonitor(displayMonitors, currentCursorPosition);
         var isForegroundProcessGameBarRecognizedGame = !string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ExecutablePath)
             && MouseHelper.IsGameBarRecognizedGame(foregroundProcessSnapshot.ExecutablePath);
@@ -58,7 +62,8 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             cursorClippingState.IsCursorClipped,
             mouseButtonSnapshot.IsAnyButtonPressed,
             isSwitchDesktopModifierSatisfied && isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied,
-            isForegroundProcessBlacklisted);
+            isForegroundProcessBlacklisted,
+            _foregroundWindowFullscreenService.ShouldDisableDesktopSwitchingAndCreation(foregroundWindowFullscreenState, currentSettings));
         var touchedDesktopEdge = desktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.Enabled
             ? GetTouchedDesktopEdge(displayMonitors, currentDisplayMonitor, currentCursorPosition, currentSettings, pendingMouseMovementDelta)
             : DesktopEdgeKind.None;
@@ -78,6 +83,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             ModifierKeySnapshot = modifierKeySnapshot,
             MouseButtonSnapshot = mouseButtonSnapshot,
             ForegroundProcessSnapshot = foregroundProcessSnapshot,
+            ForegroundWindowFullscreenState = foregroundWindowFullscreenState,
             DisplayMonitors = displayMonitors,
             CurrentDisplayMonitor = currentDisplayMonitor,
             DesktopEdgeAvailabilityStatus = desktopEdgeAvailabilityStatus,
@@ -283,7 +289,8 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         bool isCursorClipped,
         bool isAnyMouseButtonPressed,
         bool isDesktopSwitchAllowedWhileMouseButtonsArePressed,
-        bool isForegroundProcessBlacklisted)
+        bool isForegroundProcessBlacklisted,
+        bool isDesktopSwitchingAndCreationDisabledByFullscreenWindow)
     {
         if (!settings.IsDeskBorderEnabled)
             return DesktopEdgeAvailabilityStatus.DisabledByDeskBorderSetting;
@@ -304,6 +311,8 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         if (isForegroundProcessBlacklisted)
             return DesktopEdgeAvailabilityStatus.DisabledByBlacklistedProcess;
 
+        if (isDesktopSwitchingAndCreationDisabledByFullscreenWindow) return DesktopEdgeAvailabilityStatus.DisabledByFullscreenWindow;
+
         return DesktopEdgeAvailabilityStatus.Enabled;
     }
 
@@ -320,6 +329,8 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
 
         if (previousState.MouseButtonSnapshot != currentState.MouseButtonSnapshot)
             return true;
+
+        if (previousState.ForegroundWindowFullscreenState != currentState.ForegroundWindowFullscreenState) return true;
 
         if (previousState.CurrentDisplayMonitor != currentState.CurrentDisplayMonitor)
             return true;

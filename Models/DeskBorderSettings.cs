@@ -151,7 +151,7 @@ public sealed record NavigatorSettings
 
 public sealed record DeskBorderSettings
 {
-    public int SchemaVersion { get; init; } = 3;
+    public int SchemaVersion { get; init; } = 4;
 
     public bool IsDeskBorderEnabled { get; init; } = true;
 
@@ -168,6 +168,10 @@ public sealed record DeskBorderSettings
     public bool IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty { get; init; }
 
     public bool IsDesktopCreationCompletionToastEnabled { get; init; }
+
+    public bool IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen { get; init; }
+
+    public bool IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation { get; init; } = true;
 
     public bool IsAutoDeleteEnabled { get; init; } = true;
 

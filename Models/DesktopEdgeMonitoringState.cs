@@ -18,6 +18,7 @@ public enum DesktopEdgeAvailabilityStatus
     CursorOutsideDisplayEnvironment,
     DisabledByBlacklistedProcess,
     DisabledByPressedMouseButton,
+    DisabledByFullscreenWindow,
 }
 
 public readonly record struct ScreenPoint(int X, int Y);
@@ -112,6 +113,8 @@ public sealed record DesktopEdgeMonitoringState
     public MouseButtonSnapshot MouseButtonSnapshot { get; init; } = new();
 
     public ForegroundProcessSnapshot ForegroundProcessSnapshot { get; init; } = new();
+
+    public ForegroundWindowFullscreenState ForegroundWindowFullscreenState { get; init; } = new();
 
     public DisplayMonitorInfo[] DisplayMonitors { get; init; } = [];
 

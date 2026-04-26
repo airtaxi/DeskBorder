@@ -255,6 +255,9 @@
   <data name="DesktopEdgeAvailability.DisabledByPressedMouseButton" xml:space="preserve">
     <value>マウス ボタンが押されているため無効です</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByFullscreenWindow" xml:space="preserve">
+    <value>前面のウィンドウが全画面のため無効です</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>エッジ監視が利用可能です</value>
   </data>
@@ -578,6 +581,12 @@
   </data>
   <data name="SettingsPage_DesktopCreationCompletionToastToggleSwitch.Header" xml:space="preserve">
     <value>自動作成完了通知を表示</value>
+  </data>
+  <data name="SettingsPage_DesktopSwitchingAndCreationDisabledWhenFullscreenToggleSwitch.Header" xml:space="preserve">
+    <value>全画面時は切り替えと作成を無効化</value>
+  </data>
+  <data name="SettingsPage_WindowedFullscreenIncludedToggleSwitch.Header" xml:space="preserve">
+    <value>ウィンドウ全画面を含める</value>
   </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>空のデスクトップを自動削除</value>
@@ -997,6 +1006,8 @@
     <value>• デスクトップを作成: 最後のデスクトップの右端から新しいデスクトップを作成するかどうかを切り替えます。
 • 現在のデスクトップが空なら作成しない: 移動元の現在デスクトップにウィンドウが無い場合は、さらに新しいデスクトップを作成しません。
 • 自動作成完了通知を表示: 新しいデスクトップが自動作成された後に完了通知を表示します。
+• 全画面時は切り替えと作成を無効化: 前面ウィンドウが全画面の場合、端やショートカットによるデスクトップ切り替え/作成を防ぎます。
+• ウィンドウ全画面を含める: モニター全体を覆うウィンドウ全画面も全画面として扱います。
 • 上下エッジでもデスクトップを切り替える: 左右エッジに加えて、上端と下端からも前/次のデスクトップへ切り替えられるようにします。
 • 上下方向を反転 / マルチディスプレイ環境でのみ上下エッジを使用: 上端/下端の方向割り当てを変更するか、上下エッジ切り替えをマルチディスプレイ環境だけに制限します。
 • 空のデスクトップを自動削除: 外側デスクトップから内側へ移動するとき、ウィンドウが無ければそのデスクトップを削除します。

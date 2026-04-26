@@ -185,6 +185,12 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial bool IsDesktopCreationCompletionToastEnabled { get; set; }
 
     [ObservableProperty]
+    public partial bool IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation { get; set; } = true;
+
+    [ObservableProperty]
     public partial bool IsDesktopEdgeAdditionalTriggerDistanceEnabled { get; set; }
 
     [ObservableProperty]
@@ -405,7 +411,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public DeskBorderSettings CreateSettings() => new()
     {
-        SchemaVersion = 3,
+        SchemaVersion = 4,
         IsDeskBorderEnabled = IsDeskBorderEnabled,
         MultiDisplayBehavior = SelectedMultiDisplayBehaviorOption?.Value ?? MultiDisplayBehavior.DisableInMultiDisplayEnvironment,
         SwitchDesktopModifierSettings = new ModifierGateSettings
@@ -423,6 +429,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsDesktopCreationEnabled = IsDesktopCreationEnabled,
         IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty,
         IsDesktopCreationCompletionToastEnabled = IsDesktopCreationCompletionToastEnabled,
+        IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen = IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen,
+        IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation = IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation,
         IsAutoDeleteEnabled = IsAutoDeleteEnabled,
         IsAutoDeleteWarningEnabled = IsAutoDeleteWarningEnabled,
         IsAutoDeleteCompletionToastEnabled = IsAutoDeleteCompletionToastEnabled,
@@ -482,6 +490,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsDesktopCreationEnabled = deskBorderSettings.IsDesktopCreationEnabled;
         IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = deskBorderSettings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty;
         IsDesktopCreationCompletionToastEnabled = deskBorderSettings.IsDesktopCreationCompletionToastEnabled;
+        IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen = deskBorderSettings.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen;
+        IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation = deskBorderSettings.IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation;
         IsAutoDeleteEnabled = deskBorderSettings.IsAutoDeleteEnabled;
         IsAutoDeleteWarningEnabled = deskBorderSettings.IsAutoDeleteWarningEnabled;
         IsAutoDeleteCompletionToastEnabled = deskBorderSettings.IsAutoDeleteCompletionToastEnabled;

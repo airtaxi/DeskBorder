@@ -255,6 +255,9 @@
   <data name="DesktopEdgeAvailability.DisabledByPressedMouseButton" xml:space="preserve">
     <value>由于鼠标按钮被按下而禁用</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByFullscreenWindow" xml:space="preserve">
+    <value>由于前台窗口处于全屏而禁用</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>可进行边缘监视</value>
   </data>
@@ -578,6 +581,12 @@
   </data>
   <data name="SettingsPage_DesktopCreationCompletionToastToggleSwitch.Header" xml:space="preserve">
     <value>显示自动创建完成通知</value>
+  </data>
+  <data name="SettingsPage_DesktopSwitchingAndCreationDisabledWhenFullscreenToggleSwitch.Header" xml:space="preserve">
+    <value>全屏时禁用切换和创建</value>
+  </data>
+  <data name="SettingsPage_WindowedFullscreenIncludedToggleSwitch.Header" xml:space="preserve">
+    <value>包括窗口化全屏</value>
   </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>自动删除空桌面</value>
@@ -997,6 +1006,8 @@
     <value>• 桌面创建：决定是否允许从最后一个桌面的右侧边缘创建新桌面。
 • 当前桌面为空时不创建：如果即将离开的当前桌面没有窗口，则不再额外创建新桌面。
 • 显示自动创建完成通知：新桌面被自动创建后显示完成通知。
+• 全屏时禁用切换和创建：当前台窗口为全屏时，阻止通过边缘和快捷键切换或创建桌面。
+• 包括窗口化全屏：将覆盖整个显示器的窗口化全屏也视为全屏。
 • 也用上/下边缘切换桌面：除左/右边缘外，也允许通过顶部和底部边缘切换到上一个/下一个桌面。
 • 反转上下方向 / 仅在多显示器环境中使用上/下边缘：更改顶部/底部边缘的方向映射，或将上下边缘切换限制在多显示器环境中。
 • 自动删除空桌面：从最外侧桌面向内移动时，如果该桌面没有窗口就会删除它。

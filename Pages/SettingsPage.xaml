@@ -308,6 +308,28 @@
                         </Border>
 
                         <ToggleSwitch
+                            x:Name="DesktopSwitchingAndCreationDisabledWhenFullscreenToggleSwitch"
+                            x:Uid="SettingsPage_DesktopSwitchingAndCreationDisabledWhenFullscreenToggleSwitch"
+                            Header="전체화면일 때 전환 및 생성 비활성화"
+                            IsOn="{x:Bind ViewModel.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <Border
+                            Padding="12"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            CornerRadius="10"
+                            Visibility="{x:Bind GetFullscreenOptionControlsVisibility(ViewModel.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen), Mode=OneWay}">
+                            <StackPanel Spacing="12">
+                                <ToggleSwitch
+                                    x:Name="WindowedFullscreenIncludedToggleSwitch"
+                                    x:Uid="SettingsPage_WindowedFullscreenIncludedToggleSwitch"
+                                    Header="창모드 전체화면 포함"
+                                    IsOn="{x:Bind ViewModel.IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation, Mode=TwoWay}"
+                                    Toggled="OnSettingToggleSwitchToggled" />
+                            </StackPanel>
+                        </Border>
+
+                        <ToggleSwitch
                             x:Name="AutoDeleteToggleSwitch"
                             x:Uid="SettingsPage_AutoDeleteToggleSwitch"
                             Header="빈 데스크톱 자동 삭제"

@@ -255,6 +255,9 @@
   <data name="DesktopEdgeAvailability.DisabledByPressedMouseButton" xml:space="preserve">
     <value>Disabled because a mouse button is pressed</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByFullscreenWindow" xml:space="preserve">
+    <value>Disabled because the foreground window is fullscreen</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>Edge monitoring available</value>
   </data>
@@ -578,6 +581,12 @@
   </data>
   <data name="SettingsPage_DesktopCreationCompletionToastToggleSwitch.Header" xml:space="preserve">
     <value>Show auto-create completion notification</value>
+  </data>
+  <data name="SettingsPage_DesktopSwitchingAndCreationDisabledWhenFullscreenToggleSwitch.Header" xml:space="preserve">
+    <value>Disable switching and creation while fullscreen</value>
+  </data>
+  <data name="SettingsPage_WindowedFullscreenIncludedToggleSwitch.Header" xml:space="preserve">
+    <value>Include windowed fullscreen</value>
   </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>Auto delete empty desktops</value>
@@ -997,6 +1006,8 @@
     <value>• Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.
 • Skip creation when current desktop is empty: prevents creating another desktop when the desktop you are leaving has no windows.
 • Show auto-create completion notification: shows a completion notification after a new desktop is created automatically.
+• Disable switching and creation while fullscreen: blocks desktop switching or creation from edges and hotkeys while the foreground window is fullscreen.
+• Include windowed fullscreen: treats windowed fullscreen apps that cover the entire monitor as fullscreen too.
 • Switch desktops with top and bottom edges too: allows previous/next desktop switching from the top and bottom edges in addition to the left and right edges.
 • Reverse vertical direction / use top and bottom edges only in multi-display environments: changes the top/bottom direction mapping or limits vertical edge switching to multi-display setups.
 • Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.

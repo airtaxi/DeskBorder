@@ -7,6 +7,7 @@ namespace DeskBorder.Services;
 public sealed class DesktopLifecycleService(
     IDesktopEdgeMonitorService desktopEdgeMonitorService,
     IFileLogService fileLogService,
+    IForegroundWindowFullscreenService foregroundWindowFullscreenService,
     IHotkeyService hotkeyService,
     ILocalizationService localizationService,
     INavigatorService navigatorService,
@@ -22,6 +23,7 @@ public sealed class DesktopLifecycleService(
 
     private readonly IDesktopEdgeMonitorService _desktopEdgeMonitorService = desktopEdgeMonitorService;
     private readonly IFileLogService _fileLogService = fileLogService;
+    private readonly IForegroundWindowFullscreenService _foregroundWindowFullscreenService = foregroundWindowFullscreenService;
     private readonly IHotkeyService _hotkeyService = hotkeyService;
     private readonly ILocalizationService _localizationService = localizationService;
     private readonly INavigatorService _navigatorService = navigatorService;
@@ -149,6 +151,8 @@ public sealed class DesktopLifecycleService(
         DesktopSwitchDirection.Next => IsCurrentDesktopRightOuter(workspaceSnapshot),
         _ => false
     };
+
+    private static bool IsDesktopSwitchingOrCreationHotkeyAction(HotkeyActionType hotkeyActionType) => hotkeyActionType is HotkeyActionType.SwitchToPreviousDesktop or HotkeyActionType.SwitchToNextDesktop or HotkeyActionType.MoveFocusedWindowToPreviousDesktop or HotkeyActionType.MoveFocusedWindowToNextDesktop;
 
     private static ScreenRectangle CreateCombinedMonitorBounds(DisplayMonitorInfo[] displayMonitors)
     {
@@ -443,6 +447,15 @@ public sealed class DesktopLifecycleService(
         return true;
     }
 
+    private bool ShouldSkipDesktopSwitchingAndCreationBecauseForegroundWindowIsFullscreen(DeskBorderSettings currentSettings)
+    {
+        var foregroundWindowFullscreenState = _foregroundWindowFullscreenService.GetForegroundWindowFullscreenState();
+        if (!_foregroundWindowFullscreenService.ShouldDisableDesktopSwitchingAndCreation(foregroundWindowFullscreenState, currentSettings)) return false;
+
+        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Skipped desktop switching and creation because the foreground window is fullscreen. FullscreenKind={foregroundWindowFullscreenState.FullscreenKind}, WindowHandle={foregroundWindowFullscreenState.WindowHandle}.");
+        return true;
+    }
+
     private DesktopEdgeActivationEvaluation EvaluateDesktopEdgeActivation(DesktopEdgeMonitoringState currentState, DeskBorderSettings currentSettings)
     {
         if (!currentState.IsDesktopEdgeAvailable || currentState.ActiveDesktopEdge == DesktopEdgeKind.None)
@@ -719,6 +732,8 @@ public sealed class DesktopLifecycleService(
 
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Handling hotkey action. Action={hotkeyInvokedEventArgs.HotkeyActionType}.");
         var currentSettings = _settingsService.Settings;
+        if (IsDesktopSwitchingOrCreationHotkeyAction(hotkeyInvokedEventArgs.HotkeyActionType) && ShouldSkipDesktopSwitchingAndCreationBecauseForegroundWindowIsFullscreen(currentSettings)) return;
+
         await _operationSemaphore.WaitAsync();
         try
         {

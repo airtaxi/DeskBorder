@@ -255,6 +255,9 @@
   <data name="DesktopEdgeAvailability.DisabledByPressedMouseButton" xml:space="preserve">
     <value>因滑鼠按鍵被按下而停用</value>
   </data>
+  <data name="DesktopEdgeAvailability.DisabledByFullscreenWindow" xml:space="preserve">
+    <value>因前景視窗處於全螢幕而停用</value>
+  </data>
   <data name="DesktopEdgeAvailability.Enabled" xml:space="preserve">
     <value>可使用邊緣監視</value>
   </data>
@@ -578,6 +581,12 @@
   </data>
   <data name="SettingsPage_DesktopCreationCompletionToastToggleSwitch.Header" xml:space="preserve">
     <value>顯示自動建立完成通知</value>
+  </data>
+  <data name="SettingsPage_DesktopSwitchingAndCreationDisabledWhenFullscreenToggleSwitch.Header" xml:space="preserve">
+    <value>全螢幕時停用切換和建立</value>
+  </data>
+  <data name="SettingsPage_WindowedFullscreenIncludedToggleSwitch.Header" xml:space="preserve">
+    <value>包含視窗化全螢幕</value>
   </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>自動刪除空桌面</value>
@@ -997,6 +1006,8 @@
     <value>• 桌面建立：決定是否允許從最後一個桌面的右側邊緣建立新桌面。
 • 目前桌面為空時不建立：如果即將離開的目前桌面沒有視窗，則不再額外建立新桌面。
 • 顯示自動建立完成通知：新桌面自動建立後顯示完成通知。
+• 全螢幕時停用切換和建立：目前景視窗為全螢幕時，阻止透過邊緣和快捷鍵切換或建立桌面。
+• 包含視窗化全螢幕：將覆蓋整個顯示器的視窗化全螢幕也視為全螢幕。
 • 也用上/下邊緣切換桌面：除左/右邊緣外，也允許透過頂部和底部邊緣切換到上一個/下一個桌面。
 • 反轉上下方向 / 僅在多顯示器環境中使用上/下邊緣：變更頂部/底部邊緣的方向對應，或將上下邊緣切換限制在多顯示器環境中。
 • 自動刪除空桌面：當你從最外側桌面往內移動時，如果該桌面沒有視窗就會刪除它。

@@ -151,6 +151,10 @@ public sealed partial class SettingsPage : Page
         ? Visibility.Visible
         : Visibility.Collapsed;
 
+    private Visibility GetFullscreenOptionControlsVisibility(bool isDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen) => isDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
     private bool GetMultiDisplayBehaviorSelectionEnabled(bool isVerticalDesktopSwitchingEnabled) => !isVerticalDesktopSwitchingEnabled;
 
     private Visibility GetVerticalDesktopSwitchingOptionsVisibility(bool areVerticalDesktopSwitchingOptionControlsVisible) => areVerticalDesktopSwitchingOptionControlsVisible
@@ -818,6 +822,10 @@ public sealed partial class SettingsPage : Page
 
         if (ReferenceEquals(settingToggleSwitch, DesktopCreationCompletionToastToggleSwitch))
             return currentSettings.IsDesktopCreationCompletionToastEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, DesktopSwitchingAndCreationDisabledWhenFullscreenToggleSwitch)) return currentSettings.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen;
+
+        if (ReferenceEquals(settingToggleSwitch, WindowedFullscreenIncludedToggleSwitch)) return currentSettings.IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation;
 
         if (ReferenceEquals(settingToggleSwitch, AutoDeleteToggleSwitch))
             return currentSettings.IsAutoDeleteEnabled;
