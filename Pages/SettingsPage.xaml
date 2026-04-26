@@ -297,6 +297,13 @@
                                     Header="현재 데스크톱이 비어 있으면 생성 안 함"
                                     IsOn="{x:Bind ViewModel.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty, Mode=TwoWay}"
                                     Toggled="OnSettingToggleSwitchToggled" />
+
+                                <ToggleSwitch
+                                    x:Name="DesktopCreationCompletionToastToggleSwitch"
+                                    x:Uid="SettingsPage_DesktopCreationCompletionToastToggleSwitch"
+                                    Header="자동 생성 완료 알림 표시"
+                                    IsOn="{x:Bind ViewModel.IsDesktopCreationCompletionToastEnabled, Mode=TwoWay}"
+                                    Toggled="OnSettingToggleSwitchToggled" />
                             </StackPanel>
                         </Border>
 

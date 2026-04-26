@@ -167,6 +167,8 @@ public sealed record DeskBorderSettings
 
     public bool IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty { get; init; }
 
+    public bool IsDesktopCreationCompletionToastEnabled { get; init; }
+
     public bool IsAutoDeleteEnabled { get; init; } = true;
 
     public bool IsAutoDeleteWarningEnabled { get; init; }

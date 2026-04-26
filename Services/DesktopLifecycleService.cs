@@ -157,6 +157,15 @@ public sealed class DesktopLifecycleService(
         return new(left, top, right, bottom);
     }
 
+    private static string ResolveCreatedDesktopDisplayName(DesktopNavigationResult desktopNavigationResult)
+    {
+        var createdDesktopIdentifier = string.IsNullOrWhiteSpace(desktopNavigationResult.TargetDesktopIdentifier)
+            ? desktopNavigationResult.CurrentWorkspaceSnapshot.CurrentDesktopIdentifier
+            : desktopNavigationResult.TargetDesktopIdentifier;
+        var createdDesktopEntry = desktopNavigationResult.CurrentWorkspaceSnapshot.DesktopEntries.FirstOrDefault(desktopEntry => string.Equals(desktopEntry.DesktopIdentifier, createdDesktopIdentifier, StringComparison.Ordinal));
+        return createdDesktopEntry?.DisplayName ?? SettingsDisplayFormatter.FormatDesktopDisplayName(desktopNavigationResult.CurrentWorkspaceSnapshot.CurrentDesktopNumber);
+    }
+
     private static DesktopSwitchMouseLocationContext CreateDesktopSwitchMouseLocationContext(DesktopEdgeMonitoringState currentState, DesktopSwitchDirection desktopSwitchDirection) => new(
         currentState.DisplayMonitors,
         currentState.CurrentDisplayMonitor,
@@ -482,6 +491,9 @@ public sealed class DesktopLifecycleService(
         if (desktopNavigationResult.NavigationActionKind == DesktopNavigationActionKind.CreatedAndSwitched)
         {
             _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Created a new desktop and switched to it.");
+            if (_settingsService.Settings.IsDesktopCreationCompletionToastEnabled)
+                _ = ShowDesktopCreationCompletionToastAsync(desktopNavigationResult);
+
             return;
         }
 
@@ -577,6 +589,20 @@ public sealed class DesktopLifecycleService(
         {
             Title = LocalizedResourceAccessor.GetString("Toast.AutoDelete.Completed.Title"),
             Message = LocalizedResourceAccessor.GetFormattedString("Toast.AutoDelete.Completed.MessageFormat", pendingDesktopDeletion.DesktopDisplayName),
+            Duration = TimeSpan.FromSeconds(1),
+            WindowWidth = 360,
+            WindowHeight = 100
+        });
+    }
+
+    private async Task ShowDesktopCreationCompletionToastAsync(DesktopNavigationResult desktopNavigationResult)
+    {
+        var desktopDisplayName = ResolveCreatedDesktopDisplayName(desktopNavigationResult);
+        _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Showing desktop creation completion toast. DesktopIdentifier={desktopNavigationResult.TargetDesktopIdentifier}.");
+        await _toastService.ShowToastAsync(new HotkeyToastPresentationOptions
+        {
+            Title = LocalizedResourceAccessor.GetString("Toast.DesktopCreation.Completed.Title"),
+            Message = LocalizedResourceAccessor.GetFormattedString("Toast.DesktopCreation.Completed.MessageFormat", desktopDisplayName),
             Duration = TimeSpan.FromSeconds(1),
             WindowWidth = 360,
             WindowHeight = 100

@@ -576,6 +576,9 @@
   <data name="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch.Header" xml:space="preserve">
     <value>Do not create a desktop when the current desktop is empty</value>
   </data>
+  <data name="SettingsPage_DesktopCreationCompletionToastToggleSwitch.Header" xml:space="preserve">
+    <value>Show auto-create completion notification</value>
+  </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>Auto delete empty desktops</value>
   </data>
@@ -986,6 +989,7 @@
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.
 • Skip creation when current desktop is empty: prevents creating another desktop when the desktop you are leaving has no windows.
+• Show auto-create completion notification: shows a completion notification after a new desktop is created automatically.
 • Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.
 • Show deletion warning: when enabled, deletion waits briefly so you can undo it; when disabled, empty desktops are deleted immediately.
 • Show auto-delete completion notification: available only when the deletion warning is off, and shows a completion notification after an empty desktop is deleted immediately.
@@ -1104,6 +1108,12 @@
   </data>
   <data name="Toast.AutoDelete.Completed.MessageFormat" xml:space="preserve">
     <value>{0} was deleted automatically.</value>
+  </data>
+  <data name="Toast.DesktopCreation.Completed.Title" xml:space="preserve">
+    <value>Desktop created automatically</value>
+  </data>
+  <data name="Toast.DesktopCreation.Completed.MessageFormat" xml:space="preserve">
+    <value>{0} was created automatically.</value>
   </data>
   <data name="Toast.WindowTitle" xml:space="preserve">
     <value>Toast</value>

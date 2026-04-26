@@ -816,6 +816,9 @@ public sealed partial class SettingsPage : Page
         if (ReferenceEquals(settingToggleSwitch, DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch))
             return currentSettings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty;
 
+        if (ReferenceEquals(settingToggleSwitch, DesktopCreationCompletionToastToggleSwitch))
+            return currentSettings.IsDesktopCreationCompletionToastEnabled;
+
         if (ReferenceEquals(settingToggleSwitch, AutoDeleteToggleSwitch))
             return currentSettings.IsAutoDeleteEnabled;
 

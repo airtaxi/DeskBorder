@@ -576,6 +576,9 @@
   <data name="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch.Header" xml:space="preserve">
     <value>현재 데스크톱이 비어 있으면 생성 안 함</value>
   </data>
+  <data name="SettingsPage_DesktopCreationCompletionToastToggleSwitch.Header" xml:space="preserve">
+    <value>자동 생성 완료 알림 표시</value>
+  </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>빈 데스크톱 자동 삭제</value>
   </data>
@@ -986,6 +989,7 @@
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 데스크톱 생성: 마지막 데스크톱의 오른쪽 가장자리에서 새 데스크톱을 만들지 결정합니다.
 • 현재 데스크톱이 비어 있으면 생성 안 함: 떠나려는 현재 데스크톱에 창이 없을 때는 새 데스크톱을 추가로 만들지 않습니다.
+• 자동 생성 완료 알림 표시: 새 데스크톱이 자동으로 생성된 뒤 완료 알림을 표시합니다.
 • 빈 데스크톱 자동 삭제: 양 끝 데스크톱에서 안쪽으로 이동할 때 창이 없으면 해당 데스크톱을 삭제합니다.
 • 삭제 경고 표시: 켜면 잠시 기다리며 실행 취소할 수 있고, 끄면 빈 데스크톱을 바로 삭제합니다.
 • 자동 삭제 완료 알림 표시: 삭제 경고를 끈 경우에만 사용할 수 있으며, 빈 데스크톱이 바로 삭제된 뒤 완료 알림을 표시합니다.
@@ -1104,6 +1108,12 @@
   </data>
   <data name="Toast.AutoDelete.Completed.MessageFormat" xml:space="preserve">
     <value>{0}이(가) 자동으로 삭제되었습니다.</value>
+  </data>
+  <data name="Toast.DesktopCreation.Completed.Title" xml:space="preserve">
+    <value>새 데스크톱 자동 생성됨</value>
+  </data>
+  <data name="Toast.DesktopCreation.Completed.MessageFormat" xml:space="preserve">
+    <value>{0}이(가) 자동으로 생성되었습니다.</value>
   </data>
   <data name="Toast.WindowTitle" xml:space="preserve">
     <value>토스트</value>

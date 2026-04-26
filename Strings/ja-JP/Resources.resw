@@ -576,6 +576,9 @@
   <data name="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch.Header" xml:space="preserve">
     <value>現在のデスクトップが空の場合は作成しない</value>
   </data>
+  <data name="SettingsPage_DesktopCreationCompletionToastToggleSwitch.Header" xml:space="preserve">
+    <value>自動作成完了通知を表示</value>
+  </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>空のデスクトップを自動削除</value>
   </data>
@@ -986,6 +989,7 @@
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• デスクトップを作成: 最後のデスクトップの右端から新しいデスクトップを作成するかどうかを切り替えます。
 • 現在のデスクトップが空なら作成しない: 移動元の現在デスクトップにウィンドウが無い場合は、さらに新しいデスクトップを作成しません。
+• 自動作成完了通知を表示: 新しいデスクトップが自動作成された後に完了通知を表示します。
 • 空のデスクトップを自動削除: 外側デスクトップから内側へ移動するとき、ウィンドウが無ければそのデスクトップを削除します。
 • 削除前の警告を表示: 有効時は少し待って取り消せます。無効時は空のデスクトップをすぐ削除します。
 • 自動削除完了通知を表示: 削除前の警告をオフにしたときのみ使え、空のデスクトップがすぐ削除された後に完了通知を表示します。
@@ -1104,6 +1108,12 @@
   </data>
   <data name="Toast.AutoDelete.Completed.MessageFormat" xml:space="preserve">
     <value>{0} を自動で削除しました。</value>
+  </data>
+  <data name="Toast.DesktopCreation.Completed.Title" xml:space="preserve">
+    <value>デスクトップを自動作成しました</value>
+  </data>
+  <data name="Toast.DesktopCreation.Completed.MessageFormat" xml:space="preserve">
+    <value>{0} を自動で作成しました。</value>
   </data>
   <data name="Toast.WindowTitle" xml:space="preserve">
     <value>トースト</value>

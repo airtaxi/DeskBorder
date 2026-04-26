@@ -174,6 +174,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             SwitchDesktopWhileMouseButtonsArePressedModifierSettings = NormalizeModifierGateSettings(settings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings),
             IsDesktopCreationEnabled = settings.IsDesktopCreationEnabled,
             IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = settings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty,
+            IsDesktopCreationCompletionToastEnabled = settings.IsDesktopCreationCompletionToastEnabled,
             IsAutoDeleteEnabled = settings.IsAutoDeleteEnabled,
             IsAutoDeleteWarningEnabled = settings.IsAutoDeleteWarningEnabled,
             IsAutoDeleteCompletionToastEnabled = settings.IsAutoDeleteCompletionToastEnabled,

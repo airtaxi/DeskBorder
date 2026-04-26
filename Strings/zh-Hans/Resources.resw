@@ -576,6 +576,9 @@
   <data name="SettingsPage_DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch.Header" xml:space="preserve">
     <value>当前桌面为空时不创建</value>
   </data>
+  <data name="SettingsPage_DesktopCreationCompletionToastToggleSwitch.Header" xml:space="preserve">
+    <value>显示自动创建完成通知</value>
+  </data>
   <data name="SettingsPage_AutoDeleteToggleSwitch.Header" xml:space="preserve">
     <value>自动删除空桌面</value>
   </data>
@@ -986,6 +989,7 @@
   <data name="SettingsPage_EdgeSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 桌面创建：决定是否允许从最后一个桌面的右侧边缘创建新桌面。
 • 当前桌面为空时不创建：如果即将离开的当前桌面没有窗口，则不再额外创建新桌面。
+• 显示自动创建完成通知：新桌面被自动创建后显示完成通知。
 • 自动删除空桌面：从最外侧桌面向内移动时，如果该桌面没有窗口就会删除它。
 • 显示删除警告：开启时会先短暂停留以便撤销，关闭时会立即删除空桌面。
 • 显示自动删除完成通知：仅在关闭删除警告时可用，会在空桌面被立即删除后显示完成通知。
@@ -1104,6 +1108,12 @@
   </data>
   <data name="Toast.AutoDelete.Completed.MessageFormat" xml:space="preserve">
     <value>{0} 已被自动删除。</value>
+  </data>
+  <data name="Toast.DesktopCreation.Completed.Title" xml:space="preserve">
+    <value>桌面已自动创建</value>
+  </data>
+  <data name="Toast.DesktopCreation.Completed.MessageFormat" xml:space="preserve">
+    <value>{0} 已被自动创建。</value>
   </data>
   <data name="Toast.WindowTitle" xml:space="preserve">
     <value>通知</value>
