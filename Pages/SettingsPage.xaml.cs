@@ -383,11 +383,8 @@ public sealed partial class SettingsPage : Page
     private async void OnModifierSelectionCheckBoxClicked(object sender, RoutedEventArgs routedEventArgs)
     {
         _ = routedEventArgs;
-        if (ShouldRejectVerticalDesktopSwitchingModifierSelectionChange(sender))
-            return;
-
         await ShowWindowsOnlyModifierWarningIfNeededAsync(sender);
-        QueueSettingsSave();
+        QueueSettingsSave(shouldShowVerticalDesktopSwitchingModifierWarning: ShouldShowVerticalDesktopSwitchingModifierWarningForModifierSelectionChange(sender));
     }
 
     private async void OnCheckStoreUpdateButtonClicked(object sender, RoutedEventArgs routedEventArgs)
@@ -449,10 +446,7 @@ public sealed partial class SettingsPage : Page
         if (ShouldRejectAlwaysRunAsAdministratorToggleChange(settingToggleSwitch))
             return;
 
-        if (ShouldRejectVerticalDesktopSwitchingToggleChange(settingToggleSwitch))
-            return;
-
-        QueueSettingsSave(settingToggleSwitch);
+        QueueSettingsSave(settingToggleSwitch, ShouldShowVerticalDesktopSwitchingModifierWarningForToggleChange(settingToggleSwitch));
     }
 
     private void OnSettingsPageUnloaded(object sender, RoutedEventArgs routedEventArgs)
@@ -758,12 +752,12 @@ public sealed partial class SettingsPage : Page
         finally { SetSettingsTransferInProgress(false); }
     }
 
-    private void QueueSettingsSave(ToggleSwitch? sourceToggleSwitch = null)
+    private void QueueSettingsSave(ToggleSwitch? sourceToggleSwitch = null, bool shouldShowVerticalDesktopSwitchingModifierWarning = false)
     {
-        if (DispatcherQueue.TryEnqueue(async () => await SaveSettingsAsync(sourceToggleSwitch)))
+        if (DispatcherQueue.TryEnqueue(async () => await SaveSettingsAsync(sourceToggleSwitch, shouldShowVerticalDesktopSwitchingModifierWarning)))
             return;
 
-        _ = SaveSettingsAsync(sourceToggleSwitch);
+        _ = SaveSettingsAsync(sourceToggleSwitch, shouldShowVerticalDesktopSwitchingModifierWarning);
     }
 
     private bool ShouldRejectAlwaysRunAsAdministratorToggleChange(ToggleSwitch settingToggleSwitch)
@@ -873,81 +867,56 @@ public sealed partial class SettingsPage : Page
         infoBarAutoHideTimer.Start();
     }
 
-    private bool ShouldRejectVerticalDesktopSwitchingModifierSelectionChange(object sender)
+    private bool ShouldShowVerticalDesktopSwitchingModifierWarningForModifierSelectionChange(object sender)
     {
         if (!ViewModel.IsVerticalDesktopSwitchingEnabled || sender is not FrameworkElement { Tag: string modifierSelectionTag })
             return false;
 
-        var modifierKeySelectionViewModel = GetModifierSelectionViewModel(ViewModel, modifierSelectionTag);
-        if (modifierKeySelectionViewModel is null || modifierKeySelectionViewModel.CreateKeyboardModifierKeys() != KeyboardModifierKeys.None)
-            return false;
-
-        var validationMessage = modifierSelectionTag switch
+        return modifierSelectionTag switch
         {
-            SwitchDesktopModifierSelectionTag => LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingSwitchDesktopModifier"),
-            CreateDesktopModifierSelectionTag when ViewModel.IsDesktopCreationEnabled => LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingCreateDesktopModifier"),
-            _ => null
+            SwitchDesktopModifierSelectionTag => ViewModel.SwitchDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None,
+            CreateDesktopModifierSelectionTag when ViewModel.IsDesktopCreationEnabled => ViewModel.CreateDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None,
+            _ => false
         };
-        if (string.IsNullOrWhiteSpace(validationMessage))
-            return false;
-
-        ApplySettingsToViewModel();
-        ShowSettingsStatus(
-            LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"),
-            validationMessage,
-            InfoBarSeverity.Error);
-        return true;
     }
 
-    private bool ShouldRejectVerticalDesktopSwitchingToggleChange(ToggleSwitch settingToggleSwitch)
+    private bool ShouldShowVerticalDesktopSwitchingModifierWarningForToggleChange(ToggleSwitch settingToggleSwitch)
     {
-        var currentSettings = _settingsService.Settings;
         if (ReferenceEquals(settingToggleSwitch, CreateDesktopEnabledToggleSwitch)
             && settingToggleSwitch.IsOn
             && ViewModel.IsVerticalDesktopSwitchingEnabled
             && ViewModel.CreateDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None)
-        {
-            RestoreToggleSwitchState(settingToggleSwitch, currentSettings);
-            ApplySettingsToViewModel();
-            ShowSettingsStatus(
-                LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"),
-                LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier"),
-                InfoBarSeverity.Error);
             return true;
-        }
 
         if (!ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch) || !settingToggleSwitch.IsOn)
             return false;
 
-        if (currentSettings.IsVerticalDesktopSwitchingEnabled == settingToggleSwitch.IsOn)
-            return false;
-
         if (ViewModel.SwitchDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None)
-        {
-            RestoreToggleSwitchState(settingToggleSwitch, currentSettings);
-            ApplySettingsToViewModel();
-            ShowSettingsStatus(
-                LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"),
-                LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingEnableRequiresSwitchDesktopModifier"),
-                InfoBarSeverity.Error);
             return true;
-        }
 
         if (ViewModel.IsDesktopCreationEnabled && ViewModel.CreateDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None)
-        {
-            RestoreToggleSwitchState(settingToggleSwitch, currentSettings);
-            ApplySettingsToViewModel();
-            ShowSettingsStatus(
-                LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"),
-                LocalizedResourceAccessor.GetString("Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier"),
-                InfoBarSeverity.Error);
             return true;
-        }
 
         return false;
     }
 
-    private async Task SaveSettingsAsync(ToggleSwitch? sourceToggleSwitch = null)
+    private static string? GetVerticalDesktopSwitchingModifierWarningMessage(DeskBorderSettings settings)
+    {
+        if (!settings.IsVerticalDesktopSwitchingEnabled)
+            return null;
+
+        var isSwitchDesktopModifierMissing = settings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys == KeyboardModifierKeys.None;
+        var isCreateDesktopModifierMissing = settings.IsDesktopCreationEnabled && settings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys == KeyboardModifierKeys.None;
+        return (isSwitchDesktopModifierMissing, isCreateDesktopModifierMissing) switch
+        {
+            (true, true) => LocalizedResourceAccessor.GetString("Settings.Warning.VerticalDesktopSwitchingMissingSwitchAndCreateDesktopModifiers"),
+            (true, false) => LocalizedResourceAccessor.GetString("Settings.Warning.VerticalDesktopSwitchingMissingSwitchDesktopModifier"),
+            (false, true) => LocalizedResourceAccessor.GetString("Settings.Warning.VerticalDesktopSwitchingMissingCreateDesktopModifier"),
+            _ => null
+        };
+    }
+
+    private async Task SaveSettingsAsync(ToggleSwitch? sourceToggleSwitch = null, bool shouldShowVerticalDesktopSwitchingModifierWarning = false)
     {
         if (!_isInitialSettingsLoadCompleted || _isSynchronizingViewModel || _isSettingsTransferInProgress)
             return;
@@ -966,7 +935,15 @@ public sealed partial class SettingsPage : Page
             if (isLanguagePreferenceChanged)
                 return;
 
-            if (isThemePreferenceChanged)
+            var verticalDesktopSwitchingModifierWarningMessage = shouldShowVerticalDesktopSwitchingModifierWarning
+                ? GetVerticalDesktopSwitchingModifierWarningMessage(updatedSettings)
+                : null;
+            if (!string.IsNullOrWhiteSpace(verticalDesktopSwitchingModifierWarningMessage))
+                ShowSettingsStatus(
+                    LocalizedResourceAccessor.GetString("Settings.Status.VerticalDesktopSwitchingModifierWarningTitle"),
+                    verticalDesktopSwitchingModifierWarningMessage,
+                    InfoBarSeverity.Warning);
+            else if (isThemePreferenceChanged)
                 ShowSettingsStatus(
                     LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedTitle"),
                     LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedMessage"),

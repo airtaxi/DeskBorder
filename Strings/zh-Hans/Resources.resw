@@ -540,6 +540,9 @@
   <data name="Settings.Status.ThemeRestartRecommendedTitle" xml:space="preserve">
     <value>建议重新启动</value>
   </data>
+  <data name="Settings.Status.VerticalDesktopSwitchingModifierWarningTitle" xml:space="preserve">
+    <value>建议设置修饰键</value>
+  </data>
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>该进程已在黑名单中。</value>
   </data>
@@ -1234,23 +1237,14 @@
   <data name="DesktopEdgeKind.BottomDisplayEdge" xml:space="preserve">
     <value>底部边缘</value>
   </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresSwitchDesktopModifier" xml:space="preserve">
-    <value>要使用上下边缘切换桌面，必须先设置桌面切换修饰键。</value>
+  <data name="Settings.Warning.VerticalDesktopSwitchingMissingSwitchAndCreateDesktopModifiers" xml:space="preserve">
+    <value>上下边缘桌面切换可以在没有修饰键的情况下运行，但建议设置桌面切换和创建修饰键，以减少意外切换或创建桌面。</value>
   </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresCreateDesktopModifier" xml:space="preserve">
-    <value>要使用上下边缘切换桌面，必须先设置桌面创建修饰键。</value>
+  <data name="Settings.Warning.VerticalDesktopSwitchingMissingSwitchDesktopModifier" xml:space="preserve">
+    <value>上下边缘桌面切换可以在没有桌面切换修饰键的情况下运行，但建议设置该修饰键，以减少意外切换。</value>
   </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresSwitchDesktopModifier" xml:space="preserve">
-    <value>要启用上下边缘切换桌面，请先设置桌面切换修饰键。</value>
-  </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier" xml:space="preserve">
-    <value>要启用上下边缘切换桌面，请先设置桌面创建修饰键。</value>
-  </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingSwitchDesktopModifier" xml:space="preserve">
-    <value>启用上下边缘切换桌面时，不能清除桌面切换修饰键。请先关闭此功能。</value>
-  </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingCreateDesktopModifier" xml:space="preserve">
-    <value>启用上下边缘切换桌面时，不能清除桌面创建修饰键。请先关闭此功能。</value>
+  <data name="Settings.Warning.VerticalDesktopSwitchingMissingCreateDesktopModifier" xml:space="preserve">
+    <value>启用上下边缘桌面切换时，桌面创建可以在没有创建修饰键的情况下运行，但建议设置该修饰键，以减少意外创建桌面。</value>
   </data>
   <data name="SettingsPage_VerticalDesktopSwitchingToggleSwitch.Header" xml:space="preserve">
     <value>也用上/下边缘切换桌面</value>

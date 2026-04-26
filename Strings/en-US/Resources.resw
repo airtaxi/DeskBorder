@@ -540,6 +540,9 @@
   <data name="Settings.Status.ThemeRestartRecommendedTitle" xml:space="preserve">
     <value>Restart recommended</value>
   </data>
+  <data name="Settings.Status.VerticalDesktopSwitchingModifierWarningTitle" xml:space="preserve">
+    <value>Modifiers recommended</value>
+  </data>
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>That process is already blacklisted.</value>
   </data>
@@ -1234,23 +1237,14 @@
   <data name="DesktopEdgeKind.BottomDisplayEdge" xml:space="preserve">
     <value>Bottom edge</value>
   </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresSwitchDesktopModifier" xml:space="preserve">
-    <value>To use vertical desktop edge switching, set desktop switching modifiers.</value>
+  <data name="Settings.Warning.VerticalDesktopSwitchingMissingSwitchAndCreateDesktopModifiers" xml:space="preserve">
+    <value>Vertical desktop edge switching can run without modifiers, but desktop switching and creation modifiers are recommended to avoid unintended switches or desktop creation.</value>
   </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingRequiresCreateDesktopModifier" xml:space="preserve">
-    <value>To use vertical desktop edge switching, set desktop creation modifiers.</value>
+  <data name="Settings.Warning.VerticalDesktopSwitchingMissingSwitchDesktopModifier" xml:space="preserve">
+    <value>Vertical desktop edge switching can run without desktop switching modifiers, but setting them is recommended to avoid unintended switches.</value>
   </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresSwitchDesktopModifier" xml:space="preserve">
-    <value>To enable vertical desktop edge switching, set desktop switching modifiers first.</value>
-  </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingEnableRequiresCreateDesktopModifier" xml:space="preserve">
-    <value>To enable vertical desktop edge switching, set desktop creation modifiers first.</value>
-  </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingSwitchDesktopModifier" xml:space="preserve">
-    <value>You cannot clear desktop switching modifiers while vertical desktop edge switching is enabled. Disable the feature first.</value>
-  </data>
-  <data name="Settings.Validation.VerticalDesktopSwitchingDisableBeforeClearingCreateDesktopModifier" xml:space="preserve">
-    <value>You cannot clear desktop creation modifiers while vertical desktop edge switching is enabled. Disable the feature first.</value>
+  <data name="Settings.Warning.VerticalDesktopSwitchingMissingCreateDesktopModifier" xml:space="preserve">
+    <value>Desktop creation can run without creation modifiers while vertical desktop edge switching is enabled, but setting them is recommended to avoid unintended desktop creation.</value>
   </data>
   <data name="SettingsPage_VerticalDesktopSwitchingToggleSwitch.Header" xml:space="preserve">
     <value>Switch desktops with top and bottom edges too</value>
