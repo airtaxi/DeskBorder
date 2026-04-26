@@ -669,11 +669,12 @@
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 启用 DeskBorder：统一开启或关闭边缘切换、桌面创建、自动整理和全局热键。
 • 随系统启动运行：在 Windows 登录后立即以托盘方式启动应用。
+• 始终以 Administrator 运行：更新启动任务，使下次启动使用管理员权限。当前应用未提升权限时，此设置变更会被拒绝。
 • 自动检查 Store 更新：启用后每 8 小时检查一次 Microsoft Store 更新，有新版本时显示系统通知。
 • 立即检查更新：立即在 Microsoft Store 中检查新版本，并在有更新时打开产品页面。
 • 多显示器行为：在多显示器环境下禁用监控，或仅在最外侧显示器边缘生效。
 • 应用主题：切换当前应用主题。部分辅助窗口或对话框在重新打开应用后会显示得更一致。
-• 应用语言：将界面固定为指定语言，或跟随系统语言。</value>
+• 应用语言：将界面固定为指定语言，或跟随系统语言。可能需要重启应用，才能完整应用到所有窗口和通知。</value>
   </data>
   <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
     <value>无法从 Microsoft Store 检查更新。</value>
@@ -762,7 +763,10 @@
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 每个全局热键都可以单独启用或关闭。
 • 可以选择键盘按键或鼠标触发器（滚轮上/下、左键单击、右键单击），并按需与修饰键组合。
-• 可以设置切换 DeskBorder、切换到上一个桌面、切换到下一个桌面、将焦点窗口移到上一个桌面、将焦点窗口移到下一个桌面，以及切换 Navigator 叠加层。
+• 切换 DeskBorder：快速开启或关闭后台服务。
+• 切换到上一个/下一个桌面：使用指定触发器和修饰键切换到相邻桌面。如果在边缘桌面且允许创建，则可以创建新桌面。
+• 将焦点窗口移到上一个/下一个桌面：将当前焦点窗口移到相邻桌面，并切换到该桌面。在边缘桌面时会按需创建新桌面。
+• 切换 Navigator 缩略图：使用键盘或鼠标触发器打开或关闭仅用于显示的 Navigator 叠加层。
 • Ctrl + Windows + ←/→ 是 Windows 为桌面切换保留的组合，因此 DeskBorder 会将其视为无效热键。
 • 状态指示会立即显示当前组合是否有效、是否缺少触发器、是否被 Windows 保留、是否重复，或是否注册失败。</value>
   </data>
@@ -776,8 +780,9 @@
     <value>开发者说明</value>
   </data>
   <data name="SettingsPage_DeveloperSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 下载集成日志：将当前应用会话中记录的日志保存为文本文件，最多包含 1,000 条。
-• 可通过下方信息栏立即确认导出成功、取消或失败。</value>
+    <value>• 下载集成日志：将当前应用会话中记录的最近日志保存为文本文件，最多包含 1,000 条。
+• 选择保存位置：点击按钮后可选择保存位置，下方信息栏会确认成功、取消或失败。
+• 日志范围：在复现问题后立即导出，有助于查看桌面切换、通知、设置应用、Store 更新检查等最近流程。</value>
   </data>
   <data name="SettingsPage_ExportIntegratedLogButton.Content" xml:space="preserve">
     <value>保存</value>
@@ -817,8 +822,9 @@
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 导出设置：将当前应用配置保存为 .dbs 文件，便于备份或迁移到另一台电脑。
-• 导入设置：读取已保存的 .dbs 文件，并一次性应用到当前配置。
+• 导入设置：读取已保存的 .dbs 文件，并一次性应用到当前配置。出于安全考虑，始终以 Administrator 运行设置会从导入中排除，并保留当前值。
 • 重置设置：确认后将当前设置恢复为默认值。
+• 语言/主题变更：如果导入的设置包含语言或主题变更，部分窗口和通知可能需要重启应用后才会完整生效。
 • 下方信息栏会短暂显示导入、导出、重置的结果或错误。</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
@@ -899,6 +905,7 @@
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 启用触发区域：当指针进入指定屏幕区域时，会在当前指针所在显示器的底部显示仅用于展示的 Navigator 缩略图。
 • 选择区域：点击按钮后，会在当前显示设置窗口的显示器上打开选择叠加层。拖拽出的矩形会原样保存为触发区域，选择期间 DeskBorder 服务会暂时暂停。
+• 已选区域值：可用百分比直接调整横向位置、纵向位置、宽度和高度。
 • 如果同时启用全局热键中的 Navigator 缩略图切换，则快捷键和鼠标区域触发会一起生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -990,6 +997,8 @@
     <value>• 桌面创建：决定是否允许从最后一个桌面的右侧边缘创建新桌面。
 • 当前桌面为空时不创建：如果即将离开的当前桌面没有窗口，则不再额外创建新桌面。
 • 显示自动创建完成通知：新桌面被自动创建后显示完成通知。
+• 也用上/下边缘切换桌面：除左/右边缘外，也允许通过顶部和底部边缘切换到上一个/下一个桌面。
+• 反转上下方向 / 仅在多显示器环境中使用上/下边缘：更改顶部/底部边缘的方向映射，或将上下边缘切换限制在多显示器环境中。
 • 自动删除空桌面：从最外侧桌面向内移动时，如果该桌面没有窗口就会删除它。
 • 显示删除警告：开启时会先短暂停留以便撤销，关闭时会立即删除空桌面。
 • 显示自动删除完成通知：仅在关闭删除警告时可用，会在空桌面被立即删除后显示完成通知。

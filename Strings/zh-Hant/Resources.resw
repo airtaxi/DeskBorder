@@ -669,11 +669,12 @@
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 啟用 DeskBorder：統一開啟或關閉邊緣切換、桌面建立、自動整理與全域熱鍵。
 • 系統啟動時執行：在 Windows 登入後立即以系統匣方式啟動應用程式。
+• 一律以 Administrator 執行：更新啟動工作，讓下次啟動使用系統管理員權限。若目前應用程式未提升權限，此設定變更會被拒絕。
 • 自動檢查 Store 更新：啟用後每 8 小時檢查一次 Microsoft Store 更新，有新版本時顯示系統通知。
 • 立即檢查更新：立即在 Microsoft Store 中檢查新版本，並在有更新時開啟產品頁面。
 • 多顯示器行為：在多螢幕環境中停用監視，或只在最外側顯示器邊緣啟用。
 • 應用程式主題：切換目前的應用程式主題。部分輔助視窗或對話方塊在重新開啟應用程式後會顯示得更一致。
-• 應用程式語言：將介面固定為指定語言，或跟隨系統語言。</value>
+• 應用程式語言：將介面固定為指定語言，或跟隨系統語言。可能需要重新啟動應用程式，才能完整套用到所有視窗與通知。</value>
   </data>
   <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
     <value>無法從 Microsoft Store 檢查更新。</value>
@@ -762,7 +763,10 @@
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 每個全域熱鍵都可以獨立啟用或停用。
 • 可以選擇鍵盤按鍵或滑鼠觸發器（滾輪上/下、左鍵點擊、右鍵點擊），並依需要與修飾鍵組合。
-• 可以設定切換 DeskBorder、切換到上一個桌面、切換到下一個桌面、將焦點視窗移到上一個桌面、將焦點視窗移到下一個桌面，以及切換 Navigator 覆疊層。
+• 切換 DeskBorder：快速開啟或關閉背景服務。
+• 切換到上一個/下一個桌面：使用指定觸發器和修飾鍵切換到相鄰桌面。如果在邊緣桌面且允許建立，則可以建立新桌面。
+• 將焦點視窗移到上一個/下一個桌面：將目前焦點視窗移到相鄰桌面，並切換到該桌面。在邊緣桌面時會依需要建立新桌面。
+• 切換 Navigator 縮圖：使用鍵盤或滑鼠觸發器開啟或關閉僅供顯示的 Navigator 覆疊層。
 • Ctrl + Windows + ←/→ 是 Windows 為桌面切換保留的組合，因此 DeskBorder 會將其視為無效熱鍵。
 • 狀態指示會立即顯示目前組合是否有效、是否缺少觸發器、是否被 Windows 保留、是否重複，或是否註冊失敗。</value>
   </data>
@@ -776,8 +780,9 @@
     <value>開發人員說明</value>
   </data>
   <data name="SettingsPage_DeveloperSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 下載整合日誌：將目前應用程式工作階段中記錄的日誌儲存為文字檔，最多包含 1,000 筆。
-• 可透過下方資訊列立即確認匯出成功、取消或失敗。</value>
+    <value>• 下載整合日誌：將目前應用程式工作階段中記錄的最近日誌儲存為文字檔，最多包含 1,000 筆。
+• 選擇儲存位置：按下按鈕後可選擇儲存位置，下方資訊列會確認成功、取消或失敗。
+• 日誌範圍：在重現問題後立即匯出，有助於查看桌面切換、通知、設定套用、Store 更新檢查等最近流程。</value>
   </data>
   <data name="SettingsPage_ExportIntegratedLogButton.Content" xml:space="preserve">
     <value>儲存</value>
@@ -817,8 +822,9 @@
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 匯出設定：將目前應用程式設定儲存為 .dbs 檔案，方便備份或移到另一台電腦。
-• 匯入設定：讀取已儲存的 .dbs 檔案，並一次套用到目前設定。
+• 匯入設定：讀取已儲存的 .dbs 檔案，並一次套用到目前設定。基於安全考量，一律以 Administrator 執行設定會從匯入中排除，並保留目前值。
 • 重設設定：確認後將目前設定還原為預設值。
+• 語言/主題變更：如果匯入的設定包含語言或主題變更，部分視窗與通知可能需要重新啟動應用程式後才會完整生效。
 • 下方資訊列會短暫顯示匯入、匯出、重設的結果或錯誤。</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
@@ -899,6 +905,7 @@
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 啟用觸發區域：當指標進入指定的螢幕區域時，會在目前指標所在螢幕的底部顯示僅供展示的 Navigator 縮圖。
 • 選取區域：按下按鈕後，會在目前顯示設定視窗的螢幕上開啟選取覆疊層。拖曳出的矩形會原樣儲存為觸發區域，選取期間 DeskBorder 服務會暫時暫停。
+• 已選區域值：可用百分比直接調整橫向位置、縱向位置、寬度和高度。
 • 若同時啟用全域熱鍵區段中的 Navigator 縮圖切換，快捷鍵與滑鼠區域兩種觸發方式會同時生效。</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -990,6 +997,8 @@
     <value>• 桌面建立：決定是否允許從最後一個桌面的右側邊緣建立新桌面。
 • 目前桌面為空時不建立：如果即將離開的目前桌面沒有視窗，則不再額外建立新桌面。
 • 顯示自動建立完成通知：新桌面自動建立後顯示完成通知。
+• 也用上/下邊緣切換桌面：除左/右邊緣外，也允許透過頂部和底部邊緣切換到上一個/下一個桌面。
+• 反轉上下方向 / 僅在多顯示器環境中使用上/下邊緣：變更頂部/底部邊緣的方向對應，或將上下邊緣切換限制在多顯示器環境中。
 • 自動刪除空桌面：當你從最外側桌面往內移動時，如果該桌面沒有視窗就會刪除它。
 • 顯示刪除警告：開啟時會先短暫等待以便復原，關閉時會立即刪除空桌面。
 • 顯示自動刪除完成通知：僅在關閉刪除警告時可用，會在空桌面被立即刪除後顯示完成通知。

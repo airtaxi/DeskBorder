@@ -669,11 +669,12 @@
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Enable DeskBorder: turns edge switching, desktop creation, auto cleanup, and global hotkeys on or off together.
 • Run at system startup: starts the app in the tray right after Windows sign-in.
+• Always run as Administrator: updates the startup task so the next launch starts with administrator privileges. This setting change is rejected when the current app is not elevated.
 • Check for Store updates automatically: when enabled, checks Microsoft Store every 8 hours and shows a system toast when a new version is available.
 • Check for updates now: checks Microsoft Store immediately and can open the app's product page when a new version is available.
 • Multi-display behavior: disables monitoring on multi-monitor setups, or limits it to the outermost display edges only.
 • App theme: switches the current app theme. Some secondary windows or dialogs may look fully consistent after reopening the app.
-• App language: pins the UI to a specific language or follows the system language.</value>
+• App language: pins the UI to a specific language or follows the system language. Restarting the app may be needed before every window and notification is fully updated.</value>
   </data>
   <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
     <value>Failed to check for updates from Microsoft Store.</value>
@@ -762,7 +763,10 @@
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Each global hotkey can be enabled or disabled independently.
 • Choose either a keyboard key or a mouse trigger (wheel up, wheel down, left click, right click), then combine it with modifiers as needed.
-• You can configure DeskBorder toggle, switch previous desktop, switch next desktop, move focused window to previous desktop, move focused window to next desktop, and Navigator overlay toggle actions.
+• DeskBorder toggle: quickly turns the background service on or off.
+• Switch previous/next desktop: switches to an adjacent desktop with the configured trigger and modifiers. A new desktop can be created at the end when creation is allowed.
+• Move focused window previous/next: moves the currently focused window to an adjacent desktop and switches there. At the end, a new desktop is created when needed.
+• Navigator mini map toggle: opens or closes the display-only Navigator overlay with a keyboard or mouse trigger.
 • Ctrl + Windows + ←/→ is reserved by Windows for desktop switching, so DeskBorder treats it as invalid.
 • The status indicator immediately shows whether the shortcut is valid, missing a trigger, reserved by Windows, duplicated, or failed to register.</value>
   </data>
@@ -776,8 +780,9 @@
     <value>Developer guide</value>
   </data>
   <data name="SettingsPage_DeveloperSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• Download integrated logs: saves logs from the current app session to a text file, up to 1,000 entries.
-• Use the result info bar below to confirm whether the export completed, was canceled, or failed.</value>
+    <value>• Download integrated logs: saves recent logs from the current app session to a text file, up to 1,000 entries.
+• Choose save location: the button lets you pick where to save the file, and the info bar below confirms success, cancellation, or failure.
+• Log scope: exporting right after reproducing an issue makes it easier to review recent desktop switches, toasts, setting application, and Store update checks.</value>
   </data>
   <data name="SettingsPage_ExportIntegratedLogButton.Content" xml:space="preserve">
     <value>Save</value>
@@ -817,8 +822,9 @@
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Export settings: saves the current app configuration to a .dbs file for backup or transfer to another PC.
-• Import settings: loads a saved .dbs file and applies it to the current configuration in one step.
+• Import settings: loads a saved .dbs file and applies it to the current configuration in one step. Always run as Administrator is excluded from imports for safety, so the current value is preserved.
 • Reset settings: restores the current settings to their defaults after confirmation.
+• Language/theme changes: when an imported file changes language or theme, some windows and notifications may fully update only after restarting the app.
 • The info bar below briefly shows import, export, and reset results or errors.</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
@@ -896,6 +902,7 @@
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Enable trigger area: when the pointer enters the configured screen region, the display-only Navigator mini map appears at the bottom of the monitor that currently contains the pointer.
 • Select area: opens a selection overlay on the monitor that currently shows the settings window. The dragged rectangle is saved as-is, and the DeskBorder service pauses while you are selecting.
+• Selected area values: adjust the left/top position, width, and height directly as percentages.
 • If you also enable the Navigator mini map hotkey in the global hotkeys section, both the shortcut and mouse area triggers stay active together.</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -990,6 +997,8 @@
     <value>• Enable desktop creation: turns the creation of a new desktop from the right edge of the last desktop on or off.
 • Skip creation when current desktop is empty: prevents creating another desktop when the desktop you are leaving has no windows.
 • Show auto-create completion notification: shows a completion notification after a new desktop is created automatically.
+• Switch desktops with top and bottom edges too: allows previous/next desktop switching from the top and bottom edges in addition to the left and right edges.
+• Reverse vertical direction / use top and bottom edges only in multi-display environments: changes the top/bottom direction mapping or limits vertical edge switching to multi-display setups.
 • Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.
 • Show deletion warning: when enabled, deletion waits briefly so you can undo it; when disabled, empty desktops are deleted immediately.
 • Show auto-delete completion notification: available only when the deletion warning is off, and shows a completion notification after an empty desktop is deleted immediately.

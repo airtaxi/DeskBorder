@@ -669,11 +669,12 @@
   <data name="SettingsPage_GeneralSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• DeskBorder 사용: 가장자리 전환, 데스크톱 생성, 자동 정리, 전역 단축키를 한 번에 켜거나 끕니다.
 • 시스템 시작 시 자동 실행: Windows 로그인 직후 앱을 트레이로 시작합니다.
+• 항상 Administrator 로 실행: 다음 실행부터 관리자 권한으로 시작되도록 시작 작업을 갱신합니다. 현재 앱이 관리자 권한이 아니면 이 설정 변경은 거부됩니다.
 • 스토어 업데이트 자동 확인: 켜 두면 8시간마다 Microsoft Store 업데이트를 확인하고, 새 버전이 있으면 시스템 토스트를 표시합니다.
 • 업데이트 확인: 지금 바로 Microsoft Store에서 새 버전을 조회하고, 업데이트가 있으면 제품 페이지를 열 수 있습니다.
 • 다중 디스플레이 동작: 멀티 모니터에서 감시를 끄거나, 가장 바깥 모니터 경계에서만 동작하게 합니다.
 • 앱 테마: 현재 앱 테마를 바꿉니다. 일부 보조 창이나 대화상자는 앱을 다시 열면 더 일관되게 반영됩니다.
-• 앱 언어: 설정 UI 언어를 고정하거나 시스템 언어를 따르게 합니다.</value>
+• 앱 언어: 설정 UI 언어를 고정하거나 시스템 언어를 따르게 합니다. 모든 창과 알림에 완전히 반영하려면 앱 재시작이 필요할 수 있습니다.</value>
   </data>
   <data name="Settings.StoreUpdate.CheckFailedMessage" xml:space="preserve">
     <value>Microsoft Store에서 업데이트를 확인하지 못했습니다.</value>
@@ -762,7 +763,10 @@
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 각 전역 단축키는 기능별로 따로 켜고 끌 수 있습니다.
 • 키보드 키 또는 마우스 트리거(휠 위/아래, 왼쪽 클릭, 오른쪽 클릭)를 고르고 필요하면 보조 키와 함께 조합할 수 있습니다.
-• DeskBorder 전체 토글, 이전 데스크톱 전환, 다음 데스크톱 전환, 포커스 창 이전 이동, 포커스 창 다음 이동, Navigator 오버레이 토글을 지정할 수 있습니다.
+• DeskBorder 사용 토글: 백그라운드 서비스를 빠르게 켜거나 끕니다.
+• 이전/다음 데스크톱 전환: 지정한 트리거와 보조키로 인접 데스크톱으로 전환합니다. 끝 데스크톱에서 생성이 허용되어 있으면 새 데스크톱을 만들 수 있습니다.
+• 포커스 창 이전/다음 이동: 현재 포커스된 창을 인접 데스크톱으로 옮기고 그 데스크톱으로 전환합니다. 끝 데스크톱에서는 필요한 경우 새 데스크톱을 만듭니다.
+• Navigator 미니맵 토글: 표시 전용 Navigator 오버레이를 키보드나 마우스 트리거로 열고 닫습니다.
 • Ctrl + Windows + ←/→ 는 Windows가 데스크톱 전환용으로 예약한 조합이므로 DeskBorder에서는 유효하지 않은 단축키로 처리합니다.
 • 상태 점은 현재 조합이 유효한지, 트리거 미지정인지, Windows 예약 조합인지, 중복인지, 등록 실패인지 바로 보여줍니다.</value>
   </data>
@@ -776,8 +780,9 @@
     <value>개발자 안내</value>
   </data>
   <data name="SettingsPage_DeveloperSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
-    <value>• 통합 로그 다운로드: 현재 앱 세션 동안 기록된 로그를 텍스트 파일로 저장합니다. 최대 1,000개 항목까지 포함됩니다.
-• 아래 안내 바로 내보내기 성공, 취소, 실패를 바로 확인할 수 있습니다.</value>
+    <value>• 통합 로그 다운로드: 현재 앱 세션 동안 기록된 최근 로그를 텍스트 파일로 저장합니다. 최대 1,000개 항목까지 포함됩니다.
+• 저장 위치 선택: 버튼을 누르면 파일 저장 위치를 고를 수 있고, 성공/취소/실패 결과는 아래 안내 바로 확인할 수 있습니다.
+• 로그 범위: 문제를 재현한 직후 내보내면 데스크톱 전환, 토스트, 설정 적용, Store 업데이트 확인 같은 최근 흐름을 확인하기 쉽습니다.</value>
   </data>
   <data name="SettingsPage_ExportIntegratedLogButton.Content" xml:space="preserve">
     <value>저장</value>
@@ -817,8 +822,9 @@
   </data>
   <data name="SettingsPage_ImportExportSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 설정 내보내기: 현재 앱 설정을 .dbs 파일로 저장해 백업하거나 다른 PC로 옮길 수 있습니다.
-• 설정 불러오기: 저장한 .dbs 파일을 읽어 현재 설정을 한 번에 반영합니다.
+• 설정 불러오기: 저장한 .dbs 파일을 읽어 현재 설정을 한 번에 반영합니다. 항상 Administrator 로 실행 설정은 보안을 위해 가져오기에서 제외되고 현재 값이 유지됩니다.
 • 설정 초기화: 확인 후 현재 설정을 기본값으로 되돌립니다.
+• 언어/테마 변경: 가져온 설정에 언어 또는 테마 변경이 포함되면 일부 창과 알림은 앱 재시작 후 완전히 반영될 수 있습니다.
 • 아래 안내 바는 가져오기, 내보내기, 초기화 결과와 오류를 잠깐 표시합니다.</value>
   </data>
   <data name="SettingsPage_ImportSettingsButton.Content" xml:space="preserve">
@@ -899,6 +905,7 @@
   <data name="SettingsPage_NavigatorSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 트리거 영역 사용: 지정한 화면 영역에 포인터가 들어오면 현재 포인터가 있는 모니터 하단에 표시 전용 Navigator 미니맵을 표시합니다.
 • 영역 선택: 버튼을 누르면 현재 설정 창이 있는 모니터에 선택 오버레이가 열리고, 드래그한 사각형이 그대로 트리거 영역으로 저장됩니다. 선택하는 동안 DeskBorder 서비스는 잠시 멈춥니다.
+• 선택된 영역 값: 가로/세로 위치와 너비/높이를 퍼센트로 직접 조정할 수 있습니다.
 • 전역 단축키 섹션의 Navigator 미니맵 토글을 함께 켜 두면 단축키와 마우스 영역 두 방식이 동시에 동작합니다.</value>
   </data>
   <data name="SettingsPage_NavigatorToggleHotkeyAltCheckBox.Content" xml:space="preserve">
@@ -990,6 +997,8 @@
     <value>• 데스크톱 생성: 마지막 데스크톱의 오른쪽 가장자리에서 새 데스크톱을 만들지 결정합니다.
 • 현재 데스크톱이 비어 있으면 생성 안 함: 떠나려는 현재 데스크톱에 창이 없을 때는 새 데스크톱을 추가로 만들지 않습니다.
 • 자동 생성 완료 알림 표시: 새 데스크톱이 자동으로 생성된 뒤 완료 알림을 표시합니다.
+• 위/아래 경계로도 데스크톱 전환: 좌우 가장자리 외에 상단과 하단 경계에서도 이전/다음 데스크톱 전환을 허용합니다.
+• 위/아래 방향 반전 / 다중 디스플레이에서만 위/아래 경계 사용: 상단/하단 경계의 전환 방향을 바꾸거나 다중 디스플레이 환경에서만 위/아래 경계를 사용합니다.
 • 빈 데스크톱 자동 삭제: 양 끝 데스크톱에서 안쪽으로 이동할 때 창이 없으면 해당 데스크톱을 삭제합니다.
 • 삭제 경고 표시: 켜면 잠시 기다리며 실행 취소할 수 있고, 끄면 빈 데스크톱을 바로 삭제합니다.
 • 자동 삭제 완료 알림 표시: 삭제 경고를 끈 경우에만 사용할 수 있으며, 빈 데스크톱이 바로 삭제된 뒤 완료 알림을 표시합니다.
