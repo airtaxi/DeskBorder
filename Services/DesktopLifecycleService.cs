@@ -32,6 +32,7 @@ public sealed class DesktopLifecycleService(
     private CancellationTokenSource? _pendingDesktopDeletionCancellationTokenSource;
     private Task? _pendingDesktopDeletionTask;
     private bool _isDesktopEdgeActivationArmed = true;
+    private int _desktopEdgeActivationStateVersion;
     private DesktopEdgeKind _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
 
     public bool IsRunning { get; private set; }
@@ -264,6 +265,15 @@ public sealed class DesktopLifecycleService(
         => isDesktopEdgeActivationArmed
         && currentState.ActiveDesktopEdge != DesktopEdgeKind.None
         && (currentState.HasCursorEnteredDesktopEdge || HasActivationModifierBecomeSatisfiedWhileRemainingOnDesktopEdge(previousState, currentState));
+
+    private void MarkDesktopEdgeActivationStarted(DesktopEdgeKind triggeredDesktopEdge)
+    {
+        _isDesktopEdgeActivationArmed = false;
+        _lastTriggeredDesktopEdge = triggeredDesktopEdge;
+        _ = Interlocked.Increment(ref _desktopEdgeActivationStateVersion);
+    }
+
+    private void MarkDesktopEdgeActivationCompleted() => _ = Interlocked.Increment(ref _desktopEdgeActivationStateVersion);
 
     private static string FormatLastWindowsErrorDetails(int lastWindowsErrorCode) => $"LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {new Win32Exception(lastWindowsErrorCode).Message})";
 
@@ -643,9 +653,9 @@ public sealed class DesktopLifecycleService(
 
     private async Task HandleDesktopEdgeMonitorServiceMonitoringStateChangedAsync(DesktopEdgeMonitoringStateChangedEventArgs desktopEdgeMonitoringStateChangedEventArgs)
     {
-        if (!IsRunning)
-            return;
+        if (!IsRunning) return;
 
+        var observedDesktopEdgeActivationStateVersion = Volatile.Read(ref _desktopEdgeActivationStateVersion);
         var previousState = desktopEdgeMonitoringStateChangedEventArgs.PreviousState;
         var currentState = desktopEdgeMonitoringStateChangedEventArgs.CurrentState;
         if (_navigatorService.IsVisible
@@ -655,26 +665,27 @@ public sealed class DesktopLifecycleService(
         }
 
         await UiThreadHelper.ExecuteAsync(() => _navigatorService.UpdateTriggerAreaPointerState(currentState.NavigatorTriggerState.IsCursorInsideTriggerRectangle));
-        if (!_isDesktopEdgeActivationArmed && HasPointerMovedAwayFromDesktopEdge(currentState, _lastTriggeredDesktopEdge))
-        {
-            _isDesktopEdgeActivationArmed = true;
-            _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
-        }
-
-        if (!ShouldHandleDesktopEdgeActivation(previousState, currentState, _isDesktopEdgeActivationArmed))
-            return;
-
         await _operationSemaphore.WaitAsync();
+        var hasDesktopEdgeActivationStarted = false;
         try
         {
+            if (observedDesktopEdgeActivationStateVersion != Volatile.Read(ref _desktopEdgeActivationStateVersion)) return;
+
+            if (!_isDesktopEdgeActivationArmed && HasPointerMovedAwayFromDesktopEdge(currentState, _lastTriggeredDesktopEdge))
+            {
+                _isDesktopEdgeActivationArmed = true;
+                _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
+            }
+
+            if (!ShouldHandleDesktopEdgeActivation(previousState, currentState, _isDesktopEdgeActivationArmed)) return;
+
             await CancelPendingDesktopDeletionAsync();
             var currentSettings = _settingsService.Settings;
             var desktopEdgeActivationEvaluation = EvaluateDesktopEdgeActivation(currentState, currentSettings);
-            if (!desktopEdgeActivationEvaluation.ShouldAttemptActivation)
-                return;
+            if (!desktopEdgeActivationEvaluation.ShouldAttemptActivation) return;
 
-            _isDesktopEdgeActivationArmed = false;
-            _lastTriggeredDesktopEdge = currentState.ActiveDesktopEdge;
+            MarkDesktopEdgeActivationStarted(currentState.ActiveDesktopEdge);
+            hasDesktopEdgeActivationStarted = true;
             var desktopNavigationResult = HandleEdgeActivation(currentState, currentSettings, desktopEdgeActivationEvaluation);
             if (desktopNavigationResult.NavigationActionKind != DesktopNavigationActionKind.None)
             {
@@ -687,7 +698,12 @@ public sealed class DesktopLifecycleService(
             }
             await HandleNavigationResultAsync(desktopNavigationResult);
         }
-        finally { _operationSemaphore.Release(); }
+        finally
+        {
+            if (hasDesktopEdgeActivationStarted) MarkDesktopEdgeActivationCompleted();
+
+            _operationSemaphore.Release();
+        }
     }
 
     private async void OnHotkeyServiceHotkeyInvoked(object? sender, HotkeyInvokedEventArgs hotkeyInvokedEventArgs)
