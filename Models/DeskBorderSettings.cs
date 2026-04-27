@@ -155,7 +155,7 @@ public sealed record NavigatorSettings
 
 public sealed record DeskBorderSettings
 {
-    public int SchemaVersion { get; init; } = 5;
+    public int SchemaVersion { get; init; } = 6;
 
     public bool IsDeskBorderEnabled { get; init; } = true;
 
@@ -186,6 +186,8 @@ public sealed record DeskBorderSettings
     public bool IsDesktopEdgeAdditionalTriggerDistanceEnabled { get; init; } = true;
 
     public double DesktopEdgeAdditionalTriggerDistancePercentage { get; init; } = 3.0;
+
+    public bool IsKeyboardModifierConsumptionAfterDesktopActionEnabled { get; init; } = true;
 
     public bool IsVerticalDesktopSwitchingEnabled { get; init; }
 

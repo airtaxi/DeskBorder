@@ -612,6 +612,9 @@
   <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistancePercentageNumberBox.Header" xml:space="preserve">
     <value>추가 이동 거리 (%)</value>
   </data>
+  <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
+    <value>데스크톱 동작 후 보조키 떼기</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>가장자리 처리에서 제외할 실행 중 포그라운드 프로세스를 관리합니다.</value>
   </data>
@@ -1022,6 +1025,7 @@
 • 자동 삭제 완료 알림 표시: 삭제 경고를 끈 경우에만 사용할 수 있으며, 빈 데스크톱이 바로 삭제된 뒤 완료 알림을 표시합니다.
 • 삭제 경고 타임아웃: 삭제 경고가 표시되는 동안 실행 취소를 기다리는 시간을 조절합니다.
 • 가장자리 추가 이동 거리 사용 / 추가 이동 거리 (%): 현재 모니터 너비 대비 지정 비율만큼 가장자리 바깥으로 더 밀었을 때만 전환 또는 생성합니다.
+• 데스크톱 동작 후 보조키 떼기: 가장자리 전환 또는 생성이 성공하면 눌린 보조키를 한 번 떼어진 것으로 처리합니다. 끄면 보조키를 계속 누른 상태로 연속 전환할 수 있습니다.
 • 상단 무시 영역 / 하단 무시 영역: 화면 위쪽과 아래쪽에서 가장자리 전환과 데스크톱 생성을 무시할 범위를 퍼센트로 조절합니다.
 • 단축키 데스크톱 전환 후 마우스 위치 / 가장자리 데스크톱 전환 후 마우스 위치: 데스크톱 전환 뒤 포인터를 어디로 옮길지 선택합니다.
 • 데스크톱 전환 보조키: 가장자리 기반 데스크톱 전환 전에 반드시 눌러야 하는 키 조합입니다.

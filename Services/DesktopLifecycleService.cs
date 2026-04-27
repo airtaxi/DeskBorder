@@ -419,12 +419,13 @@ public sealed class DesktopLifecycleService(
             await _toastService.DismissAsync();
     }
 
-    private void ConsumeKeyboardModifiersAfterDesktopAction(DesktopNavigationResult desktopNavigationResult, KeyboardModifierKeys keyboardModifierKeys)
+    private void ConsumeKeyboardModifierKeysAfterDesktopActionIfEnabled(DeskBorderSettings currentSettings, DesktopNavigationResult desktopNavigationResult, KeyboardModifierKeys keyboardModifierKeys)
     {
-        if (!desktopNavigationResult.IsSuccessful
-            || desktopNavigationResult.NavigationActionKind is not (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched)
-            || keyboardModifierKeys == KeyboardModifierKeys.None)
-            return;
+        var shouldConsumeKeyboardModifierKeys = currentSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled
+            && desktopNavigationResult.IsSuccessful
+            && desktopNavigationResult.NavigationActionKind is (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched)
+            && keyboardModifierKeys != KeyboardModifierKeys.None;
+        if (!shouldConsumeKeyboardModifierKeys) return;
 
         try
         {
@@ -509,14 +510,14 @@ public sealed class DesktopLifecycleService(
         if (currentState.IsSwitchDesktopModifierSatisfied)
         {
             var switchOrCreateDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, desktopEdgeActivationEvaluation.DesktopSwitchDirection, currentState.IsCreateDesktopModifierSatisfied);
-            ConsumeKeyboardModifiersAfterDesktopAction(switchOrCreateDesktopNavigationResult, currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
+            ConsumeKeyboardModifierKeysAfterDesktopActionIfEnabled(currentSettings, switchOrCreateDesktopNavigationResult, currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
             return switchOrCreateDesktopNavigationResult;
         }
 
         if (desktopEdgeActivationEvaluation.CanCreateDesktop)
         {
             var createDesktopAndSwitchResult = _virtualDesktopService.CreateDesktopAndSwitch(desktopEdgeActivationEvaluation.DesktopSwitchDirection);
-            ConsumeKeyboardModifiersAfterDesktopAction(createDesktopAndSwitchResult, currentSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys);
+            ConsumeKeyboardModifierKeysAfterDesktopActionIfEnabled(currentSettings, createDesktopAndSwitchResult, currentSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys);
             return createDesktopAndSwitchResult;
         }
 

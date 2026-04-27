@@ -203,6 +203,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial double DesktopEdgeAdditionalTriggerDistancePercentage { get; set; } = 5.0;
 
     [ObservableProperty]
+    public partial bool IsKeyboardModifierConsumptionAfterDesktopActionEnabled { get; set; } = true;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsMultiDisplayBehaviorSelectionEnabled))]
     [NotifyPropertyChangedFor(nameof(AreVerticalDesktopSwitchingOptionControlsVisible))]
     public partial bool IsVerticalDesktopSwitchingEnabled { get; set; }
@@ -417,7 +420,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public DeskBorderSettings CreateSettings() => new()
     {
-        SchemaVersion = 5,
+        SchemaVersion = 6,
         IsDeskBorderEnabled = IsDeskBorderEnabled,
         MultiDisplayBehavior = SelectedMultiDisplayBehaviorOption?.Value ?? MultiDisplayBehavior.DisableInMultiDisplayEnvironment,
         SwitchDesktopModifierSettings = new ModifierGateSettings
@@ -442,6 +445,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsAutoDeleteCompletionToastEnabled = IsAutoDeleteCompletionToastEnabled,
         IsDesktopEdgeAdditionalTriggerDistanceEnabled = IsDesktopEdgeAdditionalTriggerDistanceEnabled,
         DesktopEdgeAdditionalTriggerDistancePercentage = DesktopEdgeAdditionalTriggerDistancePercentage,
+        IsKeyboardModifierConsumptionAfterDesktopActionEnabled = IsKeyboardModifierConsumptionAfterDesktopActionEnabled,
         IsVerticalDesktopSwitchingEnabled = IsVerticalDesktopSwitchingEnabled,
         IsVerticalDesktopSwitchDirectionReversed = IsVerticalDesktopSwitchDirectionReversed,
         IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment = IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment,
@@ -505,6 +509,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsAutoDeleteCompletionToastEnabled = deskBorderSettings.IsAutoDeleteCompletionToastEnabled;
         IsDesktopEdgeAdditionalTriggerDistanceEnabled = deskBorderSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
         DesktopEdgeAdditionalTriggerDistancePercentage = deskBorderSettings.DesktopEdgeAdditionalTriggerDistancePercentage;
+        IsKeyboardModifierConsumptionAfterDesktopActionEnabled = deskBorderSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled;
         IsVerticalDesktopSwitchingEnabled = deskBorderSettings.IsVerticalDesktopSwitchingEnabled;
         IsVerticalDesktopSwitchDirectionReversed = deskBorderSettings.IsVerticalDesktopSwitchDirectionReversed;
         IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment = deskBorderSettings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment;

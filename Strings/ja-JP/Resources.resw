@@ -612,6 +612,9 @@
   <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistancePercentageNumberBox.Header" xml:space="preserve">
     <value>追加移動距離 (%)</value>
   </data>
+  <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
+    <value>デスクトップ操作後に修飾キーを離す</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>エッジ処理から除外する実行中のフォアグラウンド プロセスを管理します。</value>
   </data>
@@ -1022,6 +1025,7 @@
 • 自動削除完了通知を表示: 削除前の警告をオフにしたときのみ使え、空のデスクトップがすぐ削除された後に完了通知を表示します。
 • 削除前の警告タイムアウト: 削除前の警告が表示されている間、取り消しを待つ時間を調整します。
 • 端の追加移動距離を使用 / 追加移動距離 (%): 現在のモニター幅に対して指定した割合ぶん、端の外側へさらに押し込んだときだけ切り替えまたは作成を実行します。
+• デスクトップ操作後に修飾キーを離す: エッジ切り替えまたは作成が成功した後、押下中の修飾キーを一度離されたものとして扱います。オフにすると、修飾キーを押したまま連続切り替えできます。
 • 上端無視領域 / 下端無視領域: 画面の上端と下端で、エッジ切り替えとデスクトップ作成を無視する範囲を割合で調整します。
 • ホットキーでデスクトップ切り替え後のマウス位置 / 端でデスクトップ切り替え後のマウス位置: デスクトップ切り替え後にポインターを移動する位置を選びます。
 • デスクトップ切り替え修飾キー: 端によるデスクトップ切り替えを発動する前に必ず押しておくキーの組み合わせです。

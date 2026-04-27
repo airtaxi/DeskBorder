@@ -612,6 +612,9 @@
   <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistancePercentageNumberBox.Header" xml:space="preserve">
     <value>额外移动距离 (%)</value>
   </data>
+  <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
+    <value>桌面操作后松开修饰键</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>管理要从边缘处理中排除的正在运行的前台进程。</value>
   </data>
@@ -1022,6 +1025,7 @@
 • 显示自动删除完成通知：仅在关闭删除警告时可用，会在空桌面被立即删除后显示完成通知。
 • 删除警告超时：调整显示删除警告时等待撤销的时间。
 • 使用边缘额外移动距离 / 额外移动距离（%）：只有继续向边缘外推动，达到当前显示器宽度指定比例时，才会触发切换或创建。
+• 桌面操作后松开修饰键：边缘切换或创建成功后，将按住的修饰键视为已松开一次。关闭后，可以继续按住修饰键连续切换。
 • 上方忽略区域 / 下方忽略区域：按百分比调整屏幕上方和下方忽略边缘切换与桌面创建的范围。
 • 热键切换桌面后的鼠标位置 / 边缘切换桌面后的鼠标位置：选择切换桌面后指针要移动到哪里。
 • 桌面切换修饰键：触发基于边缘的桌面切换前必须按住的按键组合。

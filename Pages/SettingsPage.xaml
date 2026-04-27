@@ -415,6 +415,13 @@
                         </Border>
 
                         <ToggleSwitch
+                            x:Name="KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
+                            x:Uid="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
+                            Header="데스크톱 동작 후 보조키 떼기"
+                            IsOn="{x:Bind ViewModel.IsKeyboardModifierConsumptionAfterDesktopActionEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <ToggleSwitch
                             x:Name="VerticalDesktopSwitchingToggleSwitch"
                             x:Uid="SettingsPage_VerticalDesktopSwitchingToggleSwitch"
                             Header="위/아래 경계로도 데스크톱 전환"

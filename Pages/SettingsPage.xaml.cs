@@ -839,6 +839,8 @@ public sealed partial class SettingsPage : Page
         if (ReferenceEquals(settingToggleSwitch, DesktopEdgeAdditionalTriggerDistanceToggleSwitch))
             return currentSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
 
+        if (ReferenceEquals(settingToggleSwitch, KeyboardModifierConsumptionAfterDesktopActionToggleSwitch)) return currentSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled;
+
         if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch))
             return currentSettings.IsVerticalDesktopSwitchingEnabled;
 

@@ -612,6 +612,9 @@
   <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistancePercentageNumberBox.Header" xml:space="preserve">
     <value>Extra movement distance (%)</value>
   </data>
+  <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
+    <value>Release modifier keys after desktop action</value>
+  </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>Manage running foreground processes to exclude from edge handling.</value>
   </data>
@@ -1022,6 +1025,7 @@
 • Show auto-delete completion notification: available only when the deletion warning is off, and shows a completion notification after an empty desktop is deleted immediately.
 • Deletion warning timeout: adjusts how long the undo wait lasts while the deletion warning is shown.
 • Require extra movement past the edge / Extra movement distance (%): edge switching or creation only triggers after you keep pushing farther past the edge by the configured percentage of the current monitor width.
+• Release modifier keys after desktop action: treats held edge modifiers as released after a successful edge switch or creation. Turn it off to keep holding modifiers for consecutive switches.
 • Top and bottom ignore zones: adjusts how much of the upper and lower screen area should ignore edge switching and desktop creation.
 • Mouse position after hotkey desktop switch / Mouse position after edge desktop switch: chooses where the pointer lands after switching desktops.
 • Switch desktop modifiers: key combination that must be held before edge-based desktop switching triggers.

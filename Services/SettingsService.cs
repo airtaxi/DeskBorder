@@ -182,6 +182,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             IsAutoDeleteCompletionToastEnabled = settings.IsAutoDeleteCompletionToastEnabled,
             IsDesktopEdgeAdditionalTriggerDistanceEnabled = settings.IsDesktopEdgeAdditionalTriggerDistanceEnabled,
             DesktopEdgeAdditionalTriggerDistancePercentage = ClampDesktopEdgeAdditionalTriggerDistancePercentage(settings.DesktopEdgeAdditionalTriggerDistancePercentage),
+            IsKeyboardModifierConsumptionAfterDesktopActionEnabled = settings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled,
             IsVerticalDesktopSwitchingEnabled = settings.IsVerticalDesktopSwitchingEnabled,
             IsVerticalDesktopSwitchDirectionReversed = settings.IsVerticalDesktopSwitchDirectionReversed,
             IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment = settings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment,
