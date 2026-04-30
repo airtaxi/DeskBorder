@@ -1,4 +1,5 @@
 using DeskBorder.Navigation;
+using DeskBorder.Models;
 using DeskBorder.Services;
 using DeskBorder.Interop;
 using Microsoft.UI.Xaml;
@@ -68,10 +69,13 @@ public sealed partial class ManageWindow : WindowEx
         var windowHandle = this.GetWindowHandle();
         _ = SetWindowSubclass(windowHandle, _windowSubclassProcedure, 1, 0);
         _mouseMovementTrackingService.RegisterWindowHandle(windowHandle);
+        RefreshRawInputTrackingRegistration();
 
         _manageNavigationService.RegisterFrame(AppFrame);
         AppFrame.Navigated += OnAppFrameNavigated;
+        _deskBorderRuntimeService.StateChanged += OnDeskBorderRuntimeServiceStateChanged;
         _localizationService.LanguageChanged += OnLocalizationServiceLanguageChanged;
+        _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
         _trayIconService.StateChanged += OnTrayIconServiceStateChanged;
         Closed += OnManageWindowClosed;
 
@@ -83,8 +87,7 @@ public sealed partial class ManageWindow : WindowEx
 
     private void RegisterCurrentWindowContentWithThemeService()
     {
-        if (Content is not FrameworkElement rootFrameworkElement)
-            throw new InvalidOperationException("Unable to resolve the manage window root content for theme application.");
+        if (Content is not FrameworkElement rootFrameworkElement) throw new InvalidOperationException("Unable to resolve the manage window root content for theme application.");
 
         _themeService.RegisterFrameworkElement(rootFrameworkElement);
     }
@@ -100,6 +103,11 @@ public sealed partial class ManageWindow : WindowEx
         manageNavigationTarget = default;
         return selectedItemTag is string selectedItemTagText && Enum.TryParse(selectedItemTagText, out manageNavigationTarget);
     }
+
+    private static bool ShouldEnableRawInputTracking(DeskBorderSettings settings, bool isRuntimeRunning, bool isRuntimeSuspended) => settings.IsDeskBorderEnabled
+        && isRuntimeRunning
+        && !isRuntimeSuspended
+        && (settings.IsDesktopEdgeAdditionalTriggerDistanceEnabled || settings.IsVerticalDesktopSwitchingEnabled);
 
     private void RefreshTrayMenu()
     {
@@ -123,8 +131,7 @@ public sealed partial class ManageWindow : WindowEx
     {
         _ = sender;
         _ = eventArguments;
-        if (DispatcherQueue.TryEnqueue(HandleLocalizationChanged))
-            return;
+        if (DispatcherQueue.TryEnqueue(HandleLocalizationChanged)) return;
 
         HandleLocalizationChanged();
     }
@@ -133,10 +140,13 @@ public sealed partial class ManageWindow : WindowEx
 
     private void OnManageWindowClosed(object sender, WindowEventArgs windowEventArguments)
     {
+        _deskBorderRuntimeService.StateChanged -= OnDeskBorderRuntimeServiceStateChanged;
         _localizationService.LanguageChanged -= OnLocalizationServiceLanguageChanged;
+        _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
         _trayIconService.StateChanged -= OnTrayIconServiceStateChanged;
         AppFrame.Navigated -= OnAppFrameNavigated;
         Closed -= OnManageWindowClosed;
+        _mouseMovementTrackingService.SetRawInputTrackingEnabled(false);
     }
 
     private void OnOpenManageWindowMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => App.GetRequiredService<IManageWindowService>().Show();
@@ -156,10 +166,36 @@ public sealed partial class ManageWindow : WindowEx
 
     private void OnTrayIconServiceStateChanged(object? sender, EventArgs eventArguments)
     {
-        if (DispatcherQueue.TryEnqueue(RefreshTrayMenu))
-            return;
+        if (DispatcherQueue.TryEnqueue(RefreshTrayMenu)) return;
 
         RefreshTrayMenu();
+    }
+
+    private void OnDeskBorderRuntimeServiceStateChanged(object? sender, EventArgs eventArguments)
+    {
+        _ = sender;
+        _ = eventArguments;
+        QueueRawInputTrackingRegistrationRefresh();
+    }
+
+    private void OnSettingsServiceSettingsChanged(object? sender, EventArgs eventArguments)
+    {
+        _ = sender;
+        _ = eventArguments;
+        QueueRawInputTrackingRegistrationRefresh();
+    }
+
+    private void QueueRawInputTrackingRegistrationRefresh()
+    {
+        if (DispatcherQueue.TryEnqueue(RefreshRawInputTrackingRegistration)) return;
+
+        RefreshRawInputTrackingRegistration();
+    }
+
+    private void RefreshRawInputTrackingRegistration()
+    {
+        var shouldEnableRawInputTracking = ShouldEnableRawInputTracking(_settingsService.Settings, _deskBorderRuntimeService.IsRunning, _deskBorderRuntimeService.IsSuspended);
+        _mouseMovementTrackingService.SetRawInputTrackingEnabled(shouldEnableRawInputTracking);
     }
 
     private nint OnWindowSubclassProcedure(nint windowHandle, uint message, nint wParam, nint lParam, nuint subclassIdentifier, nuint referenceData)

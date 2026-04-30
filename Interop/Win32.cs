@@ -27,6 +27,7 @@ internal static partial class Win32
     public const uint WindowGetIconMessage = 0x007F;
     public const uint RawInputDataCommandInput = 0x10000003;
     public const uint RawInputDeviceInputSinkFlag = 0x00000100;
+    public const uint RawInputDeviceRemoveFlag = 0x00000001;
     public const uint RawInputTypeMouse = 0;
     public const ushort GenericDesktopControlsUsagePage = 0x01;
     public const ushort GenericDesktopMouseUsage = 0x02;
