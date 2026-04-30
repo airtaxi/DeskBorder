@@ -8,6 +8,7 @@
 - **Lint / format:** There is currently no standalone lint or formatting command configured in this repository.
 
 Prefer ARM64 for primary validation because that is the main development machine and the main hands-on test platform. Use x64 when you need compatibility confirmation against the historically verified packaged build target in this repository.
+Ignore generated `XamlTypeInfo.g.cs` `Icon` obsolete warnings during builds; they are known Windows App SDK generated-code warnings and are not actionable in this repository.
 
 ## High-level architecture
 
