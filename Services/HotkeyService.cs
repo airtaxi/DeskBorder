@@ -102,7 +102,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
         if (!keyboardShortcutSettings.IsEnabled || !KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutSettings))
             return;
 
-        if (keyboardShortcutSettings.TriggerType == KeyboardShortcutTriggerType.VirtualKey)
+        if (keyboardShortcutSettings.TriggerType == InputTriggerType.VirtualKey)
         {
             registeredKeyboardHotkeys.Add(new RegisteredKeyboardHotkey(
                 identifier,
@@ -201,7 +201,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
             throw new InvalidOperationException("Duplicate hotkey registrations are not supported.");
         }
 
-        var registeredMouseHotkeyKeys = new HashSet<(KeyboardModifierKeys RequiredKeyboardModifierKeys, KeyboardShortcutTriggerType TriggerType)>();
+        var registeredMouseHotkeyKeys = new HashSet<(KeyboardModifierKeys RequiredKeyboardModifierKeys, InputTriggerType TriggerType)>();
         foreach (var registeredMouseHotkey in registeredMouseHotkeys)
         {
             if (registeredMouseHotkeyKeys.Add((registeredMouseHotkey.RequiredKeyboardModifierKeys, registeredMouseHotkey.TriggerType)))
@@ -269,8 +269,8 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     private nint OnMouseLowLevelHook(int code, nuint wParam, nint lParam)
     {
         if (code >= 0
-            && TryGetKeyboardShortcutTriggerTypeFromMouseMessage(wParam, lParam, out var keyboardShortcutTriggerType)
-            && TryGetRegisteredMouseHotkey(MouseHelper.GetModifierKeySnapshot().PressedKeyboardModifierKeys, keyboardShortcutTriggerType, out var registeredMouseHotkey))
+            && TryGetInputTriggerTypeFromMouseMessage(wParam, lParam, out var inputTriggerType)
+            && TryGetRegisteredMouseHotkey(MouseHelper.GetModifierKeySnapshot().PressedKeyboardModifierKeys, inputTriggerType, out var registeredMouseHotkey))
         {
             if (!TryPostHotkeyActionMessage(registeredMouseHotkey.HotkeyActionType))
                 _fileLogService.WriteWarning(nameof(HotkeyService), $"Failed to queue mouse hotkey action. Action={registeredMouseHotkey.HotkeyActionType}.");
@@ -370,29 +370,33 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
         }
     }
 
-    private static bool TryGetKeyboardShortcutTriggerTypeFromMouseMessage(nuint windowMessage, nint lParam, out KeyboardShortcutTriggerType keyboardShortcutTriggerType)
+    private static bool TryGetInputTriggerTypeFromMouseMessage(nuint windowMessage, nint lParam, out InputTriggerType inputTriggerType)
     {
         if (lParam == 0)
         {
-            keyboardShortcutTriggerType = default;
+            inputTriggerType = default;
             return false;
         }
 
         var nativeLowLevelMouseHookData = Marshal.PtrToStructure<Win32.NativeLowLevelMouseHookData>(lParam);
         if ((nativeLowLevelMouseHookData.Flags & Win32.LowLevelMouseHookInjectedFlag) != 0)
         {
-            keyboardShortcutTriggerType = default;
+            inputTriggerType = default;
             return false;
         }
 
         switch (windowMessage)
         {
             case Win32.LeftButtonDownWindowMessage:
-                keyboardShortcutTriggerType = KeyboardShortcutTriggerType.MouseLeftButton;
+                inputTriggerType = InputTriggerType.MouseLeftButton;
+                return true;
+
+            case Win32.MiddleButtonDownWindowMessage:
+                inputTriggerType = InputTriggerType.MouseMiddleButton;
                 return true;
 
             case Win32.RightButtonDownWindowMessage:
-                keyboardShortcutTriggerType = KeyboardShortcutTriggerType.MouseRightButton;
+                inputTriggerType = InputTriggerType.MouseRightButton;
                 return true;
 
             case Win32.MouseWheelWindowMessage:
@@ -400,13 +404,13 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
                 if (mouseWheelDelta == 0)
                     break;
 
-                keyboardShortcutTriggerType = mouseWheelDelta > 0
-                    ? KeyboardShortcutTriggerType.MouseWheelUp
-                    : KeyboardShortcutTriggerType.MouseWheelDown;
+                inputTriggerType = mouseWheelDelta > 0
+                    ? InputTriggerType.MouseWheelUp
+                    : InputTriggerType.MouseWheelDown;
                 return true;
         }
 
-        keyboardShortcutTriggerType = default;
+        inputTriggerType = default;
         return false;
     }
 
@@ -425,12 +429,12 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
         return false;
     }
 
-    private bool TryGetRegisteredMouseHotkey(KeyboardModifierKeys pressedKeyboardModifierKeys, KeyboardShortcutTriggerType keyboardShortcutTriggerType, out RegisteredMouseHotkey registeredMouseHotkey)
+    private bool TryGetRegisteredMouseHotkey(KeyboardModifierKeys pressedKeyboardModifierKeys, InputTriggerType inputTriggerType, out RegisteredMouseHotkey registeredMouseHotkey)
     {
         foreach (var currentRegisteredMouseHotkey in _registeredMouseHotkeys)
         {
             if (currentRegisteredMouseHotkey.RequiredKeyboardModifierKeys != pressedKeyboardModifierKeys
-                || currentRegisteredMouseHotkey.TriggerType != keyboardShortcutTriggerType)
+                || currentRegisteredMouseHotkey.TriggerType != inputTriggerType)
             {
                 continue;
             }
@@ -502,5 +506,5 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
 
     private readonly record struct HotkeyRegistrationPlan(List<RegisteredKeyboardHotkey> RegisteredKeyboardHotkeys, List<RegisteredMouseHotkey> RegisteredMouseHotkeys);
     private readonly record struct RegisteredKeyboardHotkey(int Identifier, HotkeyActionType HotkeyActionType, uint NativeModifierMask, uint NativeVirtualKey);
-    private readonly record struct RegisteredMouseHotkey(HotkeyActionType HotkeyActionType, KeyboardModifierKeys RequiredKeyboardModifierKeys, KeyboardShortcutTriggerType TriggerType);
+    private readonly record struct RegisteredMouseHotkey(HotkeyActionType HotkeyActionType, KeyboardModifierKeys RequiredKeyboardModifierKeys, InputTriggerType TriggerType);
 }

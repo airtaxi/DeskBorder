@@ -30,6 +30,26 @@ public static class MouseHelper
 
     public static bool AreRequiredKeyboardModifierKeysPressed(KeyboardModifierKeys requiredKeyboardModifierKeys, KeyboardModifierKeys pressedKeyboardModifierKeys) => (pressedKeyboardModifierKeys & requiredKeyboardModifierKeys) == requiredKeyboardModifierKeys;
 
+    public static bool AreRequiredModifierInputsPressed(ModifierGateSettings modifierGateSettings, ModifierKeySnapshot modifierKeySnapshot, MouseButtonSnapshot mouseButtonSnapshot) => AreRequiredKeyboardModifierKeysPressed(modifierGateSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys)
+        && AreRequiredMouseModifierButtonTriggersPressed(modifierGateSettings.RequiredMouseModifierButtonTriggers, mouseButtonSnapshot);
+
+    public static bool AreRequiredMouseModifierButtonTriggersPressed(IReadOnlyList<InputTriggerType> requiredMouseModifierButtonTriggers, MouseButtonSnapshot mouseButtonSnapshot)
+    {
+        foreach (var requiredMouseModifierButtonTrigger in requiredMouseModifierButtonTriggers)
+        {
+            if (!IsMouseModifierButtonTrigger(requiredMouseModifierButtonTrigger)) return false;
+
+            if (!IsMouseModifierButtonPressed(requiredMouseModifierButtonTrigger, mouseButtonSnapshot)) return false;
+        }
+
+        return true;
+    }
+
+    public static bool HasRequiredModifierInputs(ModifierGateSettings modifierGateSettings) => modifierGateSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None
+        || modifierGateSettings.RequiredMouseModifierButtonTriggers.Length > 0;
+
+    public static bool IsMouseModifierButtonTrigger(InputTriggerType inputTriggerType) => inputTriggerType is InputTriggerType.MouseLeftButton or InputTriggerType.MouseMiddleButton or InputTriggerType.MouseRightButton;
+
     public static ScreenPoint GetCurrentCursorPosition()
     {
         if (!TryGetCurrentCursorPosition(out var currentCursorPosition, out _)) throw new InvalidOperationException("Unable to retrieve the current cursor position.");
@@ -269,6 +289,29 @@ public static class MouseHelper
         if (sentInputCount != keyboardInputs.Count) throw CreateKeyboardModifierConsumeException(requestedKeyboardModifierKeys, sendInputKeyboardModifierKeys, pressedKeyboardModifierKeysBeforeConsume, pressedKeyboardModifierKeyStateSummaryBeforeConsume, isWindowsKeyHookInstalled, keyboardInputs, sentInputCount, nativeInputSize);
     }
 
+    public static void ConsumePressedMouseModifierButtonTriggers(IReadOnlyList<InputTriggerType> inputTriggerTypes)
+    {
+        var requestedInputTriggerTypes = inputTriggerTypes
+            .Where(IsMouseModifierButtonTrigger)
+            .Distinct()
+            .ToArray();
+        if (requestedInputTriggerTypes.Length == 0) return;
+
+        var mouseButtonSnapshotBeforeConsume = GetMouseButtonSnapshot();
+        var pressedMouseButtonStateSummaryBeforeConsume = CreatePressedMouseButtonStateSummary();
+        var mouseInputs = new List<Win32.NativeInput>(requestedInputTriggerTypes.Length);
+        foreach (var inputTriggerType in requestedInputTriggerTypes)
+        {
+            if (IsMouseModifierButtonPressed(inputTriggerType, mouseButtonSnapshotBeforeConsume)) mouseInputs.Add(CreateMouseInput(GetMouseButtonUpEventFlag(inputTriggerType)));
+        }
+
+        if (mouseInputs.Count == 0) return;
+
+        var nativeInputSize = Marshal.SizeOf<Win32.NativeInput>();
+        var sentInputCount = Win32.SendInput((uint)mouseInputs.Count, [.. mouseInputs], nativeInputSize);
+        if (sentInputCount != mouseInputs.Count) throw CreateMouseModifierButtonConsumeException(requestedInputTriggerTypes, mouseButtonSnapshotBeforeConsume, pressedMouseButtonStateSummaryBeforeConsume, mouseInputs, sentInputCount, nativeInputSize);
+    }
+
     private static void InstallWindowsKeyUpConsumeHook()
     {
         if (s_windowsKeyHookHandle != 0) return;
@@ -369,6 +412,18 @@ public static class MouseHelper
         }
     };
 
+    private static Win32.NativeInput CreateMouseInput(uint flags) => new()
+    {
+        Type = Win32.InputMouse,
+        Data = new Win32.NativeInputUnion
+        {
+            MouseInput = new Win32.NativeMouseInput
+            {
+                Flags = flags
+            }
+        }
+    };
+
     private static uint GetKeyboardEventFlags(int virtualKey) => virtualKey switch
     {
         RightControlVirtualKey or RightAlternateVirtualKey or LeftWindowsVirtualKey or RightWindowsVirtualKey => Win32.KeyboardEventExtendedKeyFlag,
@@ -395,12 +450,35 @@ public static class MouseHelper
         return new($"Unable to consume the pressed keyboard modifier input. RequestedModifierKeys={requestedKeyboardModifierKeys}, SendInputModifierKeys={sendInputKeyboardModifierKeys}, PressedModifierKeysBeforeConsume={pressedKeyboardModifierKeysBeforeConsume}, PressedModifierKeysAfterConsume={pressedKeyboardModifierKeysAfterConsume}, PressedModifierKeyStatesBeforeConsume=[{pressedKeyboardModifierKeyStateSummaryBeforeConsume}], PressedModifierKeyStatesAfterConsume=[{pressedKeyboardModifierKeyStateSummaryAfterConsume}], WindowsKeyHookInstalled={isWindowsKeyHookInstalled}, RequestedInputCount={keyboardInputs.Count}, SentInputCount={sentInputCount}, NativeInputSize={nativeInputSize}, LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {lastWindowsErrorMessage}), ForegroundWindow=[{foregroundWindowSummary}], KeyboardInputs=[{keyboardInputSummaries}].");
     }
 
+    private static InvalidOperationException CreateMouseModifierButtonConsumeException(
+        InputTriggerType[] requestedInputTriggerTypes,
+        MouseButtonSnapshot mouseButtonSnapshotBeforeConsume,
+        string pressedMouseButtonStateSummaryBeforeConsume,
+        List<Win32.NativeInput> mouseInputs,
+        uint sentInputCount,
+        int nativeInputSize)
+    {
+        var lastWindowsErrorCode = Marshal.GetLastWin32Error();
+        var lastWindowsErrorMessage = new Win32Exception(lastWindowsErrorCode).Message;
+        var mouseButtonSnapshotAfterConsume = GetMouseButtonSnapshot();
+        var pressedMouseButtonStateSummaryAfterConsume = CreatePressedMouseButtonStateSummary();
+        var foregroundWindowSummary = CreateForegroundWindowSummary();
+        var mouseInputSummaries = string.Join(", ", mouseInputs.Select(CreateMouseInputSummary));
+        return new($"Unable to consume the pressed mouse modifier input. RequestedInputTriggers={string.Join("|", requestedInputTriggerTypes)}, MouseButtonSnapshotBeforeConsume={mouseButtonSnapshotBeforeConsume}, MouseButtonSnapshotAfterConsume={mouseButtonSnapshotAfterConsume}, PressedMouseButtonStatesBeforeConsume=[{pressedMouseButtonStateSummaryBeforeConsume}], PressedMouseButtonStatesAfterConsume=[{pressedMouseButtonStateSummaryAfterConsume}], RequestedInputCount={mouseInputs.Count}, SentInputCount={sentInputCount}, NativeInputSize={nativeInputSize}, LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {lastWindowsErrorMessage}), ForegroundWindow=[{foregroundWindowSummary}], MouseInputs=[{mouseInputSummaries}].");
+    }
+
     private static string CreateKeyboardInputSummary(Win32.NativeInput keyboardInput)
     {
         var keyboardInputData = keyboardInput.Data.KeyboardInput;
         var isExtendedKey = (keyboardInputData.Flags & Win32.KeyboardEventExtendedKeyFlag) != 0;
         var isKeyUp = (keyboardInputData.Flags & Win32.KeyboardEventKeyUpFlag) != 0;
         return $"VirtualKey={GetKeyboardVirtualKeyName(keyboardInputData.VirtualKey)}(0x{keyboardInputData.VirtualKey:X2}), ScanCode=0x{keyboardInputData.ScanCode:X2}, Flags=0x{keyboardInputData.Flags:X4}, IsExtendedKey={isExtendedKey}, IsKeyUp={isKeyUp}, Time={keyboardInputData.Time}, ExtraInfo={keyboardInputData.ExtraInfo}";
+    }
+
+    private static string CreateMouseInputSummary(Win32.NativeInput mouseInput)
+    {
+        var mouseInputData = mouseInput.Data.MouseInput;
+        return $"RelativeX={mouseInputData.RelativeX}, RelativeY={mouseInputData.RelativeY}, MouseData=0x{mouseInputData.MouseData:X8}, Flags=0x{mouseInputData.Flags:X4}, Time={mouseInputData.Time}, ExtraInfo={mouseInputData.ExtraInfo}";
     }
 
     private static string CreatePressedKeyboardModifierKeyStateSummary() => string.Join(", ", [
@@ -412,6 +490,12 @@ public static class MouseHelper
         $"RightAlternate={IsVirtualKeyPressed(RightAlternateVirtualKey)}",
         $"LeftWindows={IsVirtualKeyPressed(LeftWindowsVirtualKey)}",
         $"RightWindows={IsVirtualKeyPressed(RightWindowsVirtualKey)}"
+    ]);
+
+    private static string CreatePressedMouseButtonStateSummary() => string.Join(", ", [
+        $"LeftButton={IsVirtualKeyPressed(LeftMouseButtonVirtualKey)}",
+        $"MiddleButton={IsVirtualKeyPressed(MiddleMouseButtonVirtualKey)}",
+        $"RightButton={IsVirtualKeyPressed(RightMouseButtonVirtualKey)}"
     ]);
 
     private static string CreateForegroundWindowSummary()
@@ -447,6 +531,22 @@ public static class MouseHelper
             ? 0
             : (right - left) * (bottom - top);
     }
+
+    private static uint GetMouseButtonUpEventFlag(InputTriggerType inputTriggerType) => inputTriggerType switch
+    {
+        InputTriggerType.MouseLeftButton => Win32.MouseEventLeftUpFlag,
+        InputTriggerType.MouseMiddleButton => Win32.MouseEventMiddleUpFlag,
+        InputTriggerType.MouseRightButton => Win32.MouseEventRightUpFlag,
+        _ => throw new InvalidOperationException("The requested input trigger is not a mouse modifier button.")
+    };
+
+    private static bool IsMouseModifierButtonPressed(InputTriggerType inputTriggerType, MouseButtonSnapshot mouseButtonSnapshot) => inputTriggerType switch
+    {
+        InputTriggerType.MouseLeftButton => mouseButtonSnapshot.IsLeftButtonPressed,
+        InputTriggerType.MouseMiddleButton => mouseButtonSnapshot.IsMiddleButtonPressed,
+        InputTriggerType.MouseRightButton => mouseButtonSnapshot.IsRightButtonPressed,
+        _ => false
+    };
 
     private static KeyboardModifierKeys GetPressedKeyboardModifierKeys()
     {

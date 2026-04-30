@@ -119,27 +119,28 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         VirtualKey.Down
     ];
 
-    private static readonly KeyboardShortcutTriggerType[] s_mouseKeyboardShortcutTriggerTypes =
+    private static readonly InputTriggerType[] s_mouseInputTriggerTypes =
     [
-        KeyboardShortcutTriggerType.MouseWheelUp,
-        KeyboardShortcutTriggerType.MouseWheelDown,
-        KeyboardShortcutTriggerType.MouseLeftButton,
-        KeyboardShortcutTriggerType.MouseRightButton
+        InputTriggerType.MouseWheelUp,
+        InputTriggerType.MouseWheelDown,
+        InputTriggerType.MouseLeftButton,
+        InputTriggerType.MouseMiddleButton,
+        InputTriggerType.MouseRightButton
     ];
 
     public SettingsPageViewModel()
     {
-        var keyboardShortcutTriggerOptions = CreateKeyboardShortcutTriggerOptions();
+        var inputTriggerOptions = CreateInputTriggerOptions();
         ApplicationThemePreferenceOptions = CreateSelectionOptions(s_applicationThemePreferences, SettingsDisplayFormatter.FormatApplicationThemePreference);
         AppLanguagePreferenceOptions = CreateSelectionOptions(s_appLanguagePreferences, SettingsDisplayFormatter.FormatAppLanguagePreference);
         DesktopSwitchMouseLocationOptions = CreateSelectionOptions(s_desktopSwitchMouseLocationOptions, SettingsDisplayFormatter.FormatDesktopSwitchMouseLocationOption);
         MultiDisplayBehaviorOptions = CreateSelectionOptions(s_multiDisplayBehaviors, SettingsDisplayFormatter.FormatMultiDisplayBehavior);
-        ToggleDeskBorderEnabledHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
-        SwitchToPreviousDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
-        SwitchToNextDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
-        MoveFocusedWindowToPreviousDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
-        MoveFocusedWindowToNextDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
-        NavigatorToggleHotkeyEditor = new KeyboardShortcutEditorViewModel(keyboardShortcutTriggerOptions);
+        ToggleDeskBorderEnabledHotkeyEditor = new KeyboardShortcutEditorViewModel(inputTriggerOptions);
+        SwitchToPreviousDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(inputTriggerOptions);
+        SwitchToNextDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(inputTriggerOptions);
+        MoveFocusedWindowToPreviousDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(inputTriggerOptions);
+        MoveFocusedWindowToNextDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(inputTriggerOptions);
+        NavigatorToggleHotkeyEditor = new KeyboardShortcutEditorViewModel(inputTriggerOptions);
         RegisterKeyboardShortcutEditor(ToggleDeskBorderEnabledHotkeyEditor);
         RegisterKeyboardShortcutEditor(SwitchToPreviousDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(SwitchToNextDesktopHotkeyEditor);
@@ -204,6 +205,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool IsKeyboardModifierConsumptionAfterDesktopActionEnabled { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool IsMouseModifierButtonConsumptionAfterDesktopActionEnabled { get; set; } = true;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsMultiDisplayBehaviorSelectionEnabled))]
@@ -420,20 +424,23 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public DeskBorderSettings CreateSettings() => new()
     {
-        SchemaVersion = 6,
+        SchemaVersion = 7,
         IsDeskBorderEnabled = IsDeskBorderEnabled,
         MultiDisplayBehavior = SelectedMultiDisplayBehaviorOption?.Value ?? MultiDisplayBehavior.DisableInMultiDisplayEnvironment,
         SwitchDesktopModifierSettings = new ModifierGateSettings
         {
-            RequiredKeyboardModifierKeys = SwitchDesktopModifierSelection.CreateKeyboardModifierKeys()
+            RequiredKeyboardModifierKeys = SwitchDesktopModifierSelection.CreateKeyboardModifierKeys(),
+            RequiredMouseModifierButtonTriggers = SwitchDesktopModifierSelection.CreateMouseModifierButtonTriggers()
         },
         CreateDesktopModifierSettings = new ModifierGateSettings
         {
-            RequiredKeyboardModifierKeys = CreateDesktopModifierSelection.CreateKeyboardModifierKeys()
+            RequiredKeyboardModifierKeys = CreateDesktopModifierSelection.CreateKeyboardModifierKeys(),
+            RequiredMouseModifierButtonTriggers = CreateDesktopModifierSelection.CreateMouseModifierButtonTriggers()
         },
         SwitchDesktopWhileMouseButtonsArePressedModifierSettings = new ModifierGateSettings
         {
-            RequiredKeyboardModifierKeys = SwitchDesktopWhileMouseButtonsArePressedModifierSelection.CreateKeyboardModifierKeys()
+            RequiredKeyboardModifierKeys = SwitchDesktopWhileMouseButtonsArePressedModifierSelection.CreateKeyboardModifierKeys(),
+            RequiredMouseModifierButtonTriggers = SwitchDesktopWhileMouseButtonsArePressedModifierSelection.CreateMouseModifierButtonTriggers()
         },
         IsDesktopCreationEnabled = IsDesktopCreationEnabled,
         IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty,
@@ -446,6 +453,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsDesktopEdgeAdditionalTriggerDistanceEnabled = IsDesktopEdgeAdditionalTriggerDistanceEnabled,
         DesktopEdgeAdditionalTriggerDistancePercentage = DesktopEdgeAdditionalTriggerDistancePercentage,
         IsKeyboardModifierConsumptionAfterDesktopActionEnabled = IsKeyboardModifierConsumptionAfterDesktopActionEnabled,
+        IsMouseModifierButtonConsumptionAfterDesktopActionEnabled = IsMouseModifierButtonConsumptionAfterDesktopActionEnabled,
         IsVerticalDesktopSwitchingEnabled = IsVerticalDesktopSwitchingEnabled,
         IsVerticalDesktopSwitchDirectionReversed = IsVerticalDesktopSwitchDirectionReversed,
         IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment = IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment,
@@ -510,6 +518,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsDesktopEdgeAdditionalTriggerDistanceEnabled = deskBorderSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
         DesktopEdgeAdditionalTriggerDistancePercentage = deskBorderSettings.DesktopEdgeAdditionalTriggerDistancePercentage;
         IsKeyboardModifierConsumptionAfterDesktopActionEnabled = deskBorderSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled;
+        IsMouseModifierButtonConsumptionAfterDesktopActionEnabled = deskBorderSettings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled;
         IsVerticalDesktopSwitchingEnabled = deskBorderSettings.IsVerticalDesktopSwitchingEnabled;
         IsVerticalDesktopSwitchDirectionReversed = deskBorderSettings.IsVerticalDesktopSwitchDirectionReversed;
         IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment = deskBorderSettings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment;
@@ -535,9 +544,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         SelectedDesktopEdgeTriggeredMouseLocationOption = FindSelectionOption(
             DesktopSwitchMouseLocationOptions,
             deskBorderSettings.DesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption);
-        SwitchDesktopModifierSelection.Load(deskBorderSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
-        CreateDesktopModifierSelection.Load(deskBorderSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys);
-        SwitchDesktopWhileMouseButtonsArePressedModifierSelection.Load(deskBorderSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings.RequiredKeyboardModifierKeys);
+        SwitchDesktopModifierSelection.Load(deskBorderSettings.SwitchDesktopModifierSettings);
+        CreateDesktopModifierSelection.Load(deskBorderSettings.CreateDesktopModifierSettings);
+        SwitchDesktopWhileMouseButtonsArePressedModifierSelection.Load(deskBorderSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings);
         ToggleDeskBorderEnabledHotkeyEditor.Load(deskBorderSettings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey);
         SwitchToPreviousDesktopHotkeyEditor.Load(deskBorderSettings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey);
         SwitchToNextDesktopHotkeyEditor.Load(deskBorderSettings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey);
@@ -605,24 +614,24 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     private static List<SelectionOption<TValue>> CreateSelectionOptions<TValue>(IReadOnlyList<TValue> values, Func<TValue, string> displayTextSelector) where TValue : notnull => [.. values.Select(value => new SelectionOption<TValue>(value, displayTextSelector(value)))];
 
-    private static List<SelectionOption<KeyboardShortcutTriggerOptionValue>> CreateKeyboardShortcutTriggerOptions()
+    private static List<SelectionOption<InputTriggerOptionValue>> CreateInputTriggerOptions()
     {
-        var keyboardShortcutTriggerOptions = new List<SelectionOption<KeyboardShortcutTriggerOptionValue>>(s_virtualKeys.Length + s_mouseKeyboardShortcutTriggerTypes.Length);
+        var inputTriggerOptions = new List<SelectionOption<InputTriggerOptionValue>>(s_virtualKeys.Length + s_mouseInputTriggerTypes.Length);
         foreach (var virtualKey in s_virtualKeys)
         {
-            keyboardShortcutTriggerOptions.Add(new(
-                new KeyboardShortcutTriggerOptionValue(KeyboardShortcutTriggerType.VirtualKey, virtualKey),
-                SettingsDisplayFormatter.FormatKeyboardShortcutTrigger(KeyboardShortcutTriggerType.VirtualKey, virtualKey)));
+            inputTriggerOptions.Add(new(
+                new InputTriggerOptionValue(InputTriggerType.VirtualKey, virtualKey),
+                SettingsDisplayFormatter.FormatInputTrigger(InputTriggerType.VirtualKey, virtualKey)));
         }
 
-        foreach (var mouseKeyboardShortcutTriggerType in s_mouseKeyboardShortcutTriggerTypes)
+        foreach (var mouseInputTriggerType in s_mouseInputTriggerTypes)
         {
-            keyboardShortcutTriggerOptions.Add(new(
-                new KeyboardShortcutTriggerOptionValue(mouseKeyboardShortcutTriggerType, VirtualKey.None),
-                SettingsDisplayFormatter.FormatKeyboardShortcutTrigger(mouseKeyboardShortcutTriggerType, VirtualKey.None)));
+            inputTriggerOptions.Add(new(
+                new InputTriggerOptionValue(mouseInputTriggerType, VirtualKey.None),
+                SettingsDisplayFormatter.FormatInputTrigger(mouseInputTriggerType, VirtualKey.None)));
         }
 
-        return keyboardShortcutTriggerOptions;
+        return inputTriggerOptions;
     }
 
     private TriggerRectangleSettings CreateNavigatorTriggerRectangleSettings() => new()

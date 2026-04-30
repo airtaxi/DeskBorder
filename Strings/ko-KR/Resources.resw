@@ -312,6 +312,9 @@
   <data name="KeyboardShortcutTrigger.MouseLeftButton" xml:space="preserve">
     <value>왼쪽 클릭</value>
   </data>
+  <data name="KeyboardShortcutTrigger.MouseMiddleButton" xml:space="preserve">
+    <value>가운데 클릭</value>
+  </data>
   <data name="KeyboardShortcutTrigger.MouseRightButton" xml:space="preserve">
     <value>오른쪽 클릭</value>
   </data>
@@ -613,7 +616,10 @@
     <value>추가 이동 거리 (%)</value>
   </data>
   <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
-    <value>데스크톱 동작 후 보조키 떼기</value>
+    <value>데스크톱 동작 후 키보드 보조키 떼기</value>
+  </data>
+  <data name="SettingsPage_MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
+    <value>데스크톱 동작 후 마우스 보조키 떼기</value>
   </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>가장자리 처리에서 제외할 실행 중 포그라운드 프로세스를 관리합니다.</value>
@@ -650,6 +656,15 @@
   </data>
   <data name="SettingsPage_CreateDesktopWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>왼쪽 클릭</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>가운데 클릭</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>오른쪽 클릭</value>
   </data>
   <data name="SettingsPage_DeskBorderEnabledToggleSwitch.Header" xml:space="preserve">
     <value>DeskBorder 사용</value>
@@ -780,7 +795,7 @@
   </data>
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• 각 전역 단축키는 기능별로 따로 켜고 끌 수 있습니다.
-• 키보드 키 또는 마우스 트리거(휠 위/아래, 왼쪽 클릭, 오른쪽 클릭)를 고르고 필요하면 보조 키와 함께 조합할 수 있습니다.
+• 키보드 키 또는 마우스 트리거(휠 위/아래, 왼쪽/가운데/오른쪽 클릭)를 고르고 필요하면 보조 키와 함께 조합할 수 있습니다.
 • DeskBorder 사용 토글: 백그라운드 서비스를 빠르게 켜거나 끕니다.
 • 이전/다음 데스크톱 전환: 지정한 트리거와 보조키로 인접 데스크톱으로 전환합니다. 끝 데스크톱에서 생성이 허용되어 있으면 새 데스크톱을 만들 수 있습니다.
 • 포커스 창 이전/다음 이동: 현재 포커스된 창을 인접 데스크톱으로 옮기고 그 데스크톱으로 전환합니다. 끝 데스크톱에서는 필요한 경우 새 데스크톱을 만듭니다.
@@ -1019,6 +1034,8 @@
 • 창모드 전체화면 포함: 모니터 전체를 덮는 창모드 전체화면도 전체화면으로 취급합니다.
 • 위/아래 경계로도 데스크톱 전환: 좌우 가장자리 외에 상단과 하단 경계에서도 이전/다음 데스크톱 전환을 허용합니다.
 • 위/아래 방향 반전 / 다중 디스플레이에서만 위/아래 경계 사용: 상단/하단 경계의 전환 방향을 바꾸거나 다중 디스플레이 환경에서만 위/아래 경계를 사용합니다.
+• 데스크톱 전환/생성/클릭·드래그 허용 보조키: 키보드 보조키와 왼쪽/가운데/오른쪽 마우스 버튼 눌림 상태를 함께 조건으로 사용할 수 있습니다.
+• 데스크톱 동작 후 보조키 떼기: 키보드 보조키와 마우스 보조키 떼기 동작을 각각 켜고 끌 수 있습니다.
 • 좌측 무시 영역 / 우측 무시 영역: 위/아래 경계로도 데스크톱 전환을 켰을 때 사용할 수 있으며, 화면 좌우에서 위/아래 경계 전환과 데스크톱 생성을 무시할 범위를 퍼센트로 조절합니다.
 • 빈 데스크톱 자동 삭제: 양 끝 데스크톱에서 안쪽으로 이동할 때 창이 없으면 해당 데스크톱을 삭제합니다.
 • 삭제 경고 표시: 켜면 잠시 기다리며 실행 취소할 수 있고, 끄면 빈 데스크톱을 바로 삭제합니다.
@@ -1052,6 +1069,24 @@
   </data>
   <data name="SettingsPage_SwitchDesktopWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>왼쪽 클릭</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>가운데 클릭</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>오른쪽 클릭</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>왼쪽 클릭</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>가운데 클릭</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>오른쪽 클릭</value>
   </data>
   <data name="SettingsPage_TitleTextBlock.Text" xml:space="preserve">
     <value>설정</value>

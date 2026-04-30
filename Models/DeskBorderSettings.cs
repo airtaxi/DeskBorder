@@ -35,13 +35,14 @@ public enum KeyboardModifierKeys
     Windows = 1 << 3,
 }
 
-public enum KeyboardShortcutTriggerType
+public enum InputTriggerType
 {
-    VirtualKey,
-    MouseWheelUp,
-    MouseWheelDown,
-    MouseLeftButton,
-    MouseRightButton,
+    VirtualKey = 0,
+    MouseWheelUp = 1,
+    MouseWheelDown = 2,
+    MouseLeftButton = 3,
+    MouseMiddleButton = 5,
+    MouseRightButton = 4,
 }
 
 public enum DesktopSwitchMouseLocationOption
@@ -57,6 +58,8 @@ public enum DesktopSwitchMouseLocationOption
 public sealed record ModifierGateSettings
 {
     public KeyboardModifierKeys RequiredKeyboardModifierKeys { get; init; } = KeyboardModifierKeys.None;
+
+    public InputTriggerType[] RequiredMouseModifierButtonTriggers { get; init; } = [];
 }
 
 public sealed record KeyboardShortcutSettings
@@ -65,7 +68,7 @@ public sealed record KeyboardShortcutSettings
 
     public KeyboardModifierKeys RequiredKeyboardModifierKeys { get; init; } = KeyboardModifierKeys.None;
 
-    public KeyboardShortcutTriggerType TriggerType { get; init; } = KeyboardShortcutTriggerType.VirtualKey;
+    public InputTriggerType TriggerType { get; init; } = InputTriggerType.VirtualKey;
 
     public VirtualKey Key { get; init; } = VirtualKey.None;
 }
@@ -84,13 +87,13 @@ public sealed record DesktopSwitchHotkeySettings
     public KeyboardShortcutSettings SwitchToPreviousDesktopHotkey { get; init; } = new()
     {
         RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Windows,
-        TriggerType = KeyboardShortcutTriggerType.MouseWheelUp
+        TriggerType = InputTriggerType.MouseWheelUp
     };
 
     public KeyboardShortcutSettings SwitchToNextDesktopHotkey { get; init; } = new()
     {
         RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Windows,
-        TriggerType = KeyboardShortcutTriggerType.MouseWheelDown
+        TriggerType = InputTriggerType.MouseWheelDown
     };
 }
 
@@ -155,7 +158,7 @@ public sealed record NavigatorSettings
 
 public sealed record DeskBorderSettings
 {
-    public int SchemaVersion { get; init; } = 6;
+    public int SchemaVersion { get; init; } = 7;
 
     public bool IsDeskBorderEnabled { get; init; } = true;
 
@@ -188,6 +191,8 @@ public sealed record DeskBorderSettings
     public double DesktopEdgeAdditionalTriggerDistancePercentage { get; init; } = 3.0;
 
     public bool IsKeyboardModifierConsumptionAfterDesktopActionEnabled { get; init; } = true;
+
+    public bool IsMouseModifierButtonConsumptionAfterDesktopActionEnabled { get; init; } = true;
 
     public bool IsVerticalDesktopSwitchingEnabled { get; init; }
 

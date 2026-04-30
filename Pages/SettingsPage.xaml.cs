@@ -186,7 +186,8 @@ public sealed partial class SettingsPage : Page
         _ => null
     };
 
-    private static bool IsWindowsOnlyModifierSelection(ModifierKeySelectionViewModel modifierKeySelectionViewModel) => modifierKeySelectionViewModel.CreateKeyboardModifierKeys() == WindowsOnlyKeyboardModifierKeys;
+    private static bool IsWindowsOnlyModifierSelection(ModifierKeySelectionViewModel modifierKeySelectionViewModel) => modifierKeySelectionViewModel.CreateKeyboardModifierKeys() == WindowsOnlyKeyboardModifierKeys
+        && modifierKeySelectionViewModel.CreateMouseModifierButtonTriggers().Length == 0;
 
     private nint GetManageWindowHandle() => WindowNative.GetWindowHandle(_manageWindow);
 
@@ -841,6 +842,8 @@ public sealed partial class SettingsPage : Page
 
         if (ReferenceEquals(settingToggleSwitch, KeyboardModifierConsumptionAfterDesktopActionToggleSwitch)) return currentSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled;
 
+        if (ReferenceEquals(settingToggleSwitch, MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch)) return currentSettings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled;
+
         if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch))
             return currentSettings.IsVerticalDesktopSwitchingEnabled;
 
@@ -887,8 +890,8 @@ public sealed partial class SettingsPage : Page
 
         return modifierSelectionTag switch
         {
-            SwitchDesktopModifierSelectionTag => ViewModel.SwitchDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None,
-            CreateDesktopModifierSelectionTag when ViewModel.IsDesktopCreationEnabled => ViewModel.CreateDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None,
+            SwitchDesktopModifierSelectionTag => !ViewModel.SwitchDesktopModifierSelection.HasAnyModifierInput(),
+            CreateDesktopModifierSelectionTag when ViewModel.IsDesktopCreationEnabled => !ViewModel.CreateDesktopModifierSelection.HasAnyModifierInput(),
             _ => false
         };
     }
@@ -898,16 +901,16 @@ public sealed partial class SettingsPage : Page
         if (ReferenceEquals(settingToggleSwitch, CreateDesktopEnabledToggleSwitch)
             && settingToggleSwitch.IsOn
             && ViewModel.IsVerticalDesktopSwitchingEnabled
-            && ViewModel.CreateDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None)
+            && !ViewModel.CreateDesktopModifierSelection.HasAnyModifierInput())
             return true;
 
         if (!ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch) || !settingToggleSwitch.IsOn)
             return false;
 
-        if (ViewModel.SwitchDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None)
+        if (!ViewModel.SwitchDesktopModifierSelection.HasAnyModifierInput())
             return true;
 
-        if (ViewModel.IsDesktopCreationEnabled && ViewModel.CreateDesktopModifierSelection.CreateKeyboardModifierKeys() == KeyboardModifierKeys.None)
+        if (ViewModel.IsDesktopCreationEnabled && !ViewModel.CreateDesktopModifierSelection.HasAnyModifierInput())
             return true;
 
         return false;
@@ -918,8 +921,8 @@ public sealed partial class SettingsPage : Page
         if (!settings.IsVerticalDesktopSwitchingEnabled)
             return null;
 
-        var isSwitchDesktopModifierMissing = settings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys == KeyboardModifierKeys.None;
-        var isCreateDesktopModifierMissing = settings.IsDesktopCreationEnabled && settings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys == KeyboardModifierKeys.None;
+        var isSwitchDesktopModifierMissing = !MouseHelper.HasRequiredModifierInputs(settings.SwitchDesktopModifierSettings);
+        var isCreateDesktopModifierMissing = settings.IsDesktopCreationEnabled && !MouseHelper.HasRequiredModifierInputs(settings.CreateDesktopModifierSettings);
         return (isSwitchDesktopModifierMissing, isCreateDesktopModifierMissing) switch
         {
             (true, true) => LocalizedResourceAccessor.GetString("Settings.Warning.VerticalDesktopSwitchingMissingSwitchAndCreateDesktopModifiers"),

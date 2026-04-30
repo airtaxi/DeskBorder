@@ -417,8 +417,15 @@
                         <ToggleSwitch
                             x:Name="KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
                             x:Uid="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
-                            Header="데스크톱 동작 후 보조키 떼기"
+                            Header="데스크톱 동작 후 키보드 보조키 떼기"
                             IsOn="{x:Bind ViewModel.IsKeyboardModifierConsumptionAfterDesktopActionEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <ToggleSwitch
+                            x:Name="MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch"
+                            x:Uid="SettingsPage_MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch"
+                            Header="데스크톱 동작 후 마우스 보조키 떼기"
+                            IsOn="{x:Bind ViewModel.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled, Mode=TwoWay}"
                             Toggled="OnSettingToggleSwitchToggled" />
 
                         <ToggleSwitch
@@ -578,6 +585,24 @@
                                         Content="Windows"
                                         IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
                                         Tag="SwitchDesktopModifierSelection" />
+                                    <CheckBox
+                                        x:Uid="SettingsPage_SwitchDesktopMouseLeftButtonCheckBox"
+                                        Click="OnModifierSelectionCheckBoxClicked"
+                                        Content="왼쪽 클릭"
+                                        IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsLeftMouseButtonEnabled, Mode=TwoWay}"
+                                        Tag="SwitchDesktopModifierSelection" />
+                                    <CheckBox
+                                        x:Uid="SettingsPage_SwitchDesktopMouseMiddleButtonCheckBox"
+                                        Click="OnModifierSelectionCheckBoxClicked"
+                                        Content="가운데 클릭"
+                                        IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsMiddleMouseButtonEnabled, Mode=TwoWay}"
+                                        Tag="SwitchDesktopModifierSelection" />
+                                    <CheckBox
+                                        x:Uid="SettingsPage_SwitchDesktopMouseRightButtonCheckBox"
+                                        Click="OnModifierSelectionCheckBoxClicked"
+                                        Content="오른쪽 클릭"
+                                        IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsRightMouseButtonEnabled, Mode=TwoWay}"
+                                        Tag="SwitchDesktopModifierSelection" />
                                 </StackPanel>
                             </Border>
 
@@ -617,6 +642,24 @@
                                                 Content="Windows"
                                                 IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
                                                 Tag="CreateDesktopModifierSelection" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_CreateDesktopMouseLeftButtonCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="왼쪽 클릭"
+                                                IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsLeftMouseButtonEnabled, Mode=TwoWay}"
+                                                Tag="CreateDesktopModifierSelection" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_CreateDesktopMouseMiddleButtonCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="가운데 클릭"
+                                                IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsMiddleMouseButtonEnabled, Mode=TwoWay}"
+                                                Tag="CreateDesktopModifierSelection" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_CreateDesktopMouseRightButtonCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="오른쪽 클릭"
+                                                IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsRightMouseButtonEnabled, Mode=TwoWay}"
+                                                Tag="CreateDesktopModifierSelection" />
                                         </StackPanel>
                                     </Frame>
                                 </StackPanel>
@@ -655,6 +698,24 @@
                                         Click="OnModifierSelectionCheckBoxClicked"
                                         Content="Windows"
                                         IsChecked="{x:Bind ViewModel.SwitchDesktopWhileMouseButtonsArePressedModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
+                                        Tag="SwitchDesktopWhileMouseButtonsArePressedModifierSelection" />
+                                    <CheckBox
+                                        x:Uid="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseLeftButtonCheckBox"
+                                        Click="OnModifierSelectionCheckBoxClicked"
+                                        Content="왼쪽 클릭"
+                                        IsChecked="{x:Bind ViewModel.SwitchDesktopWhileMouseButtonsArePressedModifierSelection.IsLeftMouseButtonEnabled, Mode=TwoWay}"
+                                        Tag="SwitchDesktopWhileMouseButtonsArePressedModifierSelection" />
+                                    <CheckBox
+                                        x:Uid="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseMiddleButtonCheckBox"
+                                        Click="OnModifierSelectionCheckBoxClicked"
+                                        Content="가운데 클릭"
+                                        IsChecked="{x:Bind ViewModel.SwitchDesktopWhileMouseButtonsArePressedModifierSelection.IsMiddleMouseButtonEnabled, Mode=TwoWay}"
+                                        Tag="SwitchDesktopWhileMouseButtonsArePressedModifierSelection" />
+                                    <CheckBox
+                                        x:Uid="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseRightButtonCheckBox"
+                                        Click="OnModifierSelectionCheckBoxClicked"
+                                        Content="오른쪽 클릭"
+                                        IsChecked="{x:Bind ViewModel.SwitchDesktopWhileMouseButtonsArePressedModifierSelection.IsRightMouseButtonEnabled, Mode=TwoWay}"
                                         Tag="SwitchDesktopWhileMouseButtonsArePressedModifierSelection" />
                                 </StackPanel>
                             </Border>
@@ -763,8 +824,8 @@
                                         Header="기본 키"
                                         IsEnabled="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.IsEnabled, Mode=OneWay}"
                                         ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                                        ItemsSource="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
+                                        ItemsSource="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.InputTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.ToggleDeskBorderEnabledHotkeyEditor.SelectedInputTriggerOption, Mode=TwoWay}"
                                         SelectionChanged="OnSettingSelectionChanged" />
                                     <StackPanel
                                         Grid.Column="2"
@@ -848,8 +909,8 @@
                                         Header="트리거"
                                         IsEnabled="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
                                         ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                                        ItemsSource="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
+                                        ItemsSource="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.InputTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.SwitchToPreviousDesktopHotkeyEditor.SelectedInputTriggerOption, Mode=TwoWay}"
                                         SelectionChanged="OnSettingSelectionChanged" />
                                     <StackPanel
                                         Grid.Column="2"
@@ -933,8 +994,8 @@
                                         Header="트리거"
                                         IsEnabled="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
                                         ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                                        ItemsSource="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
+                                        ItemsSource="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.InputTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.SwitchToNextDesktopHotkeyEditor.SelectedInputTriggerOption, Mode=TwoWay}"
                                         SelectionChanged="OnSettingSelectionChanged" />
                                     <StackPanel
                                         Grid.Column="2"
@@ -1018,8 +1079,8 @@
                                         Header="기본 키"
                                         IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
                                         ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                                        ItemsSource="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
+                                        ItemsSource="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.InputTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.SelectedInputTriggerOption, Mode=TwoWay}"
                                         SelectionChanged="OnSettingSelectionChanged" />
                                     <StackPanel
                                         Grid.Column="2"
@@ -1103,8 +1164,8 @@
                                         Header="기본 키"
                                         IsEnabled="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.IsEnabled, Mode=OneWay}"
                                         ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                                        ItemsSource="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
+                                        ItemsSource="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.InputTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.SelectedInputTriggerOption, Mode=TwoWay}"
                                         SelectionChanged="OnSettingSelectionChanged" />
                                     <StackPanel
                                         Grid.Column="2"
@@ -1188,8 +1249,8 @@
                                         Header="기본 키"
                                         IsEnabled="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.IsEnabled, Mode=OneWay}"
                                         ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
-                                        ItemsSource="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.KeyboardShortcutTriggerOptions, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.SelectedKeyboardShortcutTriggerOption, Mode=TwoWay}"
+                                        ItemsSource="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.InputTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.NavigatorToggleHotkeyEditor.SelectedInputTriggerOption, Mode=TwoWay}"
                                         SelectionChanged="OnSettingSelectionChanged" />
                                     <StackPanel
                                         Grid.Column="2"

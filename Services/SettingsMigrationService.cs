@@ -6,17 +6,19 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
 {
     private const int SchemaVersionFive = 5;
     private const int SchemaVersionSix = 6;
+    private const int SchemaVersionSeven = 7;
     private const double DefaultHorizontalDesktopEdgeIgnorePercentage = 20.0;
 
     private readonly IFileLogService _fileLogService = fileLogService;
 
-    public int CurrentSchemaVersion => SchemaVersionSix;
+    public int CurrentSchemaVersion => SchemaVersionSeven;
 
     public DeskBorderSettings MigrateSettings(DeskBorderSettings settings)
     {
         var migratedSettings = settings;
         if (migratedSettings.SchemaVersion < SchemaVersionFive) migratedSettings = MigrateSettingsToSchemaVersionFive(migratedSettings);
         if (migratedSettings.SchemaVersion < SchemaVersionSix) migratedSettings = MigrateSettingsToSchemaVersionSix(migratedSettings);
+        if (migratedSettings.SchemaVersion < SchemaVersionSeven) migratedSettings = MigrateSettingsToSchemaVersionSeven(migratedSettings);
 
         return migratedSettings;
     }
@@ -43,6 +45,28 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
         {
             SchemaVersion = SchemaVersionSix,
             IsKeyboardModifierConsumptionAfterDesktopActionEnabled = true
+        };
+    }
+
+    private DeskBorderSettings MigrateSettingsToSchemaVersionSeven(DeskBorderSettings settings)
+    {
+        _fileLogService.WriteInformation(nameof(SettingsMigrationService), $"Migrating settings from schema version {settings.SchemaVersion} to {SchemaVersionSeven}.");
+        return settings with
+        {
+            SchemaVersion = SchemaVersionSeven,
+            SwitchDesktopModifierSettings = MigrateModifierGateSettings(settings.SwitchDesktopModifierSettings),
+            CreateDesktopModifierSettings = MigrateModifierGateSettings(settings.CreateDesktopModifierSettings),
+            SwitchDesktopWhileMouseButtonsArePressedModifierSettings = MigrateModifierGateSettings(settings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings),
+            IsMouseModifierButtonConsumptionAfterDesktopActionEnabled = true
+        };
+    }
+
+    private static ModifierGateSettings MigrateModifierGateSettings(ModifierGateSettings? modifierGateSettings)
+    {
+        var actualModifierGateSettings = modifierGateSettings ?? new();
+        return actualModifierGateSettings with
+        {
+            RequiredMouseModifierButtonTriggers = []
         };
     }
 }

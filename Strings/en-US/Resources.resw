@@ -312,6 +312,9 @@
   <data name="KeyboardShortcutTrigger.MouseLeftButton" xml:space="preserve">
     <value>Left click</value>
   </data>
+  <data name="KeyboardShortcutTrigger.MouseMiddleButton" xml:space="preserve">
+    <value>Middle click</value>
+  </data>
   <data name="KeyboardShortcutTrigger.MouseRightButton" xml:space="preserve">
     <value>Right click</value>
   </data>
@@ -613,7 +616,10 @@
     <value>Extra movement distance (%)</value>
   </data>
   <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
-    <value>Release modifier keys after desktop action</value>
+    <value>Release keyboard modifier keys after desktop action</value>
+  </data>
+  <data name="SettingsPage_MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
+    <value>Release mouse modifier buttons after desktop action</value>
   </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>Manage running foreground processes to exclude from edge handling.</value>
@@ -650,6 +656,15 @@
   </data>
   <data name="SettingsPage_CreateDesktopWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>Left click</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>Middle click</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>Right click</value>
   </data>
   <data name="SettingsPage_DeskBorderEnabledToggleSwitch.Header" xml:space="preserve">
     <value>Enable DeskBorder</value>
@@ -780,7 +795,7 @@
   </data>
   <data name="SettingsPage_HotkeysSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
     <value>• Each global hotkey can be enabled or disabled independently.
-• Choose either a keyboard key or a mouse trigger (wheel up, wheel down, left click, right click), then combine it with modifiers as needed.
+• Choose either a keyboard key or a mouse trigger (wheel up, wheel down, left/middle/right click), then combine it with modifiers as needed.
 • DeskBorder toggle: quickly turns the background service on or off.
 • Switch previous/next desktop: switches to an adjacent desktop with the configured trigger and modifiers. A new desktop can be created at the end when creation is allowed.
 • Move focused window previous/next: moves the currently focused window to an adjacent desktop and switches there. At the end, a new desktop is created when needed.
@@ -1019,6 +1034,8 @@
 • Include windowed fullscreen: treats windowed fullscreen apps that cover the entire monitor as fullscreen too.
 • Switch desktops with top and bottom edges too: allows previous/next desktop switching from the top and bottom edges in addition to the left and right edges.
 • Reverse vertical direction / use top and bottom edges only in multi-display environments: changes the top/bottom direction mapping or limits vertical edge switching to multi-display setups.
+• Desktop switch, creation, and click/drag allowance modifiers: use keyboard modifiers and left/middle/right mouse button pressed states together as conditions.
+• Release modifiers after desktop action: keyboard modifier key release and mouse modifier button release can be turned on or off separately.
 • Left and right ignore zones: available with top/bottom edge switching and adjusts how much of the left and right screen area should ignore top/bottom edge switching and desktop creation.
 • Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.
 • Show deletion warning: when enabled, deletion waits briefly so you can undo it; when disabled, empty desktops are deleted immediately.
@@ -1052,6 +1069,24 @@
   </data>
   <data name="SettingsPage_SwitchDesktopWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>Left click</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>Middle click</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>Right click</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>Left click</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>Middle click</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>Right click</value>
   </data>
   <data name="SettingsPage_TitleTextBlock.Text" xml:space="preserve">
     <value>Settings</value>

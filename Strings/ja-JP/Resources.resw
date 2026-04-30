@@ -312,6 +312,9 @@
   <data name="KeyboardShortcutTrigger.MouseLeftButton" xml:space="preserve">
     <value>左クリック</value>
   </data>
+  <data name="KeyboardShortcutTrigger.MouseMiddleButton" xml:space="preserve">
+    <value>中央クリック</value>
+  </data>
   <data name="KeyboardShortcutTrigger.MouseRightButton" xml:space="preserve">
     <value>右クリック</value>
   </data>
@@ -613,7 +616,10 @@
     <value>追加移動距離 (%)</value>
   </data>
   <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
-    <value>デスクトップ操作後に修飾キーを離す</value>
+    <value>デスクトップ操作後にキーボード修飾キーを離す</value>
+  </data>
+  <data name="SettingsPage_MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
+    <value>デスクトップ操作後にマウス修飾キーを離す</value>
   </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>エッジ処理から除外する実行中のフォアグラウンド プロセスを管理します。</value>
@@ -650,6 +656,15 @@
   </data>
   <data name="SettingsPage_CreateDesktopWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>左クリック</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>中央クリック</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>右クリック</value>
   </data>
   <data name="SettingsPage_DeskBorderEnabledToggleSwitch.Header" xml:space="preserve">
     <value>DeskBorder を有効化</value>
@@ -1052,6 +1067,24 @@
   </data>
   <data name="SettingsPage_SwitchDesktopWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>左クリック</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>中央クリック</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>右クリック</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>左クリック</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>中央クリック</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>右クリック</value>
   </data>
   <data name="SettingsPage_TitleTextBlock.Text" xml:space="preserve">
     <value>設定</value>

@@ -5,6 +5,7 @@ namespace DeskBorder.Interop;
 internal static partial class Win32
 {
     public const short AsyncKeyDownMask = unchecked((short)0x8000);
+    public const int InputMouse = 0;
     public const int InputKeyboard = 1;
     public const int ShowWindowRestore = 9;
     public const int LowLevelKeyboardHookId = 13;
@@ -20,7 +21,11 @@ internal static partial class Win32
     public const nuint SystemKeyUpWindowMessage = 0x0105;
     public const nuint LeftButtonDownWindowMessage = 0x0201;
     public const nuint RightButtonDownWindowMessage = 0x0204;
+    public const nuint MiddleButtonDownWindowMessage = 0x0207;
     public const nuint MouseWheelWindowMessage = 0x020A;
+    public const uint MouseEventLeftUpFlag = 0x0004;
+    public const uint MouseEventRightUpFlag = 0x0010;
+    public const uint MouseEventMiddleUpFlag = 0x0040;
     public const uint WindowApplicationMessage = 0x8000;
     public const uint WindowInputMessage = 0x00FF;
     public const uint WindowHotkeyMessage = 0x0312;

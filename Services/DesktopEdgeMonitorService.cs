@@ -37,10 +37,10 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         var foregroundProcessSnapshot = MouseHelper.GetForegroundProcessSnapshot();
         var modifierKeySnapshot = MouseHelper.GetModifierKeySnapshot();
         var mouseButtonSnapshot = MouseHelper.GetMouseButtonSnapshot();
-        var isSwitchDesktopModifierSatisfied = MouseHelper.AreRequiredKeyboardModifierKeysPressed(currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys);
-        var isCreateDesktopModifierSatisfied = MouseHelper.AreRequiredKeyboardModifierKeysPressed(currentSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys);
-        var isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied = currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None
-            && MouseHelper.AreRequiredKeyboardModifierKeysPressed(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys);
+        var isSwitchDesktopModifierSatisfied = MouseHelper.AreRequiredModifierInputsPressed(currentSettings.SwitchDesktopModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
+        var isCreateDesktopModifierSatisfied = MouseHelper.AreRequiredModifierInputsPressed(currentSettings.CreateDesktopModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
+        var isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied = MouseHelper.HasRequiredModifierInputs(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings)
+            && MouseHelper.AreRequiredModifierInputsPressed(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
         var pendingMouseMovementDelta = _mouseMovementTrackingService.ConsumePendingMouseMovementDelta();
         var displayMonitors = MouseHelper.GetDisplayMonitors();
         var foregroundWindowFullscreenState = currentSettings.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen
@@ -363,6 +363,9 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             return true;
 
         if (previousState.IsCreateDesktopModifierSatisfied != currentState.IsCreateDesktopModifierSatisfied)
+            return true;
+
+        if (previousState.IsSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied != currentState.IsSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied)
             return true;
 
         if (previousState.NavigatorTriggerState != currentState.NavigatorTriggerState)

@@ -183,6 +183,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             IsDesktopEdgeAdditionalTriggerDistanceEnabled = settings.IsDesktopEdgeAdditionalTriggerDistanceEnabled,
             DesktopEdgeAdditionalTriggerDistancePercentage = ClampDesktopEdgeAdditionalTriggerDistancePercentage(settings.DesktopEdgeAdditionalTriggerDistancePercentage),
             IsKeyboardModifierConsumptionAfterDesktopActionEnabled = settings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled,
+            IsMouseModifierButtonConsumptionAfterDesktopActionEnabled = settings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled,
             IsVerticalDesktopSwitchingEnabled = settings.IsVerticalDesktopSwitchingEnabled,
             IsVerticalDesktopSwitchDirectionReversed = settings.IsVerticalDesktopSwitchDirectionReversed,
             IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment = settings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment,
@@ -266,10 +267,12 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private static KeyboardShortcutSettings NormalizeKeyboardShortcutSettings(KeyboardShortcutSettings? keyboardShortcutSettings)
     {
         var actualKeyboardShortcutSettings = keyboardShortcutSettings ?? new();
+        var inputTriggerType = NormalizeInputTriggerType(actualKeyboardShortcutSettings.TriggerType);
         return actualKeyboardShortcutSettings with
         {
             RequiredKeyboardModifierKeys = actualKeyboardShortcutSettings.RequiredKeyboardModifierKeys,
-            Key = actualKeyboardShortcutSettings.TriggerType == KeyboardShortcutTriggerType.VirtualKey ? actualKeyboardShortcutSettings.Key : VirtualKey.None
+            TriggerType = inputTriggerType,
+            Key = inputTriggerType == InputTriggerType.VirtualKey ? actualKeyboardShortcutSettings.Key : VirtualKey.None
         };
     }
 
@@ -281,9 +284,29 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         };
         return actualModifierGateSettings with
         {
-            RequiredKeyboardModifierKeys = actualModifierGateSettings.RequiredKeyboardModifierKeys
+            RequiredKeyboardModifierKeys = actualModifierGateSettings.RequiredKeyboardModifierKeys,
+            RequiredMouseModifierButtonTriggers = NormalizeMouseModifierButtonTriggers(actualModifierGateSettings.RequiredMouseModifierButtonTriggers)
         };
     }
+
+    private static InputTriggerType NormalizeInputTriggerType(InputTriggerType inputTriggerType) => Enum.IsDefined(typeof(InputTriggerType), inputTriggerType)
+        ? inputTriggerType
+        : InputTriggerType.VirtualKey;
+
+    private static InputTriggerType[] NormalizeMouseModifierButtonTriggers(InputTriggerType[]? inputTriggerTypes) => [.. (inputTriggerTypes ?? [])
+        .Where(IsMouseModifierButtonTrigger)
+        .Distinct()
+        .OrderBy(GetMouseModifierButtonTriggerSortOrder)];
+
+    private static bool IsMouseModifierButtonTrigger(InputTriggerType inputTriggerType) => inputTriggerType is InputTriggerType.MouseLeftButton or InputTriggerType.MouseMiddleButton or InputTriggerType.MouseRightButton;
+
+    private static int GetMouseModifierButtonTriggerSortOrder(InputTriggerType inputTriggerType) => inputTriggerType switch
+    {
+        InputTriggerType.MouseLeftButton => 0,
+        InputTriggerType.MouseMiddleButton => 1,
+        InputTriggerType.MouseRightButton => 2,
+        _ => 3
+    };
 
     private static NavigatorSettings NormalizeNavigatorSettings(NavigatorSettings? navigatorSettings)
     {
@@ -350,7 +373,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private static void ValidateUniqueKeyboardShortcutSettings(
         IReadOnlyList<(string KeyboardShortcutDisplayNameResourceKey, KeyboardShortcutSettings KeyboardShortcutSettings)> keyboardShortcutEntries)
     {
-        var registeredKeyboardShortcuts = new Dictionary<(KeyboardModifierKeys RequiredKeyboardModifierKeys, KeyboardShortcutTriggerType TriggerType, VirtualKey Key), string>();
+        var registeredKeyboardShortcuts = new Dictionary<(KeyboardModifierKeys RequiredKeyboardModifierKeys, InputTriggerType TriggerType, VirtualKey Key), string>();
         foreach (var keyboardShortcutEntry in keyboardShortcutEntries)
         {
             if (!keyboardShortcutEntry.KeyboardShortcutSettings.IsEnabled || !KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutEntry.KeyboardShortcutSettings)) continue;

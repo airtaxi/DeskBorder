@@ -312,6 +312,9 @@
   <data name="KeyboardShortcutTrigger.MouseLeftButton" xml:space="preserve">
     <value>左鍵點擊</value>
   </data>
+  <data name="KeyboardShortcutTrigger.MouseMiddleButton" xml:space="preserve">
+    <value>中鍵點擊</value>
+  </data>
   <data name="KeyboardShortcutTrigger.MouseRightButton" xml:space="preserve">
     <value>右鍵點擊</value>
   </data>
@@ -613,7 +616,10 @@
     <value>額外移動距離 (%)</value>
   </data>
   <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
-    <value>桌面操作後鬆開修飾鍵</value>
+    <value>桌面操作後鬆開鍵盤修飾鍵</value>
+  </data>
+  <data name="SettingsPage_MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
+    <value>桌面操作後鬆開滑鼠修飾鍵</value>
   </data>
   <data name="SettingsPage_BlacklistSectionDescriptionTextBlock.Text" xml:space="preserve">
     <value>管理要從邊緣處理中排除的執行中前景處理程序。</value>
@@ -650,6 +656,15 @@
   </data>
   <data name="SettingsPage_CreateDesktopWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>左鍵點擊</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>中鍵點擊</value>
+  </data>
+  <data name="SettingsPage_CreateDesktopMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>右鍵點擊</value>
   </data>
   <data name="SettingsPage_DeskBorderEnabledToggleSwitch.Header" xml:space="preserve">
     <value>啟用 DeskBorder</value>
@@ -1052,6 +1067,24 @@
   </data>
   <data name="SettingsPage_SwitchDesktopWindowsCheckBox.Content" xml:space="preserve">
     <value>Windows</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>左鍵點擊</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>中鍵點擊</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>右鍵點擊</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseLeftButtonCheckBox.Content" xml:space="preserve">
+    <value>左鍵點擊</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseMiddleButtonCheckBox.Content" xml:space="preserve">
+    <value>中鍵點擊</value>
+  </data>
+  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseRightButtonCheckBox.Content" xml:space="preserve">
+    <value>右鍵點擊</value>
   </data>
   <data name="SettingsPage_TitleTextBlock.Text" xml:space="preserve">
     <value>設定</value>

@@ -64,6 +64,20 @@ public static class SettingsDisplayFormatter
         if (keyboardModifierKeys == KeyboardModifierKeys.None)
             return LocalizedResourceAccessor.GetString("Common.None");
 
+        return string.Join(" + ", CreateKeyboardModifierKeyNames(keyboardModifierKeys));
+    }
+
+    public static string FormatModifierGateSettings(ModifierGateSettings modifierGateSettings)
+    {
+        var modifierNames = CreateKeyboardModifierKeyNames(modifierGateSettings.RequiredKeyboardModifierKeys);
+        modifierNames.AddRange(modifierGateSettings.RequiredMouseModifierButtonTriggers.Select(FormatMouseModifierButtonTrigger));
+        return modifierNames.Count == 0
+            ? LocalizedResourceAccessor.GetString("Common.None")
+            : string.Join(" + ", modifierNames);
+    }
+
+    private static List<string> CreateKeyboardModifierKeyNames(KeyboardModifierKeys keyboardModifierKeys)
+    {
         var keyboardModifierNames = new List<string>(4);
         if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Control))
             keyboardModifierNames.Add(LocalizedResourceAccessor.GetString("KeyboardModifier.Control"));
@@ -77,7 +91,7 @@ public static class SettingsDisplayFormatter
         if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows))
             keyboardModifierNames.Add(LocalizedResourceAccessor.GetString("KeyboardModifier.Windows"));
 
-        return string.Join(" + ", keyboardModifierNames);
+        return keyboardModifierNames;
     }
 
     public static string FormatKeyboardShortcut(KeyboardShortcutSettings keyboardShortcutSettings)
@@ -92,19 +106,22 @@ public static class SettingsDisplayFormatter
         if (keyboardShortcutSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None)
             keyNames.Add(FormatKeyboardModifierKeys(keyboardShortcutSettings.RequiredKeyboardModifierKeys));
 
-        keyNames.Add(FormatKeyboardShortcutTrigger(keyboardShortcutSettings.TriggerType, keyboardShortcutSettings.Key));
+        keyNames.Add(FormatInputTrigger(keyboardShortcutSettings.TriggerType, keyboardShortcutSettings.Key));
         return string.Join(" + ", keyNames);
     }
 
-    public static string FormatKeyboardShortcutTrigger(KeyboardShortcutTriggerType keyboardShortcutTriggerType, VirtualKey virtualKey) => keyboardShortcutTriggerType switch
+    public static string FormatInputTrigger(InputTriggerType inputTriggerType, VirtualKey virtualKey) => inputTriggerType switch
     {
-        KeyboardShortcutTriggerType.VirtualKey => FormatVirtualKey(virtualKey),
-        KeyboardShortcutTriggerType.MouseWheelUp => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseWheelUp"),
-        KeyboardShortcutTriggerType.MouseWheelDown => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseWheelDown"),
-        KeyboardShortcutTriggerType.MouseLeftButton => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseLeftButton"),
-        KeyboardShortcutTriggerType.MouseRightButton => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseRightButton"),
-        _ => keyboardShortcutTriggerType.ToString()
+        InputTriggerType.VirtualKey => FormatVirtualKey(virtualKey),
+        InputTriggerType.MouseWheelUp => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseWheelUp"),
+        InputTriggerType.MouseWheelDown => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseWheelDown"),
+        InputTriggerType.MouseLeftButton => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseLeftButton"),
+        InputTriggerType.MouseMiddleButton => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseMiddleButton"),
+        InputTriggerType.MouseRightButton => LocalizedResourceAccessor.GetString("KeyboardShortcutTrigger.MouseRightButton"),
+        _ => inputTriggerType.ToString()
     };
+
+    private static string FormatMouseModifierButtonTrigger(InputTriggerType inputTriggerType) => FormatInputTrigger(inputTriggerType, VirtualKey.None);
 
     public static string FormatMultiDisplayBehavior(MultiDisplayBehavior multiDisplayBehavior) => multiDisplayBehavior switch
     {

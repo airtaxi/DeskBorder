@@ -291,11 +291,11 @@ public sealed partial class DashboardPage : Page
         [
             LocalizedResourceAccessor.GetFormattedString(
                 "Dashboard.HotkeyModifiers.Format",
-                SettingsDisplayFormatter.FormatKeyboardModifierKeys(currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys),
+                SettingsDisplayFormatter.FormatModifierGateSettings(currentSettings.SwitchDesktopModifierSettings),
                 currentSettings.IsDesktopCreationEnabled
-                    ? SettingsDisplayFormatter.FormatKeyboardModifierKeys(currentSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys)
+                    ? SettingsDisplayFormatter.FormatModifierGateSettings(currentSettings.CreateDesktopModifierSettings)
                     : LocalizedResourceAccessor.GetString("Common.Disabled"),
-                SettingsDisplayFormatter.FormatKeyboardModifierKeys(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings.RequiredKeyboardModifierKeys)),
+                SettingsDisplayFormatter.FormatModifierGateSettings(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings)),
             LocalizedResourceAccessor.GetString(_hotkeyService.IsInitialized ? "Dashboard.HotkeyService.Ready" : "Dashboard.HotkeyService.Initializing")
         ]);
     }

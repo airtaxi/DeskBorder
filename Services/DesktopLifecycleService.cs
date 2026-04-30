@@ -392,20 +392,34 @@ public sealed class DesktopLifecycleService(
             await _toastService.DismissAsync();
     }
 
-    private void ConsumeKeyboardModifierKeysAfterDesktopActionIfEnabled(DeskBorderSettings currentSettings, DesktopNavigationResult desktopNavigationResult, KeyboardModifierKeys keyboardModifierKeys)
-    {
-        var shouldConsumeKeyboardModifierKeys = currentSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled
-            && desktopNavigationResult.IsSuccessful
-            && desktopNavigationResult.NavigationActionKind is (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched)
-            && keyboardModifierKeys != KeyboardModifierKeys.None;
-        if (!shouldConsumeKeyboardModifierKeys) return;
+    private static bool ShouldConsumeModifierInputs(DesktopNavigationResult desktopNavigationResult) => desktopNavigationResult.IsSuccessful
+        && desktopNavigationResult.NavigationActionKind is (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched);
 
-        try
+    private void ConsumeModifierInputsAfterDesktopActionIfEnabled(DeskBorderSettings currentSettings, DesktopNavigationResult desktopNavigationResult, ModifierGateSettings modifierGateSettings)
+    {
+        if (!ShouldConsumeModifierInputs(desktopNavigationResult)) return;
+
+        if (currentSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled
+            && modifierGateSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None)
         {
-            MouseHelper.ConsumePressedKeyboardModifierKeys(keyboardModifierKeys);
-            _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Consumed modifier keys after desktop action. ModifierKeys={keyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.");
+            try
+            {
+                MouseHelper.ConsumePressedKeyboardModifierKeys(modifierGateSettings.RequiredKeyboardModifierKeys);
+                _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Consumed keyboard modifier keys after desktop action. ModifierKeys={modifierGateSettings.RequiredKeyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.");
+            }
+            catch (InvalidOperationException exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to consume keyboard modifier keys after desktop action. ModifierKeys={modifierGateSettings.RequiredKeyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.", exception); }
         }
-        catch (InvalidOperationException exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to consume modifier keys after desktop action. ModifierKeys={keyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.", exception); }
+
+        if (currentSettings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled
+            && modifierGateSettings.RequiredMouseModifierButtonTriggers.Length > 0)
+        {
+            try
+            {
+                MouseHelper.ConsumePressedMouseModifierButtonTriggers(modifierGateSettings.RequiredMouseModifierButtonTriggers);
+                _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Consumed mouse modifier buttons after desktop action. ModifierButtons={string.Join("|", modifierGateSettings.RequiredMouseModifierButtonTriggers)}, Action={desktopNavigationResult.NavigationActionKind}.");
+            }
+            catch (InvalidOperationException exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to consume mouse modifier buttons after desktop action. ModifierButtons={string.Join("|", modifierGateSettings.RequiredMouseModifierButtonTriggers)}, Action={desktopNavigationResult.NavigationActionKind}.", exception); }
+        }
     }
 
     private bool ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(DeskBorderSettings currentSettings, VirtualDesktopWorkspaceSnapshot currentWorkspaceSnapshot)
@@ -483,14 +497,14 @@ public sealed class DesktopLifecycleService(
         if (currentState.IsSwitchDesktopModifierSatisfied)
         {
             var switchOrCreateDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, desktopEdgeActivationEvaluation.DesktopSwitchDirection, currentState.IsCreateDesktopModifierSatisfied);
-            ConsumeKeyboardModifierKeysAfterDesktopActionIfEnabled(currentSettings, switchOrCreateDesktopNavigationResult, currentSettings.SwitchDesktopModifierSettings.RequiredKeyboardModifierKeys);
+            ConsumeModifierInputsAfterDesktopActionIfEnabled(currentSettings, switchOrCreateDesktopNavigationResult, currentSettings.SwitchDesktopModifierSettings);
             return switchOrCreateDesktopNavigationResult;
         }
 
         if (desktopEdgeActivationEvaluation.CanCreateDesktop)
         {
             var createDesktopAndSwitchResult = _virtualDesktopService.CreateDesktopAndSwitch(desktopEdgeActivationEvaluation.DesktopSwitchDirection);
-            ConsumeKeyboardModifierKeysAfterDesktopActionIfEnabled(currentSettings, createDesktopAndSwitchResult, currentSettings.CreateDesktopModifierSettings.RequiredKeyboardModifierKeys);
+            ConsumeModifierInputsAfterDesktopActionIfEnabled(currentSettings, createDesktopAndSwitchResult, currentSettings.CreateDesktopModifierSettings);
             return createDesktopAndSwitchResult;
         }
 
