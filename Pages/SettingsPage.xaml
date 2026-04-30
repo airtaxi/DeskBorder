@@ -415,6 +415,14 @@
                         </Border>
 
                         <ToggleSwitch
+                            x:Name="DesktopEdgeActivationOnModifierPressToggleSwitch"
+                            x:Uid="SettingsPage_DesktopEdgeActivationOnModifierPressToggleSwitch"
+                            Header="경계 위에서 보조키 입력 시 전환/생성"
+                            IsOn="{x:Bind ViewModel.IsDesktopEdgeActivationOnModifierPressEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled"
+                            Visibility="{x:Bind GetDesktopEdgeActivationOnModifierPressVisibility(ViewModel.HasActiveDesktopActionModifierInputs), Mode=OneWay}" />
+
+                        <ToggleSwitch
                             x:Name="KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
                             x:Uid="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
                             Header="데스크톱 동작 후 키보드 보조키 떼기"

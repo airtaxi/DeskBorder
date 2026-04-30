@@ -187,6 +187,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasActiveDesktopActionKeyboardModifiers))]
     [NotifyPropertyChangedFor(nameof(HasActiveDesktopActionMouseModifierButtons))]
+    [NotifyPropertyChangedFor(nameof(HasActiveDesktopActionModifierInputs))]
     [NotifyPropertyChangedFor(nameof(IsSwitchDesktopWhileMouseButtonsArePressedModifierSelectionEnabled))]
     public partial bool IsDesktopCreationEnabled { get; set; }
 
@@ -207,6 +208,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     [ObservableProperty]
     public partial double DesktopEdgeAdditionalTriggerDistancePercentage { get; set; } = 5.0;
+
+    [ObservableProperty]
+    public partial bool IsDesktopEdgeActivationOnModifierPressEnabled { get; set; } = true;
 
     [ObservableProperty]
     public partial bool IsKeyboardModifierConsumptionAfterDesktopActionEnabled { get; set; } = true;
@@ -393,6 +397,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public bool HasActiveDesktopActionMouseModifierButtons => HasMouseModifierButtonTriggers(SwitchDesktopModifierSelection)
         || (IsDesktopCreationEnabled && HasMouseModifierButtonTriggers(CreateDesktopModifierSelection));
 
+    public bool HasActiveDesktopActionModifierInputs => HasActiveDesktopActionKeyboardModifiers || HasActiveDesktopActionMouseModifierButtons;
+
     public bool IsSwitchDesktopWhileMouseButtonsArePressedModifierSelectionEnabled => !HasActiveDesktopActionMouseModifierButtons;
 
     public bool IsMultiDisplayBehaviorSelectionEnabled => !IsVerticalDesktopSwitchingEnabled;
@@ -437,7 +443,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public DeskBorderSettings CreateSettings() => new()
     {
-        SchemaVersion = 7,
+        SchemaVersion = 8,
         IsDeskBorderEnabled = IsDeskBorderEnabled,
         MultiDisplayBehavior = SelectedMultiDisplayBehaviorOption?.Value ?? MultiDisplayBehavior.DisableInMultiDisplayEnvironment,
         SwitchDesktopModifierSettings = new ModifierGateSettings
@@ -465,6 +471,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsAutoDeleteCompletionToastEnabled = IsAutoDeleteCompletionToastEnabled,
         IsDesktopEdgeAdditionalTriggerDistanceEnabled = IsDesktopEdgeAdditionalTriggerDistanceEnabled,
         DesktopEdgeAdditionalTriggerDistancePercentage = DesktopEdgeAdditionalTriggerDistancePercentage,
+        IsDesktopEdgeActivationOnModifierPressEnabled = IsDesktopEdgeActivationOnModifierPressEnabled,
         IsKeyboardModifierConsumptionAfterDesktopActionEnabled = IsKeyboardModifierConsumptionAfterDesktopActionEnabled,
         IsMouseModifierButtonConsumptionAfterDesktopActionEnabled = IsMouseModifierButtonConsumptionAfterDesktopActionEnabled,
         IsVerticalDesktopSwitchingEnabled = IsVerticalDesktopSwitchingEnabled,
@@ -530,6 +537,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsAutoDeleteCompletionToastEnabled = deskBorderSettings.IsAutoDeleteCompletionToastEnabled;
         IsDesktopEdgeAdditionalTriggerDistanceEnabled = deskBorderSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
         DesktopEdgeAdditionalTriggerDistancePercentage = deskBorderSettings.DesktopEdgeAdditionalTriggerDistancePercentage;
+        IsDesktopEdgeActivationOnModifierPressEnabled = deskBorderSettings.IsDesktopEdgeActivationOnModifierPressEnabled;
         IsKeyboardModifierConsumptionAfterDesktopActionEnabled = deskBorderSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled;
         IsMouseModifierButtonConsumptionAfterDesktopActionEnabled = deskBorderSettings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled;
         IsVerticalDesktopSwitchingEnabled = deskBorderSettings.IsVerticalDesktopSwitchingEnabled;
@@ -719,6 +727,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasActiveDesktopActionKeyboardModifiers));
         OnPropertyChanged(nameof(HasActiveDesktopActionMouseModifierButtons));
+        OnPropertyChanged(nameof(HasActiveDesktopActionModifierInputs));
         OnPropertyChanged(nameof(IsSwitchDesktopWhileMouseButtonsArePressedModifierSelectionEnabled));
     }
 

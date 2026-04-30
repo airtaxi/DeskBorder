@@ -273,10 +273,15 @@ public sealed class DesktopLifecycleService(
         && ((!previousState.IsSwitchDesktopModifierSatisfied && currentState.IsSwitchDesktopModifierSatisfied)
             || (!previousState.IsCreateDesktopModifierSatisfied && currentState.IsCreateDesktopModifierSatisfied));
 
-    private static bool ShouldHandleDesktopEdgeActivation(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState, bool isDesktopEdgeActivationArmed)
+    private static bool ShouldHandleDesktopEdgeActivation(
+        DesktopEdgeMonitoringState previousState,
+        DesktopEdgeMonitoringState currentState,
+        bool isDesktopEdgeActivationArmed,
+        bool isDesktopEdgeActivationOnModifierPressEnabled)
         => isDesktopEdgeActivationArmed
         && currentState.ActiveDesktopEdge != DesktopEdgeKind.None
-        && (currentState.HasCursorEnteredDesktopEdge || HasActivationModifierBecomeSatisfiedWhileRemainingOnDesktopEdge(previousState, currentState));
+        && (currentState.HasCursorEnteredDesktopEdge
+            || (isDesktopEdgeActivationOnModifierPressEnabled && HasActivationModifierBecomeSatisfiedWhileRemainingOnDesktopEdge(previousState, currentState)));
 
     private void MarkDesktopEdgeActivationStarted(DesktopEdgeKind triggeredDesktopEdge)
     {
@@ -889,10 +894,14 @@ public sealed class DesktopLifecycleService(
                 _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
             }
 
-            if (!ShouldHandleDesktopEdgeActivation(previousState, currentState, _isDesktopEdgeActivationArmed)) return;
+            var currentSettings = _settingsService.Settings;
+            if (!ShouldHandleDesktopEdgeActivation(
+                previousState,
+                currentState,
+                _isDesktopEdgeActivationArmed,
+                currentSettings.IsDesktopEdgeActivationOnModifierPressEnabled)) return;
 
             await CancelPendingDesktopDeletionAsync();
-            var currentSettings = _settingsService.Settings;
             var desktopEdgeActivationEvaluation = EvaluateDesktopEdgeActivation(currentState, currentSettings);
             if (!desktopEdgeActivationEvaluation.ShouldAttemptActivation) return;
 

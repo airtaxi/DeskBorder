@@ -7,11 +7,12 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
     private const int SchemaVersionFive = 5;
     private const int SchemaVersionSix = 6;
     private const int SchemaVersionSeven = 7;
+    private const int SchemaVersionEight = 8;
     private const double DefaultHorizontalDesktopEdgeIgnorePercentage = 20.0;
 
     private readonly IFileLogService _fileLogService = fileLogService;
 
-    public int CurrentSchemaVersion => SchemaVersionSeven;
+    public int CurrentSchemaVersion => SchemaVersionEight;
 
     public DeskBorderSettings MigrateSettings(DeskBorderSettings settings)
     {
@@ -19,6 +20,7 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
         if (migratedSettings.SchemaVersion < SchemaVersionFive) migratedSettings = MigrateSettingsToSchemaVersionFive(migratedSettings);
         if (migratedSettings.SchemaVersion < SchemaVersionSix) migratedSettings = MigrateSettingsToSchemaVersionSix(migratedSettings);
         if (migratedSettings.SchemaVersion < SchemaVersionSeven) migratedSettings = MigrateSettingsToSchemaVersionSeven(migratedSettings);
+        if (migratedSettings.SchemaVersion < SchemaVersionEight) migratedSettings = MigrateSettingsToSchemaVersionEight(migratedSettings);
 
         return migratedSettings;
     }
@@ -58,6 +60,16 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
             CreateDesktopModifierSettings = MigrateModifierGateSettings(settings.CreateDesktopModifierSettings),
             SwitchDesktopWhileMouseButtonsArePressedModifierSettings = MigrateModifierGateSettings(settings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings),
             IsMouseModifierButtonConsumptionAfterDesktopActionEnabled = true
+        };
+    }
+
+    private DeskBorderSettings MigrateSettingsToSchemaVersionEight(DeskBorderSettings settings)
+    {
+        _fileLogService.WriteInformation(nameof(SettingsMigrationService), $"Migrating settings from schema version {settings.SchemaVersion} to {SchemaVersionEight}.");
+        return settings with
+        {
+            SchemaVersion = SchemaVersionEight,
+            IsDesktopEdgeActivationOnModifierPressEnabled = true
         };
     }
 

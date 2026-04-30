@@ -621,6 +621,9 @@
   <data name="SettingsPage_DesktopEdgeAdditionalTriggerDistancePercentageNumberBox.Header" xml:space="preserve">
     <value>額外移動距離 (%)</value>
   </data>
+  <data name="SettingsPage_DesktopEdgeActivationOnModifierPressToggleSwitch.Header" xml:space="preserve">
+    <value>在邊緣上按下修飾鍵時切換/建立</value>
+  </data>
   <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
     <value>桌面操作後鬆開鍵盤修飾鍵</value>
   </data>
@@ -1048,6 +1051,7 @@
 • 顯示自動刪除完成通知：僅在關閉刪除警告時可用，會在空桌面被立即刪除後顯示完成通知。
 • 刪除警告逾時：調整顯示刪除警告時等待復原的時間。
 • 使用邊緣額外移動距離 / 額外移動距離（%）：只有持續往邊緣外推，達到目前顯示器寬度指定比例時，才會觸發切換或建立。
+• 在邊緣上按下修飾鍵時切換/建立：開啟後，當指標已經位於邊緣上時，按下所需的鍵盤或滑鼠修飾鍵也可以開始切換或建立。
 • 桌面操作後鬆開修飾鍵：可以分別開啟或關閉鍵盤修飾鍵鬆開和滑鼠修飾按鈕鬆開。鍵盤修飾鍵鬆開選項僅在桌面切換或建立修飾鍵使用鍵盤修飾鍵時顯示，滑鼠修飾按鈕鬆開選項僅在使用滑鼠按鈕時顯示。
 • 上方忽略區域 / 下方忽略區域：以百分比調整螢幕上方與下方忽略邊緣切換與桌面建立的範圍。
 • 熱鍵切換桌面後的滑鼠位置 / 邊緣切換桌面後的滑鼠位置：選擇切換桌面後指標要移動到哪裡。

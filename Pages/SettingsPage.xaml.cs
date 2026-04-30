@@ -147,6 +147,10 @@ public sealed partial class SettingsPage : Page
         ? Visibility.Visible
         : Visibility.Collapsed;
 
+    private Visibility GetDesktopEdgeActivationOnModifierPressVisibility(bool hasActiveDesktopActionModifierInputs) => hasActiveDesktopActionModifierInputs
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
     private Visibility GetDesktopCreationOptionControlsVisibility(bool isDesktopCreationEnabled) => isDesktopCreationEnabled
         ? Visibility.Visible
         : Visibility.Collapsed;
@@ -851,6 +855,9 @@ public sealed partial class SettingsPage : Page
 
         if (ReferenceEquals(settingToggleSwitch, DesktopEdgeAdditionalTriggerDistanceToggleSwitch))
             return currentSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
+
+        if (ReferenceEquals(settingToggleSwitch, DesktopEdgeActivationOnModifierPressToggleSwitch))
+            return currentSettings.IsDesktopEdgeActivationOnModifierPressEnabled;
 
         if (ReferenceEquals(settingToggleSwitch, KeyboardModifierConsumptionAfterDesktopActionToggleSwitch)) return currentSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled;
 
