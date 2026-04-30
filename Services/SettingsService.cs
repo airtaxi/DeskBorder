@@ -171,7 +171,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             MultiDisplayBehavior = settings.MultiDisplayBehavior,
             SwitchDesktopModifierSettings = NormalizeModifierGateSettings(settings.SwitchDesktopModifierSettings),
             CreateDesktopModifierSettings = NormalizeModifierGateSettings(settings.CreateDesktopModifierSettings),
-            SwitchDesktopWhileMouseButtonsArePressedModifierSettings = NormalizeModifierGateSettings(settings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings),
+            SwitchDesktopWhileMouseButtonsArePressedModifierSettings = NormalizeModifierGateSettings(settings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings, areMouseModifierButtonTriggersAllowed: false),
             IsDesktopCreationEnabled = settings.IsDesktopCreationEnabled,
             IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = settings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty,
             IsDesktopCreationCompletionToastEnabled = settings.IsDesktopCreationCompletionToastEnabled,
@@ -276,7 +276,10 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         };
     }
 
-    private static ModifierGateSettings NormalizeModifierGateSettings(ModifierGateSettings? modifierGateSettings, KeyboardModifierKeys defaultKeyboardModifierKeys = KeyboardModifierKeys.None)
+    private static ModifierGateSettings NormalizeModifierGateSettings(
+        ModifierGateSettings? modifierGateSettings,
+        KeyboardModifierKeys defaultKeyboardModifierKeys = KeyboardModifierKeys.None,
+        bool areMouseModifierButtonTriggersAllowed = true)
     {
         var actualModifierGateSettings = modifierGateSettings ?? new()
         {
@@ -285,7 +288,9 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         return actualModifierGateSettings with
         {
             RequiredKeyboardModifierKeys = actualModifierGateSettings.RequiredKeyboardModifierKeys,
-            RequiredMouseModifierButtonTriggers = NormalizeMouseModifierButtonTriggers(actualModifierGateSettings.RequiredMouseModifierButtonTriggers)
+            RequiredMouseModifierButtonTriggers = areMouseModifierButtonTriggersAllowed
+                ? NormalizeMouseModifierButtonTriggers(actualModifierGateSettings.RequiredMouseModifierButtonTriggers)
+                : []
         };
     }
 

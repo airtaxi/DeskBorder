@@ -549,6 +549,12 @@
   <data name="Settings.Status.VerticalDesktopSwitchingModifierWarningTitle" xml:space="preserve">
     <value>Modifiers recommended</value>
   </data>
+  <data name="Settings.Status.MouseModifierButtonBehaviorInformationTitle" xml:space="preserve">
+    <value>Mouse button modifier behavior</value>
+  </data>
+  <data name="Settings.Status.MouseModifierButtonBehaviorInformationMessage" xml:space="preserve">
+    <value>When a mouse button is used as a desktop switch or creation modifier, the click/drag allowance modifier is disabled. Blocking while clicking or dragging is bypassed only while that mouse button modifier condition is actually pressed.</value>
+  </data>
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>That process is already blacklisted.</value>
   </data>
@@ -1034,20 +1040,19 @@
 • Include windowed fullscreen: treats windowed fullscreen apps that cover the entire monitor as fullscreen too.
 • Switch desktops with top and bottom edges too: allows previous/next desktop switching from the top and bottom edges in addition to the left and right edges.
 • Reverse vertical direction / use top and bottom edges only in multi-display environments: changes the top/bottom direction mapping or limits vertical edge switching to multi-display setups.
-• Desktop switch, creation, and click/drag allowance modifiers: use keyboard modifiers and left/middle/right mouse button pressed states together as conditions.
-• Release modifiers after desktop action: keyboard modifier key release and mouse modifier button release can be turned on or off separately.
+• Desktop switch and creation modifiers: use keyboard modifiers and left/middle/right mouse button pressed states together as conditions.
+• Allow click/drag while switching modifiers: keyboard modifier combination that allows edge switching while a mouse button is held. When a desktop switch or creation modifier uses a mouse button, this setting is disabled and click/drag blocking is bypassed only while that mouse button modifier condition is actually pressed.
+• Release modifiers after desktop action: keyboard modifier key release and mouse modifier button release can be turned on or off separately. The keyboard modifier key release option appears only when desktop switch or creation modifiers use keyboard modifiers, and the mouse modifier button release option appears only when they use a mouse button.
 • Left and right ignore zones: available with top/bottom edge switching and adjusts how much of the left and right screen area should ignore top/bottom edge switching and desktop creation.
 • Auto delete empty desktops: deletes an outer desktop when you move inward and it no longer has windows.
 • Show deletion warning: when enabled, deletion waits briefly so you can undo it; when disabled, empty desktops are deleted immediately.
 • Show auto-delete completion notification: available only when the deletion warning is off, and shows a completion notification after an empty desktop is deleted immediately.
 • Deletion warning timeout: adjusts how long the undo wait lasts while the deletion warning is shown.
 • Require extra movement past the edge / Extra movement distance (%): edge switching or creation only triggers after you keep pushing farther past the edge by the configured percentage of the current monitor width.
-• Release modifier keys after desktop action: treats held edge modifiers as released after a successful edge switch or creation. Turn it off to keep holding modifiers for consecutive switches.
 • Top and bottom ignore zones: adjusts how much of the upper and lower screen area should ignore edge switching and desktop creation.
 • Mouse position after hotkey desktop switch / Mouse position after edge desktop switch: chooses where the pointer lands after switching desktops.
-• Switch desktop modifiers: key combination that must be held before edge-based desktop switching triggers.
-• Create desktop modifiers: key combination required to create a new desktop from the right edge of the last desktop.
-• Allow click/drag while switching modifiers: edge-based switching can still run while a mouse button is held, but only when both the switch modifiers and this extra modifier combination are pressed.</value>
+• Switch desktop modifiers: combination that must be held before edge-based desktop switching triggers.
+• Create desktop modifiers: combination required to create a new desktop from the right edge of the last desktop.</value>
   </data>
   <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>Top ignore zone (%)</value>
@@ -1077,15 +1082,6 @@
     <value>Middle click</value>
   </data>
   <data name="SettingsPage_SwitchDesktopMouseRightButtonCheckBox.Content" xml:space="preserve">
-    <value>Right click</value>
-  </data>
-  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseLeftButtonCheckBox.Content" xml:space="preserve">
-    <value>Left click</value>
-  </data>
-  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseMiddleButtonCheckBox.Content" xml:space="preserve">
-    <value>Middle click</value>
-  </data>
-  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseRightButtonCheckBox.Content" xml:space="preserve">
     <value>Right click</value>
   </data>
   <data name="SettingsPage_TitleTextBlock.Text" xml:space="preserve">

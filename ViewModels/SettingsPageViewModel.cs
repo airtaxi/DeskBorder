@@ -147,6 +147,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         RegisterKeyboardShortcutEditor(MoveFocusedWindowToPreviousDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(MoveFocusedWindowToNextDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(NavigatorToggleHotkeyEditor);
+        SwitchDesktopModifierSelection.PropertyChanged += OnDesktopActionModifierSelectionPropertyChanged;
+        CreateDesktopModifierSelection.PropertyChanged += OnDesktopActionModifierSelectionPropertyChanged;
     }
 
     public List<SelectionOption<ApplicationThemePreference>> ApplicationThemePreferenceOptions { get; }
@@ -183,6 +185,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial bool IsAutoDeleteCompletionToastEnabled { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasActiveDesktopActionKeyboardModifiers))]
+    [NotifyPropertyChangedFor(nameof(HasActiveDesktopActionMouseModifierButtons))]
+    [NotifyPropertyChangedFor(nameof(IsSwitchDesktopWhileMouseButtonsArePressedModifierSelectionEnabled))]
     public partial bool IsDesktopCreationEnabled { get; set; }
 
     [ObservableProperty]
@@ -382,6 +387,14 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public bool AreVerticalDesktopSwitchingOptionControlsVisible => IsVerticalDesktopSwitchingEnabled;
 
+    public bool HasActiveDesktopActionKeyboardModifiers => HasKeyboardModifierKeys(SwitchDesktopModifierSelection)
+        || (IsDesktopCreationEnabled && HasKeyboardModifierKeys(CreateDesktopModifierSelection));
+
+    public bool HasActiveDesktopActionMouseModifierButtons => HasMouseModifierButtonTriggers(SwitchDesktopModifierSelection)
+        || (IsDesktopCreationEnabled && HasMouseModifierButtonTriggers(CreateDesktopModifierSelection));
+
+    public bool IsSwitchDesktopWhileMouseButtonsArePressedModifierSelectionEnabled => !HasActiveDesktopActionMouseModifierButtons;
+
     public bool IsMultiDisplayBehaviorSelectionEnabled => !IsVerticalDesktopSwitchingEnabled;
 
     public string NavigatorTriggerAreaSummary => SettingsDisplayFormatter.FormatTriggerRectangle(CreateNavigatorTriggerRectangleSettings());
@@ -440,7 +453,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         SwitchDesktopWhileMouseButtonsArePressedModifierSettings = new ModifierGateSettings
         {
             RequiredKeyboardModifierKeys = SwitchDesktopWhileMouseButtonsArePressedModifierSelection.CreateKeyboardModifierKeys(),
-            RequiredMouseModifierButtonTriggers = SwitchDesktopWhileMouseButtonsArePressedModifierSelection.CreateMouseModifierButtonTriggers()
+            RequiredMouseModifierButtonTriggers = []
         },
         IsDesktopCreationEnabled = IsDesktopCreationEnabled,
         IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty = IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty,
@@ -614,6 +627,10 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     private static List<SelectionOption<TValue>> CreateSelectionOptions<TValue>(IReadOnlyList<TValue> values, Func<TValue, string> displayTextSelector) where TValue : notnull => [.. values.Select(value => new SelectionOption<TValue>(value, displayTextSelector(value)))];
 
+    private static bool HasKeyboardModifierKeys(ModifierKeySelectionViewModel modifierKeySelectionViewModel) => modifierKeySelectionViewModel.CreateKeyboardModifierKeys() != KeyboardModifierKeys.None;
+
+    private static bool HasMouseModifierButtonTriggers(ModifierKeySelectionViewModel modifierKeySelectionViewModel) => modifierKeySelectionViewModel.CreateMouseModifierButtonTriggers().Length > 0;
+
     private static List<SelectionOption<InputTriggerOptionValue>> CreateInputTriggerOptions()
     {
         var inputTriggerOptions = new List<SelectionOption<InputTriggerOptionValue>>(s_virtualKeys.Length + s_mouseInputTriggerTypes.Length);
@@ -696,6 +713,25 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         OnPropertyChanged(nameof(MoveFocusedWindowToPreviousDesktopHotkeyValidationState));
         OnPropertyChanged(nameof(MoveFocusedWindowToNextDesktopHotkeyValidationState));
         OnPropertyChanged(nameof(NavigatorToggleHotkeyValidationState));
+    }
+
+    private void NotifyActiveDesktopActionModifierStatesChanged()
+    {
+        OnPropertyChanged(nameof(HasActiveDesktopActionKeyboardModifiers));
+        OnPropertyChanged(nameof(HasActiveDesktopActionMouseModifierButtons));
+        OnPropertyChanged(nameof(IsSwitchDesktopWhileMouseButtonsArePressedModifierSelectionEnabled));
+    }
+
+    private void OnDesktopActionModifierSelectionPropertyChanged(object? sender, PropertyChangedEventArgs propertyChangedEventArgs)
+    {
+        _ = sender;
+        if (propertyChangedEventArgs.PropertyName is nameof(ModifierKeySelectionViewModel.IsLeftMouseButtonEnabled)
+            or nameof(ModifierKeySelectionViewModel.IsMiddleMouseButtonEnabled)
+            or nameof(ModifierKeySelectionViewModel.IsRightMouseButtonEnabled)
+            or nameof(ModifierKeySelectionViewModel.IsControlEnabled)
+            or nameof(ModifierKeySelectionViewModel.IsShiftEnabled)
+            or nameof(ModifierKeySelectionViewModel.IsAlternateEnabled)
+            or nameof(ModifierKeySelectionViewModel.IsWindowsEnabled)) NotifyActiveDesktopActionModifierStatesChanged();
     }
 
     private void OnKeyboardShortcutEditorPropertyChanged(object? sender, PropertyChangedEventArgs propertyChangedEventArgs)

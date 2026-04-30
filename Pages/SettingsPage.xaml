@@ -419,14 +419,16 @@
                             x:Uid="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
                             Header="데스크톱 동작 후 키보드 보조키 떼기"
                             IsOn="{x:Bind ViewModel.IsKeyboardModifierConsumptionAfterDesktopActionEnabled, Mode=TwoWay}"
-                            Toggled="OnSettingToggleSwitchToggled" />
+                            Toggled="OnSettingToggleSwitchToggled"
+                            Visibility="{x:Bind GetKeyboardModifierConsumptionAfterDesktopActionVisibility(ViewModel.HasActiveDesktopActionKeyboardModifiers), Mode=OneWay}" />
 
                         <ToggleSwitch
                             x:Name="MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch"
                             x:Uid="SettingsPage_MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch"
                             Header="데스크톱 동작 후 마우스 보조키 떼기"
                             IsOn="{x:Bind ViewModel.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled, Mode=TwoWay}"
-                            Toggled="OnSettingToggleSwitchToggled" />
+                            Toggled="OnSettingToggleSwitchToggled"
+                            Visibility="{x:Bind GetMouseModifierButtonConsumptionAfterDesktopActionVisibility(ViewModel.HasActiveDesktopActionMouseModifierButtons), Mode=OneWay}" />
 
                         <ToggleSwitch
                             x:Name="VerticalDesktopSwitchingToggleSwitch"
@@ -586,18 +588,21 @@
                                         IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
                                         Tag="SwitchDesktopModifierSelection" />
                                     <CheckBox
+                                        x:Name="SwitchDesktopMouseLeftButtonCheckBox"
                                         x:Uid="SettingsPage_SwitchDesktopMouseLeftButtonCheckBox"
                                         Click="OnModifierSelectionCheckBoxClicked"
                                         Content="왼쪽 클릭"
                                         IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsLeftMouseButtonEnabled, Mode=TwoWay}"
                                         Tag="SwitchDesktopModifierSelection" />
                                     <CheckBox
+                                        x:Name="SwitchDesktopMouseMiddleButtonCheckBox"
                                         x:Uid="SettingsPage_SwitchDesktopMouseMiddleButtonCheckBox"
                                         Click="OnModifierSelectionCheckBoxClicked"
                                         Content="가운데 클릭"
                                         IsChecked="{x:Bind ViewModel.SwitchDesktopModifierSelection.IsMiddleMouseButtonEnabled, Mode=TwoWay}"
                                         Tag="SwitchDesktopModifierSelection" />
                                     <CheckBox
+                                        x:Name="SwitchDesktopMouseRightButtonCheckBox"
                                         x:Uid="SettingsPage_SwitchDesktopMouseRightButtonCheckBox"
                                         Click="OnModifierSelectionCheckBoxClicked"
                                         Content="오른쪽 클릭"
@@ -643,18 +648,21 @@
                                                 IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
                                                 Tag="CreateDesktopModifierSelection" />
                                             <CheckBox
+                                                x:Name="CreateDesktopMouseLeftButtonCheckBox"
                                                 x:Uid="SettingsPage_CreateDesktopMouseLeftButtonCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="왼쪽 클릭"
                                                 IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsLeftMouseButtonEnabled, Mode=TwoWay}"
                                                 Tag="CreateDesktopModifierSelection" />
                                             <CheckBox
+                                                x:Name="CreateDesktopMouseMiddleButtonCheckBox"
                                                 x:Uid="SettingsPage_CreateDesktopMouseMiddleButtonCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="가운데 클릭"
                                                 IsChecked="{x:Bind ViewModel.CreateDesktopModifierSelection.IsMiddleMouseButtonEnabled, Mode=TwoWay}"
                                                 Tag="CreateDesktopModifierSelection" />
                                             <CheckBox
+                                                x:Name="CreateDesktopMouseRightButtonCheckBox"
                                                 x:Uid="SettingsPage_CreateDesktopMouseRightButtonCheckBox"
                                                 Click="OnModifierSelectionCheckBoxClicked"
                                                 Content="오른쪽 클릭"
@@ -665,11 +673,12 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border
+                            <Frame
                                 Grid.Column="2"
                                 Padding="12"
                                 Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                CornerRadius="10">
+                                CornerRadius="10"
+                                IsEnabled="{x:Bind ViewModel.IsSwitchDesktopWhileMouseButtonsArePressedModifierSelectionEnabled, Mode=OneWay}">
                                 <StackPanel Spacing="10">
                                     <TextBlock
                                         x:Uid="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedModifierTitleTextBlock"
@@ -699,26 +708,8 @@
                                         Content="Windows"
                                         IsChecked="{x:Bind ViewModel.SwitchDesktopWhileMouseButtonsArePressedModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
                                         Tag="SwitchDesktopWhileMouseButtonsArePressedModifierSelection" />
-                                    <CheckBox
-                                        x:Uid="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseLeftButtonCheckBox"
-                                        Click="OnModifierSelectionCheckBoxClicked"
-                                        Content="왼쪽 클릭"
-                                        IsChecked="{x:Bind ViewModel.SwitchDesktopWhileMouseButtonsArePressedModifierSelection.IsLeftMouseButtonEnabled, Mode=TwoWay}"
-                                        Tag="SwitchDesktopWhileMouseButtonsArePressedModifierSelection" />
-                                    <CheckBox
-                                        x:Uid="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseMiddleButtonCheckBox"
-                                        Click="OnModifierSelectionCheckBoxClicked"
-                                        Content="가운데 클릭"
-                                        IsChecked="{x:Bind ViewModel.SwitchDesktopWhileMouseButtonsArePressedModifierSelection.IsMiddleMouseButtonEnabled, Mode=TwoWay}"
-                                        Tag="SwitchDesktopWhileMouseButtonsArePressedModifierSelection" />
-                                    <CheckBox
-                                        x:Uid="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseRightButtonCheckBox"
-                                        Click="OnModifierSelectionCheckBoxClicked"
-                                        Content="오른쪽 클릭"
-                                        IsChecked="{x:Bind ViewModel.SwitchDesktopWhileMouseButtonsArePressedModifierSelection.IsRightMouseButtonEnabled, Mode=TwoWay}"
-                                        Tag="SwitchDesktopWhileMouseButtonsArePressedModifierSelection" />
                                 </StackPanel>
-                            </Border>
+                            </Frame>
 
                         </Grid>
                     </StackPanel>

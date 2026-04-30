@@ -39,8 +39,15 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         var mouseButtonSnapshot = MouseHelper.GetMouseButtonSnapshot();
         var isSwitchDesktopModifierSatisfied = MouseHelper.AreRequiredModifierInputsPressed(currentSettings.SwitchDesktopModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
         var isCreateDesktopModifierSatisfied = MouseHelper.AreRequiredModifierInputsPressed(currentSettings.CreateDesktopModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
-        var isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied = MouseHelper.HasRequiredModifierInputs(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings)
+        var hasActiveDesktopActionMouseModifierButtonTriggers = HasActiveDesktopActionMouseModifierButtonTriggers(currentSettings);
+        var isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied = !hasActiveDesktopActionMouseModifierButtonTriggers
+            && MouseHelper.HasRequiredModifierInputs(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings)
             && MouseHelper.AreRequiredModifierInputsPressed(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
+        var isDesktopSwitchingAndCreationAllowedWhileMouseButtonsArePressed = IsDesktopSwitchingAndCreationAllowedWhileMouseButtonsArePressed(
+            currentSettings,
+            isSwitchDesktopModifierSatisfied,
+            isCreateDesktopModifierSatisfied,
+            isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied);
         var pendingMouseMovementDelta = _mouseMovementTrackingService.ConsumePendingMouseMovementDelta();
         var displayMonitors = MouseHelper.GetDisplayMonitors();
         var foregroundWindowFullscreenState = currentSettings.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen
@@ -61,7 +68,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             currentDisplayMonitor is not null,
             cursorClippingState.IsCursorClipped,
             mouseButtonSnapshot.IsAnyButtonPressed,
-            isSwitchDesktopModifierSatisfied && isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied,
+            isDesktopSwitchingAndCreationAllowedWhileMouseButtonsArePressed,
             isForegroundProcessBlacklisted,
             _foregroundWindowFullscreenService.ShouldDisableDesktopSwitchingAndCreation(foregroundWindowFullscreenState, currentSettings));
         var touchedDesktopEdge = desktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.Enabled
@@ -326,6 +333,34 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         if (isDesktopSwitchingAndCreationDisabledByFullscreenWindow) return DesktopEdgeAvailabilityStatus.DisabledByFullscreenWindow;
 
         return DesktopEdgeAvailabilityStatus.Enabled;
+    }
+
+    private static bool HasActiveDesktopActionMouseModifierButtonTriggers(DeskBorderSettings settings) => HasMouseModifierButtonTriggers(settings.SwitchDesktopModifierSettings)
+        || (settings.IsDesktopCreationEnabled && HasMouseModifierButtonTriggers(settings.CreateDesktopModifierSettings));
+
+    private static bool HasMouseModifierButtonTriggers(ModifierGateSettings modifierGateSettings) => modifierGateSettings.RequiredMouseModifierButtonTriggers.Length > 0;
+
+    private static bool IsActiveDesktopActionMouseModifierSatisfied(
+        DeskBorderSettings settings,
+        bool isSwitchDesktopModifierSatisfied,
+        bool isCreateDesktopModifierSatisfied)
+    {
+        if (HasMouseModifierButtonTriggers(settings.SwitchDesktopModifierSettings) && isSwitchDesktopModifierSatisfied) return true;
+
+        return settings.IsDesktopCreationEnabled
+            && HasMouseModifierButtonTriggers(settings.CreateDesktopModifierSettings)
+            && isCreateDesktopModifierSatisfied;
+    }
+
+    private static bool IsDesktopSwitchingAndCreationAllowedWhileMouseButtonsArePressed(
+        DeskBorderSettings settings,
+        bool isSwitchDesktopModifierSatisfied,
+        bool isCreateDesktopModifierSatisfied,
+        bool isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied)
+    {
+        if (HasActiveDesktopActionMouseModifierButtonTriggers(settings)) return IsActiveDesktopActionMouseModifierSatisfied(settings, isSwitchDesktopModifierSatisfied, isCreateDesktopModifierSatisfied);
+
+        return isSwitchDesktopModifierSatisfied && isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied;
     }
 
     private static bool HasStateChanged(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState)

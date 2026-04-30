@@ -549,6 +549,12 @@
   <data name="Settings.Status.VerticalDesktopSwitchingModifierWarningTitle" xml:space="preserve">
     <value>建議設定輔助鍵</value>
   </data>
+  <data name="Settings.Status.MouseModifierButtonBehaviorInformationTitle" xml:space="preserve">
+    <value>滑鼠按鈕修飾鍵行為</value>
+  </data>
+  <data name="Settings.Status.MouseModifierButtonBehaviorInformationMessage" xml:space="preserve">
+    <value>將滑鼠按鈕用作桌面切換或建立修飾鍵時，切換時允許點擊/拖曳的修飾鍵會停用。點擊或拖曳中對切換/建立的阻止只會在實際按下該滑鼠按鈕修飾鍵條件時解除。</value>
+  </data>
   <data name="Settings.Validation.ProcessAlreadyBlacklisted" xml:space="preserve">
     <value>該處理程序已在黑名單中。</value>
   </data>
@@ -1034,18 +1040,19 @@
 • 包含視窗化全螢幕：將覆蓋整個顯示器的視窗化全螢幕也視為全螢幕。
 • 也用上/下邊緣切換桌面：除左/右邊緣外，也允許透過頂部和底部邊緣切換到上一個/下一個桌面。
 • 反轉上下方向 / 僅在多顯示器環境中使用上/下邊緣：變更頂部/底部邊緣的方向對應，或將上下邊緣切換限制在多顯示器環境中。
+• 桌面切換/建立修飾鍵：可以將鍵盤修飾鍵與左/中/右滑鼠按鈕按下狀態組合為條件。
+• 切換時允許點擊/拖曳的修飾鍵：在按住滑鼠按鈕時仍允許邊緣切換的鍵盤修飾鍵組合。若桌面切換或建立修飾鍵使用滑鼠按鈕，此設定會停用，點擊/拖曳中對切換/建立的阻止只會在實際按下該滑鼠按鈕修飾鍵條件時解除。
 • 左側忽略區域 / 右側忽略區域：僅在啟用上/下邊緣切換時可用，以百分比調整螢幕左右兩側忽略上/下邊緣切換和桌面建立的範圍。
 • 自動刪除空桌面：當你從最外側桌面往內移動時，如果該桌面沒有視窗就會刪除它。
 • 顯示刪除警告：開啟時會先短暫等待以便復原，關閉時會立即刪除空桌面。
 • 顯示自動刪除完成通知：僅在關閉刪除警告時可用，會在空桌面被立即刪除後顯示完成通知。
 • 刪除警告逾時：調整顯示刪除警告時等待復原的時間。
 • 使用邊緣額外移動距離 / 額外移動距離（%）：只有持續往邊緣外推，達到目前顯示器寬度指定比例時，才會觸發切換或建立。
-• 桌面操作後鬆開修飾鍵：邊緣切換或建立成功後，將按住的修飾鍵視為已鬆開一次。關閉後，可以繼續按住修飾鍵連續切換。
+• 桌面操作後鬆開修飾鍵：可以分別開啟或關閉鍵盤修飾鍵鬆開和滑鼠修飾按鈕鬆開。鍵盤修飾鍵鬆開選項僅在桌面切換或建立修飾鍵使用鍵盤修飾鍵時顯示，滑鼠修飾按鈕鬆開選項僅在使用滑鼠按鈕時顯示。
 • 上方忽略區域 / 下方忽略區域：以百分比調整螢幕上方與下方忽略邊緣切換與桌面建立的範圍。
 • 熱鍵切換桌面後的滑鼠位置 / 邊緣切換桌面後的滑鼠位置：選擇切換桌面後指標要移動到哪裡。
-• 桌面切換修飾鍵：觸發基於邊緣的桌面切換前必須按住的按鍵組合。
-• 桌面建立修飾鍵：從最後一個桌面的右側邊緣建立新桌面時需要按住的按鍵組合。
-• 允許切換時點擊/拖曳的修飾鍵：即使滑鼠按鈕正按住，也允許邊緣切換的附加按鍵組合。只有桌面切換修飾鍵和這組附加修飾鍵同時滿足時才會生效。</value>
+• 桌面切換修飾鍵：觸發基於邊緣的桌面切換前必須按住的組合。
+• 桌面建立修飾鍵：從最後一個桌面的右側邊緣建立新桌面時需要按住的組合。</value>
   </data>
   <data name="SettingsPage_TopDesktopEdgeIgnorePercentageNumberBox.Header" xml:space="preserve">
     <value>頂部忽略區域 (%)</value>
@@ -1075,15 +1082,6 @@
     <value>中鍵點擊</value>
   </data>
   <data name="SettingsPage_SwitchDesktopMouseRightButtonCheckBox.Content" xml:space="preserve">
-    <value>右鍵點擊</value>
-  </data>
-  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseLeftButtonCheckBox.Content" xml:space="preserve">
-    <value>左鍵點擊</value>
-  </data>
-  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseMiddleButtonCheckBox.Content" xml:space="preserve">
-    <value>中鍵點擊</value>
-  </data>
-  <data name="SettingsPage_SwitchDesktopWhileMouseButtonsArePressedMouseRightButtonCheckBox.Content" xml:space="preserve">
     <value>右鍵點擊</value>
   </data>
   <data name="SettingsPage_TitleTextBlock.Text" xml:space="preserve">

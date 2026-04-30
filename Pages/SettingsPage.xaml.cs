@@ -155,6 +155,14 @@ public sealed partial class SettingsPage : Page
         ? Visibility.Visible
         : Visibility.Collapsed;
 
+    private Visibility GetKeyboardModifierConsumptionAfterDesktopActionVisibility(bool hasActiveDesktopActionKeyboardModifiers) => hasActiveDesktopActionKeyboardModifiers
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
+    private Visibility GetMouseModifierButtonConsumptionAfterDesktopActionVisibility(bool hasActiveDesktopActionMouseModifierButtons) => hasActiveDesktopActionMouseModifierButtons
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
     private bool GetMultiDisplayBehaviorSelectionEnabled(bool isVerticalDesktopSwitchingEnabled) => !isVerticalDesktopSwitchingEnabled;
 
     private Visibility GetVerticalDesktopSwitchingOptionsVisibility(bool areVerticalDesktopSwitchingOptionControlsVisible) => areVerticalDesktopSwitchingOptionControlsVisible
@@ -389,7 +397,9 @@ public sealed partial class SettingsPage : Page
     {
         _ = routedEventArgs;
         await ShowWindowsOnlyModifierWarningIfNeededAsync(sender);
-        QueueSettingsSave(shouldShowVerticalDesktopSwitchingModifierWarning: ShouldShowVerticalDesktopSwitchingModifierWarningForModifierSelectionChange(sender));
+        QueueSettingsSave(
+            shouldShowVerticalDesktopSwitchingModifierWarning: ShouldShowVerticalDesktopSwitchingModifierWarningForModifierSelectionChange(sender),
+            shouldShowMouseModifierButtonBehaviorInformation: ShouldShowMouseModifierButtonBehaviorInformationForModifierSelectionChange(sender));
     }
 
     private async void OnCheckStoreUpdateButtonClicked(object sender, RoutedEventArgs routedEventArgs)
@@ -757,12 +767,14 @@ public sealed partial class SettingsPage : Page
         finally { SetSettingsTransferInProgress(false); }
     }
 
-    private void QueueSettingsSave(ToggleSwitch? sourceToggleSwitch = null, bool shouldShowVerticalDesktopSwitchingModifierWarning = false)
+    private void QueueSettingsSave(
+        ToggleSwitch? sourceToggleSwitch = null,
+        bool shouldShowVerticalDesktopSwitchingModifierWarning = false,
+        bool shouldShowMouseModifierButtonBehaviorInformation = false)
     {
-        if (DispatcherQueue.TryEnqueue(async () => await SaveSettingsAsync(sourceToggleSwitch, shouldShowVerticalDesktopSwitchingModifierWarning)))
-            return;
+        if (DispatcherQueue.TryEnqueue(async () => await SaveSettingsAsync(sourceToggleSwitch, shouldShowVerticalDesktopSwitchingModifierWarning, shouldShowMouseModifierButtonBehaviorInformation))) return;
 
-        _ = SaveSettingsAsync(sourceToggleSwitch, shouldShowVerticalDesktopSwitchingModifierWarning);
+        _ = SaveSettingsAsync(sourceToggleSwitch, shouldShowVerticalDesktopSwitchingModifierWarning, shouldShowMouseModifierButtonBehaviorInformation);
     }
 
     private bool ShouldRejectAlwaysRunAsAdministratorToggleChange(ToggleSwitch settingToggleSwitch)
@@ -896,6 +908,20 @@ public sealed partial class SettingsPage : Page
         };
     }
 
+    private bool ShouldShowMouseModifierButtonBehaviorInformationForModifierSelectionChange(object sender)
+    {
+        if (sender is not CheckBox { IsChecked: true, Tag: string modifierSelectionTag }) return false;
+
+        if (modifierSelectionTag is not (SwitchDesktopModifierSelectionTag or CreateDesktopModifierSelectionTag)) return false;
+
+        return ReferenceEquals(sender, SwitchDesktopMouseLeftButtonCheckBox)
+            || ReferenceEquals(sender, SwitchDesktopMouseMiddleButtonCheckBox)
+            || ReferenceEquals(sender, SwitchDesktopMouseRightButtonCheckBox)
+            || ReferenceEquals(sender, CreateDesktopMouseLeftButtonCheckBox)
+            || ReferenceEquals(sender, CreateDesktopMouseMiddleButtonCheckBox)
+            || ReferenceEquals(sender, CreateDesktopMouseRightButtonCheckBox);
+    }
+
     private bool ShouldShowVerticalDesktopSwitchingModifierWarningForToggleChange(ToggleSwitch settingToggleSwitch)
     {
         if (ReferenceEquals(settingToggleSwitch, CreateDesktopEnabledToggleSwitch)
@@ -932,7 +958,10 @@ public sealed partial class SettingsPage : Page
         };
     }
 
-    private async Task SaveSettingsAsync(ToggleSwitch? sourceToggleSwitch = null, bool shouldShowVerticalDesktopSwitchingModifierWarning = false)
+    private async Task SaveSettingsAsync(
+        ToggleSwitch? sourceToggleSwitch = null,
+        bool shouldShowVerticalDesktopSwitchingModifierWarning = false,
+        bool shouldShowMouseModifierButtonBehaviorInformation = false)
     {
         if (!_isInitialSettingsLoadCompleted || _isSynchronizingViewModel || _isSettingsTransferInProgress)
             return;
@@ -959,6 +988,11 @@ public sealed partial class SettingsPage : Page
                     LocalizedResourceAccessor.GetString("Settings.Status.VerticalDesktopSwitchingModifierWarningTitle"),
                     verticalDesktopSwitchingModifierWarningMessage,
                     InfoBarSeverity.Warning);
+            else if (shouldShowMouseModifierButtonBehaviorInformation)
+                ShowSettingsStatus(
+                    LocalizedResourceAccessor.GetString("Settings.Status.MouseModifierButtonBehaviorInformationTitle"),
+                    LocalizedResourceAccessor.GetString("Settings.Status.MouseModifierButtonBehaviorInformationMessage"),
+                    InfoBarSeverity.Informational);
             else if (isThemePreferenceChanged)
                 ShowSettingsStatus(
                     LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedTitle"),
