@@ -1484,4 +1484,10 @@
   <data name="Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableMessage" xml:space="preserve">
     <value>The active window's process information is unavailable.</value>
   </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.CurrentProcessUnavailableTitle" xml:space="preserve">
+    <value>DeskBorder excluded</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.CurrentProcessUnavailableMessage" xml:space="preserve">
+    <value>DeskBorder's own windows cannot be used as auto-move rule targets.</value>
+  </data>
 </root>

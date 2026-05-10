@@ -114,6 +114,9 @@ public sealed class ApplicationBootstrapService(
         return remainingDuration <= TimeSpan.Zero ? TimeSpan.FromMinutes(1) : remainingDuration;
     }
 
+    private static bool IsCurrentProcessWindow(ProcessDesktopPlacementWindowSnapshot windowSnapshot)
+        => windowSnapshot.ProcessIdentifier == (uint)Environment.ProcessId;
+
     private async Task<ProcessDesktopPlacementPopupResult?> ShowProcessDesktopPlacementPopupWindowAsync(
         int targetDesktopNumber,
         ProcessDesktopPlacementWindowSnapshot windowSnapshot,
@@ -154,6 +157,14 @@ public sealed class ApplicationBootstrapService(
         if (foregroundWindowSnapshot is null)
         {
             await ShowProcessDesktopPlacementQuickConfigurationUnavailableToastAsync();
+            return;
+        }
+
+        if (IsCurrentProcessWindow(foregroundWindowSnapshot))
+        {
+            _fileLogService.WriteInformation(nameof(ApplicationBootstrapService), $"Skipped process desktop placement quick configuration for the current process. ProcessName={foregroundWindowSnapshot.ProcessName}, ProcessIdentifier={foregroundWindowSnapshot.ProcessIdentifier}.");
+
+            await ShowProcessDesktopPlacementQuickConfigurationCurrentProcessUnavailableToastAsync();
             return;
         }
 
@@ -217,6 +228,18 @@ public sealed class ApplicationBootstrapService(
         {
             Title = LocalizedResourceAccessor.GetString("Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableTitle"),
             Message = LocalizedResourceAccessor.GetString("Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableMessage"),
+            Duration = TimeSpan.FromSeconds(2),
+            WindowWidth = 420,
+            WindowHeight = 110
+        });
+    }
+
+    private async Task ShowProcessDesktopPlacementQuickConfigurationCurrentProcessUnavailableToastAsync()
+    {
+        await _toastService.ShowToastAsync(new HotkeyToastPresentationOptions
+        {
+            Title = LocalizedResourceAccessor.GetString("Toast.ProcessDesktopPlacementQuickConfiguration.CurrentProcessUnavailableTitle"),
+            Message = LocalizedResourceAccessor.GetString("Toast.ProcessDesktopPlacementQuickConfiguration.CurrentProcessUnavailableMessage"),
             Duration = TimeSpan.FromSeconds(2),
             WindowWidth = 420,
             WindowHeight = 110

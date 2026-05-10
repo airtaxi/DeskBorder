@@ -1484,4 +1484,10 @@
   <data name="Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableMessage" xml:space="preserve">
     <value>現在のアクティブ ウィンドウのプロセス情報を確認できません。</value>
   </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.CurrentProcessUnavailableTitle" xml:space="preserve">
+    <value>DeskBorder は対象外</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.CurrentProcessUnavailableMessage" xml:space="preserve">
+    <value>DeskBorder 自身のウィンドウは自動移動規則の対象として使用できません。</value>
+  </data>
 </root>

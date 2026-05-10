@@ -1484,4 +1484,10 @@
   <data name="Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableMessage" xml:space="preserve">
     <value>無法取得目前作用中視窗的處理程序資訊。</value>
   </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.CurrentProcessUnavailableTitle" xml:space="preserve">
+    <value>已排除 DeskBorder</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.CurrentProcessUnavailableMessage" xml:space="preserve">
+    <value>DeskBorder 自身視窗不能作為自動移動規則目標。</value>
+  </data>
 </root>
