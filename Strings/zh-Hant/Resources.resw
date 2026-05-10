@@ -1405,7 +1405,7 @@
 • 移動視窗後切換到目標桌面：自動移動後切換一次到目標桌面。
 • 程式啟動時執行規則：當你直接啟動程式，或程式隨系統啟動時，也會對初始視窗套用規則。關閉此項可減少系統重新啟動後自動啟動程式被意外放置的情況。
 • 目標桌面遺失時建立：先建立桌面直到達到儲存的桌面編號，再移動視窗。
-• 目標桌面遺失時停用規則：獨立於自動建立選項，目標桌面遺失時不刪除規則，只將其關閉。啟用此項時，停用規則會優先於建立目標桌面。
+• 目標桌面遺失時停用規則：目標桌面遺失時保留使用者切換狀態，標記為目標遺失狀態並停止套用規則。啟用此項時，停用規則會優先於建立目標桌面。
 • 快速設定彈出視窗快捷鍵：將目前前景處理程序快速註冊為目前桌面的永久或暫時自動移動規則。
 • 從執行中處理程序新增：將目前執行中的處理程序新增為以目前桌面為目標的自動移動規則。之後你手動移動的視窗不會被拉回。</value>
   </data>
@@ -1450,6 +1450,9 @@
   </data>
   <data name="Settings.ProcessDesktopPlacement.RuleLifetime.Permanent" xml:space="preserve">
     <value>永久套用</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleDisabledBecauseTargetDesktopIsMissingFormat" xml:space="preserve">
+    <value>{0} / 因目標桌面不存在而已停用</value>
   </data>
   <data name="Settings.ProcessDesktopPlacement.RuleLifetime.TimedRemainingFormat" xml:space="preserve">
     <value>限時 · 剩餘 {0}</value>

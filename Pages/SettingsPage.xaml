@@ -919,7 +919,7 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel VerticalAlignment="Center" Spacing="2">
-                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind ProcessName, Mode=OneWay}" />
+                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind ProcessNameDisplayText, Mode=OneWay}" />
                                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind TargetDesktopDisplayName, Mode=OneWay}" />
                                                 <TextBlock Foreground="{ThemeResource TextFillColorTertiaryBrush}" Text="{x:Bind RuleLifetimeStatusText, Mode=OneWay}" />
                                             </StackPanel>

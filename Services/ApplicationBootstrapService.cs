@@ -98,11 +98,12 @@ public sealed class ApplicationBootstrapService(
 
     private static ProcessDesktopPlacementRuleSettings CreateProcessDesktopPlacementRule(string processName, ProcessDesktopPlacementTargetSnapshot targetSnapshot) => new()
     {
+        IsDisabledBecauseTargetDesktopIsMissing = false,
+        IsEnabled = true,
         ProcessName = processName,
         TargetDesktopIdentifier = targetSnapshot.DesktopIdentifier,
         TargetDesktopNumber = targetSnapshot.DesktopNumber,
-        TargetDesktopDisplayName = targetSnapshot.DisplayName,
-        IsEnabled = true
+        TargetDesktopDisplayName = targetSnapshot.DisplayName
     };
 
     private static ProcessDesktopPlacementRuleSettings CreateProcessDesktopPlacementRule(ProcessDesktopPlacementWindowSnapshot windowSnapshot, ProcessDesktopPlacementTargetSnapshot targetSnapshot) => CreateProcessDesktopPlacementRule(windowSnapshot.ProcessName, targetSnapshot);

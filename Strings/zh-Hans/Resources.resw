@@ -1405,7 +1405,7 @@
 • 移动窗口后切换到目标桌面：自动移动后切换一次到目标桌面。
 • 程序启动时执行规则：当你直接启动程序，或程序随系统启动时，也会对初始窗口应用规则。关闭此项可减少系统重启后自动启动程序被意外放置的情况。
 • 目标桌面缺失时创建：先创建桌面直到达到保存的桌面编号，再移动窗口。
-• 目标桌面缺失时禁用规则：独立于自动创建选项，目标桌面缺失时不删除规则，只将其关闭。启用此项时，禁用规则会优先于创建目标桌面。
+• 目标桌面缺失时禁用规则：目标桌面缺失时保留用户开关状态，标记为目标缺失状态并停止应用规则。启用此项时，禁用规则会优先于创建目标桌面。
 • 快速设置弹窗快捷键：将当前前台进程快速注册为当前桌面的永久或临时自动移动规则。
 • 从运行中进程添加：将当前运行中的进程添加为以当前桌面为目标的自动移动规则。之后你手动移动的窗口不会被拉回。</value>
   </data>
@@ -1450,6 +1450,9 @@
   </data>
   <data name="Settings.ProcessDesktopPlacement.RuleLifetime.Permanent" xml:space="preserve">
     <value>永久应用</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleDisabledBecauseTargetDesktopIsMissingFormat" xml:space="preserve">
+    <value>{0} / 因目标桌面不存在而已禁用</value>
   </data>
   <data name="Settings.ProcessDesktopPlacement.RuleLifetime.TimedRemainingFormat" xml:space="preserve">
     <value>限时 · 剩余 {0}</value>

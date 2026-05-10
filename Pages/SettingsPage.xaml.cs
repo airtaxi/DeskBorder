@@ -285,11 +285,12 @@ public sealed partial class SettingsPage : Page
 
     private static ProcessDesktopPlacementRuleSettings CreateProcessDesktopPlacementRule(string processName, ProcessDesktopPlacementTargetSnapshot targetSnapshot) => new()
     {
+        IsDisabledBecauseTargetDesktopIsMissing = false,
+        IsEnabled = true,
         ProcessName = processName,
         TargetDesktopIdentifier = targetSnapshot.DesktopIdentifier,
         TargetDesktopNumber = targetSnapshot.DesktopNumber,
-        TargetDesktopDisplayName = targetSnapshot.DisplayName,
-        IsEnabled = true
+        TargetDesktopDisplayName = targetSnapshot.DisplayName
     };
 
     private static ProcessDesktopPlacementTemporaryRuleLifetime ConvertToTemporaryRuleLifetime(ProcessDesktopPlacementRuleLifetime lifetime) => lifetime switch

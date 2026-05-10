@@ -160,6 +160,7 @@ public sealed class ProcessDesktopPlacementService(
                 {
                     Rule = _temporaryRules[index].Rule with
                     {
+                        IsDisabledBecauseTargetDesktopIsMissing = false,
                         TargetDesktopIdentifier = targetSnapshot.DesktopIdentifier,
                         TargetDesktopNumber = targetSnapshot.DesktopNumber,
                         TargetDesktopDisplayName = targetSnapshot.DisplayName
@@ -235,6 +236,7 @@ public sealed class ProcessDesktopPlacementService(
 
     private static ProcessDesktopPlacementRuleSettings ApplyPlacementResultTarget(ProcessDesktopPlacementRuleSettings processDesktopPlacementRule, ProcessDesktopPlacementResult processDesktopPlacementResult) => processDesktopPlacementRule with
     {
+        IsDisabledBecauseTargetDesktopIsMissing = false,
         TargetDesktopIdentifier = processDesktopPlacementResult.TargetDesktopIdentifier ?? processDesktopPlacementRule.TargetDesktopIdentifier,
         TargetDesktopNumber = processDesktopPlacementResult.TargetDesktopNumber,
         TargetDesktopDisplayName = processDesktopPlacementResult.TargetDesktopDisplayName ?? processDesktopPlacementRule.TargetDesktopDisplayName
@@ -272,6 +274,7 @@ public sealed class ProcessDesktopPlacementService(
         foreach (var persistentRule in currentSettings.ProcessDesktopPlacementSettings.Rules)
         {
             if (!persistentRule.IsEnabled
+                || persistentRule.IsDisabledBecauseTargetDesktopIsMissing
                 || !string.Equals(persistentRule.ProcessName, windowSnapshot.ProcessName, StringComparison.OrdinalIgnoreCase))
             {
                 continue;
@@ -318,7 +321,7 @@ public sealed class ProcessDesktopPlacementService(
             await UpdatePersistentRulesByTargetDesktopNumberAsync(
                 currentSettings,
                 processDesktopPlacementRule.TargetDesktopNumber,
-                rule => rule with { IsEnabled = false });
+                rule => rule with { IsDisabledBecauseTargetDesktopIsMissing = true });
         }
     }
 

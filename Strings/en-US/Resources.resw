@@ -1405,7 +1405,7 @@
 • Switch to the target desktop after moving a window: Switches once to the target desktop after the automatic move.
 • Run rules when programs start: Applies rules to initial windows when you launch a program directly or when a program starts with the system. Turn this off to reduce unwanted placement of auto-started programs after a system restart.
 • Create the target desktop when it is missing: Creates desktops up to the saved desktop number before moving the window.
-• Disable the rule when the target desktop is missing: Turns the rule off without deleting it when the target desktop is missing, independently of the automatic creation option. When this is on, disabling the rule takes priority over creating the target desktop.
+• Disable the rule when the target desktop is missing: Keeps the user toggle as-is, marks the rule as target-missing, and stops applying it when the target desktop is missing. When this is on, disabling the rule takes priority over creating the target desktop.
 • Quick setup popup hotkey: Quickly registers the current foreground process on the current desktop as a permanent or temporary auto-move rule.
 • Add from running processes: Adds a currently running process as an auto-move rule targeting the current desktop. Windows you move manually later are not pulled back.</value>
   </data>
@@ -1450,6 +1450,9 @@
   </data>
   <data name="Settings.ProcessDesktopPlacement.RuleLifetime.Permanent" xml:space="preserve">
     <value>Permanent</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleDisabledBecauseTargetDesktopIsMissingFormat" xml:space="preserve">
+    <value>{0} / disabled because the target desktop is missing</value>
   </data>
   <data name="Settings.ProcessDesktopPlacement.RuleLifetime.TimedRemainingFormat" xml:space="preserve">
     <value>Timed · {0} left</value>

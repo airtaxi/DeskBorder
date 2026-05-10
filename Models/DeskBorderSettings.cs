@@ -166,6 +166,8 @@ public sealed record ProcessDesktopPlacementRuleSettings
 {
     public bool IsEnabled { get; init; } = true;
 
+    public bool IsDisabledBecauseTargetDesktopIsMissing { get; init; }
+
     public string ProcessName { get; init; } = string.Empty;
 
     public string TargetDesktopIdentifier { get; init; } = string.Empty;

@@ -479,6 +479,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         {
             ProcessDesktopPlacementRules.Add(new()
             {
+                IsDisabledBecauseTargetDesktopIsMissing = false,
                 IsEnabled = true,
                 ProcessName = normalizedProcessName,
                 TargetDesktopIdentifier = targetSnapshot.DesktopIdentifier,
