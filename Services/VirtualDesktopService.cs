@@ -217,24 +217,11 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         };
     }
 
-    public ProcessDesktopPlacementTargetSnapshot GetCurrentProcessDesktopPlacementTarget()
+    public int GetCurrentProcessDesktopPlacementTargetNumber()
     {
         var workspaceSnapshot = GetWorkspaceSnapshot();
         var currentDesktopEntry = workspaceSnapshot.DesktopEntries.FirstOrDefault(desktopEntry => desktopEntry.IsCurrentDesktop);
-        return GetProcessDesktopPlacementTarget(currentDesktopEntry?.DesktopNumber ?? workspaceSnapshot.CurrentDesktopNumber);
-    }
-
-    public ProcessDesktopPlacementTargetSnapshot GetProcessDesktopPlacementTarget(int desktopNumber)
-    {
-        var targetDesktopNumber = Math.Max(1, desktopNumber);
-        var workspaceSnapshot = GetWorkspaceSnapshot();
-        var currentDesktopEntry = workspaceSnapshot.DesktopEntries.FirstOrDefault(desktopEntry => desktopEntry.DesktopNumber == targetDesktopNumber);
-        return new()
-        {
-            DesktopIdentifier = currentDesktopEntry?.DesktopIdentifier ?? string.Empty,
-            DesktopNumber = targetDesktopNumber,
-            DisplayName = currentDesktopEntry?.DisplayName ?? SettingsDisplayFormatter.FormatDesktopDisplayName(targetDesktopNumber)
-        };
+        return Math.Max(1, currentDesktopEntry?.DesktopNumber ?? workspaceSnapshot.CurrentDesktopNumber);
     }
 
     public ProcessDesktopPlacementWindowSnapshot? GetForegroundProcessDesktopPlacementWindowSnapshot()
@@ -274,7 +261,6 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
                 WindowHandle = windowHandle,
                 ProcessIdentifier = processIdentifier,
                 ProcessName = processName,
-                DesktopIdentifier = applicationViewSnapshot.VirtualDesktopIdentifier.ToString(),
                 DesktopNumber = desktopNumbersByIdentifier.GetValueOrDefault(applicationViewSnapshot.VirtualDesktopIdentifier.ToString())
             });
         }
@@ -316,14 +302,11 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
                 FocusWindowOnTargetDesktop(virtualDesktopShellConnection.VirtualDesktopShell.VirtualDesktopManager, movedWindowHandles[0], targetDesktopIdentifier);
             }
 
-            var targetDesktopSnapshot = CreateProcessDesktopPlacementTargetSnapshot(virtualDesktopShellConnection.VirtualDesktopShell, targetDesktopIdentifier);
             _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Applied process desktop placement. ProcessName={processDesktopPlacementRule.ProcessName}, TargetDesktopNumber={targetDesktopNumber}, TargetDesktopIdentifier={targetDesktopIdentifier}, MovedWindowCount={movedWindowHandles.Count}, CreatedTargetDesktop={targetResolution.WasTargetDesktopCreated}, SwitchedToTargetDesktop={didSwitchToTargetDesktop}.");
             return new()
             {
                 OperationStatus = ProcessDesktopPlacementOperationStatus.Success,
-                TargetDesktopIdentifier = targetDesktopSnapshot.DesktopIdentifier,
-                TargetDesktopDisplayName = targetDesktopSnapshot.DisplayName,
-                TargetDesktopNumber = targetDesktopSnapshot.DesktopNumber,
+                TargetDesktopNumber = targetDesktopNumber,
                 MovedWindowCount = movedWindowHandles.Count,
                 WasTargetDesktopCreated = targetResolution.WasTargetDesktopCreated,
                 DidSwitchToTargetDesktop = didSwitchToTargetDesktop
@@ -331,7 +314,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         }
         catch (Exception exception)
         {
-            _fileLogService.WriteError(nameof(VirtualDesktopService), $"Process desktop placement failed unexpectedly. ProcessName={processDesktopPlacementRule.ProcessName}, TargetDesktopNumber={processDesktopPlacementRule.TargetDesktopNumber}, TargetDesktopIdentifier={processDesktopPlacementRule.TargetDesktopIdentifier}, ExceptionHResult=0x{exception.HResult:X8}, {FormatLastWindowsErrorDetails(Marshal.GetLastWin32Error())}{FormatPrivilegeDiagnostic(exception)}.", exception);
+            _fileLogService.WriteError(nameof(VirtualDesktopService), $"Process desktop placement failed unexpectedly. ProcessName={processDesktopPlacementRule.ProcessName}, TargetDesktopNumber={processDesktopPlacementRule.TargetDesktopNumber}, ExceptionHResult=0x{exception.HResult:X8}, {FormatLastWindowsErrorDetails(Marshal.GetLastWin32Error())}{FormatPrivilegeDiagnostic(exception)}.", exception);
             return new()
             {
                 OperationStatus = ProcessDesktopPlacementOperationStatus.UnexpectedError
@@ -647,19 +630,6 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         return new(virtualDesktops[targetDesktopNumber - 1], wasTargetDesktopCreated);
     }
 
-    private static ProcessDesktopPlacementTargetSnapshot CreateProcessDesktopPlacementTargetSnapshot(VirtualDesktopShell virtualDesktopShell, VirtualDesktopIdentifier targetDesktopIdentifier)
-    {
-        var targetDesktopIdentifierText = targetDesktopIdentifier.ToString();
-        var workspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShell);
-        var targetDesktopEntry = workspaceSnapshot.DesktopEntries.FirstOrDefault(desktopEntry => string.Equals(desktopEntry.DesktopIdentifier, targetDesktopIdentifierText, StringComparison.Ordinal));
-        return new()
-        {
-            DesktopIdentifier = targetDesktopIdentifierText,
-            DesktopNumber = targetDesktopEntry?.DesktopNumber ?? Math.Max(1, workspaceSnapshot.DesktopCount),
-            DisplayName = targetDesktopEntry?.DisplayName ?? SettingsDisplayFormatter.FormatDesktopDisplayName(Math.Max(1, workspaceSnapshot.DesktopCount))
-        };
-    }
-
     private List<nint> MoveProcessWindowsToTargetDesktop(
         VirtualDesktopShell virtualDesktopShell,
         IReadOnlyList<nint> windowHandles,
@@ -727,7 +697,6 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             WindowHandle = windowHandle,
             ProcessIdentifier = processIdentifier,
             ProcessName = processName,
-            DesktopIdentifier = desktopIdentifier.ToString(),
             DesktopNumber = CreateDesktopNumbersByIdentifier(virtualDesktopShell).GetValueOrDefault(desktopIdentifier.ToString())
         };
         return true;

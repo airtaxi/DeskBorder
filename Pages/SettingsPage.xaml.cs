@@ -283,37 +283,21 @@ public sealed partial class SettingsPage : Page
 
     private static string GetCurrentApplicationVersion() => FormatCurrentApplicationVersion(Package.Current.Id.Version);
 
-    private static ProcessDesktopPlacementRuleSettings CreateProcessDesktopPlacementRule(string processName, ProcessDesktopPlacementTargetSnapshot targetSnapshot, bool isEnabled = true) => new()
+    private static ProcessDesktopPlacementRuleSettings CreateProcessDesktopPlacementRule(string processName, int targetDesktopNumber, bool isEnabled = true) => new()
     {
         IsDisabledBecauseTargetDesktopIsMissing = false,
         IsEnabled = isEnabled,
         ProcessName = processName,
-        TargetDesktopIdentifier = targetSnapshot.DesktopIdentifier,
-        TargetDesktopNumber = targetSnapshot.DesktopNumber,
-        TargetDesktopDisplayName = targetSnapshot.DisplayName
-    };
-
-    private static ProcessDesktopPlacementTemporaryRuleLifetime ConvertToTemporaryRuleLifetime(ProcessDesktopPlacementRuleLifetime lifetime) => lifetime switch
-    {
-        ProcessDesktopPlacementRuleLifetime.UntilProcessExit => ProcessDesktopPlacementTemporaryRuleLifetime.UntilProcessExit,
-        ProcessDesktopPlacementRuleLifetime.Timed => ProcessDesktopPlacementTemporaryRuleLifetime.Timed,
-        _ => throw new InvalidOperationException("The requested process desktop placement lifetime is not temporary.")
-    };
-
-    private static ProcessDesktopPlacementRuleLifetime ConvertToPopupRuleLifetime(ProcessDesktopPlacementRuleViewModelLifetime lifetime) => lifetime switch
-    {
-        ProcessDesktopPlacementRuleViewModelLifetime.UntilProcessExit => ProcessDesktopPlacementRuleLifetime.UntilProcessExit,
-        ProcessDesktopPlacementRuleViewModelLifetime.Timed => ProcessDesktopPlacementRuleLifetime.Timed,
-        _ => ProcessDesktopPlacementRuleLifetime.Permanent
+        TargetDesktopNumber = Math.Max(1, targetDesktopNumber)
     };
 
     private static ProcessDesktopPlacementPopupInitialRule CreateProcessDesktopPlacementPopupInitialRule(ProcessDesktopPlacementRuleViewModel processDesktopPlacementRule) => new(
-        ConvertToPopupRuleLifetime(processDesktopPlacementRule.Lifetime),
+        processDesktopPlacementRule.Lifetime,
         GetRemainingProcessDesktopPlacementRuleDuration(processDesktopPlacementRule));
 
     private static TimeSpan? GetRemainingProcessDesktopPlacementRuleDuration(ProcessDesktopPlacementRuleViewModel processDesktopPlacementRule)
     {
-        if (processDesktopPlacementRule.Lifetime != ProcessDesktopPlacementRuleViewModelLifetime.Timed || !processDesktopPlacementRule.ExpiresAt.HasValue) return null;
+        if (processDesktopPlacementRule.Lifetime != ProcessDesktopPlacementRuleLifetime.Timed || !processDesktopPlacementRule.ExpiresAt.HasValue) return null;
 
         var remainingDuration = processDesktopPlacementRule.ExpiresAt.Value - DateTimeOffset.UtcNow;
         return remainingDuration <= TimeSpan.Zero
@@ -536,11 +520,11 @@ public sealed partial class SettingsPage : Page
     {
         if (sender is not Button { Tag: ProcessDesktopPlacementRuleViewModel processDesktopPlacementRule }) return;
 
-        var targetSnapshot = _virtualDesktopService.GetCurrentProcessDesktopPlacementTarget();
-        processDesktopPlacementRule.SetTargetDesktop(targetSnapshot);
+        var targetDesktopNumber = _virtualDesktopService.GetCurrentProcessDesktopPlacementTargetNumber();
+        processDesktopPlacementRule.SetTargetDesktopNumber(targetDesktopNumber);
         if (!processDesktopPlacementRule.IsPersistentRule)
         {
-            _ = _processDesktopPlacementService.UpdateTemporaryRuleTarget(processDesktopPlacementRule.ProcessName, targetSnapshot);
+            _ = _processDesktopPlacementService.UpdateTemporaryRuleTarget(processDesktopPlacementRule.ProcessName, targetDesktopNumber);
             return;
         }
 
@@ -849,41 +833,40 @@ public sealed partial class SettingsPage : Page
             "Settings.ProcessDesktopPlacement.Dialog.Description");
         if (selectedProcessNames.Count == 0) return;
 
-        var popupResult = await ShowProcessDesktopPlacementPopupWindowAsync(selectedProcessNames, _virtualDesktopService.GetCurrentProcessDesktopPlacementTarget());
+        var popupResult = await ShowProcessDesktopPlacementPopupWindowAsync(selectedProcessNames, _virtualDesktopService.GetCurrentProcessDesktopPlacementTargetNumber());
         if (popupResult is null) return;
 
-        var targetSnapshot = _virtualDesktopService.GetProcessDesktopPlacementTarget(popupResult.TargetDesktopNumber);
+        var targetDesktopNumber = Math.Max(1, popupResult.TargetDesktopNumber);
         switch (popupResult.Lifetime)
         {
             case ProcessDesktopPlacementRuleLifetime.Permanent:
-                if (!ViewModel.AddProcessDesktopPlacementRules(selectedProcessNames, targetSnapshot)) return;
+                if (!ViewModel.AddProcessDesktopPlacementRules(selectedProcessNames, targetDesktopNumber)) return;
 
                 await SaveSettingsAsync();
                 break;
             default:
-                foreach (var selectedProcessName in selectedProcessNames) AddTemporaryProcessDesktopPlacementRule(selectedProcessName, targetSnapshot, popupResult);
+                foreach (var selectedProcessName in selectedProcessNames) AddTemporaryProcessDesktopPlacementRule(selectedProcessName, targetDesktopNumber, popupResult);
 
                 break;
         }
     }
 
-    private void AddTemporaryProcessDesktopPlacementRule(string processName, ProcessDesktopPlacementTargetSnapshot targetSnapshot, ProcessDesktopPlacementPopupResult popupResult)
+    private void AddTemporaryProcessDesktopPlacementRule(string processName, int targetDesktopNumber, ProcessDesktopPlacementPopupResult popupResult)
         => _processDesktopPlacementService.AddTemporaryRule(
-            CreateProcessDesktopPlacementRule(processName, targetSnapshot),
-            ConvertToTemporaryRuleLifetime(popupResult.Lifetime),
+            CreateProcessDesktopPlacementRule(processName, targetDesktopNumber),
+            popupResult.Lifetime,
             popupResult.Duration);
 
     private async Task EditProcessDesktopPlacementRuleAsync(ProcessDesktopPlacementRuleViewModel processDesktopPlacementRule)
     {
-        var initialTargetSnapshot = _virtualDesktopService.GetProcessDesktopPlacementTarget(processDesktopPlacementRule.TargetDesktopNumber);
         var initialRule = CreateProcessDesktopPlacementPopupInitialRule(processDesktopPlacementRule);
-        var popupResult = await ShowProcessDesktopPlacementPopupWindowAsync([processDesktopPlacementRule.ProcessName], initialTargetSnapshot, initialRule);
+        var popupResult = await ShowProcessDesktopPlacementPopupWindowAsync([processDesktopPlacementRule.ProcessName], processDesktopPlacementRule.TargetDesktopNumber, initialRule);
         if (popupResult is null) return;
 
-        var targetSnapshot = _virtualDesktopService.GetProcessDesktopPlacementTarget(popupResult.TargetDesktopNumber);
+        var targetDesktopNumber = Math.Max(1, popupResult.TargetDesktopNumber);
         var updatedProcessDesktopPlacementRule = CreateProcessDesktopPlacementRule(
             processDesktopPlacementRule.ProcessName,
-            targetSnapshot,
+            targetDesktopNumber,
             processDesktopPlacementRule.IsPersistentRule ? processDesktopPlacementRule.IsEnabled : true);
         switch (popupResult.Lifetime)
         {
@@ -902,7 +885,7 @@ public sealed partial class SettingsPage : Page
 
                 _processDesktopPlacementService.AddTemporaryRule(
                     updatedProcessDesktopPlacementRule,
-                    ConvertToTemporaryRuleLifetime(popupResult.Lifetime),
+                    popupResult.Lifetime,
                     popupResult.Duration);
                 RefreshTemporaryProcessDesktopPlacementRules();
                 break;
@@ -911,10 +894,10 @@ public sealed partial class SettingsPage : Page
 
     private async Task<ProcessDesktopPlacementPopupResult?> ShowProcessDesktopPlacementPopupWindowAsync(
         IReadOnlyList<string> processNames,
-        ProcessDesktopPlacementTargetSnapshot targetSnapshot,
+        int targetDesktopNumber,
         ProcessDesktopPlacementPopupInitialRule? initialRule = null)
     {
-        var processDesktopPlacementPopupWindow = new ProcessDesktopPlacementPopupWindow(processNames, targetSnapshot, _localizationService, _themeService, initialRule);
+        var processDesktopPlacementPopupWindow = new ProcessDesktopPlacementPopupWindow(processNames, targetDesktopNumber, _localizationService, _themeService, initialRule);
         if (!await processDesktopPlacementPopupWindow.ShowModalAsync(GetManageWindowHandle())) return null;
 
         return new(

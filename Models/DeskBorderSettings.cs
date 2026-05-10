@@ -55,8 +55,9 @@ public enum DesktopSwitchMouseLocationOption
     DoNotMove,
 }
 
-public enum ProcessDesktopPlacementTemporaryRuleLifetime
+public enum ProcessDesktopPlacementRuleLifetime
 {
+    Permanent,
     UntilProcessExit,
     Timed,
 }
@@ -170,11 +171,7 @@ public sealed record ProcessDesktopPlacementRuleSettings
 
     public string ProcessName { get; init; } = string.Empty;
 
-    public string TargetDesktopIdentifier { get; init; } = string.Empty;
-
     public int TargetDesktopNumber { get; init; }
-
-    public string TargetDesktopDisplayName { get; init; } = string.Empty;
 }
 
 public sealed record ProcessDesktopPlacementSettings

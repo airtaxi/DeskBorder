@@ -8,9 +8,7 @@ public interface IVirtualDesktopService
 
     NavigatorPreviewSnapshot GetNavigatorPreviewSnapshot(DisplayMonitorInfo targetDisplayMonitor);
 
-    ProcessDesktopPlacementTargetSnapshot GetCurrentProcessDesktopPlacementTarget();
-
-    ProcessDesktopPlacementTargetSnapshot GetProcessDesktopPlacementTarget(int desktopNumber);
+    int GetCurrentProcessDesktopPlacementTargetNumber();
 
     ProcessDesktopPlacementWindowSnapshot? GetForegroundProcessDesktopPlacementWindowSnapshot();
 

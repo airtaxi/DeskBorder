@@ -464,7 +464,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         return true;
     }
 
-    public bool AddProcessDesktopPlacementRules(IEnumerable<string> processNames, ProcessDesktopPlacementTargetSnapshot targetSnapshot)
+    public bool AddProcessDesktopPlacementRules(IEnumerable<string> processNames, int targetDesktopNumber)
     {
         var processDesktopPlacementRuleProcessNameSet = ProcessDesktopPlacementRules
             .Where(rule => rule.IsPersistentRule)
@@ -482,9 +482,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
                 IsDisabledBecauseTargetDesktopIsMissing = false,
                 IsEnabled = true,
                 ProcessName = normalizedProcessName,
-                TargetDesktopIdentifier = targetSnapshot.DesktopIdentifier,
-                TargetDesktopNumber = targetSnapshot.DesktopNumber,
-                TargetDesktopDisplayName = targetSnapshot.DisplayName
+                TargetDesktopNumber = Math.Max(1, targetDesktopNumber)
             });
         }
 

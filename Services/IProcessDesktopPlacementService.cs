@@ -8,7 +8,7 @@ public interface IProcessDesktopPlacementService
 
     bool IsRunning { get; }
 
-    void AddTemporaryRule(ProcessDesktopPlacementRuleSettings processDesktopPlacementRule, ProcessDesktopPlacementTemporaryRuleLifetime lifetime, TimeSpan? duration = null);
+    void AddTemporaryRule(ProcessDesktopPlacementRuleSettings processDesktopPlacementRule, ProcessDesktopPlacementRuleLifetime lifetime, TimeSpan? duration = null);
 
     Task ApplyRuleToWindowAsync(nint windowHandle, ProcessDesktopPlacementRuleSettings processDesktopPlacementRule);
 
@@ -22,5 +22,5 @@ public interface IProcessDesktopPlacementService
 
     Task StopAsync();
 
-    bool UpdateTemporaryRuleTarget(string processName, ProcessDesktopPlacementTargetSnapshot targetSnapshot);
+    bool UpdateTemporaryRuleTarget(string processName, int targetDesktopNumber);
 }

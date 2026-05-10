@@ -355,19 +355,12 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         if (processDesktopPlacementRule is null) return false;
 
         var processName = (processDesktopPlacementRule.ProcessName ?? string.Empty).Trim();
-        var targetDesktopIdentifier = (processDesktopPlacementRule.TargetDesktopIdentifier ?? string.Empty).Trim();
         if (string.IsNullOrWhiteSpace(processName)) return false;
 
         normalizedProcessDesktopPlacementRule = processDesktopPlacementRule with
         {
             ProcessName = processName,
-            TargetDesktopIdentifier = Guid.TryParse(targetDesktopIdentifier, out var parsedTargetDesktopIdentifier)
-                ? parsedTargetDesktopIdentifier.ToString("D")
-                : string.Empty,
-            TargetDesktopNumber = Math.Max(1, processDesktopPlacementRule.TargetDesktopNumber),
-            TargetDesktopDisplayName = string.IsNullOrWhiteSpace(processDesktopPlacementRule.TargetDesktopDisplayName)
-                ? SettingsDisplayFormatter.FormatDesktopDisplayName(Math.Max(1, processDesktopPlacementRule.TargetDesktopNumber))
-                : processDesktopPlacementRule.TargetDesktopDisplayName.Trim()
+            TargetDesktopNumber = Math.Max(1, processDesktopPlacementRule.TargetDesktopNumber)
         };
         return true;
     }

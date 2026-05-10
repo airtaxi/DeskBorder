@@ -12,13 +12,6 @@ using WinUIEx;
 
 namespace DeskBorder.Views;
 
-public enum ProcessDesktopPlacementRuleLifetime
-{
-    Permanent,
-    UntilProcessExit,
-    Timed,
-}
-
 public sealed record ProcessDesktopPlacementPopupInitialRule(ProcessDesktopPlacementRuleLifetime Lifetime, TimeSpan? Duration = null);
 
 public sealed partial class ProcessDesktopPlacementPopupWindow : WindowEx
@@ -38,7 +31,7 @@ public sealed partial class ProcessDesktopPlacementPopupWindow : WindowEx
 
     public ProcessDesktopPlacementPopupWindow(
         IReadOnlyList<string> processNames,
-        ProcessDesktopPlacementTargetSnapshot targetSnapshot,
+        int targetDesktopNumber,
         ILocalizationService localizationService,
         IThemeService themeService,
         ProcessDesktopPlacementPopupInitialRule? initialRule = null)
@@ -50,7 +43,7 @@ public sealed partial class ProcessDesktopPlacementPopupWindow : WindowEx
         ConfigurePopupPresenter();
         ApplyLocalizedText(initialRule is not null);
         ProcessNameTextBlock.Text = localizationService.GetFormattedString("ProcessDesktopPlacementPopup.ProcessNameFormat", FormatProcessNames(processNames));
-        TargetDesktopNumberBox.Value = Math.Max(1, targetSnapshot.DesktopNumber);
+        TargetDesktopNumberBox.Value = Math.Max(1, targetDesktopNumber);
         ApplyInitialRule(initialRule);
         UpdateTargetDesktopText();
     }

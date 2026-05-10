@@ -90,15 +90,6 @@ public sealed record DesktopNavigationResult
     public bool IsSuccessful => OperationStatus == VirtualDesktopOperationStatus.Success;
 }
 
-public sealed record ProcessDesktopPlacementTargetSnapshot
-{
-    public string DesktopIdentifier { get; init; } = string.Empty;
-
-    public int DesktopNumber { get; init; }
-
-    public string DisplayName { get; init; } = string.Empty;
-}
-
 public sealed record ProcessDesktopPlacementWindowSnapshot
 {
     public nint WindowHandle { get; init; }
@@ -107,8 +98,6 @@ public sealed record ProcessDesktopPlacementWindowSnapshot
 
     public string ProcessName { get; init; } = string.Empty;
 
-    public string DesktopIdentifier { get; init; } = string.Empty;
-
     public int DesktopNumber { get; init; }
 }
 
@@ -116,7 +105,7 @@ public sealed record ProcessDesktopPlacementTemporaryRuleSnapshot
 {
     public ProcessDesktopPlacementRuleSettings Rule { get; init; } = new();
 
-    public ProcessDesktopPlacementTemporaryRuleLifetime Lifetime { get; init; }
+    public ProcessDesktopPlacementRuleLifetime Lifetime { get; init; }
 
     public DateTimeOffset? ExpiresAt { get; init; }
 
@@ -128,10 +117,6 @@ public sealed record ProcessDesktopPlacementTemporaryRuleSnapshot
 public sealed record ProcessDesktopPlacementResult
 {
     public ProcessDesktopPlacementOperationStatus OperationStatus { get; init; } = ProcessDesktopPlacementOperationStatus.Success;
-
-    public string? TargetDesktopIdentifier { get; init; }
-
-    public string? TargetDesktopDisplayName { get; init; }
 
     public int TargetDesktopNumber { get; init; }
 

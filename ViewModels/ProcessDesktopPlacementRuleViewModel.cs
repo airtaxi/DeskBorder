@@ -4,13 +4,6 @@ using DeskBorder.Models;
 
 namespace DeskBorder.ViewModels;
 
-public enum ProcessDesktopPlacementRuleViewModelLifetime
-{
-    Permanent,
-    UntilProcessExit,
-    Timed,
-}
-
 public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObject
 {
     [ObservableProperty]
@@ -31,7 +24,7 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsPersistentRule))]
-    public partial ProcessDesktopPlacementRuleViewModelLifetime Lifetime { get; set; } = ProcessDesktopPlacementRuleViewModelLifetime.Permanent;
+    public partial ProcessDesktopPlacementRuleLifetime Lifetime { get; set; } = ProcessDesktopPlacementRuleLifetime.Permanent;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ProcessNameDisplayText))]
@@ -41,15 +34,12 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
     public partial string RuleLifetimeStatusText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string TargetDesktopDisplayName { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string TargetDesktopIdentifier { get; set; } = string.Empty;
-
-    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TargetDesktopDisplayText))]
     public partial int TargetDesktopNumber { get; set; }
 
-    public bool IsPersistentRule => Lifetime == ProcessDesktopPlacementRuleViewModelLifetime.Permanent;
+    public bool IsPersistentRule => Lifetime == ProcessDesktopPlacementRuleLifetime.Permanent;
+
+    public string TargetDesktopDisplayText => SettingsDisplayFormatter.FormatDesktopDisplayName(TargetDesktopNumber);
 
     public string ProcessNameDisplayText => IsDisabledBecauseTargetDesktopIsMissing
         ? LocalizedResourceAccessor.GetFormattedString("Settings.ProcessDesktopPlacement.RuleDisabledBecauseTargetDesktopIsMissingFormat", ProcessName)
@@ -60,9 +50,7 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
         IsEnabled = IsEnabled,
         IsDisabledBecauseTargetDesktopIsMissing = IsDisabledBecauseTargetDesktopIsMissing,
         ProcessName = ProcessName,
-        TargetDesktopIdentifier = TargetDesktopIdentifier,
-        TargetDesktopNumber = TargetDesktopNumber,
-        TargetDesktopDisplayName = TargetDesktopDisplayName
+        TargetDesktopNumber = TargetDesktopNumber
     };
 
     public static ProcessDesktopPlacementRuleViewModel Load(ProcessDesktopPlacementRuleSettings processDesktopPlacementRuleSettings)
@@ -72,10 +60,8 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
             IsEnabled = processDesktopPlacementRuleSettings.IsEnabled,
             IsDisabledBecauseTargetDesktopIsMissing = processDesktopPlacementRuleSettings.IsDisabledBecauseTargetDesktopIsMissing,
             ProcessName = processDesktopPlacementRuleSettings.ProcessName,
-            TargetDesktopIdentifier = processDesktopPlacementRuleSettings.TargetDesktopIdentifier,
             TargetDesktopNumber = processDesktopPlacementRuleSettings.TargetDesktopNumber,
-            TargetDesktopDisplayName = processDesktopPlacementRuleSettings.TargetDesktopDisplayName,
-            Lifetime = ProcessDesktopPlacementRuleViewModelLifetime.Permanent
+            Lifetime = ProcessDesktopPlacementRuleLifetime.Permanent
         };
         processDesktopPlacementRuleViewModel.RefreshLifetimeStatus(DateTimeOffset.UtcNow);
         return processDesktopPlacementRuleViewModel;
@@ -84,12 +70,7 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
     public static ProcessDesktopPlacementRuleViewModel Load(ProcessDesktopPlacementTemporaryRuleSnapshot temporaryRuleSnapshot)
     {
         var processDesktopPlacementRuleViewModel = Load(temporaryRuleSnapshot.Rule);
-        processDesktopPlacementRuleViewModel.Lifetime = temporaryRuleSnapshot.Lifetime switch
-        {
-            ProcessDesktopPlacementTemporaryRuleLifetime.UntilProcessExit => ProcessDesktopPlacementRuleViewModelLifetime.UntilProcessExit,
-            ProcessDesktopPlacementTemporaryRuleLifetime.Timed => ProcessDesktopPlacementRuleViewModelLifetime.Timed,
-            _ => ProcessDesktopPlacementRuleViewModelLifetime.Permanent
-        };
+        processDesktopPlacementRuleViewModel.Lifetime = temporaryRuleSnapshot.Lifetime;
         processDesktopPlacementRuleViewModel.ExpiresAt = temporaryRuleSnapshot.ExpiresAt;
         processDesktopPlacementRuleViewModel.CreatedAt = temporaryRuleSnapshot.CreatedAt;
         processDesktopPlacementRuleViewModel.IsLifetimeProcessRunning = temporaryRuleSnapshot.IsProcessRunning;
@@ -102,20 +83,18 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
         OnPropertyChanged(nameof(ProcessNameDisplayText));
         RuleLifetimeStatusText = Lifetime switch
         {
-            ProcessDesktopPlacementRuleViewModelLifetime.Timed => FormatTimedLifetimeStatus(currentTimestamp),
-            ProcessDesktopPlacementRuleViewModelLifetime.UntilProcessExit => LocalizedResourceAccessor.GetString(IsLifetimeProcessRunning
+            ProcessDesktopPlacementRuleLifetime.Timed => FormatTimedLifetimeStatus(currentTimestamp),
+            ProcessDesktopPlacementRuleLifetime.UntilProcessExit => LocalizedResourceAccessor.GetString(IsLifetimeProcessRunning
                 ? "Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitRunning"
                 : "Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitNotRunning"),
             _ => LocalizedResourceAccessor.GetString("Settings.ProcessDesktopPlacement.RuleLifetime.Permanent")
         };
     }
 
-    public void SetTargetDesktop(ProcessDesktopPlacementTargetSnapshot targetSnapshot)
+    public void SetTargetDesktopNumber(int targetDesktopNumber)
     {
         IsDisabledBecauseTargetDesktopIsMissing = false;
-        TargetDesktopIdentifier = targetSnapshot.DesktopIdentifier;
-        TargetDesktopNumber = targetSnapshot.DesktopNumber;
-        TargetDesktopDisplayName = targetSnapshot.DisplayName;
+        TargetDesktopNumber = Math.Max(1, targetDesktopNumber);
     }
 
     public void UpdateFromSettings(ProcessDesktopPlacementRuleSettings processDesktopPlacementRuleSettings)
@@ -123,10 +102,8 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
         IsEnabled = processDesktopPlacementRuleSettings.IsEnabled;
         IsDisabledBecauseTargetDesktopIsMissing = processDesktopPlacementRuleSettings.IsDisabledBecauseTargetDesktopIsMissing;
         ProcessName = processDesktopPlacementRuleSettings.ProcessName;
-        TargetDesktopIdentifier = processDesktopPlacementRuleSettings.TargetDesktopIdentifier;
         TargetDesktopNumber = processDesktopPlacementRuleSettings.TargetDesktopNumber;
-        TargetDesktopDisplayName = processDesktopPlacementRuleSettings.TargetDesktopDisplayName;
-        Lifetime = ProcessDesktopPlacementRuleViewModelLifetime.Permanent;
+        Lifetime = ProcessDesktopPlacementRuleLifetime.Permanent;
         ExpiresAt = null;
         CreatedAt = default;
         IsLifetimeProcessRunning = true;
@@ -137,15 +114,8 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
     {
         IsEnabled = temporaryRuleSnapshot.Rule.IsEnabled;
         IsDisabledBecauseTargetDesktopIsMissing = temporaryRuleSnapshot.Rule.IsDisabledBecauseTargetDesktopIsMissing;
-        TargetDesktopIdentifier = temporaryRuleSnapshot.Rule.TargetDesktopIdentifier;
         TargetDesktopNumber = temporaryRuleSnapshot.Rule.TargetDesktopNumber;
-        TargetDesktopDisplayName = temporaryRuleSnapshot.Rule.TargetDesktopDisplayName;
-        Lifetime = temporaryRuleSnapshot.Lifetime switch
-        {
-            ProcessDesktopPlacementTemporaryRuleLifetime.UntilProcessExit => ProcessDesktopPlacementRuleViewModelLifetime.UntilProcessExit,
-            ProcessDesktopPlacementTemporaryRuleLifetime.Timed => ProcessDesktopPlacementRuleViewModelLifetime.Timed,
-            _ => ProcessDesktopPlacementRuleViewModelLifetime.Permanent
-        };
+        Lifetime = temporaryRuleSnapshot.Lifetime;
         ExpiresAt = temporaryRuleSnapshot.ExpiresAt;
         CreatedAt = temporaryRuleSnapshot.CreatedAt;
         IsLifetimeProcessRunning = temporaryRuleSnapshot.IsProcessRunning;
