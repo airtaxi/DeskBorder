@@ -332,16 +332,18 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         {
             ShouldApplyRulesWhenProcessStarts = actualProcessDesktopPlacementSettings.ShouldApplyRulesWhenProcessStarts,
             QuickConfigurationHotkey = NormalizeKeyboardShortcutSettings(actualProcessDesktopPlacementSettings.QuickConfigurationHotkey),
-            Rules = NormalizeProcessDesktopPlacementRules(actualProcessDesktopPlacementSettings.Rules)
+            Rules = NormalizeProcessDesktopPlacementRules(
+                actualProcessDesktopPlacementSettings.Rules,
+                actualProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing)
         };
     }
 
-    private static ProcessDesktopPlacementRuleSettings[] NormalizeProcessDesktopPlacementRules(ProcessDesktopPlacementRuleSettings[]? processDesktopPlacementRules)
+    private static ProcessDesktopPlacementRuleSettings[] NormalizeProcessDesktopPlacementRules(ProcessDesktopPlacementRuleSettings[]? processDesktopPlacementRules, bool shouldPreserveMissingTargetDisabledFlag)
     {
         var normalizedProcessDesktopPlacementRules = new Dictionary<string, ProcessDesktopPlacementRuleSettings>(StringComparer.OrdinalIgnoreCase);
         foreach (var processDesktopPlacementRule in processDesktopPlacementRules ?? [])
         {
-            if (!TryNormalizeProcessDesktopPlacementRule(processDesktopPlacementRule, out var normalizedProcessDesktopPlacementRule)) continue;
+            if (!TryNormalizeProcessDesktopPlacementRule(processDesktopPlacementRule, shouldPreserveMissingTargetDisabledFlag, out var normalizedProcessDesktopPlacementRule)) continue;
 
             normalizedProcessDesktopPlacementRules[normalizedProcessDesktopPlacementRule.ProcessName] = normalizedProcessDesktopPlacementRule;
         }
@@ -349,7 +351,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         return [.. normalizedProcessDesktopPlacementRules.Values.OrderBy(processDesktopPlacementRule => processDesktopPlacementRule.ProcessName, StringComparer.OrdinalIgnoreCase)];
     }
 
-    private static bool TryNormalizeProcessDesktopPlacementRule(ProcessDesktopPlacementRuleSettings? processDesktopPlacementRule, out ProcessDesktopPlacementRuleSettings normalizedProcessDesktopPlacementRule)
+    private static bool TryNormalizeProcessDesktopPlacementRule(ProcessDesktopPlacementRuleSettings? processDesktopPlacementRule, bool shouldPreserveMissingTargetDisabledFlag, out ProcessDesktopPlacementRuleSettings normalizedProcessDesktopPlacementRule)
     {
         normalizedProcessDesktopPlacementRule = new();
         if (processDesktopPlacementRule is null) return false;
@@ -359,6 +361,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
         normalizedProcessDesktopPlacementRule = processDesktopPlacementRule with
         {
+            IsDisabledBecauseTargetDesktopIsMissing = shouldPreserveMissingTargetDisabledFlag && processDesktopPlacementRule.IsDisabledBecauseTargetDesktopIsMissing,
             ProcessName = processName,
             TargetDesktopNumber = Math.Max(1, processDesktopPlacementRule.TargetDesktopNumber)
         };

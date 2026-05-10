@@ -226,13 +226,21 @@ public sealed class ApplicationBootstrapService(
     private async Task UpsertPersistentProcessDesktopPlacementRuleAsync(ProcessDesktopPlacementRuleSettings processDesktopPlacementRule)
     {
         var currentSettings = _settingsService.Settings;
+        var currentWorkspaceSnapshot = _virtualDesktopService.GetWorkspaceSnapshot();
+        var updatedProcessDesktopPlacementRule = processDesktopPlacementRule with
+        {
+            IsDisabledBecauseTargetDesktopIsMissing = ProcessDesktopPlacementRuleStateHelper.ShouldDisableBecauseTargetDesktopIsMissing(
+                currentSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing,
+                processDesktopPlacementRule.TargetDesktopNumber,
+                currentWorkspaceSnapshot.DesktopCount)
+        };
         var existingRules = currentSettings.ProcessDesktopPlacementSettings.Rules
             .Where(rule => !string.Equals(rule.ProcessName, processDesktopPlacementRule.ProcessName, StringComparison.OrdinalIgnoreCase));
         await _settingsService.UpdateSettingsAsync(currentSettings with
         {
             ProcessDesktopPlacementSettings = currentSettings.ProcessDesktopPlacementSettings with
             {
-                Rules = [.. existingRules, processDesktopPlacementRule]
+                Rules = [.. existingRules, updatedProcessDesktopPlacementRule]
             }
         });
     }

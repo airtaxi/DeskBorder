@@ -588,7 +588,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             ShouldCreateMissingTargetDesktop = IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled,
             ShouldDisableRuleWhenTargetDesktopIsMissing = IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled,
             QuickConfigurationHotkey = ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings(),
-            Rules = [.. ProcessDesktopPlacementRules.Where(rule => rule.IsPersistentRule).Select(rule => rule.CreateSettings())]
+            Rules = [.. ProcessDesktopPlacementRules
+                .Where(rule => rule.IsPersistentRule)
+                .Select(rule => rule.CreateSettings(IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled))]
         },
         BlacklistedProcessNames = [.. BlacklistedProcessNames],
         WhitelistedProcessNames = [.. WhitelistedProcessNames],
@@ -701,6 +703,26 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     {
         foreach (var processDesktopPlacementRule in ProcessDesktopPlacementRules)
             processDesktopPlacementRule.RefreshLifetimeStatus(currentTimestamp);
+    }
+
+    public bool RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates(int desktopCount)
+    {
+        var hasRuleChanged = false;
+        foreach (var processDesktopPlacementRule in ProcessDesktopPlacementRules.Where(processDesktopPlacementRule => processDesktopPlacementRule.IsPersistentRule))
+        {
+            var isDisabledBecauseTargetDesktopIsMissing = ProcessDesktopPlacementRuleStateHelper.ShouldDisableBecauseTargetDesktopIsMissing(
+                IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled,
+                processDesktopPlacementRule.TargetDesktopNumber,
+                desktopCount);
+            if (processDesktopPlacementRule.IsDisabledBecauseTargetDesktopIsMissing == isDisabledBecauseTargetDesktopIsMissing) continue;
+
+            processDesktopPlacementRule.IsDisabledBecauseTargetDesktopIsMissing = isDisabledBecauseTargetDesktopIsMissing;
+            hasRuleChanged = true;
+        }
+
+        if (hasRuleChanged) RefreshProcessDesktopPlacementRuleLifetimeStatuses(DateTimeOffset.UtcNow);
+
+        return hasRuleChanged;
     }
 
     public void SetNavigatorTriggerRectangle(TriggerRectangleSettings triggerRectangleSettings)
@@ -883,9 +905,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         if (hasCollectionChanged) SortProcessDesktopPlacementRules();
     }
 
-    private void OnDesktopActionModifierSelectionPropertyChanged(object? sender, PropertyChangedEventArgs propertyChangedEventArgs)
+    private void OnDesktopActionModifierSelectionPropertyChanged(object? _, PropertyChangedEventArgs propertyChangedEventArgs)
     {
-        _ = sender;
         if (propertyChangedEventArgs.PropertyName is nameof(ModifierKeySelectionViewModel.IsLeftMouseButtonEnabled)
             or nameof(ModifierKeySelectionViewModel.IsMiddleMouseButtonEnabled)
             or nameof(ModifierKeySelectionViewModel.IsRightMouseButtonEnabled)
@@ -895,12 +916,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             or nameof(ModifierKeySelectionViewModel.IsWindowsEnabled)) NotifyActiveDesktopActionModifierStatesChanged();
     }
 
-    private void OnKeyboardShortcutEditorPropertyChanged(object? sender, PropertyChangedEventArgs propertyChangedEventArgs)
-    {
-        _ = sender;
-        _ = propertyChangedEventArgs;
-        NotifyKeyboardShortcutValidationStatesChanged();
-    }
+    private void OnKeyboardShortcutEditorPropertyChanged(object? _, PropertyChangedEventArgs __) => NotifyKeyboardShortcutValidationStatesChanged();
 
     private void RegisterKeyboardShortcutEditor(KeyboardShortcutEditorViewModel keyboardShortcutEditor)
     {

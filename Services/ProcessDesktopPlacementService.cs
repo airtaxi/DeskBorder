@@ -1,3 +1,5 @@
+using CommunityToolkit.Mvvm.Messaging;
+using DeskBorder.Helpers;
 using DeskBorder.Interop;
 using DeskBorder.Models;
 using System.ComponentModel;
@@ -114,6 +116,7 @@ public sealed class ProcessDesktopPlacementService(
         _knownProcessIdentifiers = [.. initialWindowSnapshots.Select(windowSnapshot => windowSnapshot.ProcessIdentifier).Where(processIdentifier => processIdentifier != 0)];
         _knownWindowHandles = [.. initialWindowSnapshots.Select(windowSnapshot => windowSnapshot.WindowHandle)];
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
+        WeakReferenceMessenger.Default.Register<VirtualDesktopWorkspaceChangedMessage>(this, static (recipient, message) => ((ProcessDesktopPlacementService)recipient).OnVirtualDesktopWorkspaceChangedMessage(message));
         _monitoringCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _fallbackPollingTask = RunFallbackPollingLoopAsync(_monitoringCancellationTokenSource.Token);
         StartWindowEventHook();
@@ -126,6 +129,7 @@ public sealed class ProcessDesktopPlacementService(
 
         IsRunning = false;
         _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
+        WeakReferenceMessenger.Default.Unregister<VirtualDesktopWorkspaceChangedMessage>(this);
         _monitoringCancellationTokenSource?.Cancel();
         TryPostWindowEventHookShutdownMessage();
         try { await (_fallbackPollingTask ?? Task.CompletedTask); }
@@ -144,37 +148,6 @@ public sealed class ProcessDesktopPlacementService(
             _knownWindowHandles.Clear();
             _fileLogService.WriteInformation(nameof(ProcessDesktopPlacementService), "Stopped process desktop placement monitoring.");
         }
-    }
-
-    public bool UpdateTemporaryRuleTarget(string processName, int targetDesktopNumber)
-    {
-        var normalizedProcessName = processName.Trim();
-        if (string.IsNullOrWhiteSpace(normalizedProcessName)) return false;
-
-        var wasUpdated = false;
-        lock (_temporaryRulesLock)
-        {
-            for (var index = 0; index < _temporaryRules.Count; index++)
-            {
-                if (!string.Equals(_temporaryRules[index].Rule.ProcessName, normalizedProcessName, StringComparison.OrdinalIgnoreCase)) continue;
-
-                _temporaryRules[index] = _temporaryRules[index] with
-                {
-                    Rule = _temporaryRules[index].Rule with
-                    {
-                        IsDisabledBecauseTargetDesktopIsMissing = false,
-                        TargetDesktopNumber = Math.Max(1, targetDesktopNumber)
-                    }
-                };
-                wasUpdated = true;
-            }
-        }
-
-        if (!wasUpdated) return false;
-
-        _fileLogService.WriteInformation(nameof(ProcessDesktopPlacementService), $"Updated temporary process desktop placement rule target. ProcessName={normalizedProcessName}, TargetDesktopNumber={targetDesktopNumber}.");
-        OnTemporaryRulesChanged();
-        return true;
     }
 
     private static ProcessDesktopPlacementTemporaryRuleSnapshot CreateTemporaryRuleSnapshot(TemporaryProcessDesktopPlacementRule temporaryRule) => new()
@@ -262,10 +235,12 @@ public sealed class ProcessDesktopPlacementService(
 
         if (!currentSettings.ProcessDesktopPlacementSettings.IsEnabled) return null;
 
+        var shouldSkipMissingTargetDisabledRules = currentSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing;
         foreach (var persistentRule in currentSettings.ProcessDesktopPlacementSettings.Rules)
         {
+            var isDisabledBecauseTargetDesktopIsMissing = shouldSkipMissingTargetDisabledRules && persistentRule.IsDisabledBecauseTargetDesktopIsMissing;
             if (!persistentRule.IsEnabled
-                || persistentRule.IsDisabledBecauseTargetDesktopIsMissing
+                || isDisabledBecauseTargetDesktopIsMissing
                 || !string.Equals(persistentRule.ProcessName, windowSnapshot.ProcessName, StringComparison.OrdinalIgnoreCase))
             {
                 continue;
@@ -365,6 +340,8 @@ public sealed class ProcessDesktopPlacementService(
         await _refreshSemaphore.WaitAsync();
         try
         {
+            var currentWorkspaceSnapshot = _virtualDesktopService.GetWorkspaceSnapshot();
+            await SynchronizePersistentMissingTargetDisabledRulesAsync(currentWorkspaceSnapshot);
             var currentSettings = _settingsService.Settings;
             var currentWindowSnapshots = _virtualDesktopService.GetProcessDesktopPlacementWindowSnapshots();
             var currentProcessIdentifiers = currentWindowSnapshots
@@ -544,10 +521,9 @@ public sealed class ProcessDesktopPlacementService(
         if (!Win32.PostThreadMessage(_windowEventHookThreadIdentifier, ShutdownWindowEventHookMessage, 0, 0)) _fileLogService.WriteWarning(nameof(ProcessDesktopPlacementService), $"Failed to schedule process desktop placement window event hook shutdown. {FormatLastWindowsErrorDetails(Marshal.GetLastWin32Error())}.");
     }
 
-    private void OnSettingsServiceSettingsChanged(object? _, EventArgs __)
-    {
-        _ = RefreshAfterSettingsChangedAsync();
-    }
+    private void OnSettingsServiceSettingsChanged(object? _, EventArgs __) => _ = RefreshAfterSettingsChangedAsync();
+
+    private void OnVirtualDesktopWorkspaceChangedMessage(VirtualDesktopWorkspaceChangedMessage message) => _ = SynchronizePersistentMissingTargetDisabledRulesAfterWorkspaceChangedAsync(message.WorkspaceSnapshot);
 
     private void OnTemporaryRulesChanged() => TemporaryRulesChanged?.Invoke(this, EventArgs.Empty);
 
@@ -558,8 +534,41 @@ public sealed class ProcessDesktopPlacementService(
 
     private async Task RefreshAfterSettingsChangedAsync()
     {
-        try { await RefreshAsync(); }
+        try
+        {
+            await SynchronizePersistentMissingTargetDisabledRulesAsync();
+            await RefreshAsync();
+        }
         catch (Exception exception) { _fileLogService.WriteWarning(nameof(ProcessDesktopPlacementService), "Process desktop placement settings refresh failed.", exception); }
+    }
+
+    private async Task SynchronizePersistentMissingTargetDisabledRulesAfterWorkspaceChangedAsync(VirtualDesktopWorkspaceSnapshot workspaceSnapshot)
+    {
+        try { await SynchronizePersistentMissingTargetDisabledRulesAsync(workspaceSnapshot); }
+        catch (Exception exception) { _fileLogService.WriteWarning(nameof(ProcessDesktopPlacementService), "Process desktop placement missing target rule state refresh failed after a virtual desktop workspace change.", exception); }
+    }
+
+    private async Task SynchronizePersistentMissingTargetDisabledRulesAsync(VirtualDesktopWorkspaceSnapshot? workspaceSnapshot = null)
+    {
+        var currentSettings = _settingsService.Settings;
+        var processDesktopPlacementSettings = currentSettings.ProcessDesktopPlacementSettings;
+        if (processDesktopPlacementSettings.Rules.Length == 0) return;
+
+        var desktopCount = Math.Max(1, workspaceSnapshot?.DesktopCount ?? _virtualDesktopService.GetWorkspaceSnapshot().DesktopCount);
+        var updatedRules = ProcessDesktopPlacementRuleStateHelper.CreateRulesWithMissingTargetDisabledState(
+            processDesktopPlacementSettings.Rules,
+            processDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing,
+            desktopCount,
+            out var hasRuleChanged);
+        if (!hasRuleChanged) return;
+
+        await _settingsService.UpdateSettingsAsync(currentSettings with
+        {
+            ProcessDesktopPlacementSettings = processDesktopPlacementSettings with
+            {
+                Rules = updatedRules
+            }
+        });
     }
 
     private async Task UpdatePersistentRulesByTargetDesktopNumberAsync(DeskBorderSettings currentSettings, int targetDesktopNumber, Func<ProcessDesktopPlacementRuleSettings, ProcessDesktopPlacementRuleSettings> updateRule)

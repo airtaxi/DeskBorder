@@ -1466,9 +1466,6 @@
   <data name="Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitNotRunning" xml:space="preserve">
     <value>프로세스 종료까지 · 실행 안 함</value>
   </data>
-  <data name="SettingsPage_UpdateProcessDesktopPlacementRuleTargetButtonToolTip.Content" xml:space="preserve">
-    <value>현재 데스크톱으로 재지정</value>
-  </data>
   <data name="SettingsPage_EditProcessDesktopPlacementRuleButtonToolTip.Content" xml:space="preserve">
     <value>수정</value>
   </data>

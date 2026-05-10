@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Messaging;
 using DeskBorder.Dialogs;
 using DeskBorder.Helpers;
 using DeskBorder.Models;
@@ -49,6 +50,7 @@ public sealed partial class SettingsPage : Page
     private readonly ManageWindow _manageWindow;
     private readonly IProcessDesktopPlacementService _processDesktopPlacementService;
     private readonly DispatcherQueueTimer _processDesktopPlacementRuleLifetimeTimer;
+    private readonly DispatcherQueueTimer _processDesktopPlacementWorkspaceRefreshTimer;
     private readonly DispatcherQueueTimer _settingsStatusInfoBarAutoHideTimer;
     private readonly ISettingsService _settingsService;
     private readonly IStoreUpdateService _storeUpdateService;
@@ -83,10 +85,13 @@ public sealed partial class SettingsPage : Page
         _storeUpdateService = App.GetRequiredService<IStoreUpdateService>();
         _themeService = App.GetRequiredService<IThemeService>();
         _virtualDesktopService = App.GetRequiredService<IVirtualDesktopService>();
+        _processDesktopPlacementWorkspaceRefreshTimer = CreateProcessDesktopPlacementWorkspaceRefreshTimer();
         _hotkeyService.RegistrationStateChanged += OnHotkeyServiceRegistrationStateChanged;
         _localizationService.LanguageChanged += OnLocalizationServiceLanguageChanged;
         _processDesktopPlacementService.TemporaryRulesChanged += OnProcessDesktopPlacementServiceTemporaryRulesChanged;
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
+        WeakReferenceMessenger.Default.Register<VirtualDesktopWorkspaceChangedMessage>(this, static (recipient, message) => ((SettingsPage)recipient).OnVirtualDesktopWorkspaceChangedMessage(message));
+        _processDesktopPlacementWorkspaceRefreshTimer.Start();
         RefreshStoreUpdateVisualState();
         Unloaded += OnSettingsPageUnloaded;
         _ = LoadSettingsAsync();
@@ -97,10 +102,10 @@ public sealed partial class SettingsPage : Page
         _isSynchronizingViewModel = true;
         ViewModel.Load(_settingsService.Settings);
         RefreshTemporaryProcessDesktopPlacementRules();
+        RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates();
         ApplyHotkeyRegistrationState();
         _isInitialSettingsLoadCompleted = true;
-        if (DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => _isSynchronizingViewModel = false))
-            return;
+        if (DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => _isSynchronizingViewModel = false)) return;
 
         _isSynchronizingViewModel = false;
     }
@@ -127,6 +132,15 @@ public sealed partial class SettingsPage : Page
         processDesktopPlacementRuleLifetimeTimer.IsRepeating = true;
         processDesktopPlacementRuleLifetimeTimer.Tick += OnProcessDesktopPlacementRuleLifetimeTimerTick;
         return processDesktopPlacementRuleLifetimeTimer;
+    }
+
+    private DispatcherQueueTimer CreateProcessDesktopPlacementWorkspaceRefreshTimer()
+    {
+        var processDesktopPlacementWorkspaceRefreshTimer = DispatcherQueue.CreateTimer();
+        processDesktopPlacementWorkspaceRefreshTimer.Interval = TimeSpan.FromSeconds(1);
+        processDesktopPlacementWorkspaceRefreshTimer.IsRepeating = true;
+        processDesktopPlacementWorkspaceRefreshTimer.Tick += OnProcessDesktopPlacementWorkspaceRefreshTimerTick;
+        return processDesktopPlacementWorkspaceRefreshTimer;
     }
 
 #pragma warning disable CA1822 // Mark members as static => Used on XAML bindings
@@ -404,17 +418,13 @@ public sealed partial class SettingsPage : Page
         ShowPendingLanguageRestartRecommendedStatusIfNeeded();
     }
 
-    private async void OnAddBlacklistedProcessNameButtonClicked(object sender, RoutedEventArgs routedEventArgs)
+    private async void OnAddBlacklistedProcessNameButtonClicked(object sender, RoutedEventArgs args)
     {
-        _ = sender;
-        _ = routedEventArgs;
         await ShowBlacklistedProcessSelectionDialogAsync();
     }
 
-    private async void OnAddWhitelistedProcessNameButtonClicked(object sender, RoutedEventArgs routedEventArgs)
+    private async void OnAddWhitelistedProcessNameButtonClicked(object sender, RoutedEventArgs args)
     {
-        _ = sender;
-        _ = routedEventArgs;
         await ShowWhitelistedProcessSelectionDialogAsync();
     }
 
@@ -430,52 +440,43 @@ public sealed partial class SettingsPage : Page
         await EditProcessDesktopPlacementRuleAsync(processDesktopPlacementRule);
     }
 
-    private async void OnExportSettingsButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ExportSettingsAsync();
+    private async void OnExportSettingsButtonClicked(object sender, RoutedEventArgs args) => await ExportSettingsAsync();
 
-    private async void OnExportIntegratedLogButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ExportIntegratedLogAsync();
+    private async void OnExportIntegratedLogButtonClicked(object sender, RoutedEventArgs args) => await ExportIntegratedLogAsync();
 
-    private async void OnImportSettingsButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ImportSettingsAsync();
+    private async void OnImportSettingsButtonClicked(object sender, RoutedEventArgs args) => await ImportSettingsAsync();
 
-    private async void OnResetSettingsButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ResetSettingsAsync();
+    private async void OnResetSettingsButtonClicked(object sender, RoutedEventArgs args) => await ResetSettingsAsync();
 
-    private async void OnSelectNavigatorTriggerAreaButtonClicked(object sender, RoutedEventArgs routedEventArgs)
+    private async void OnSelectNavigatorTriggerAreaButtonClicked(object sender, RoutedEventArgs args)
     {
-        _ = sender;
-        _ = routedEventArgs;
         await SelectNavigatorTriggerAreaAsync();
     }
 
-    private void OnHotkeyServiceRegistrationStateChanged(object? sender, EventArgs eventArguments)
+    private void OnHotkeyServiceRegistrationStateChanged(object? _, EventArgs __)
     {
-        _ = sender;
-        _ = eventArguments;
-        if (DispatcherQueue.TryEnqueue(ApplyHotkeyRegistrationState))
-            return;
+        if (DispatcherQueue.TryEnqueue(ApplyHotkeyRegistrationState)) return;
 
         ApplyHotkeyRegistrationState();
     }
 
     private void OnLocalizationServiceLanguageChanged(object? _, EventArgs __)
     {
-        if (DispatcherQueue.TryEnqueue(RefreshLocalizedProcessDesktopPlacementRuleVisualState))
-            return;
+        if (DispatcherQueue.TryEnqueue(RefreshLocalizedProcessDesktopPlacementRuleVisualState)) return;
 
         RefreshLocalizedProcessDesktopPlacementRuleVisualState();
     }
 
-    private async void OnModifierSelectionCheckBoxClicked(object sender, RoutedEventArgs routedEventArgs)
+    private async void OnModifierSelectionCheckBoxClicked(object sender, RoutedEventArgs args)
     {
-        _ = routedEventArgs;
         await ShowWindowsOnlyModifierWarningIfNeededAsync(sender);
         QueueSettingsSave(
             shouldShowVerticalDesktopSwitchingModifierWarning: ShouldShowVerticalDesktopSwitchingModifierWarningForModifierSelectionChange(sender),
             shouldShowMouseModifierButtonBehaviorInformation: ShouldShowMouseModifierButtonBehaviorInformationForModifierSelectionChange(sender));
     }
 
-    private async void OnCheckStoreUpdateButtonClicked(object sender, RoutedEventArgs routedEventArgs)
+    private async void OnCheckStoreUpdateButtonClicked(object sender, RoutedEventArgs args)
     {
-        _ = sender;
-        _ = routedEventArgs;
         await CheckStoreUpdateAsync();
     }
 
@@ -516,21 +517,6 @@ public sealed partial class SettingsPage : Page
         QueueSettingsSave(processDesktopPlacementRuleEnabledToggleSwitch);
     }
 
-    private async void OnUpdateProcessDesktopPlacementRuleTargetButtonClicked(object sender, RoutedEventArgs args)
-    {
-        if (sender is not Button { Tag: ProcessDesktopPlacementRuleViewModel processDesktopPlacementRule }) return;
-
-        var targetDesktopNumber = _virtualDesktopService.GetCurrentProcessDesktopPlacementTargetNumber();
-        processDesktopPlacementRule.SetTargetDesktopNumber(targetDesktopNumber);
-        if (!processDesktopPlacementRule.IsPersistentRule)
-        {
-            _ = _processDesktopPlacementService.UpdateTemporaryRuleTarget(processDesktopPlacementRule.ProcessName, targetDesktopNumber);
-            return;
-        }
-
-        await SaveSettingsAsync();
-    }
-
     private async void OnRemoveWhitelistedProcessNameButtonClicked(object sender, RoutedEventArgs routedEventArgs)
     {
         if (sender is not Button { Tag: string whitelistedProcessName })
@@ -542,11 +528,9 @@ public sealed partial class SettingsPage : Page
         await SaveSettingsAsync();
     }
 
-    private void OnSectionHelpButtonClicked(object sender, RoutedEventArgs routedEventArgs)
+    private void OnSectionHelpButtonClicked(object sender, RoutedEventArgs args)
     {
-        _ = routedEventArgs;
-        if (sender is not Button { Tag: TeachingTip targetTeachingTip })
-            return;
+        if (sender is not Button { Tag: TeachingTip targetTeachingTip }) return;
 
         if (ReferenceEquals(_activeSectionTeachingTip, targetTeachingTip) && targetTeachingTip.IsOpen)
         {
@@ -563,45 +547,46 @@ public sealed partial class SettingsPage : Page
 
     private void OnSettingSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs) => QueueSettingsSave();
 
-    private void OnSettingToggleSwitchToggled(object sender, RoutedEventArgs routedEventArgs)
+    private void OnSettingToggleSwitchToggled(object sender, RoutedEventArgs args)
     {
-        _ = routedEventArgs;
-        if (_isSynchronizingViewModel || !_isInitialSettingsLoadCompleted || sender is not ToggleSwitch settingToggleSwitch)
-            return;
+        if (_isSynchronizingViewModel || !_isInitialSettingsLoadCompleted || sender is not ToggleSwitch settingToggleSwitch) return;
 
-        if (ShouldRejectAlwaysRunAsAdministratorToggleChange(settingToggleSwitch))
-            return;
+        if (ShouldRejectAlwaysRunAsAdministratorToggleChange(settingToggleSwitch)) return;
+
+        if (ReferenceEquals(settingToggleSwitch, ProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingToggleSwitch))
+        {
+            ViewModel.IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled = settingToggleSwitch.IsOn;
+            RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates();
+        }
 
         QueueSettingsSave(settingToggleSwitch, ShouldShowVerticalDesktopSwitchingModifierWarningForToggleChange(settingToggleSwitch));
     }
 
-    private void OnSettingsPageUnloaded(object sender, RoutedEventArgs routedEventArgs)
+    private void OnSettingsPageUnloaded(object sender, RoutedEventArgs args)
     {
         _developerLogInfoBarAutoHideTimer.Stop();
         _settingsImportExportInfoBarAutoHideTimer.Stop();
         _hotkeyService.RegistrationStateChanged -= OnHotkeyServiceRegistrationStateChanged;
         _localizationService.LanguageChanged -= OnLocalizationServiceLanguageChanged;
         _processDesktopPlacementService.TemporaryRulesChanged -= OnProcessDesktopPlacementServiceTemporaryRulesChanged;
+        WeakReferenceMessenger.Default.Unregister<VirtualDesktopWorkspaceChangedMessage>(this);
         _processDesktopPlacementRuleLifetimeTimer.Stop();
         _processDesktopPlacementRuleLifetimeTimer.Tick -= OnProcessDesktopPlacementRuleLifetimeTimerTick;
+        _processDesktopPlacementWorkspaceRefreshTimer.Stop();
+        _processDesktopPlacementWorkspaceRefreshTimer.Tick -= OnProcessDesktopPlacementWorkspaceRefreshTimerTick;
         _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
         _settingsStatusInfoBarAutoHideTimer.Stop();
         Unloaded -= OnSettingsPageUnloaded;
     }
 
-    private void OnSectionTeachingTipClosed(TeachingTip sender, TeachingTipClosedEventArgs eventArguments)
+    private void OnSectionTeachingTipClosed(TeachingTip sender, TeachingTipClosedEventArgs args)
     {
-        _ = eventArguments;
-        if (ReferenceEquals(_activeSectionTeachingTip, sender))
-            _activeSectionTeachingTip = null;
+        if (ReferenceEquals(_activeSectionTeachingTip, sender)) _activeSectionTeachingTip = null;
     }
 
-    private void OnSettingsServiceSettingsChanged(object? sender, EventArgs eventArguments)
+    private void OnSettingsServiceSettingsChanged(object? _, EventArgs __)
     {
-        _ = sender;
-        _ = eventArguments;
-        if (DispatcherQueue.TryEnqueue(ApplySettingsToViewModel))
-            return;
+        if (DispatcherQueue.TryEnqueue(ApplySettingsToViewModel)) return;
 
         ApplySettingsToViewModel();
     }
@@ -612,11 +597,21 @@ public sealed partial class SettingsPage : Page
         ViewModel.RefreshProcessDesktopPlacementRuleLifetimeStatuses(DateTimeOffset.UtcNow);
     }
 
+    private void OnProcessDesktopPlacementWorkspaceRefreshTimerTick(object? _, object __)
+        => RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates(shouldSaveChanges: true);
+
     private void OnProcessDesktopPlacementServiceTemporaryRulesChanged(object? _, EventArgs __)
     {
         if (DispatcherQueue.TryEnqueue(RefreshTemporaryProcessDesktopPlacementRules)) return;
 
         RefreshTemporaryProcessDesktopPlacementRules();
+    }
+
+    private void OnVirtualDesktopWorkspaceChangedMessage(VirtualDesktopWorkspaceChangedMessage message)
+    {
+        if (DispatcherQueue.TryEnqueue(() => RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates(message.WorkspaceSnapshot, shouldSaveChanges: true))) return;
+
+        RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates(message.WorkspaceSnapshot, shouldSaveChanges: true);
     }
 
     private void OnSettingNumberBoxValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs eventArguments) => QueueSettingsSave();
@@ -636,6 +631,18 @@ public sealed partial class SettingsPage : Page
     {
         ViewModel.SynchronizeTemporaryProcessDesktopPlacementRules(_processDesktopPlacementService.GetTemporaryRules());
         RefreshProcessDesktopPlacementRuleLifetimeTimerState();
+    }
+
+    private void RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates(VirtualDesktopWorkspaceSnapshot? workspaceSnapshot = null, bool shouldSaveChanges = false)
+    {
+        try
+        {
+            var desktopCount = Math.Max(1, workspaceSnapshot?.DesktopCount ?? _virtualDesktopService.GetWorkspaceSnapshot().DesktopCount);
+            if (!ViewModel.RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates(desktopCount)) return;
+
+            if (shouldSaveChanges) QueueSettingsSave();
+        }
+        catch (Exception exception) { _fileLogService.WriteWarning(nameof(SettingsPage), "Failed to refresh process desktop placement missing target rule states.", exception); }
     }
 
     private async Task<PickFileResult> PickExportSettingsFileAsync()
@@ -842,6 +849,7 @@ public sealed partial class SettingsPage : Page
             case ProcessDesktopPlacementRuleLifetime.Permanent:
                 if (!ViewModel.AddProcessDesktopPlacementRules(selectedProcessNames, targetDesktopNumber)) return;
 
+                RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates();
                 await SaveSettingsAsync();
                 break;
             default:
@@ -874,6 +882,7 @@ public sealed partial class SettingsPage : Page
                 if (!processDesktopPlacementRule.IsPersistentRule) _ = _processDesktopPlacementService.RemoveTemporaryRule(processDesktopPlacementRule.ProcessName);
 
                 ViewModel.UpsertProcessDesktopPlacementRule(updatedProcessDesktopPlacementRule);
+                RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates();
                 await SaveSettingsAsync();
                 break;
             default:

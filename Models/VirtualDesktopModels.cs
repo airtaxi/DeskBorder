@@ -73,6 +73,8 @@ public sealed record VirtualDesktopWorkspaceSnapshot
     public int DesktopCount => DesktopEntries.Length;
 }
 
+public sealed record VirtualDesktopWorkspaceChangedMessage(VirtualDesktopWorkspaceSnapshot WorkspaceSnapshot);
+
 public sealed record DesktopNavigationResult
 {
     public VirtualDesktopOperationStatus OperationStatus { get; init; } = VirtualDesktopOperationStatus.Success;

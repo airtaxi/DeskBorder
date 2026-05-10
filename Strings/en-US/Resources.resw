@@ -1466,9 +1466,6 @@
   <data name="Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitNotRunning" xml:space="preserve">
     <value>Until process exits · not running</value>
   </data>
-  <data name="SettingsPage_UpdateProcessDesktopPlacementRuleTargetButtonToolTip.Content" xml:space="preserve">
-    <value>Retarget to the current desktop</value>
-  </data>
   <data name="SettingsPage_EditProcessDesktopPlacementRuleButtonToolTip.Content" xml:space="preserve">
     <value>Edit</value>
   </data>

@@ -22,5 +22,4 @@ public interface IProcessDesktopPlacementService
 
     Task StopAsync();
 
-    bool UpdateTemporaryRuleTarget(string processName, int targetDesktopNumber);
 }

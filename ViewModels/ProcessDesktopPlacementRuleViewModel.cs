@@ -16,7 +16,6 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
     public partial bool IsEnabled { get; set; } = true;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ProcessNameDisplayText))]
     public partial bool IsDisabledBecauseTargetDesktopIsMissing { get; set; }
 
     [ObservableProperty]
@@ -27,7 +26,6 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
     public partial ProcessDesktopPlacementRuleLifetime Lifetime { get; set; } = ProcessDesktopPlacementRuleLifetime.Permanent;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ProcessNameDisplayText))]
     public partial string ProcessName { get; set; } = string.Empty;
 
     [ObservableProperty]
@@ -41,14 +39,10 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
 
     public string TargetDesktopDisplayText => SettingsDisplayFormatter.FormatDesktopDisplayName(TargetDesktopNumber);
 
-    public string ProcessNameDisplayText => IsDisabledBecauseTargetDesktopIsMissing
-        ? LocalizedResourceAccessor.GetFormattedString("Settings.ProcessDesktopPlacement.RuleDisabledBecauseTargetDesktopIsMissingFormat", ProcessName)
-        : ProcessName;
-
-    public ProcessDesktopPlacementRuleSettings CreateSettings() => new()
+    public ProcessDesktopPlacementRuleSettings CreateSettings(bool shouldPreserveMissingTargetDisabledFlag) => new()
     {
         IsEnabled = IsEnabled,
-        IsDisabledBecauseTargetDesktopIsMissing = IsDisabledBecauseTargetDesktopIsMissing,
+        IsDisabledBecauseTargetDesktopIsMissing = shouldPreserveMissingTargetDisabledFlag && IsDisabledBecauseTargetDesktopIsMissing,
         ProcessName = ProcessName,
         TargetDesktopNumber = TargetDesktopNumber
     };
@@ -80,8 +74,7 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
 
     public void RefreshLifetimeStatus(DateTimeOffset currentTimestamp)
     {
-        OnPropertyChanged(nameof(ProcessNameDisplayText));
-        RuleLifetimeStatusText = Lifetime switch
+        var ruleLifetimeStatusText = Lifetime switch
         {
             ProcessDesktopPlacementRuleLifetime.Timed => FormatTimedLifetimeStatus(currentTimestamp),
             ProcessDesktopPlacementRuleLifetime.UntilProcessExit => LocalizedResourceAccessor.GetString(IsLifetimeProcessRunning
@@ -89,12 +82,9 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
                 : "Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitNotRunning"),
             _ => LocalizedResourceAccessor.GetString("Settings.ProcessDesktopPlacement.RuleLifetime.Permanent")
         };
-    }
-
-    public void SetTargetDesktopNumber(int targetDesktopNumber)
-    {
-        IsDisabledBecauseTargetDesktopIsMissing = false;
-        TargetDesktopNumber = Math.Max(1, targetDesktopNumber);
+        RuleLifetimeStatusText = IsDisabledBecauseTargetDesktopIsMissing
+            ? LocalizedResourceAccessor.GetFormattedString("Settings.ProcessDesktopPlacement.RuleDisabledBecauseTargetDesktopIsMissingFormat", ruleLifetimeStatusText)
+            : ruleLifetimeStatusText;
     }
 
     public void UpdateFromSettings(ProcessDesktopPlacementRuleSettings processDesktopPlacementRuleSettings)

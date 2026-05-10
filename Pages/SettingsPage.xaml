@@ -917,10 +917,9 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <StackPanel VerticalAlignment="Center" Spacing="2">
-                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind ProcessNameDisplayText, Mode=OneWay}" />
+                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind ProcessName, Mode=OneWay}" />
                                                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind TargetDesktopDisplayText, Mode=OneWay}" />
                                                 <TextBlock Foreground="{ThemeResource TextFillColorTertiaryBrush}" Text="{x:Bind RuleLifetimeStatusText, Mode=OneWay}" />
                                             </StackPanel>
@@ -937,21 +936,6 @@
                                                 Padding="8"
                                                 Background="Transparent"
                                                 BorderBrush="Transparent"
-                                                Click="OnUpdateProcessDesktopPlacementRuleTargetButtonClicked"
-                                                Tag="{Binding}">
-                                                <Button.Content>
-                                                    <SymbolIcon Symbol="Refresh" />
-                                                </Button.Content>
-                                                <ToolTipService.ToolTip>
-                                                    <ToolTip x:Uid="SettingsPage_UpdateProcessDesktopPlacementRuleTargetButtonToolTip" Content="현재 데스크톱으로 재지정" />
-                                                </ToolTipService.ToolTip>
-                                            </Button>
-                                            <Button
-                                                Grid.Column="3"
-                                                MinWidth="0"
-                                                Padding="8"
-                                                Background="Transparent"
-                                                BorderBrush="Transparent"
                                                 Click="OnEditProcessDesktopPlacementRuleButtonClicked"
                                                 Tag="{Binding}">
                                                 <Button.Content>
@@ -962,7 +946,7 @@
                                                 </ToolTipService.ToolTip>
                                             </Button>
                                             <Button
-                                                Grid.Column="4"
+                                                Grid.Column="3"
                                                 MinWidth="0"
                                                 Padding="8"
                                                 Background="Transparent"

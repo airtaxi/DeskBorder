@@ -1466,9 +1466,6 @@
   <data name="Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitNotRunning" xml:space="preserve">
     <value>直到處理程序結束 · 未執行</value>
   </data>
-  <data name="SettingsPage_UpdateProcessDesktopPlacementRuleTargetButtonToolTip.Content" xml:space="preserve">
-    <value>重新指定為目前桌面</value>
-  </data>
   <data name="SettingsPage_EditProcessDesktopPlacementRuleButtonToolTip.Content" xml:space="preserve">
     <value>編輯</value>
   </data>
