@@ -1,18 +1,16 @@
 using DeskBorder.Helpers;
 using DeskBorder.Models;
-using System.Collections.Concurrent;
 
 namespace DeskBorder.Services;
 
-public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, IFileLogService fileLogService, IForegroundWindowFullscreenService foregroundWindowFullscreenService, IMouseMovementTrackingService mouseMovementTrackingService) : IDesktopEdgeMonitorService, IDisposable
+public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, IFileLogService fileLogService, IForegroundWindowFullscreenService foregroundWindowFullscreenService, IMouseMovementTrackingService mouseMovementTrackingService, IGameBarProcessBlacklistService gameBarProcessBlacklistService) : IDesktopEdgeMonitorService, IDisposable
 {
     private static readonly TimeSpan s_defaultPollingInterval = TimeSpan.FromMilliseconds(40);
     private static readonly TimeSpan s_refreshFailureLoggingWindow = TimeSpan.FromSeconds(2);
-    private static readonly ConcurrentDictionary<string, string> s_autoBlacklistedGameBarExecutablePaths = new(StringComparer.OrdinalIgnoreCase);
-    private static readonly ConcurrentDictionary<string, byte> s_persistingGameBarExecutablePaths = new(StringComparer.OrdinalIgnoreCase);
 
     private readonly IFileLogService _fileLogService = fileLogService;
     private readonly IForegroundWindowFullscreenService _foregroundWindowFullscreenService = foregroundWindowFullscreenService;
+    private readonly IGameBarProcessBlacklistService _gameBarProcessBlacklistService = gameBarProcessBlacklistService;
     private readonly IMouseMovementTrackingService _mouseMovementTrackingService = mouseMovementTrackingService;
     private readonly ISettingsService _settingsService = settingsService;
     private CancellationTokenSource? _monitoringCancellationTokenSource;
@@ -54,14 +52,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             ? _foregroundWindowFullscreenService.GetForegroundWindowFullscreenState(displayMonitors)
             : new();
         var currentDisplayMonitor = FindCurrentDisplayMonitor(displayMonitors, currentCursorPosition);
-        var isForegroundProcessGameBarRecognizedGame = !string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ExecutablePath)
-            && MouseHelper.IsGameBarRecognizedGame(foregroundProcessSnapshot.ExecutablePath);
-        QueueGameBarRecognizedProcessAutoBlacklistPersistence(foregroundProcessSnapshot, currentSettings, isForegroundProcessGameBarRecognizedGame);
-        var isForegroundProcessBlacklisted = IsForegroundProcessBlacklisted(
-            currentSettings.BlacklistedProcessNames,
-            currentSettings.WhitelistedProcessNames,
-            foregroundProcessSnapshot,
-            isForegroundProcessGameBarRecognizedGame);
+        var isForegroundProcessBlacklisted = IsForegroundProcessBlacklisted(currentSettings, foregroundProcessSnapshot);
         var desktopEdgeAvailabilityStatus = GetDesktopEdgeAvailabilityStatus(
             currentSettings,
             displayMonitors.Length,
@@ -561,7 +552,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         if (currentState.DesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByBlacklistedProcess
             && !string.IsNullOrWhiteSpace(currentState.ForegroundProcessSnapshot.ExecutablePath))
         {
-            var wasAutoBlacklistedByGameBar = s_autoBlacklistedGameBarExecutablePaths.ContainsKey(currentState.ForegroundProcessSnapshot.ExecutablePath);
+            var wasAutoBlacklistedByGameBar = _gameBarProcessBlacklistService.IsAutoBlacklisted(currentState.ForegroundProcessSnapshot);
             if (wasAutoBlacklistedByGameBar)
             {
                 _fileLogService.WriteInformation(
@@ -581,98 +572,15 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         DesktopEdgeAvailabilityStatus currentDesktopEdgeAvailabilityStatus) => previousDesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton
             || currentDesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton;
 
-    private bool IsForegroundProcessBlacklisted(
-        IReadOnlyList<string> blacklistedProcessNames,
-        IReadOnlyList<string> whitelistedProcessNames,
-        ForegroundProcessSnapshot foregroundProcessSnapshot,
-        bool isForegroundProcessGameBarRecognizedGame)
+    private bool IsForegroundProcessBlacklisted(DeskBorderSettings currentSettings, ForegroundProcessSnapshot foregroundProcessSnapshot)
     {
-        if (!string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ProcessName)
-            && whitelistedProcessNames.Contains(foregroundProcessSnapshot.ProcessName, StringComparer.OrdinalIgnoreCase))
-        {
-            return false;
-        }
+        var processName = foregroundProcessSnapshot.ProcessName;
+        if (string.IsNullOrWhiteSpace(processName)) return false;
+        if (IsProcessNameListed(currentSettings.WhitelistedProcessNames, processName)) return false;
 
-        if (!string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ProcessName)
-            && blacklistedProcessNames.Contains(foregroundProcessSnapshot.ProcessName, StringComparer.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (!isForegroundProcessGameBarRecognizedGame
-            || string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ProcessName)
-            || string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ExecutablePath))
-        {
-            return false;
-        }
-
-        if (s_autoBlacklistedGameBarExecutablePaths.TryAdd(foregroundProcessSnapshot.ExecutablePath, foregroundProcessSnapshot.ProcessName))
-        {
-            _fileLogService.WriteInformation(
-                nameof(DesktopEdgeMonitorService),
-                $"Auto-registered Game Bar recognized foreground process to the runtime blacklist. ProcessName={foregroundProcessSnapshot.ProcessName}, ExecutablePath={foregroundProcessSnapshot.ExecutablePath}.");
-        }
-
-        return true;
+        return IsProcessNameListed(currentSettings.BlacklistedProcessNames, processName)
+            || _gameBarProcessBlacklistService.TryAutoBlacklistForegroundProcess(currentSettings, foregroundProcessSnapshot);
     }
 
-    private void QueueGameBarRecognizedProcessAutoBlacklistPersistence(
-        ForegroundProcessSnapshot foregroundProcessSnapshot,
-        DeskBorderSettings currentSettings,
-        bool isForegroundProcessGameBarRecognizedGame)
-    {
-        if (!isForegroundProcessGameBarRecognizedGame
-            || string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ProcessName)
-            || string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ExecutablePath))
-        {
-            return;
-        }
-
-        if (currentSettings.WhitelistedProcessNames.Contains(foregroundProcessSnapshot.ProcessName, StringComparer.OrdinalIgnoreCase)
-            || currentSettings.BlacklistedProcessNames.Contains(foregroundProcessSnapshot.ProcessName, StringComparer.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
-        if (!s_persistingGameBarExecutablePaths.TryAdd(foregroundProcessSnapshot.ExecutablePath, 0))
-            return;
-
-        _ = PersistGameBarRecognizedProcessToBlacklistAsync(foregroundProcessSnapshot);
-    }
-
-    private async Task PersistGameBarRecognizedProcessToBlacklistAsync(ForegroundProcessSnapshot foregroundProcessSnapshot)
-    {
-        try
-        {
-            var currentSettings = _settingsService.Settings;
-            if (string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ProcessName)
-                || string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ExecutablePath)
-                || currentSettings.WhitelistedProcessNames.Contains(foregroundProcessSnapshot.ProcessName, StringComparer.OrdinalIgnoreCase)
-                || currentSettings.BlacklistedProcessNames.Contains(foregroundProcessSnapshot.ProcessName, StringComparer.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            await _settingsService.UpdateSettingsAsync(currentSettings with
-            {
-                BlacklistedProcessNames = [.. currentSettings.BlacklistedProcessNames, foregroundProcessSnapshot.ProcessName]
-            });
-            _fileLogService.WriteInformation(
-                nameof(DesktopEdgeMonitorService),
-                $"Persisted Game Bar recognized foreground process to blacklist. ProcessName={foregroundProcessSnapshot.ProcessName}, ExecutablePath={foregroundProcessSnapshot.ExecutablePath}.");
-        }
-        catch (ArgumentException exception)
-        {
-            _fileLogService.WriteWarning(nameof(DesktopEdgeMonitorService), "Failed to persist Game Bar recognized foreground process to blacklist because the process name was invalid.", exception);
-        }
-        catch (InvalidOperationException exception)
-        {
-            _fileLogService.WriteWarning(nameof(DesktopEdgeMonitorService), "Failed to persist Game Bar recognized foreground process to blacklist because settings update was rejected.", exception);
-        }
-        finally
-        {
-            if (!string.IsNullOrWhiteSpace(foregroundProcessSnapshot.ExecutablePath))
-                _ = s_persistingGameBarExecutablePaths.TryRemove(foregroundProcessSnapshot.ExecutablePath, out _);
-        }
-    }
+    private static bool IsProcessNameListed(IReadOnlyList<string> processNames, string processName) => processNames.Contains(processName, StringComparer.OrdinalIgnoreCase);
 }

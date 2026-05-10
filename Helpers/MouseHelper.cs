@@ -1,8 +1,6 @@
 using DeskBorder.Interop;
 using DeskBorder.Models;
-using Microsoft.Win32;
 using System.ComponentModel;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -10,7 +8,6 @@ namespace DeskBorder.Helpers;
 
 public static class MouseHelper
 {
-    private const string GameBarRegistryPath = @"System\GameConfigStore\Children";
     private const int VirtualScreenLeftSystemMetricIndex = 76;
     private const int VirtualScreenTopSystemMetricIndex = 77;
     private const int VirtualScreenWidthSystemMetricIndex = 78;
@@ -26,7 +23,6 @@ public static class MouseHelper
     private const int MiddleMouseButtonVirtualKey = 0x04;
     private const int RightMouseButtonVirtualKey = 0x02;
     private const int RightWindowsVirtualKey = 0x5C;
-    private static readonly ConcurrentDictionary<string, bool> s_gameBarRecognizedGameCache = new(StringComparer.OrdinalIgnoreCase);
 
     public static bool AreRequiredKeyboardModifierKeysPressed(KeyboardModifierKeys requiredKeyboardModifierKeys, KeyboardModifierKeys pressedKeyboardModifierKeys) => (pressedKeyboardModifierKeys & requiredKeyboardModifierKeys) == requiredKeyboardModifierKeys;
 
@@ -227,36 +223,6 @@ public static class MouseHelper
         catch (InvalidOperationException) { return new(); }
         catch (NotSupportedException) { return new(); }
         catch (Win32Exception) { return new(); }
-    }
-
-    public static bool IsGameBarRecognizedGame(string targetExecutablePath)
-    {
-        if (string.IsNullOrWhiteSpace(targetExecutablePath))
-            return false;
-
-        return s_gameBarRecognizedGameCache.GetOrAdd(targetExecutablePath, static executablePath =>
-        {
-            using var gameConfigStoreKey = Registry.CurrentUser.OpenSubKey(GameBarRegistryPath);
-            if (gameConfigStoreKey is null)
-                return false;
-
-            foreach (var subKeyName in gameConfigStoreKey.GetSubKeyNames())
-            {
-                using var childKey = gameConfigStoreKey.OpenSubKey(subKeyName);
-                if (childKey is null)
-                    continue;
-
-                var matchedExecutablePath = childKey.GetValue("MatchedExeFullPath") as string;
-                if (!string.Equals(matchedExecutablePath, executablePath, StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                var flagsValue = childKey.GetValue("Flags");
-                if (flagsValue is int flags)
-                    return flags > 0;
-            }
-
-            return false;
-        });
     }
 
     private static nint s_windowsKeyHookHandle;
