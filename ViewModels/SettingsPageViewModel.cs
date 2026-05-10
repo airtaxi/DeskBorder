@@ -687,6 +687,18 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public bool RemoveWhitelistedProcessName(string processName) => WhitelistedProcessNames.Remove(processName);
 
+    public void UpsertProcessDesktopPlacementRule(ProcessDesktopPlacementRuleSettings processDesktopPlacementRuleSettings)
+    {
+        var existingProcessDesktopPlacementRule = ProcessDesktopPlacementRules.FirstOrDefault(processDesktopPlacementRule =>
+            processDesktopPlacementRule.IsPersistentRule
+            && string.Equals(processDesktopPlacementRule.ProcessName, processDesktopPlacementRuleSettings.ProcessName, StringComparison.OrdinalIgnoreCase));
+        if (existingProcessDesktopPlacementRule is null) ProcessDesktopPlacementRules.Add(ProcessDesktopPlacementRuleViewModel.Load(processDesktopPlacementRuleSettings));
+        else existingProcessDesktopPlacementRule.UpdateFromSettings(processDesktopPlacementRuleSettings);
+
+        RefreshProcessDesktopPlacementRuleLifetimeStatuses(DateTimeOffset.UtcNow);
+        SortProcessDesktopPlacementRules();
+    }
+
     public void RefreshProcessDesktopPlacementRuleLifetimeStatuses(DateTimeOffset currentTimestamp)
     {
         foreach (var processDesktopPlacementRule in ProcessDesktopPlacementRules)

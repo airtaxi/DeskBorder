@@ -118,6 +118,21 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
         TargetDesktopDisplayName = targetSnapshot.DisplayName;
     }
 
+    public void UpdateFromSettings(ProcessDesktopPlacementRuleSettings processDesktopPlacementRuleSettings)
+    {
+        IsEnabled = processDesktopPlacementRuleSettings.IsEnabled;
+        IsDisabledBecauseTargetDesktopIsMissing = processDesktopPlacementRuleSettings.IsDisabledBecauseTargetDesktopIsMissing;
+        ProcessName = processDesktopPlacementRuleSettings.ProcessName;
+        TargetDesktopIdentifier = processDesktopPlacementRuleSettings.TargetDesktopIdentifier;
+        TargetDesktopNumber = processDesktopPlacementRuleSettings.TargetDesktopNumber;
+        TargetDesktopDisplayName = processDesktopPlacementRuleSettings.TargetDesktopDisplayName;
+        Lifetime = ProcessDesktopPlacementRuleViewModelLifetime.Permanent;
+        ExpiresAt = null;
+        CreatedAt = default;
+        IsLifetimeProcessRunning = true;
+        RefreshLifetimeStatus(DateTimeOffset.UtcNow);
+    }
+
     public void UpdateFromTemporaryRule(ProcessDesktopPlacementTemporaryRuleSnapshot temporaryRuleSnapshot)
     {
         IsEnabled = temporaryRuleSnapshot.Rule.IsEnabled;

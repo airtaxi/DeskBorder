@@ -1469,6 +1469,9 @@
   <data name="SettingsPage_UpdateProcessDesktopPlacementRuleTargetButtonToolTip.Content" xml:space="preserve">
     <value>現在のデスクトップに再指定</value>
   </data>
+  <data name="SettingsPage_EditProcessDesktopPlacementRuleButtonToolTip.Content" xml:space="preserve">
+    <value>編集</value>
+  </data>
   <data name="SettingsPage_RemoveProcessDesktopPlacementRuleButtonToolTip.Content" xml:space="preserve">
     <value>削除</value>
   </data>
