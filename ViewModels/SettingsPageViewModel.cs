@@ -446,6 +446,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public bool IsMultiDisplayBehaviorSelectionEnabled => !IsVerticalDesktopSwitchingEnabled;
 
+    public bool ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing => IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled
+        && IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled;
+
     public string NavigatorTriggerAreaSummary => SettingsDisplayFormatter.FormatTriggerRectangle(CreateNavigatorTriggerRectangleSettings());
 
     public bool AddBlacklistedProcessNames(IEnumerable<string> processNames)
@@ -586,11 +589,11 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             ShouldSwitchToTargetDesktopAfterPlacement = IsProcessDesktopPlacementSwitchToTargetDesktopEnabled,
             ShouldApplyRulesWhenProcessStarts = IsProcessDesktopPlacementRuleApplicationOnProcessStartEnabled,
             ShouldCreateMissingTargetDesktop = IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled,
-            ShouldDisableRuleWhenTargetDesktopIsMissing = IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled,
+            ShouldDisableRuleWhenTargetDesktopIsMissing = ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing,
             QuickConfigurationHotkey = ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings(),
             Rules = [.. ProcessDesktopPlacementRules
                 .Where(rule => rule.IsPersistentRule)
-                .Select(rule => rule.CreateSettings(IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled))]
+                .Select(rule => rule.CreateSettings(ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing))]
         },
         BlacklistedProcessNames = [.. BlacklistedProcessNames],
         WhitelistedProcessNames = [.. WhitelistedProcessNames],
@@ -635,7 +638,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsProcessDesktopPlacementSwitchToTargetDesktopEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldSwitchToTargetDesktopAfterPlacement;
         IsProcessDesktopPlacementRuleApplicationOnProcessStartEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldApplyRulesWhenProcessStarts;
         IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldCreateMissingTargetDesktop;
-        IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing;
+        IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldCreateMissingTargetDesktop
+            && deskBorderSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing;
         SetNavigatorTriggerRectangle(deskBorderSettings.NavigatorSettings.TriggerRectangle);
         SelectedMultiDisplayBehaviorOption = FindSelectionOption(
             MultiDisplayBehaviorOptions,
@@ -711,7 +715,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         foreach (var processDesktopPlacementRule in ProcessDesktopPlacementRules.Where(processDesktopPlacementRule => processDesktopPlacementRule.IsPersistentRule))
         {
             var isDisabledBecauseTargetDesktopIsMissing = ProcessDesktopPlacementRuleStateHelper.ShouldDisableBecauseTargetDesktopIsMissing(
-                IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled,
+                ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing,
                 processDesktopPlacementRule.TargetDesktopNumber,
                 desktopCount);
             if (processDesktopPlacementRule.IsDisabledBecauseTargetDesktopIsMissing == isDisabledBecauseTargetDesktopIsMissing) continue;

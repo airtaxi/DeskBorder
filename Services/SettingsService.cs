@@ -328,13 +328,16 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private static ProcessDesktopPlacementSettings NormalizeProcessDesktopPlacementSettings(ProcessDesktopPlacementSettings? processDesktopPlacementSettings)
     {
         var actualProcessDesktopPlacementSettings = processDesktopPlacementSettings ?? new();
+        var shouldPreserveMissingTargetDisabledFlag = actualProcessDesktopPlacementSettings.ShouldCreateMissingTargetDesktop
+            && actualProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing;
         return actualProcessDesktopPlacementSettings with
         {
+            ShouldDisableRuleWhenTargetDesktopIsMissing = shouldPreserveMissingTargetDisabledFlag,
             ShouldApplyRulesWhenProcessStarts = actualProcessDesktopPlacementSettings.ShouldApplyRulesWhenProcessStarts,
             QuickConfigurationHotkey = NormalizeKeyboardShortcutSettings(actualProcessDesktopPlacementSettings.QuickConfigurationHotkey),
             Rules = NormalizeProcessDesktopPlacementRules(
                 actualProcessDesktopPlacementSettings.Rules,
-                actualProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing)
+                shouldPreserveMissingTargetDisabledFlag)
         };
     }
 

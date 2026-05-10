@@ -203,6 +203,10 @@ public sealed partial class SettingsPage : Page
         ? Visibility.Visible
         : Visibility.Collapsed;
 
+    private Visibility GetProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingVisibility(bool isProcessDesktopPlacementMissingTargetDesktopCreationEnabled) => isProcessDesktopPlacementMissingTargetDesktopCreationEnabled
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
     private bool GetMultiDisplayBehaviorSelectionEnabled(bool isVerticalDesktopSwitchingEnabled) => !isVerticalDesktopSwitchingEnabled;
 
     private Visibility GetVerticalDesktopSwitchingOptionsVisibility(bool areVerticalDesktopSwitchingOptionControlsVisible) => areVerticalDesktopSwitchingOptionControlsVisible
@@ -552,6 +556,13 @@ public sealed partial class SettingsPage : Page
         if (_isSynchronizingViewModel || !_isInitialSettingsLoadCompleted || sender is not ToggleSwitch settingToggleSwitch) return;
 
         if (ShouldRejectAlwaysRunAsAdministratorToggleChange(settingToggleSwitch)) return;
+
+        if (ReferenceEquals(settingToggleSwitch, ProcessDesktopPlacementMissingTargetDesktopCreationToggleSwitch)
+            && !settingToggleSwitch.IsOn)
+        {
+            ViewModel.IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled = false;
+            RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates();
+        }
 
         if (ReferenceEquals(settingToggleSwitch, ProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingToggleSwitch))
         {

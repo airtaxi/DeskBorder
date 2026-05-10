@@ -809,7 +809,8 @@
                                         x:Uid="SettingsPage_ProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingToggleSwitch"
                                         Header="대상 데스크톱이 없으면 규칙 비활성화"
                                         IsOn="{x:Bind ViewModel.IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled, Mode=TwoWay}"
-                                        Toggled="OnSettingToggleSwitchToggled" />
+                                        Toggled="OnSettingToggleSwitchToggled"
+                                        Visibility="{x:Bind GetProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingVisibility(ViewModel.IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled), Mode=OneWay}" />
                                 </StackPanel>
                             </Border>
 
