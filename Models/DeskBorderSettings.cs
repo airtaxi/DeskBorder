@@ -55,6 +55,12 @@ public enum DesktopSwitchMouseLocationOption
     DoNotMove,
 }
 
+public enum ProcessDesktopPlacementTemporaryRuleLifetime
+{
+    UntilProcessExit,
+    Timed,
+}
+
 public sealed record ModifierGateSettings
 {
     public KeyboardModifierKeys RequiredKeyboardModifierKeys { get; init; } = KeyboardModifierKeys.None;
@@ -156,9 +162,44 @@ public sealed record NavigatorSettings
     public TriggerRectangleSettings TriggerRectangle { get; init; } = new();
 }
 
+public sealed record ProcessDesktopPlacementRuleSettings
+{
+    public bool IsEnabled { get; init; } = true;
+
+    public string ProcessName { get; init; } = string.Empty;
+
+    public string TargetDesktopIdentifier { get; init; } = string.Empty;
+
+    public int TargetDesktopNumber { get; init; }
+
+    public string TargetDesktopDisplayName { get; init; } = string.Empty;
+}
+
+public sealed record ProcessDesktopPlacementSettings
+{
+    public bool IsEnabled { get; init; } = true;
+
+    public bool ShouldSwitchToTargetDesktopAfterPlacement { get; init; } = true;
+
+    public bool ShouldApplyRulesWhenProcessStarts { get; init; } = true;
+
+    public bool ShouldCreateMissingTargetDesktop { get; init; }
+
+    public bool ShouldDisableRuleWhenTargetDesktopIsMissing { get; init; }
+
+    public KeyboardShortcutSettings QuickConfigurationHotkey { get; init; } = new()
+    {
+        IsEnabled = true,
+        RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Shift | KeyboardModifierKeys.Windows,
+        Key = VirtualKey.P
+    };
+
+    public ProcessDesktopPlacementRuleSettings[] Rules { get; init; } = [];
+}
+
 public sealed record DeskBorderSettings
 {
-    public int SchemaVersion { get; init; } = 8;
+    public int SchemaVersion { get; init; } = 9;
 
     public bool IsDeskBorderEnabled { get; init; } = true;
 
@@ -215,6 +256,8 @@ public sealed record DeskBorderSettings
     public FocusedWindowMoveHotkeySettings FocusedWindowMoveHotkeySettings { get; init; } = new();
 
     public NavigatorSettings NavigatorSettings { get; init; } = new();
+
+    public ProcessDesktopPlacementSettings ProcessDesktopPlacementSettings { get; init; } = new();
 
     public string[] BlacklistedProcessNames { get; init; } = [];
 

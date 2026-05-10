@@ -8,11 +8,12 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
     private const int SchemaVersionSix = 6;
     private const int SchemaVersionSeven = 7;
     private const int SchemaVersionEight = 8;
+    private const int SchemaVersionNine = 9;
     private const double DefaultHorizontalDesktopEdgeIgnorePercentage = 20.0;
 
     private readonly IFileLogService _fileLogService = fileLogService;
 
-    public int CurrentSchemaVersion => SchemaVersionEight;
+    public int CurrentSchemaVersion => SchemaVersionNine;
 
     public DeskBorderSettings MigrateSettings(DeskBorderSettings settings)
     {
@@ -21,6 +22,7 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
         if (migratedSettings.SchemaVersion < SchemaVersionSix) migratedSettings = MigrateSettingsToSchemaVersionSix(migratedSettings);
         if (migratedSettings.SchemaVersion < SchemaVersionSeven) migratedSettings = MigrateSettingsToSchemaVersionSeven(migratedSettings);
         if (migratedSettings.SchemaVersion < SchemaVersionEight) migratedSettings = MigrateSettingsToSchemaVersionEight(migratedSettings);
+        if (migratedSettings.SchemaVersion < SchemaVersionNine) migratedSettings = MigrateSettingsToSchemaVersionNine(migratedSettings);
 
         return migratedSettings;
     }
@@ -70,6 +72,26 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
         {
             SchemaVersion = SchemaVersionEight,
             IsDesktopEdgeActivationOnModifierPressEnabled = true
+        };
+    }
+
+    private DeskBorderSettings MigrateSettingsToSchemaVersionNine(DeskBorderSettings settings)
+    {
+        _fileLogService.WriteInformation(nameof(SettingsMigrationService), $"Migrating settings from schema version {settings.SchemaVersion} to {SchemaVersionNine}.");
+        return settings with
+        {
+            SchemaVersion = SchemaVersionNine,
+            ProcessDesktopPlacementSettings = new()
+            {
+                ShouldSwitchToTargetDesktopAfterPlacement = true,
+                ShouldApplyRulesWhenProcessStarts = true,
+                QuickConfigurationHotkey = new()
+                {
+                    IsEnabled = true,
+                    RequiredKeyboardModifierKeys = KeyboardModifierKeys.Control | KeyboardModifierKeys.Shift | KeyboardModifierKeys.Windows,
+                    Key = Windows.System.VirtualKey.P
+                }
+            }
         };
     }
 

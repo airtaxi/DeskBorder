@@ -31,4 +31,34 @@ public static class UiThreadHelper
 
         return taskCompletionSource.Task;
     }
+
+    public static Task ExecuteAsync(Func<Task> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+        return ExecuteAsync(async () =>
+        {
+            await action();
+            return true;
+        });
+    }
+
+    public static Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        var dispatcherQueue = App.GetRequiredService<ManageWindow>().DispatcherQueue;
+        if (dispatcherQueue.HasThreadAccess) return action();
+
+        var taskCompletionSource = new TaskCompletionSource<TResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        if (!dispatcherQueue.TryEnqueue(async () =>
+        {
+            try { taskCompletionSource.SetResult(await action()); }
+            catch (Exception exception) { taskCompletionSource.SetException(exception); }
+        }))
+        {
+            taskCompletionSource.SetException(new InvalidOperationException("Failed to enqueue the UI operation."));
+        }
+
+        return taskCompletionSource.Task;
+    }
 }

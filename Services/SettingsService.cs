@@ -195,6 +195,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             DesktopSwitchMouseLocationSettings = NormalizeDesktopSwitchMouseLocationSettings(settings.DesktopSwitchMouseLocationSettings),
             FocusedWindowMoveHotkeySettings = NormalizeFocusedWindowMoveHotkeySettings(settings.FocusedWindowMoveHotkeySettings),
             NavigatorSettings = NormalizeNavigatorSettings(settings.NavigatorSettings),
+            ProcessDesktopPlacementSettings = NormalizeProcessDesktopPlacementSettings(settings.ProcessDesktopPlacementSettings),
             BlacklistedProcessNames = NormalizeBlacklistedProcessNames(settings.BlacklistedProcessNames)
                 .Except(normalizedWhitelistedProcessNames, StringComparer.OrdinalIgnoreCase)
                 .ToArray(),
@@ -324,6 +325,53 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         };
     }
 
+    private static ProcessDesktopPlacementSettings NormalizeProcessDesktopPlacementSettings(ProcessDesktopPlacementSettings? processDesktopPlacementSettings)
+    {
+        var actualProcessDesktopPlacementSettings = processDesktopPlacementSettings ?? new();
+        return actualProcessDesktopPlacementSettings with
+        {
+            ShouldApplyRulesWhenProcessStarts = actualProcessDesktopPlacementSettings.ShouldApplyRulesWhenProcessStarts,
+            QuickConfigurationHotkey = NormalizeKeyboardShortcutSettings(actualProcessDesktopPlacementSettings.QuickConfigurationHotkey),
+            Rules = NormalizeProcessDesktopPlacementRules(actualProcessDesktopPlacementSettings.Rules)
+        };
+    }
+
+    private static ProcessDesktopPlacementRuleSettings[] NormalizeProcessDesktopPlacementRules(ProcessDesktopPlacementRuleSettings[]? processDesktopPlacementRules)
+    {
+        var normalizedProcessDesktopPlacementRules = new Dictionary<string, ProcessDesktopPlacementRuleSettings>(StringComparer.OrdinalIgnoreCase);
+        foreach (var processDesktopPlacementRule in processDesktopPlacementRules ?? [])
+        {
+            if (!TryNormalizeProcessDesktopPlacementRule(processDesktopPlacementRule, out var normalizedProcessDesktopPlacementRule)) continue;
+
+            normalizedProcessDesktopPlacementRules[normalizedProcessDesktopPlacementRule.ProcessName] = normalizedProcessDesktopPlacementRule;
+        }
+
+        return [.. normalizedProcessDesktopPlacementRules.Values.OrderBy(processDesktopPlacementRule => processDesktopPlacementRule.ProcessName, StringComparer.OrdinalIgnoreCase)];
+    }
+
+    private static bool TryNormalizeProcessDesktopPlacementRule(ProcessDesktopPlacementRuleSettings? processDesktopPlacementRule, out ProcessDesktopPlacementRuleSettings normalizedProcessDesktopPlacementRule)
+    {
+        normalizedProcessDesktopPlacementRule = new();
+        if (processDesktopPlacementRule is null) return false;
+
+        var processName = (processDesktopPlacementRule.ProcessName ?? string.Empty).Trim();
+        var targetDesktopIdentifier = (processDesktopPlacementRule.TargetDesktopIdentifier ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(processName)) return false;
+
+        normalizedProcessDesktopPlacementRule = processDesktopPlacementRule with
+        {
+            ProcessName = processName,
+            TargetDesktopIdentifier = Guid.TryParse(targetDesktopIdentifier, out var parsedTargetDesktopIdentifier)
+                ? parsedTargetDesktopIdentifier.ToString("D")
+                : string.Empty,
+            TargetDesktopNumber = Math.Max(1, processDesktopPlacementRule.TargetDesktopNumber),
+            TargetDesktopDisplayName = string.IsNullOrWhiteSpace(processDesktopPlacementRule.TargetDesktopDisplayName)
+                ? SettingsDisplayFormatter.FormatDesktopDisplayName(Math.Max(1, processDesktopPlacementRule.TargetDesktopNumber))
+                : processDesktopPlacementRule.TargetDesktopDisplayName.Trim()
+        };
+        return true;
+    }
+
     private static double ClampNormalizedLength(double value) => double.IsFinite(value) ? Math.Clamp(value, 0.01, 1.0) : 0.01;
 
     private static double ClampNormalizedOffset(double value, double length) => double.IsFinite(value) ? Math.Clamp(value, 0.0, 1.0 - length) : 0.0;
@@ -365,6 +413,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         ValidateKeyboardShortcutSettings(settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey, "SettingsPage_MovePreviousHotkeyToggleSwitch.Header");
         ValidateKeyboardShortcutSettings(settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey, "SettingsPage_MoveNextHotkeyToggleSwitch.Header");
         ValidateKeyboardShortcutSettings(settings.NavigatorSettings.ToggleHotkey, "SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header");
+        ValidateKeyboardShortcutSettings(settings.ProcessDesktopPlacementSettings.QuickConfigurationHotkey, "SettingsPage_ProcessDesktopPlacementQuickHotkeyToggleSwitch.Header");
         ValidateUniqueKeyboardShortcutSettings(
         [
             new("SettingsPage_ToggleDeskBorderHotkeyToggleSwitch.Header", settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey),
@@ -372,7 +421,8 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             new("SettingsPage_SwitchNextHotkeyToggleSwitch.Header", settings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey),
             new("SettingsPage_MovePreviousHotkeyToggleSwitch.Header", settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey),
             new("SettingsPage_MoveNextHotkeyToggleSwitch.Header", settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey),
-            new("SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header", settings.NavigatorSettings.ToggleHotkey)
+            new("SettingsPage_NavigatorToggleHotkeyToggleSwitch.Header", settings.NavigatorSettings.ToggleHotkey),
+            new("SettingsPage_ProcessDesktopPlacementQuickHotkeyToggleSwitch.Header", settings.ProcessDesktopPlacementSettings.QuickConfigurationHotkey)
         ]);
     }
 

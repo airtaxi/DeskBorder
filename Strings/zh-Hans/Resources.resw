@@ -1334,4 +1334,151 @@
   <data name="SettingsPage_VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch.Header" xml:space="preserve">
     <value>仅在多显示器环境中使用上/下边缘</value>
   </data>
+  <data name="ProcessDesktopPlacementPopupWindow.Title" xml:space="preserve">
+    <value>新窗口自动移至桌面</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.EditTitle" xml:space="preserve">
+    <value>编辑自动移动规则</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TitleTextBlock.Text" xml:space="preserve">
+    <value>新窗口自动移至桌面</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_SaveButton.Content" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_CancelButton.Content" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_DescriptionTextBlock.Text" xml:space="preserve">
+    <value>注册一条规则，让所选进程的新窗口自动移动到指定桌面。</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.EditDescription" xml:space="preserve">
+    <value>编辑此进程已有的新窗口自动移动规则。</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.ProcessNameFormat" xml:space="preserve">
+    <value>进程：{0}</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.TargetDesktopFormat" xml:space="preserve">
+    <value>目标桌面：{0}</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_LifetimeComboBox.Header" xml:space="preserve">
+    <value>规则有效期</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_PermanentComboBoxItem.Content" xml:space="preserve">
+    <value>永久</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_UntilProcessExitComboBoxItem.Content" xml:space="preserve">
+    <value>直到进程退出</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TimedComboBoxItem.Content" xml:space="preserve">
+    <value>限时</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TargetDesktopNumberBox.Header" xml:space="preserve">
+    <value>目标桌面编号</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TimedDurationMinutesNumberBox.Header" xml:space="preserve">
+    <value>持续时间（分钟）</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.NoAvailableProcessesTitle" xml:space="preserve">
+    <value>没有可添加的进程</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.NoAvailableProcessesMessage" xml:space="preserve">
+    <value>当前运行的进程中没有未加入自动移动规则的项目。</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.Dialog.Title" xml:space="preserve">
+    <value>添加新窗口自动移动规则</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.Dialog.Description" xml:space="preserve">
+    <value>选择新窗口应自动移动到当前桌面的运行中进程。</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>新窗口自动移至桌面</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>将新检测到的指定进程窗口自动移动到选定桌面。</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionTeachingTip.Title" xml:space="preserve">
+    <value>新窗口自动移至桌面</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 使用新窗口自动移至桌面：将新检测到的指定进程窗口自动移动到已注册的目标桌面。窗口创建后才会被检测并移动，因此可能会短暂出现在原桌面。
+• 移动窗口后切换到目标桌面：自动移动后切换一次到目标桌面。
+• 程序启动时执行规则：当你直接启动程序，或程序随系统启动时，也会对初始窗口应用规则。关闭此项可减少系统重启后自动启动程序被意外放置的情况。
+• 目标桌面缺失时创建：先创建桌面直到达到保存的桌面编号，再移动窗口。
+• 目标桌面缺失时禁用规则：独立于自动创建选项，目标桌面缺失时不删除规则，只将其关闭。启用此项时，禁用规则会优先于创建目标桌面。
+• 快速设置弹窗快捷键：将当前前台进程快速注册为当前桌面的永久或临时自动移动规则。
+• 从运行中进程添加：将当前运行中的进程添加为以当前桌面为目标的自动移动规则。之后你手动移动的窗口不会被拉回。</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>使用新窗口自动移至桌面</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSwitchToTargetDesktopToggleSwitch.Header" xml:space="preserve">
+    <value>移动窗口后切换到目标桌面</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementRuleApplicationOnProcessStartToggleSwitch.Header" xml:space="preserve">
+    <value>程序启动时执行规则</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementMissingTargetDesktopCreationToggleSwitch.Header" xml:space="preserve">
+    <value>目标桌面缺失时创建</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingToggleSwitch.Header" xml:space="preserve">
+    <value>目标桌面缺失时禁用规则</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>快速设置弹窗快捷键</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>主键</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>修饰键</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_AddProcessDesktopPlacementRuleButton.Content" xml:space="preserve">
+    <value>从运行中进程添加</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.Permanent" xml:space="preserve">
+    <value>永久应用</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.TimedRemainingFormat" xml:space="preserve">
+    <value>限时 · 剩余 {0}</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.TimedExpired" xml:space="preserve">
+    <value>限时 · 已过期</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitRunning" xml:space="preserve">
+    <value>直到进程退出 · 运行中</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitNotRunning" xml:space="preserve">
+    <value>直到进程退出 · 未运行</value>
+  </data>
+  <data name="SettingsPage_UpdateProcessDesktopPlacementRuleTargetButtonToolTip.Content" xml:space="preserve">
+    <value>重新指定为当前桌面</value>
+  </data>
+  <data name="SettingsPage_RemoveProcessDesktopPlacementRuleButtonToolTip.Content" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.SavedTitle" xml:space="preserve">
+    <value>已保存自动移动规则</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.SavedMessageFormat" xml:space="preserve">
+    <value>{0} 窗口将自动移动到 {1}。</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableTitle" xml:space="preserve">
+    <value>无法创建自动移动规则</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableMessage" xml:space="preserve">
+    <value>无法获取当前活动窗口的进程信息。</value>
+  </data>
 </root>

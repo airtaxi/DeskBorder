@@ -10,6 +10,8 @@ internal static partial class Win32
     public const int ShowWindowRestore = 9;
     public const int LowLevelKeyboardHookId = 13;
     public const int LowLevelMouseHookId = 14;
+    public const int ObjectIdentifierWindow = 0;
+    public const int ChildIdentifierSelf = 0;
     public const ushort VirtualKeyF24 = 0x87;
     public const uint KeyboardEventExtendedKeyFlag = 0x0001;
     public const uint MonitorInfoPrimary = 0x00000001;
@@ -40,13 +42,18 @@ internal static partial class Win32
     public const uint DesktopWindowManagerCloakedAttribute = 14;
     public const uint DesktopWindowManagerExtendedFrameBoundsAttribute = 9;
     public const uint DesktopWindowManagerWindowCornerPreferenceAttribute = 33;
+    public const uint EventObjectShow = 0x8002;
+    public const uint GetAncestorRootFlag = 2;
     public const uint GetAncestorRootOwnerFlag = 3;
     public const uint HotkeyModifierAlternate = 0x0001;
     public const uint HotkeyModifierControl = 0x0002;
     public const uint HotkeyModifierShift = 0x0004;
     public const uint HotkeyModifierWindows = 0x0008;
     public const uint HotkeyModifierNoRepeat = 0x4000;
+    public const uint WinEventOutOfContext = 0x0000;
+    public const uint WinEventSkipOwnProcess = 0x0002;
     public const int ExtendedWindowStyleIndex = -20;
+    public const int WindowLongPointerOwnerIndex = -8;
     public const int WindowIconSmall = 0;
     public const int WindowIconBig = 1;
     public const int WindowIconSmallSecondary = 2;
@@ -65,6 +72,7 @@ internal static partial class Win32
     public delegate bool WindowEnumerationProcedure(nint windowHandle, nint applicationData);
     public delegate nint LowLevelKeyboardHookProcedure(int code, nuint wParam, nint lParam);
     public delegate nint LowLevelMouseHookProcedure(int code, nuint wParam, nint lParam);
+    public delegate void WinEventProcedure(nint winEventHook, uint eventType, nint windowHandle, int objectIdentifier, int childIdentifier, uint eventThreadIdentifier, uint eventTime);
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -101,6 +109,13 @@ internal static partial class Win32
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool UnhookWindowsHookEx(nint hookHandle);
 
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern nint SetWinEventHook(uint eventMinimum, uint eventMaximum, nint moduleHandle, WinEventProcedure winEventProcedure, uint processIdentifier, uint threadIdentifier, uint flags);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool UnhookWinEvent(nint winEventHook);
+
     [LibraryImport("user32.dll")]
     public static partial nint GetForegroundWindow();
 
@@ -128,6 +143,9 @@ internal static partial class Win32
 
     [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW", SetLastError = true)]
     public static partial nint GetWindowLongPointer(nint windowHandle, int index);
+
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
+    public static partial nint SetWindowLongPointer(nint windowHandle, int index, nint newLong);
 
     [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
     public static partial nint SendMessage(nint windowHandle, uint message, nint wParam, nint lParam);
@@ -202,6 +220,18 @@ internal static partial class Win32
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool IsWindowVisible(nint windowHandle);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool IsWindow(nint windowHandle);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool IsWindowEnabled(nint windowHandle);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool EnableWindow(nint windowHandle, [MarshalAs(UnmanagedType.Bool)] bool shouldEnable);
 
     [LibraryImport("user32.dll", SetLastError = true)]
     public static partial uint GetWindowThreadProcessId(nint windowHandle, out uint processIdentifier);

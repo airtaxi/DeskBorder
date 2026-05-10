@@ -12,6 +12,7 @@ public sealed class DesktopLifecycleService(
     IHotkeyService hotkeyService,
     ILocalizationService localizationService,
     INavigatorService navigatorService,
+    IProcessDesktopPlacementService processDesktopPlacementService,
     ISettingsService settingsService,
     IToastService toastService,
     IVirtualDesktopService virtualDesktopService) : IDesktopLifecycleService
@@ -29,6 +30,7 @@ public sealed class DesktopLifecycleService(
     private readonly ILocalizationService _localizationService = localizationService;
     private readonly object _mouseLocationApplyStateGate = new();
     private readonly INavigatorService _navigatorService = navigatorService;
+    private readonly IProcessDesktopPlacementService _processDesktopPlacementService = processDesktopPlacementService;
     private readonly ISettingsService _settingsService = settingsService;
     private readonly IToastService _toastService = toastService;
     private readonly IVirtualDesktopService _virtualDesktopService = virtualDesktopService;
@@ -62,6 +64,7 @@ public sealed class DesktopLifecycleService(
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
 
         await RefreshNavigatorAsync();
+        await _processDesktopPlacementService.StartAsync(cancellationToken);
         await _desktopEdgeMonitorService.StartAsync(cancellationToken);
         IsRunning = true;
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Desktop lifecycle service started.");
@@ -85,6 +88,7 @@ public sealed class DesktopLifecycleService(
         await CancelMouseLocationAfterDesktopSwitchAsync();
         await WaitForMouseLocationApplyCancellationCleanupAsync();
         await _desktopEdgeMonitorService.StopAsync();
+        await _processDesktopPlacementService.StopAsync();
         await UiThreadHelper.ExecuteAsync(_navigatorService.Hide);
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Desktop lifecycle service stopped.");
     }

@@ -8,6 +8,16 @@ public interface IVirtualDesktopService
 
     NavigatorPreviewSnapshot GetNavigatorPreviewSnapshot(DisplayMonitorInfo targetDisplayMonitor);
 
+    ProcessDesktopPlacementTargetSnapshot GetCurrentProcessDesktopPlacementTarget();
+
+    ProcessDesktopPlacementTargetSnapshot GetProcessDesktopPlacementTarget(int desktopNumber);
+
+    ProcessDesktopPlacementWindowSnapshot? GetForegroundProcessDesktopPlacementWindowSnapshot();
+
+    ProcessDesktopPlacementWindowSnapshot[] GetProcessDesktopPlacementWindowSnapshots();
+
+    ProcessDesktopPlacementResult PlaceWindowsOnDesktop(IReadOnlyList<nint> windowHandles, ProcessDesktopPlacementRuleSettings processDesktopPlacementRule, bool shouldSwitchToTargetDesktop, bool shouldCreateMissingTargetDesktop);
+
     DesktopNavigationResult SwitchDesktop(DesktopSwitchDirection desktopSwitchDirection);
 
     DesktopNavigationResult MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection desktopSwitchDirection);

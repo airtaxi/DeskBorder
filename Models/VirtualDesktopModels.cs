@@ -18,6 +18,16 @@ public enum VirtualDesktopOperationStatus
     UnexpectedError,
 }
 
+public enum ProcessDesktopPlacementOperationStatus
+{
+    Success,
+    InvalidDesktopIdentifier,
+    TargetDesktopNotFound,
+    WindowNotFound,
+    WindowCannotMove,
+    UnexpectedError,
+}
+
 public enum DesktopNavigationActionKind
 {
     None,
@@ -78,6 +88,60 @@ public sealed record DesktopNavigationResult
     public string? TargetDesktopIdentifier { get; init; }
 
     public bool IsSuccessful => OperationStatus == VirtualDesktopOperationStatus.Success;
+}
+
+public sealed record ProcessDesktopPlacementTargetSnapshot
+{
+    public string DesktopIdentifier { get; init; } = string.Empty;
+
+    public int DesktopNumber { get; init; }
+
+    public string DisplayName { get; init; } = string.Empty;
+}
+
+public sealed record ProcessDesktopPlacementWindowSnapshot
+{
+    public nint WindowHandle { get; init; }
+
+    public uint ProcessIdentifier { get; init; }
+
+    public string ProcessName { get; init; } = string.Empty;
+
+    public string DesktopIdentifier { get; init; } = string.Empty;
+
+    public int DesktopNumber { get; init; }
+}
+
+public sealed record ProcessDesktopPlacementTemporaryRuleSnapshot
+{
+    public ProcessDesktopPlacementRuleSettings Rule { get; init; } = new();
+
+    public ProcessDesktopPlacementTemporaryRuleLifetime Lifetime { get; init; }
+
+    public DateTimeOffset? ExpiresAt { get; init; }
+
+    public DateTimeOffset CreatedAt { get; init; }
+
+    public bool IsProcessRunning { get; init; }
+}
+
+public sealed record ProcessDesktopPlacementResult
+{
+    public ProcessDesktopPlacementOperationStatus OperationStatus { get; init; } = ProcessDesktopPlacementOperationStatus.Success;
+
+    public string? TargetDesktopIdentifier { get; init; }
+
+    public string? TargetDesktopDisplayName { get; init; }
+
+    public int TargetDesktopNumber { get; init; }
+
+    public int MovedWindowCount { get; init; }
+
+    public bool WasTargetDesktopCreated { get; init; }
+
+    public bool DidSwitchToTargetDesktop { get; init; }
+
+    public bool IsSuccessful => OperationStatus == ProcessDesktopPlacementOperationStatus.Success;
 }
 
 public sealed record DesktopAutoDeletionValidationResult

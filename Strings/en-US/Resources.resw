@@ -1334,4 +1334,151 @@
   <data name="SettingsPage_VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch.Header" xml:space="preserve">
     <value>Use top and bottom edges only in multi-display environments</value>
   </data>
+  <data name="ProcessDesktopPlacementPopupWindow.Title" xml:space="preserve">
+    <value>Auto-move new windows to desktops</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.EditTitle" xml:space="preserve">
+    <value>Edit auto-move rule</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TitleTextBlock.Text" xml:space="preserve">
+    <value>Auto-move new windows to desktops</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_SaveButton.Content" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_CancelButton.Content" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_DescriptionTextBlock.Text" xml:space="preserve">
+    <value>Register a rule that automatically moves new windows from the selected process to the specified desktop.</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.EditDescription" xml:space="preserve">
+    <value>Edit the existing automatic desktop move rule for this process.</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.ProcessNameFormat" xml:space="preserve">
+    <value>Process: {0}</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.TargetDesktopFormat" xml:space="preserve">
+    <value>Target desktop: {0}</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_LifetimeComboBox.Header" xml:space="preserve">
+    <value>Rule lifetime</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_PermanentComboBoxItem.Content" xml:space="preserve">
+    <value>Permanent</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_UntilProcessExitComboBoxItem.Content" xml:space="preserve">
+    <value>Until process exits</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TimedComboBoxItem.Content" xml:space="preserve">
+    <value>Timed</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TargetDesktopNumberBox.Header" xml:space="preserve">
+    <value>Target desktop number</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TimedDurationMinutesNumberBox.Header" xml:space="preserve">
+    <value>Duration (minutes)</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.NoAvailableProcessesTitle" xml:space="preserve">
+    <value>No processes to add</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.NoAvailableProcessesMessage" xml:space="preserve">
+    <value>There are no running processes that are not already in the auto-move rules.</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.Dialog.Title" xml:space="preserve">
+    <value>Add new-window auto-move rules</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.Dialog.Description" xml:space="preserve">
+    <value>Select running processes whose new windows should automatically move to the current desktop.</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>Auto-move new windows to desktops</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>Automatically move newly detected windows from specific processes to a selected desktop.</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionTeachingTip.Title" xml:space="preserve">
+    <value>Auto-move new windows to desktops</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• Use auto-move for new windows: Automatically moves newly detected windows from specific processes to their registered target desktop. Windows are detected after they are created, so they may appear briefly on their original desktop.
+• Switch to the target desktop after moving a window: Switches once to the target desktop after the automatic move.
+• Run rules when programs start: Applies rules to initial windows when you launch a program directly or when a program starts with the system. Turn this off to reduce unwanted placement of auto-started programs after a system restart.
+• Create the target desktop when it is missing: Creates desktops up to the saved desktop number before moving the window.
+• Disable the rule when the target desktop is missing: Turns the rule off without deleting it when the target desktop is missing, independently of the automatic creation option. When this is on, disabling the rule takes priority over creating the target desktop.
+• Quick setup popup hotkey: Quickly registers the current foreground process on the current desktop as a permanent or temporary auto-move rule.
+• Add from running processes: Adds a currently running process as an auto-move rule targeting the current desktop. Windows you move manually later are not pulled back.</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>Use auto-move for new windows</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSwitchToTargetDesktopToggleSwitch.Header" xml:space="preserve">
+    <value>Switch to the target desktop after moving a window</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementRuleApplicationOnProcessStartToggleSwitch.Header" xml:space="preserve">
+    <value>Run rules when programs start</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementMissingTargetDesktopCreationToggleSwitch.Header" xml:space="preserve">
+    <value>Create the target desktop when it is missing</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingToggleSwitch.Header" xml:space="preserve">
+    <value>Disable the rule when the target desktop is missing</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>Quick setup popup hotkey</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>Primary key</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>Modifier keys</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_AddProcessDesktopPlacementRuleButton.Content" xml:space="preserve">
+    <value>Add from running processes</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.Permanent" xml:space="preserve">
+    <value>Permanent</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.TimedRemainingFormat" xml:space="preserve">
+    <value>Timed · {0} left</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.TimedExpired" xml:space="preserve">
+    <value>Timed · expired</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitRunning" xml:space="preserve">
+    <value>Until process exits · running</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitNotRunning" xml:space="preserve">
+    <value>Until process exits · not running</value>
+  </data>
+  <data name="SettingsPage_UpdateProcessDesktopPlacementRuleTargetButtonToolTip.Content" xml:space="preserve">
+    <value>Retarget to the current desktop</value>
+  </data>
+  <data name="SettingsPage_RemoveProcessDesktopPlacementRuleButtonToolTip.Content" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.SavedTitle" xml:space="preserve">
+    <value>Auto-move rule saved</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.SavedMessageFormat" xml:space="preserve">
+    <value>{0} windows will automatically move to {1}.</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableTitle" xml:space="preserve">
+    <value>Cannot create auto-move rule</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableMessage" xml:space="preserve">
+    <value>The active window's process information is unavailable.</value>
+  </data>
 </root>

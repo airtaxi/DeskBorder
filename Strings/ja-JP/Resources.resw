@@ -1334,4 +1334,151 @@
   <data name="SettingsPage_VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch.Header" xml:space="preserve">
     <value>マルチディスプレイ環境でのみ上下エッジを使用</value>
   </data>
+  <data name="ProcessDesktopPlacementPopupWindow.Title" xml:space="preserve">
+    <value>新しいウィンドウの自動デスクトップ移動</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.EditTitle" xml:space="preserve">
+    <value>自動移動規則を編集</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TitleTextBlock.Text" xml:space="preserve">
+    <value>新しいウィンドウの自動デスクトップ移動</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_SaveButton.Content" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_CancelButton.Content" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_DescriptionTextBlock.Text" xml:space="preserve">
+    <value>選択したプロセスで新しいウィンドウが開いたとき、指定したデスクトップへ自動移動する規則を登録します。</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.EditDescription" xml:space="preserve">
+    <value>このプロセスに登録済みの新しいウィンドウ自動移動規則を編集します。</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.ProcessNameFormat" xml:space="preserve">
+    <value>プロセス: {0}</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopup.TargetDesktopFormat" xml:space="preserve">
+    <value>対象デスクトップ: {0}</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_LifetimeComboBox.Header" xml:space="preserve">
+    <value>規則の有効期間</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_PermanentComboBoxItem.Content" xml:space="preserve">
+    <value>永続</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_UntilProcessExitComboBoxItem.Content" xml:space="preserve">
+    <value>プロセス終了まで</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TimedComboBoxItem.Content" xml:space="preserve">
+    <value>時間制限</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TargetDesktopNumberBox.Header" xml:space="preserve">
+    <value>対象デスクトップ番号</value>
+  </data>
+  <data name="ProcessDesktopPlacementPopupWindow_TimedDurationMinutesNumberBox.Header" xml:space="preserve">
+    <value>保持時間 (分)</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.NoAvailableProcessesTitle" xml:space="preserve">
+    <value>追加できるプロセスがありません</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.NoAvailableProcessesMessage" xml:space="preserve">
+    <value>現在実行中のプロセスのうち、自動移動規則に未登録のものはありません。</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.Dialog.Title" xml:space="preserve">
+    <value>新しいウィンドウの自動移動規則を追加</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.Dialog.Description" xml:space="preserve">
+    <value>新しいウィンドウを現在のデスクトップへ自動移動する実行中プロセスを選択してください。</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionTitleTextBlock.Text" xml:space="preserve">
+    <value>新しいウィンドウの自動デスクトップ移動</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionDescriptionTextBlock.Text" xml:space="preserve">
+    <value>新しく検出された特定プロセスのウィンドウを指定したデスクトップへ自動移動します。</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionTeachingTip.Title" xml:space="preserve">
+    <value>新しいウィンドウの自動デスクトップ移動</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSectionTeachingTipContentTextBlock.Text" xml:space="preserve">
+    <value>• 新しいウィンドウの自動デスクトップ移動を使用: 新しく検出された特定プロセスのウィンドウを登録済みの対象デスクトップへ自動移動します。ウィンドウ作成後に検出して移動するため、元のデスクトップに一瞬表示される場合があります。
+• ウィンドウ移動後に対象デスクトップへ移動: 自動移動後に対象デスクトップへ 1 回切り替えます。
+• プログラム起動時に規則を実行: ユーザーがプログラムを直接起動した場合や、システム起動とともにプログラムが開始された場合の初期ウィンドウにも規則を適用します。オフにすると、システム再起動後に自動起動したプログラムが意図せず配置されるのを抑えられます。
+• 対象デスクトップがない場合は作成: 保存されたデスクトップ番号まで不足分のデスクトップを作成してからウィンドウを移動します。
+• 対象デスクトップがない場合は規則を無効化: 自動作成オプションとは別に、対象デスクトップがない場合は規則を削除せずオフにします。このオプションがオンの場合、対象デスクトップの作成より規則の無効化が優先されます。
+• クイック設定ポップアップのショートカット: 現在の前面プロセスを現在のデスクトップに永続または一時自動移動規則としてすばやく登録します。
+• 実行中のプロセスから追加: 現在実行中のプロセスを、現在のデスクトップを対象にした自動移動規則として追加します。後で手動移動したウィンドウは戻しません。</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementEnabledToggleSwitch.Header" xml:space="preserve">
+    <value>新しいウィンドウの自動デスクトップ移動を使用</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementSwitchToTargetDesktopToggleSwitch.Header" xml:space="preserve">
+    <value>ウィンドウ移動後に対象デスクトップへ移動</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementRuleApplicationOnProcessStartToggleSwitch.Header" xml:space="preserve">
+    <value>プログラム起動時に規則を実行</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementMissingTargetDesktopCreationToggleSwitch.Header" xml:space="preserve">
+    <value>対象デスクトップがない場合は作成</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingToggleSwitch.Header" xml:space="preserve">
+    <value>対象デスクトップがない場合は規則を無効化</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyToggleSwitch.Header" xml:space="preserve">
+    <value>クイック設定ポップアップのショートカット</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyKeyComboBox.Header" xml:space="preserve">
+    <value>基本キー</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyModifierTextBlock.Text" xml:space="preserve">
+    <value>修飾キー</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyControlCheckBox.Content" xml:space="preserve">
+    <value>Ctrl</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyShiftCheckBox.Content" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyAltCheckBox.Content" xml:space="preserve">
+    <value>Alt</value>
+  </data>
+  <data name="SettingsPage_ProcessDesktopPlacementQuickHotkeyWindowsCheckBox.Content" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="SettingsPage_AddProcessDesktopPlacementRuleButton.Content" xml:space="preserve">
+    <value>実行中のプロセスから追加</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.Permanent" xml:space="preserve">
+    <value>常時適用</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.TimedRemainingFormat" xml:space="preserve">
+    <value>時間制限 · 残り {0}</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.TimedExpired" xml:space="preserve">
+    <value>時間制限 · 期限切れ</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitRunning" xml:space="preserve">
+    <value>プロセス終了まで · 実行中</value>
+  </data>
+  <data name="Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitNotRunning" xml:space="preserve">
+    <value>プロセス終了まで · 未実行</value>
+  </data>
+  <data name="SettingsPage_UpdateProcessDesktopPlacementRuleTargetButtonToolTip.Content" xml:space="preserve">
+    <value>現在のデスクトップに再指定</value>
+  </data>
+  <data name="SettingsPage_RemoveProcessDesktopPlacementRuleButtonToolTip.Content" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.SavedTitle" xml:space="preserve">
+    <value>自動移動規則を保存しました</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.SavedMessageFormat" xml:space="preserve">
+    <value>{0} のウィンドウを {1} へ自動移動します。</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableTitle" xml:space="preserve">
+    <value>自動移動規則を作成できません</value>
+  </data>
+  <data name="Toast.ProcessDesktopPlacementQuickConfiguration.UnavailableMessage" xml:space="preserve">
+    <value>現在のアクティブ ウィンドウのプロセス情報を確認できません。</value>
+  </data>
 </root>

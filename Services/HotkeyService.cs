@@ -15,6 +15,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     private const int MoveFocusedWindowToPreviousDesktopHotkeyIdentifier = 4;
     private const int MoveFocusedWindowToNextDesktopHotkeyIdentifier = 5;
     private const int ToggleNavigatorHotkeyIdentifier = 6;
+    private const int ShowProcessDesktopPlacementQuickConfigurationHotkeyIdentifier = 7;
     private const uint RefreshRegisteredHotkeysMessage = Win32.WindowApplicationMessage + 1;
     private const uint ShutdownMessage = Win32.WindowApplicationMessage + 2;
     private const uint InvokeMouseHotkeyActionMessage = Win32.WindowApplicationMessage + 3;
@@ -120,8 +121,8 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
 
     private static HotkeyRegistrationPlan BuildRegisteredHotkeys(DeskBorderSettings settings)
     {
-        var registeredKeyboardHotkeys = new List<RegisteredKeyboardHotkey>(6);
-        var registeredMouseHotkeys = new List<RegisteredMouseHotkey>(6);
+        var registeredKeyboardHotkeys = new List<RegisteredKeyboardHotkey>(7);
+        var registeredMouseHotkeys = new List<RegisteredMouseHotkey>(7);
         AddRegisteredHotkey(
             registeredKeyboardHotkeys,
             registeredMouseHotkeys,
@@ -158,6 +159,12 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
             HotkeyActionType.ToggleNavigator,
             ToggleNavigatorHotkeyIdentifier,
             settings.NavigatorSettings.ToggleHotkey);
+        AddRegisteredHotkey(
+            registeredKeyboardHotkeys,
+            registeredMouseHotkeys,
+            HotkeyActionType.ShowProcessDesktopPlacementQuickConfiguration,
+            ShowProcessDesktopPlacementQuickConfigurationHotkeyIdentifier,
+            settings.ProcessDesktopPlacementSettings.QuickConfigurationHotkey);
         ValidateRegisteredHotkeyCollisions(registeredKeyboardHotkeys, registeredMouseHotkeys);
         return new HotkeyRegistrationPlan(registeredKeyboardHotkeys, registeredMouseHotkeys);
     }
@@ -187,7 +194,8 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
         [HotkeyActionType.SwitchToNextDesktop] = null,
         [HotkeyActionType.MoveFocusedWindowToPreviousDesktop] = null,
         [HotkeyActionType.MoveFocusedWindowToNextDesktop] = null,
-        [HotkeyActionType.ToggleNavigator] = null
+        [HotkeyActionType.ToggleNavigator] = null,
+        [HotkeyActionType.ShowProcessDesktopPlacementQuickConfiguration] = null
     };
 
     private static void ValidateRegisteredHotkeyCollisions(IReadOnlyList<RegisteredKeyboardHotkey> registeredKeyboardHotkeys, IReadOnlyList<RegisteredMouseHotkey> registeredMouseHotkeys)
@@ -240,6 +248,9 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
                 return;
 
             case HotkeyActionType.ToggleNavigator:
+                return;
+
+            case HotkeyActionType.ShowProcessDesktopPlacementQuickConfiguration:
                 return;
 
             default:

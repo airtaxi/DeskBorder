@@ -25,6 +25,7 @@ Ignore generated `XamlTypeInfo.g.cs` `Icon` obsolete warnings during builds; the
 - `DesktopLifecycleService` is the main orchestration layer for edge activation and hotkeys. It combines:
   - edge state from `IDesktopEdgeMonitorService`
   - virtual desktop operations from `IVirtualDesktopService`
+  - process-based desktop placement monitoring from `IProcessDesktopPlacementService`
   - navigator refreshes
   - modifier-key consumption
   - pending auto-delete warnings and completion toasts
@@ -33,7 +34,8 @@ Ignore generated `XamlTypeInfo.g.cs` `Icon` obsolete warnings during builds; the
 
 - `DesktopEdgeMonitorService` samples cursor position, mouse buttons, modifier keys, foreground process state, monitor layout, and raw mouse movement. It decides whether an edge is merely touched or fully activated.
 - `MouseMovementTrackingService` feeds the additional edge-trigger-distance feature through Raw Input, so edge activation can depend on real mouse travel instead of only cursor position.
-- `VirtualDesktopService` performs actual desktop creation, switching, focused-window moves, auto-delete evaluation, and navigator snapshot generation.
+- `ProcessDesktopPlacementService` uses WinEvent show notifications plus fallback polling while the DeskBorder runtime is enabled, then asks `IVirtualDesktopService` to move matching windows to their configured target desktops.
+- `VirtualDesktopService` performs actual desktop creation, switching, focused-window moves, process-window placement, auto-delete evaluation, and navigator snapshot generation.
 
 ### Virtual desktop interop
 

@@ -8,6 +8,7 @@ public enum HotkeyActionType
     MoveFocusedWindowToPreviousDesktop,
     MoveFocusedWindowToNextDesktop,
     ToggleNavigator,
+    ShowProcessDesktopPlacementQuickConfiguration,
 }
 
 public sealed class HotkeyInvokedEventArgs(HotkeyActionType hotkeyActionType) : EventArgs

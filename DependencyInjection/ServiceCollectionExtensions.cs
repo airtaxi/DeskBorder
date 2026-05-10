@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IMouseMovementTrackingService, MouseMovementTrackingService>();
         serviceCollection.AddSingleton<IHotkeyService, HotkeyService>();
         serviceCollection.AddSingleton<INavigatorService, NavigatorService>();
+        serviceCollection.AddSingleton<IProcessDesktopPlacementService, ProcessDesktopPlacementService>();
         serviceCollection.AddSingleton<IStartupRegistrationService, StartupRegistrationService>();
         serviceCollection.AddSingleton<ISettingsMigrationService, SettingsMigrationService>();
         serviceCollection.AddSingleton<ISettingsService, SettingsService>();

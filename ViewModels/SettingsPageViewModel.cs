@@ -141,12 +141,14 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         MoveFocusedWindowToPreviousDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(inputTriggerOptions);
         MoveFocusedWindowToNextDesktopHotkeyEditor = new KeyboardShortcutEditorViewModel(inputTriggerOptions);
         NavigatorToggleHotkeyEditor = new KeyboardShortcutEditorViewModel(inputTriggerOptions);
+        ProcessDesktopPlacementQuickHotkeyEditor = new KeyboardShortcutEditorViewModel(inputTriggerOptions);
         RegisterKeyboardShortcutEditor(ToggleDeskBorderEnabledHotkeyEditor);
         RegisterKeyboardShortcutEditor(SwitchToPreviousDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(SwitchToNextDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(MoveFocusedWindowToPreviousDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(MoveFocusedWindowToNextDesktopHotkeyEditor);
         RegisterKeyboardShortcutEditor(NavigatorToggleHotkeyEditor);
+        RegisterKeyboardShortcutEditor(ProcessDesktopPlacementQuickHotkeyEditor);
         SwitchDesktopModifierSelection.PropertyChanged += OnDesktopActionModifierSelectionPropertyChanged;
         CreateDesktopModifierSelection.PropertyChanged += OnDesktopActionModifierSelectionPropertyChanged;
     }
@@ -156,6 +158,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public List<SelectionOption<AppLanguagePreference>> AppLanguagePreferenceOptions { get; }
 
     public ObservableCollection<string> BlacklistedProcessNames { get; } = [];
+
+    public ObservableCollection<ProcessDesktopPlacementRuleViewModel> ProcessDesktopPlacementRules { get; } = [];
 
     public ObservableCollection<string> WhitelistedProcessNames { get; } = [];
 
@@ -242,6 +246,21 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial bool IsNavigatorTriggerAreaEnabled { get; set; }
 
     [ObservableProperty]
+    public partial bool IsProcessDesktopPlacementEnabled { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsProcessDesktopPlacementRuleApplicationOnProcessStartEnabled { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool IsProcessDesktopPlacementSwitchToTargetDesktopEnabled { get; set; } = true;
+
+    [ObservableProperty]
     public partial bool IsStoreUpdateCheckEnabled { get; set; }
 
     [ObservableProperty]
@@ -262,7 +281,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
-            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
+            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings(),
+            ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
         SwitchToNextDesktopHotkeyRegistrationFailureMessage);
 
@@ -279,7 +299,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
-            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
+            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings(),
+            ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
         SwitchToPreviousDesktopHotkeyRegistrationFailureMessage);
 
@@ -296,7 +317,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
-            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
+            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings(),
+            ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
         MoveFocusedWindowToNextDesktopHotkeyRegistrationFailureMessage);
 
@@ -313,7 +335,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
-            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
+            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings(),
+            ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
         MoveFocusedWindowToPreviousDesktopHotkeyRegistrationFailureMessage);
 
@@ -332,9 +355,28 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
-            MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings()
+            MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
         NavigatorToggleHotkeyRegistrationFailureMessage);
+
+    public KeyboardShortcutEditorViewModel ProcessDesktopPlacementQuickHotkeyEditor { get; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ProcessDesktopPlacementQuickHotkeyValidationState))]
+    public partial string? ProcessDesktopPlacementQuickHotkeyRegistrationFailureMessage { get; set; }
+
+    public KeyboardShortcutValidationState ProcessDesktopPlacementQuickHotkeyValidationState => GetKeyboardShortcutValidationState(
+        ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings(),
+        [
+            ToggleDeskBorderEnabledHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
+            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
+        ],
+        ProcessDesktopPlacementQuickHotkeyRegistrationFailureMessage);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(NavigatorTriggerAreaSummary))]
@@ -385,7 +427,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             SwitchToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToPreviousDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
             MoveFocusedWindowToNextDesktopHotkeyEditor.CreateKeyboardShortcutSettings(),
-            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings()
+            NavigatorToggleHotkeyEditor.CreateKeyboardShortcutSettings(),
+            ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings()
         ],
         ToggleDeskBorderEnabledHotkeyRegistrationFailureMessage);
 
@@ -421,6 +464,34 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         return true;
     }
 
+    public bool AddProcessDesktopPlacementRules(IEnumerable<string> processNames, ProcessDesktopPlacementTargetSnapshot targetSnapshot)
+    {
+        var processDesktopPlacementRuleProcessNameSet = ProcessDesktopPlacementRules
+            .Where(rule => rule.IsPersistentRule)
+            .Select(rule => rule.ProcessName)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var normalizedProcessNames = NormalizeProcessNames(processNames)
+            .Where(processDesktopPlacementRuleProcessNameSet.Add)
+            .ToArray();
+        if (normalizedProcessNames.Length == 0) return false;
+
+        foreach (var normalizedProcessName in normalizedProcessNames)
+        {
+            ProcessDesktopPlacementRules.Add(new()
+            {
+                IsEnabled = true,
+                ProcessName = normalizedProcessName,
+                TargetDesktopIdentifier = targetSnapshot.DesktopIdentifier,
+                TargetDesktopNumber = targetSnapshot.DesktopNumber,
+                TargetDesktopDisplayName = targetSnapshot.DisplayName
+            });
+        }
+
+        RefreshProcessDesktopPlacementRuleLifetimeStatuses(DateTimeOffset.UtcNow);
+        SortProcessDesktopPlacementRules();
+        return true;
+    }
+
     public bool AddWhitelistedProcessNames(IEnumerable<string> processNames)
     {
         var whitelistedProcessNameSet = WhitelistedProcessNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -443,7 +514,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public DeskBorderSettings CreateSettings() => new()
     {
-        SchemaVersion = 8,
+        SchemaVersion = 9,
         IsDeskBorderEnabled = IsDeskBorderEnabled,
         MultiDisplayBehavior = SelectedMultiDisplayBehaviorOption?.Value ?? MultiDisplayBehavior.DisableInMultiDisplayEnvironment,
         SwitchDesktopModifierSettings = new ModifierGateSettings
@@ -510,6 +581,16 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             IsTriggerAreaEnabled = IsNavigatorTriggerAreaEnabled,
             TriggerRectangle = CreateNavigatorTriggerRectangleSettings()
         },
+        ProcessDesktopPlacementSettings = new ProcessDesktopPlacementSettings
+        {
+            IsEnabled = IsProcessDesktopPlacementEnabled,
+            ShouldSwitchToTargetDesktopAfterPlacement = IsProcessDesktopPlacementSwitchToTargetDesktopEnabled,
+            ShouldApplyRulesWhenProcessStarts = IsProcessDesktopPlacementRuleApplicationOnProcessStartEnabled,
+            ShouldCreateMissingTargetDesktop = IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled,
+            ShouldDisableRuleWhenTargetDesktopIsMissing = IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled,
+            QuickConfigurationHotkey = ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings(),
+            Rules = [.. ProcessDesktopPlacementRules.Where(rule => rule.IsPersistentRule).Select(rule => rule.CreateSettings())]
+        },
         BlacklistedProcessNames = [.. BlacklistedProcessNames],
         WhitelistedProcessNames = [.. WhitelistedProcessNames],
         IsLaunchOnStartupEnabled = IsLaunchOnStartupEnabled,
@@ -549,6 +630,11 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         TopDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.TopIgnorePercentage;
         BottomDesktopEdgeIgnorePercentage = deskBorderSettings.DesktopEdgeIgnoreZoneSettings.BottomIgnorePercentage;
         IsNavigatorTriggerAreaEnabled = deskBorderSettings.NavigatorSettings.IsTriggerAreaEnabled;
+        IsProcessDesktopPlacementEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.IsEnabled;
+        IsProcessDesktopPlacementSwitchToTargetDesktopEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldSwitchToTargetDesktopAfterPlacement;
+        IsProcessDesktopPlacementRuleApplicationOnProcessStartEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldApplyRulesWhenProcessStarts;
+        IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldCreateMissingTargetDesktop;
+        IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing;
         SetNavigatorTriggerRectangle(deskBorderSettings.NavigatorSettings.TriggerRectangle);
         SelectedMultiDisplayBehaviorOption = FindSelectionOption(
             MultiDisplayBehaviorOptions,
@@ -574,6 +660,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         MoveFocusedWindowToPreviousDesktopHotkeyEditor.Load(deskBorderSettings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey);
         MoveFocusedWindowToNextDesktopHotkeyEditor.Load(deskBorderSettings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey);
         NavigatorToggleHotkeyEditor.Load(deskBorderSettings.NavigatorSettings.ToggleHotkey);
+        ProcessDesktopPlacementQuickHotkeyEditor.Load(deskBorderSettings.ProcessDesktopPlacementSettings.QuickConfigurationHotkey);
 
         BlacklistedProcessNames.Clear();
         foreach (var blacklistedProcessName in deskBorderSettings.BlacklistedProcessNames)
@@ -583,14 +670,27 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         foreach (var whitelistedProcessName in deskBorderSettings.WhitelistedProcessNames)
             WhitelistedProcessNames.Add(whitelistedProcessName);
 
+        ProcessDesktopPlacementRules.Clear();
+        foreach (var processDesktopPlacementRule in deskBorderSettings.ProcessDesktopPlacementSettings.Rules) ProcessDesktopPlacementRules.Add(ProcessDesktopPlacementRuleViewModel.Load(processDesktopPlacementRule));
+
+        RefreshProcessDesktopPlacementRuleLifetimeStatuses(DateTimeOffset.UtcNow);
         SortBlacklistedProcessNames();
         SortWhitelistedProcessNames();
+        SortProcessDesktopPlacementRules();
         NotifyKeyboardShortcutValidationStatesChanged();
     }
 
     public bool RemoveBlacklistedProcessName(string processName) => BlacklistedProcessNames.Remove(processName);
 
+    public bool RemoveProcessDesktopPlacementRule(ProcessDesktopPlacementRuleViewModel processDesktopPlacementRule) => ProcessDesktopPlacementRules.Remove(processDesktopPlacementRule);
+
     public bool RemoveWhitelistedProcessName(string processName) => WhitelistedProcessNames.Remove(processName);
+
+    public void RefreshProcessDesktopPlacementRuleLifetimeStatuses(DateTimeOffset currentTimestamp)
+    {
+        foreach (var processDesktopPlacementRule in ProcessDesktopPlacementRules)
+            processDesktopPlacementRule.RefreshLifetimeStatus(currentTimestamp);
+    }
 
     public void SetNavigatorTriggerRectangle(TriggerRectangleSettings triggerRectangleSettings)
     {
@@ -626,6 +726,10 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
             case HotkeyActionType.ToggleNavigator:
                 NavigatorToggleHotkeyRegistrationFailureMessage = registrationFailureMessage;
+                return;
+
+            case HotkeyActionType.ShowProcessDesktopPlacementQuickConfiguration:
+                ProcessDesktopPlacementQuickHotkeyRegistrationFailureMessage = registrationFailureMessage;
                 return;
 
             default:
@@ -721,6 +825,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         OnPropertyChanged(nameof(MoveFocusedWindowToPreviousDesktopHotkeyValidationState));
         OnPropertyChanged(nameof(MoveFocusedWindowToNextDesktopHotkeyValidationState));
         OnPropertyChanged(nameof(NavigatorToggleHotkeyValidationState));
+        OnPropertyChanged(nameof(ProcessDesktopPlacementQuickHotkeyValidationState));
     }
 
     private void NotifyActiveDesktopActionModifierStatesChanged()
@@ -729,6 +834,42 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         OnPropertyChanged(nameof(HasActiveDesktopActionMouseModifierButtons));
         OnPropertyChanged(nameof(HasActiveDesktopActionModifierInputs));
         OnPropertyChanged(nameof(IsSwitchDesktopWhileMouseButtonsArePressedModifierSelectionEnabled));
+    }
+
+    public void SynchronizeTemporaryProcessDesktopPlacementRules(IReadOnlyList<ProcessDesktopPlacementTemporaryRuleSnapshot> temporaryRuleSnapshots)
+    {
+        var temporaryRuleSnapshotByProcessName = temporaryRuleSnapshots
+            .Where(temporaryRuleSnapshot => !string.IsNullOrWhiteSpace(temporaryRuleSnapshot.Rule.ProcessName))
+            .ToDictionary(temporaryRuleSnapshot => temporaryRuleSnapshot.Rule.ProcessName, StringComparer.OrdinalIgnoreCase);
+        var existingTemporaryRules = ProcessDesktopPlacementRules
+            .Where(processDesktopPlacementRule => !processDesktopPlacementRule.IsPersistentRule)
+            .ToArray();
+        var hasCollectionChanged = false;
+        foreach (var existingTemporaryRule in existingTemporaryRules)
+        {
+            if (temporaryRuleSnapshotByProcessName.ContainsKey(existingTemporaryRule.ProcessName)) continue;
+
+            _ = ProcessDesktopPlacementRules.Remove(existingTemporaryRule);
+            hasCollectionChanged = true;
+        }
+
+        foreach (var temporaryRuleSnapshot in temporaryRuleSnapshots)
+        {
+            var existingTemporaryRule = ProcessDesktopPlacementRules.FirstOrDefault(processDesktopPlacementRule =>
+                !processDesktopPlacementRule.IsPersistentRule
+                && string.Equals(processDesktopPlacementRule.ProcessName, temporaryRuleSnapshot.Rule.ProcessName, StringComparison.OrdinalIgnoreCase));
+            if (existingTemporaryRule is null)
+            {
+                ProcessDesktopPlacementRules.Add(ProcessDesktopPlacementRuleViewModel.Load(temporaryRuleSnapshot));
+                hasCollectionChanged = true;
+                continue;
+            }
+
+            existingTemporaryRule.UpdateFromTemporaryRule(temporaryRuleSnapshot);
+        }
+
+        RefreshProcessDesktopPlacementRuleLifetimeStatuses(DateTimeOffset.UtcNow);
+        if (hasCollectionChanged) SortProcessDesktopPlacementRules();
     }
 
     private void OnDesktopActionModifierSelectionPropertyChanged(object? sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -769,6 +910,16 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         BlacklistedProcessNames.Clear();
         foreach (var blacklistedProcessName in sortedBlacklistedProcessNames)
             BlacklistedProcessNames.Add(blacklistedProcessName);
+    }
+
+    private void SortProcessDesktopPlacementRules()
+    {
+        var sortedProcessDesktopPlacementRules = ProcessDesktopPlacementRules
+            .OrderBy(rule => rule.ProcessName, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(rule => rule.Lifetime)
+            .ToArray();
+        ProcessDesktopPlacementRules.Clear();
+        foreach (var processDesktopPlacementRule in sortedProcessDesktopPlacementRules) ProcessDesktopPlacementRules.Add(processDesktopPlacementRule);
     }
 
     private void SortWhitelistedProcessNames()

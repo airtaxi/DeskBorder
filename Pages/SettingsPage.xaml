@@ -737,6 +737,251 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel Spacing="6">
                                 <TextBlock
+                                    x:Uid="SettingsPage_ProcessDesktopPlacementSectionTitleTextBlock"
+                                    FontWeight="SemiBold"
+                                    Text="새 창 자동 데스크톱 이동" />
+                                <TextBlock
+                                    x:Uid="SettingsPage_ProcessDesktopPlacementSectionDescriptionTextBlock"
+                                    Text="새로 감지된 특정 프로세스 창을 지정한 데스크톱으로 이동합니다."
+                                    TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                            <Grid
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top">
+                                <Button
+                                    x:Name="ProcessDesktopPlacementSectionHelpButton"
+                                    Click="OnSectionHelpButtonClicked"
+                                    Style="{StaticResource SectionHelpButtonStyle}"
+                                    Tag="{x:Bind ProcessDesktopPlacementSectionTeachingTip}">
+                                    <FontIcon Glyph="&#xE9CE;" />
+                                </Button>
+                                <TeachingTip
+                                    x:Name="ProcessDesktopPlacementSectionTeachingTip"
+                                    x:Uid="SettingsPage_ProcessDesktopPlacementSectionTeachingTip"
+                                    Title="새 창 자동 데스크톱 이동 안내"
+                                    Closed="OnSectionTeachingTipClosed"
+                                    IsLightDismissEnabled="True"
+                                    Target="{x:Bind ProcessDesktopPlacementSectionHelpButton}">
+                                    <TeachingTip.Content>
+                                        <TextBlock
+                                            x:Uid="SettingsPage_ProcessDesktopPlacementSectionTeachingTipContentTextBlock"
+                                            Style="{StaticResource SectionTeachingTipContentTextBlockStyle}"
+                                            Text="새 창 자동 데스크톱 이동은 창이 만들어진 뒤 감지해 이동하므로 아주 짧게 원래 데스크톱에 보일 수 있습니다." />
+                                    </TeachingTip.Content>
+                                </TeachingTip>
+                            </Grid>
+                        </Grid>
+
+                        <ToggleSwitch
+                            x:Name="ProcessDesktopPlacementEnabledToggleSwitch"
+                            x:Uid="SettingsPage_ProcessDesktopPlacementEnabledToggleSwitch"
+                            Header="새 창 자동 데스크톱 이동 사용"
+                            IsOn="{x:Bind ViewModel.IsProcessDesktopPlacementEnabled, Mode=TwoWay}"
+                            Toggled="OnSettingToggleSwitchToggled" />
+
+                        <StackPanel Spacing="16" Visibility="{x:Bind GetProcessDesktopPlacementOptionControlsVisibility(ViewModel.IsProcessDesktopPlacementEnabled), Mode=OneWay}">
+                            <Border
+                                Padding="12"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                CornerRadius="10">
+                                <StackPanel Spacing="12">
+                                    <ToggleSwitch
+                                        x:Name="ProcessDesktopPlacementSwitchToTargetDesktopToggleSwitch"
+                                        x:Uid="SettingsPage_ProcessDesktopPlacementSwitchToTargetDesktopToggleSwitch"
+                                        Header="창을 옮긴 뒤 대상 데스크톱으로 이동"
+                                        IsOn="{x:Bind ViewModel.IsProcessDesktopPlacementSwitchToTargetDesktopEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <ToggleSwitch
+                                        x:Name="ProcessDesktopPlacementRuleApplicationOnProcessStartToggleSwitch"
+                                        x:Uid="SettingsPage_ProcessDesktopPlacementRuleApplicationOnProcessStartToggleSwitch"
+                                        Header="프로그램 실행 시 규칙 실행"
+                                        IsOn="{x:Bind ViewModel.IsProcessDesktopPlacementRuleApplicationOnProcessStartEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <ToggleSwitch
+                                        x:Name="ProcessDesktopPlacementMissingTargetDesktopCreationToggleSwitch"
+                                        x:Uid="SettingsPage_ProcessDesktopPlacementMissingTargetDesktopCreationToggleSwitch"
+                                        Header="대상 데스크톱이 없으면 새로 만들기"
+                                        IsOn="{x:Bind ViewModel.IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <ToggleSwitch
+                                        x:Name="ProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingToggleSwitch"
+                                        x:Uid="SettingsPage_ProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingToggleSwitch"
+                                        Header="대상 데스크톱이 없으면 규칙 비활성화"
+                                        IsOn="{x:Bind ViewModel.IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                </StackPanel>
+                            </Border>
+
+                            <Grid RowSpacing="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <StackPanel
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
+                                    <Ellipse
+                                        Width="10"
+                                        Height="10"
+                                        VerticalAlignment="Center"
+                                        Fill="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.ProcessDesktopPlacementQuickHotkeyValidationState), Mode=OneWay}" />
+                                    <TextBlock Foreground="{x:Bind GetKeyboardShortcutValidationForegroundBrush(ViewModel.ProcessDesktopPlacementQuickHotkeyValidationState), Mode=OneWay}" Text="{x:Bind GetKeyboardShortcutValidationText(ViewModel.ProcessDesktopPlacementQuickHotkeyValidationState), Mode=OneWay}" />
+                                </StackPanel>
+                                <Grid Grid.Row="1" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleSwitch
+                                        x:Name="ProcessDesktopPlacementQuickHotkeyToggleSwitch"
+                                        x:Uid="SettingsPage_ProcessDesktopPlacementQuickHotkeyToggleSwitch"
+                                        Grid.Column="0"
+                                        Margin="0,-8"
+                                        VerticalAlignment="Center"
+                                        Header="빠른 설정 팝업 단축키"
+                                        IsOn="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.IsEnabled, Mode=TwoWay}"
+                                        Toggled="OnSettingToggleSwitchToggled" />
+                                    <ComboBox
+                                        x:Uid="SettingsPage_ProcessDesktopPlacementQuickHotkeyKeyComboBox"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Top"
+                                        Header="기본 키"
+                                        IsEnabled="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                        ItemTemplate="{StaticResource SelectionOptionTextTemplate}"
+                                        ItemsSource="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.InputTriggerOptions, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.SelectedInputTriggerOption, Mode=TwoWay}"
+                                        SelectionChanged="OnSettingSelectionChanged" />
+                                    <StackPanel
+                                        Grid.Column="2"
+                                        VerticalAlignment="Top"
+                                        Spacing="10">
+                                        <TextBlock
+                                            x:Uid="SettingsPage_ProcessDesktopPlacementQuickHotkeyModifierTextBlock"
+                                            Foreground="{x:Bind GetHotkeyLabelForegroundBrush(ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.IsEnabled), Mode=OneWay}"
+                                            Text="보조 키" />
+                                        <StackPanel Orientation="Horizontal" Spacing="12">
+                                            <CheckBox
+                                                x:Uid="SettingsPage_ProcessDesktopPlacementQuickHotkeyControlCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Ctrl"
+                                                IsChecked="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.RequiredKeyboardModifierSelection.IsControlEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                                Tag="ProcessDesktopPlacementQuickHotkeyEditor" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_ProcessDesktopPlacementQuickHotkeyShiftCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Shift"
+                                                IsChecked="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.RequiredKeyboardModifierSelection.IsShiftEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                                Tag="ProcessDesktopPlacementQuickHotkeyEditor" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_ProcessDesktopPlacementQuickHotkeyAltCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Alt"
+                                                IsChecked="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.RequiredKeyboardModifierSelection.IsAlternateEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                                Tag="ProcessDesktopPlacementQuickHotkeyEditor" />
+                                            <CheckBox
+                                                x:Uid="SettingsPage_ProcessDesktopPlacementQuickHotkeyWindowsCheckBox"
+                                                Click="OnModifierSelectionCheckBoxClicked"
+                                                Content="Windows"
+                                                IsChecked="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.RequiredKeyboardModifierSelection.IsWindowsEnabled, Mode=TwoWay}"
+                                                IsEnabled="{x:Bind ViewModel.ProcessDesktopPlacementQuickHotkeyEditor.IsEnabled, Mode=OneWay}"
+                                                Tag="ProcessDesktopPlacementQuickHotkeyEditor" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+
+                            <Button
+                                x:Name="AddProcessDesktopPlacementRuleButton"
+                                x:Uid="SettingsPage_AddProcessDesktopPlacementRuleButton"
+                                HorizontalAlignment="Left"
+                                Click="OnAddProcessDesktopPlacementRuleButtonClicked"
+                                Content="실행된 프로세스에서 추가" />
+
+                            <ListView
+                                x:Name="ProcessDesktopPlacementRulesListView"
+                                ItemsSource="{x:Bind ViewModel.ProcessDesktopPlacementRules, Mode=OneWay}"
+                                SelectionMode="None">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ProcessDesktopPlacementRuleViewModel">
+                                        <Grid ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel VerticalAlignment="Center" Spacing="2">
+                                                <TextBlock FontWeight="SemiBold" Text="{x:Bind ProcessName, Mode=OneWay}" />
+                                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind TargetDesktopDisplayName, Mode=OneWay}" />
+                                                <TextBlock Foreground="{ThemeResource TextFillColorTertiaryBrush}" Text="{x:Bind RuleLifetimeStatusText, Mode=OneWay}" />
+                                            </StackPanel>
+                                            <ToggleSwitch
+                                                Grid.Column="1"
+                                                MinWidth="0"
+                                                IsEnabled="{x:Bind IsPersistentRule, Mode=OneWay}"
+                                                IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
+                                                Tag="{Binding}"
+                                                Toggled="OnProcessDesktopPlacementRuleEnabledToggleSwitchToggled" />
+                                            <Button
+                                                Grid.Column="2"
+                                                MinWidth="0"
+                                                Padding="8"
+                                                Background="Transparent"
+                                                BorderBrush="Transparent"
+                                                Click="OnUpdateProcessDesktopPlacementRuleTargetButtonClicked"
+                                                Tag="{Binding}">
+                                                <Button.Content>
+                                                    <SymbolIcon Symbol="Refresh" />
+                                                </Button.Content>
+                                                <ToolTipService.ToolTip>
+                                                    <ToolTip x:Uid="SettingsPage_UpdateProcessDesktopPlacementRuleTargetButtonToolTip" Content="현재 데스크톱으로 재지정" />
+                                                </ToolTipService.ToolTip>
+                                            </Button>
+                                            <Button
+                                                Grid.Column="3"
+                                                MinWidth="0"
+                                                Padding="8"
+                                                Background="Transparent"
+                                                BorderBrush="Transparent"
+                                                Click="OnRemoveProcessDesktopPlacementRuleButtonClicked"
+                                                Tag="{Binding}">
+                                                <Button.Content>
+                                                    <SymbolIcon Symbol="Delete" />
+                                                </Button.Content>
+                                                <ToolTipService.ToolTip>
+                                                    <ToolTip x:Uid="SettingsPage_RemoveProcessDesktopPlacementRuleButtonToolTip" Content="제거" />
+                                                </ToolTipService.ToolTip>
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="6">
+                                <TextBlock
                                     x:Uid="SettingsPage_HotkeysSectionTitleTextBlock"
                                     FontWeight="SemiBold"
                                     Text="전역 단축키" />
