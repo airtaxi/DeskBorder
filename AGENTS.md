@@ -61,6 +61,7 @@ Ignore generated `XamlTypeInfo.g.cs` `Icon` obsolete warnings during builds; the
 - Do not run `git commit` or `git push` unless the user explicitly requests it.
 - Do not run builds for small, localized changes unless the user explicitly asks for validation. Reserve builds for broad, risky, or integration-heavy changes.
 - Treat `.resw` files as finicky. Do not batch-edit multiple `.resw` files in a single edit operation; make those edits at the end of your file changes, and use a separate edit operation for each language file.
+- When updating `README.md`, also update `README.ko.md` so the English and Korean documentation stay aligned.
 - If repository behavior, architecture, build expectations, or conventions change in a way that makes this file outdated, update this instruction file in the same task so it stays aligned with the codebase.
 
 ### C# naming and formatting
