@@ -198,7 +198,7 @@ public sealed record ProcessDesktopPlacementSettings
 
 public sealed record DeskBorderSettings
 {
-    public int SchemaVersion { get; init; } = 9;
+    public int SchemaVersion { get; init; } = 10;
 
     public bool IsDeskBorderEnabled { get; init; } = true;
 
@@ -233,6 +233,8 @@ public sealed record DeskBorderSettings
     public bool IsDesktopEdgeActivationOnModifierPressEnabled { get; init; } = true;
 
     public bool IsKeyboardModifierConsumptionAfterDesktopActionEnabled { get; init; } = true;
+
+    public bool IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled { get; init; } = true;
 
     public bool IsMouseModifierButtonConsumptionAfterDesktopActionEnabled { get; init; } = true;
 

@@ -627,6 +627,9 @@
   <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
     <value>桌面操作后松开键盘修饰键</value>
   </data>
+  <data name="SettingsPage_NonWindowsKeyboardModifierPreemptiveAbsorptionToggleSwitch.Header" xml:space="preserve">
+    <value>也先拦截非 Windows 修饰键</value>
+  </data>
   <data name="SettingsPage_MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
     <value>桌面操作后松开鼠标修饰键</value>
   </data>
@@ -1053,6 +1056,7 @@
 • 使用边缘额外移动距离 / 额外移动距离（%）：只有继续向边缘外推动，达到当前显示器宽度指定比例时，才会触发切换或创建。
 • 在边缘上按下修饰键时切换/创建：开启后，当指针已经位于边缘上时，按下所需的键盘或鼠标修饰键也可以开始切换或创建。
 • 桌面操作后松开修饰键：可以分别开启或关闭键盘修饰键松开和鼠标修饰按钮松开。键盘修饰键松开选项仅在桌面切换或创建修饰键使用键盘修饰键时显示，鼠标修饰按钮松开选项仅在使用鼠标按钮时显示。
+• 也先拦截非 Windows 修饰键：Shift、Ctrl、Alt 修饰键也会在桌面操作前先被吸收。启用此选项后，可以按住修饰键连续多次切换或创建桌面。仅使用 Windows 键的修饰键会为了阻止开始菜单弹出而始终先被拦截，不受此选项影响。
 • 上方忽略区域 / 下方忽略区域：按百分比调整屏幕上方和下方忽略边缘切换与桌面创建的范围。
 • 热键切换桌面后的鼠标位置 / 边缘切换桌面后的鼠标位置：选择切换桌面后指针要移动到哪里。
 • 桌面切换修饰键：触发基于边缘的桌面切换前必须按住的组合。
@@ -1296,7 +1300,7 @@
     <value>关闭</value>
   </data>
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Content" xml:space="preserve">
-    <value>如果只设置 Windows 键，开始菜单也可能会一起弹出。建议同时设置 Ctrl、Shift 或 Alt 中的一个。</value>
+    <value>将 Windows 键用作桌面切换或创建的修饰键时，DeskBorder 会先拦截该按键，以防止开始菜单打开。这可能会与某些按键重映射工具、硬件输入检测应用或 Windows 键快捷方式冲突。</value>
   </data>
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.PrimaryButtonText" xml:space="preserve">
     <value>确定</value>
@@ -1305,7 +1309,7 @@
     <value>不再显示</value>
   </data>
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Title" xml:space="preserve">
-    <value>仅使用 Windows 修饰键提醒</value>
+    <value>Windows 键修饰键兼容性提醒</value>
   </data>
   <data name="DesktopEdgeKind.TopDisplayEdge" xml:space="preserve">
     <value>顶部边缘</value>

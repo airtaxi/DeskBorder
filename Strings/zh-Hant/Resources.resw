@@ -627,6 +627,9 @@
   <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
     <value>桌面操作後鬆開鍵盤修飾鍵</value>
   </data>
+  <data name="SettingsPage_NonWindowsKeyboardModifierPreemptiveAbsorptionToggleSwitch.Header" xml:space="preserve">
+    <value>也先攔截非 Windows 修飾鍵</value>
+  </data>
   <data name="SettingsPage_MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
     <value>桌面操作後鬆開滑鼠修飾鍵</value>
   </data>
@@ -1053,6 +1056,7 @@
 • 使用邊緣額外移動距離 / 額外移動距離（%）：只有持續往邊緣外推，達到目前顯示器寬度指定比例時，才會觸發切換或建立。
 • 在邊緣上按下修飾鍵時切換/建立：開啟後，當指標已經位於邊緣上時，按下所需的鍵盤或滑鼠修飾鍵也可以開始切換或建立。
 • 桌面操作後鬆開修飾鍵：可以分別開啟或關閉鍵盤修飾鍵鬆開和滑鼠修飾按鈕鬆開。鍵盤修飾鍵鬆開選項僅在桌面切換或建立修飾鍵使用鍵盤修飾鍵時顯示，滑鼠修飾按鈕鬆開選項僅在使用滑鼠按鈕時顯示。
+• 也先攔截非 Windows 修飾鍵：Shift、Ctrl、Alt 修飾鍵也會在桌面操作前先被吸收。啟用此選項後，可以按住修飾鍵連續多次切換或建立桌面。僅使用 Windows 鍵的修飾鍵會為了阻止開始功能表彈出而始終先被攔截，不受此選項影響。
 • 上方忽略區域 / 下方忽略區域：以百分比調整螢幕上方與下方忽略邊緣切換與桌面建立的範圍。
 • 熱鍵切換桌面後的滑鼠位置 / 邊緣切換桌面後的滑鼠位置：選擇切換桌面後指標要移動到哪裡。
 • 桌面切換修飾鍵：觸發基於邊緣的桌面切換前必須按住的組合。
@@ -1296,7 +1300,7 @@
     <value>關閉</value>
   </data>
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Content" xml:space="preserve">
-    <value>如果只設定 Windows 鍵，開始功能表也可能一併跳出。建議同時加入 Ctrl、Shift 或 Alt 其中一個。</value>
+    <value>將 Windows 鍵用作桌面切換或建立的輔助鍵時，DeskBorder 會先攔截該按鍵，以防止開始功能表開啟。這可能會與某些按鍵重新對應工具、硬體輸入偵測應用程式或 Windows 鍵快速鍵衝突。</value>
   </data>
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.PrimaryButtonText" xml:space="preserve">
     <value>確定</value>
@@ -1305,7 +1309,7 @@
     <value>不再顯示</value>
   </data>
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Title" xml:space="preserve">
-    <value>僅使用 Windows 輔助鍵提醒</value>
+    <value>Windows 鍵輔助鍵相容性提醒</value>
   </data>
   <data name="DesktopEdgeKind.TopDisplayEdge" xml:space="preserve">
     <value>頂部邊緣</value>

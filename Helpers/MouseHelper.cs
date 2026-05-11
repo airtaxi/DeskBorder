@@ -12,22 +12,9 @@ public static class MouseHelper
     private const int VirtualScreenTopSystemMetricIndex = 77;
     private const int VirtualScreenWidthSystemMetricIndex = 78;
     private const int VirtualScreenHeightSystemMetricIndex = 79;
-    private const int LeftShiftVirtualKey = 0xA0;
-    private const int RightShiftVirtualKey = 0xA1;
-    private const int LeftControlVirtualKey = 0xA2;
-    private const int RightControlVirtualKey = 0xA3;
-    private const int LeftAlternateVirtualKey = 0xA4;
-    private const int RightAlternateVirtualKey = 0xA5;
-    private const int LeftWindowsVirtualKey = 0x5B;
     private const int LeftMouseButtonVirtualKey = 0x01;
     private const int MiddleMouseButtonVirtualKey = 0x04;
     private const int RightMouseButtonVirtualKey = 0x02;
-    private const int RightWindowsVirtualKey = 0x5C;
-
-    public static bool AreRequiredKeyboardModifierKeysPressed(KeyboardModifierKeys requiredKeyboardModifierKeys, KeyboardModifierKeys pressedKeyboardModifierKeys) => (pressedKeyboardModifierKeys & requiredKeyboardModifierKeys) == requiredKeyboardModifierKeys;
-
-    public static bool AreRequiredModifierInputsPressed(ModifierGateSettings modifierGateSettings, ModifierKeySnapshot modifierKeySnapshot, MouseButtonSnapshot mouseButtonSnapshot) => AreRequiredKeyboardModifierKeysPressed(modifierGateSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys)
-        && AreRequiredMouseModifierButtonTriggersPressed(modifierGateSettings.RequiredMouseModifierButtonTriggers, mouseButtonSnapshot);
 
     public static bool AreRequiredMouseModifierButtonTriggersPressed(IReadOnlyList<InputTriggerType> requiredMouseModifierButtonTriggers, MouseButtonSnapshot mouseButtonSnapshot)
     {
@@ -40,9 +27,6 @@ public static class MouseHelper
 
         return true;
     }
-
-    public static bool HasRequiredModifierInputs(ModifierGateSettings modifierGateSettings) => modifierGateSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None
-        || modifierGateSettings.RequiredMouseModifierButtonTriggers.Length > 0;
 
     public static bool IsMouseModifierButtonTrigger(InputTriggerType inputTriggerType) => inputTriggerType is InputTriggerType.MouseLeftButton or InputTriggerType.MouseMiddleButton or InputTriggerType.MouseRightButton;
 
@@ -174,19 +158,6 @@ public static class MouseHelper
             .First();
     }
 
-    public static ModifierKeySnapshot GetModifierKeySnapshot()
-    {
-        var pressedKeyboardModifierKeys = GetPressedKeyboardModifierKeys();
-        return new()
-        {
-            PressedKeyboardModifierKeys = pressedKeyboardModifierKeys,
-            IsShiftPressed = pressedKeyboardModifierKeys.HasFlag(KeyboardModifierKeys.Shift),
-            IsControlPressed = pressedKeyboardModifierKeys.HasFlag(KeyboardModifierKeys.Control),
-            IsAlternatePressed = pressedKeyboardModifierKeys.HasFlag(KeyboardModifierKeys.Alternate),
-            IsWindowsPressed = pressedKeyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows)
-        };
-    }
-
     public static MouseButtonSnapshot GetMouseButtonSnapshot() => new()
     {
         IsLeftButtonPressed = IsVirtualKeyPressed(LeftMouseButtonVirtualKey),
@@ -225,36 +196,6 @@ public static class MouseHelper
         catch (Win32Exception) { return new(); }
     }
 
-    private static nint s_windowsKeyHookHandle;
-    private static Win32.LowLevelKeyboardHookProcedure? s_windowsKeyHookCallback;
-
-    public static void ConsumePressedKeyboardModifierKeys(KeyboardModifierKeys keyboardModifierKeys)
-    {
-        if (keyboardModifierKeys == KeyboardModifierKeys.None) return;
-
-        var requestedKeyboardModifierKeys = keyboardModifierKeys;
-        var pressedKeyboardModifierKeysBeforeConsume = GetPressedKeyboardModifierKeys();
-        var pressedKeyboardModifierKeyStateSummaryBeforeConsume = CreatePressedKeyboardModifierKeyStateSummary();
-        var isWindowsKeyHookInstalled = false;
-        var keyboardInputs = new List<Win32.NativeInput>();
-
-        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows)
-            && (IsVirtualKeyPressed(LeftWindowsVirtualKey) || IsVirtualKeyPressed(RightWindowsVirtualKey)))
-        {
-            InstallWindowsKeyUpConsumeHook();
-            isWindowsKeyHookInstalled = true;
-            keyboardModifierKeys &= ~KeyboardModifierKeys.Windows;
-        }
-
-        var sendInputKeyboardModifierKeys = keyboardModifierKeys;
-        AddKeyboardModifierKeyUpInputs(keyboardInputs, keyboardModifierKeys);
-        if (keyboardInputs.Count == 0) return;
-
-        var nativeInputSize = Marshal.SizeOf<Win32.NativeInput>();
-        var sentInputCount = Win32.SendInput((uint)keyboardInputs.Count, [.. keyboardInputs], nativeInputSize);
-        if (sentInputCount != keyboardInputs.Count) throw CreateKeyboardModifierConsumeException(requestedKeyboardModifierKeys, sendInputKeyboardModifierKeys, pressedKeyboardModifierKeysBeforeConsume, pressedKeyboardModifierKeyStateSummaryBeforeConsume, isWindowsKeyHookInstalled, keyboardInputs, sentInputCount, nativeInputSize);
-    }
-
     public static void ConsumePressedMouseModifierButtonTriggers(IReadOnlyList<InputTriggerType> inputTriggerTypes)
     {
         var requestedInputTriggerTypes = inputTriggerTypes
@@ -278,40 +219,6 @@ public static class MouseHelper
         if (sentInputCount != mouseInputs.Count) throw CreateMouseModifierButtonConsumeException(requestedInputTriggerTypes, mouseButtonSnapshotBeforeConsume, pressedMouseButtonStateSummaryBeforeConsume, mouseInputs, sentInputCount, nativeInputSize);
     }
 
-    private static void InstallWindowsKeyUpConsumeHook()
-    {
-        if (s_windowsKeyHookHandle != 0) return;
-        s_windowsKeyHookCallback = OnWindowsKeyLowLevelHook;
-        s_windowsKeyHookHandle = Win32.SetWindowsHookEx(Win32.LowLevelKeyboardHookId, s_windowsKeyHookCallback, 0, 0);
-    }
-
-    private static nint OnWindowsKeyLowLevelHook(int code, nuint wParam, nint lParam)
-    {
-        if (code >= 0 && (wParam == Win32.KeyUpWindowMessage || wParam == Win32.SystemKeyUpWindowMessage))
-        {
-            var hookData = Marshal.PtrToStructure<Win32.NativeLowLevelKeyboardHookData>(lParam);
-            var isPhysical = (hookData.Flags & Win32.LowLevelKeyboardHookInjectedFlag) == 0;
-            var isWindowsKey = hookData.VirtualKey == (uint)LeftWindowsVirtualKey || hookData.VirtualKey == (uint)RightWindowsVirtualKey;
-
-            if (isPhysical && isWindowsKey)
-            {
-                var hookHandle = s_windowsKeyHookHandle;
-                s_windowsKeyHookHandle = 0;
-                s_windowsKeyHookCallback = null;
-                Win32.UnhookWindowsHookEx(hookHandle);
-
-                // Send synthetic (injected) key-up to keep OS key state in sync.
-                // Explorer ignores injected events for Start menu activation.
-                var syntheticKeyUp = CreateKeyboardInput((ushort)hookData.VirtualKey, Win32.KeyboardEventKeyUpFlag | GetKeyboardEventFlags((int)hookData.VirtualKey));
-                Win32.SendInput(1, [syntheticKeyUp], Marshal.SizeOf<Win32.NativeInput>());
-
-                return 1;
-            }
-        }
-
-        return Win32.CallNextHookEx(0, code, wParam, lParam);
-    }
-
     public static string? TryGetForegroundProcessName()
     {
         var foregroundProcessSnapshot = GetForegroundProcessSnapshot();
@@ -332,52 +239,6 @@ public static class MouseHelper
 
     private static ScreenRectangle CreateScreenRectangle(Win32.NativeRectangle nativeRectangle) => new(nativeRectangle.Left, nativeRectangle.Top, nativeRectangle.Right, nativeRectangle.Bottom);
 
-    private static void AddKeyboardInputIfPressed(List<Win32.NativeInput> keyboardInputs, int virtualKey)
-    {
-        if (IsVirtualKeyPressed(virtualKey))
-            keyboardInputs.Add(CreateKeyboardInput((ushort)virtualKey, Win32.KeyboardEventKeyUpFlag | GetKeyboardEventFlags(virtualKey)));
-    }
-
-    private static void AddKeyboardModifierKeyUpInputs(List<Win32.NativeInput> keyboardInputs, KeyboardModifierKeys keyboardModifierKeys)
-    {
-        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Shift))
-        {
-            AddKeyboardInputIfPressed(keyboardInputs, LeftShiftVirtualKey);
-            AddKeyboardInputIfPressed(keyboardInputs, RightShiftVirtualKey);
-        }
-
-        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Control))
-        {
-            AddKeyboardInputIfPressed(keyboardInputs, LeftControlVirtualKey);
-            AddKeyboardInputIfPressed(keyboardInputs, RightControlVirtualKey);
-        }
-
-        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Alternate))
-        {
-            AddKeyboardInputIfPressed(keyboardInputs, LeftAlternateVirtualKey);
-            AddKeyboardInputIfPressed(keyboardInputs, RightAlternateVirtualKey);
-        }
-
-        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows))
-        {
-            AddKeyboardInputIfPressed(keyboardInputs, LeftWindowsVirtualKey);
-            AddKeyboardInputIfPressed(keyboardInputs, RightWindowsVirtualKey);
-        }
-    }
-
-    private static Win32.NativeInput CreateKeyboardInput(ushort virtualKey, uint flags = 0) => new()
-    {
-        Type = Win32.InputKeyboard,
-        Data = new Win32.NativeInputUnion
-        {
-            KeyboardInput = new Win32.NativeKeyboardInput
-            {
-                VirtualKey = virtualKey,
-                Flags = flags
-            }
-        }
-    };
-
     private static Win32.NativeInput CreateMouseInput(uint flags) => new()
     {
         Type = Win32.InputMouse,
@@ -389,32 +250,6 @@ public static class MouseHelper
             }
         }
     };
-
-    private static uint GetKeyboardEventFlags(int virtualKey) => virtualKey switch
-    {
-        RightControlVirtualKey or RightAlternateVirtualKey or LeftWindowsVirtualKey or RightWindowsVirtualKey => Win32.KeyboardEventExtendedKeyFlag,
-        _ => 0
-    };
-
-    private static InvalidOperationException CreateKeyboardModifierConsumeException(
-        KeyboardModifierKeys requestedKeyboardModifierKeys,
-        KeyboardModifierKeys sendInputKeyboardModifierKeys,
-        KeyboardModifierKeys pressedKeyboardModifierKeysBeforeConsume,
-        string pressedKeyboardModifierKeyStateSummaryBeforeConsume,
-        bool isWindowsKeyHookInstalled,
-        List<Win32.NativeInput> keyboardInputs,
-        uint sentInputCount,
-        int nativeInputSize)
-    {
-        var lastWindowsErrorCode = Marshal.GetLastWin32Error();
-        var lastWindowsErrorMessage = new Win32Exception(lastWindowsErrorCode).Message;
-        var pressedKeyboardModifierKeysAfterConsume = GetPressedKeyboardModifierKeys();
-        var pressedKeyboardModifierKeyStateSummaryAfterConsume = CreatePressedKeyboardModifierKeyStateSummary();
-        var foregroundWindowSummary = CreateForegroundWindowSummary();
-        var keyboardInputSummaries = string.Join(", ", keyboardInputs.Select(CreateKeyboardInputSummary));
-
-        return new($"Unable to consume the pressed keyboard modifier input. RequestedModifierKeys={requestedKeyboardModifierKeys}, SendInputModifierKeys={sendInputKeyboardModifierKeys}, PressedModifierKeysBeforeConsume={pressedKeyboardModifierKeysBeforeConsume}, PressedModifierKeysAfterConsume={pressedKeyboardModifierKeysAfterConsume}, PressedModifierKeyStatesBeforeConsume=[{pressedKeyboardModifierKeyStateSummaryBeforeConsume}], PressedModifierKeyStatesAfterConsume=[{pressedKeyboardModifierKeyStateSummaryAfterConsume}], WindowsKeyHookInstalled={isWindowsKeyHookInstalled}, RequestedInputCount={keyboardInputs.Count}, SentInputCount={sentInputCount}, NativeInputSize={nativeInputSize}, LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {lastWindowsErrorMessage}), ForegroundWindow=[{foregroundWindowSummary}], KeyboardInputs=[{keyboardInputSummaries}].");
-    }
 
     private static InvalidOperationException CreateMouseModifierButtonConsumeException(
         InputTriggerType[] requestedInputTriggerTypes,
@@ -433,30 +268,11 @@ public static class MouseHelper
         return new($"Unable to consume the pressed mouse modifier input. RequestedInputTriggers={string.Join("|", requestedInputTriggerTypes)}, MouseButtonSnapshotBeforeConsume={mouseButtonSnapshotBeforeConsume}, MouseButtonSnapshotAfterConsume={mouseButtonSnapshotAfterConsume}, PressedMouseButtonStatesBeforeConsume=[{pressedMouseButtonStateSummaryBeforeConsume}], PressedMouseButtonStatesAfterConsume=[{pressedMouseButtonStateSummaryAfterConsume}], RequestedInputCount={mouseInputs.Count}, SentInputCount={sentInputCount}, NativeInputSize={nativeInputSize}, LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {lastWindowsErrorMessage}), ForegroundWindow=[{foregroundWindowSummary}], MouseInputs=[{mouseInputSummaries}].");
     }
 
-    private static string CreateKeyboardInputSummary(Win32.NativeInput keyboardInput)
-    {
-        var keyboardInputData = keyboardInput.Data.KeyboardInput;
-        var isExtendedKey = (keyboardInputData.Flags & Win32.KeyboardEventExtendedKeyFlag) != 0;
-        var isKeyUp = (keyboardInputData.Flags & Win32.KeyboardEventKeyUpFlag) != 0;
-        return $"VirtualKey={GetKeyboardVirtualKeyName(keyboardInputData.VirtualKey)}(0x{keyboardInputData.VirtualKey:X2}), ScanCode=0x{keyboardInputData.ScanCode:X2}, Flags=0x{keyboardInputData.Flags:X4}, IsExtendedKey={isExtendedKey}, IsKeyUp={isKeyUp}, Time={keyboardInputData.Time}, ExtraInfo={keyboardInputData.ExtraInfo}";
-    }
-
     private static string CreateMouseInputSummary(Win32.NativeInput mouseInput)
     {
         var mouseInputData = mouseInput.Data.MouseInput;
         return $"RelativeX={mouseInputData.RelativeX}, RelativeY={mouseInputData.RelativeY}, MouseData=0x{mouseInputData.MouseData:X8}, Flags=0x{mouseInputData.Flags:X4}, Time={mouseInputData.Time}, ExtraInfo={mouseInputData.ExtraInfo}";
     }
-
-    private static string CreatePressedKeyboardModifierKeyStateSummary() => string.Join(", ", [
-        $"LeftShift={IsVirtualKeyPressed(LeftShiftVirtualKey)}",
-        $"RightShift={IsVirtualKeyPressed(RightShiftVirtualKey)}",
-        $"LeftControl={IsVirtualKeyPressed(LeftControlVirtualKey)}",
-        $"RightControl={IsVirtualKeyPressed(RightControlVirtualKey)}",
-        $"LeftAlternate={IsVirtualKeyPressed(LeftAlternateVirtualKey)}",
-        $"RightAlternate={IsVirtualKeyPressed(RightAlternateVirtualKey)}",
-        $"LeftWindows={IsVirtualKeyPressed(LeftWindowsVirtualKey)}",
-        $"RightWindows={IsVirtualKeyPressed(RightWindowsVirtualKey)}"
-    ]);
 
     private static string CreatePressedMouseButtonStateSummary() => string.Join(", ", [
         $"LeftButton={IsVirtualKeyPressed(LeftMouseButtonVirtualKey)}",
@@ -473,19 +289,6 @@ public static class MouseHelper
         var foregroundProcessSnapshot = GetForegroundProcessSnapshot();
         return $"WindowHandle={foregroundWindowHandle}, ThreadIdentifier={foregroundThreadIdentifier}, ProcessIdentifier={foregroundProcessIdentifier}, ProcessName={foregroundProcessSnapshot.ProcessName ?? "<null>"}, ExecutablePath={foregroundProcessSnapshot.ExecutablePath ?? "<null>"}";
     }
-
-    private static string GetKeyboardVirtualKeyName(int virtualKey) => virtualKey switch
-    {
-        LeftShiftVirtualKey => nameof(LeftShiftVirtualKey),
-        RightShiftVirtualKey => nameof(RightShiftVirtualKey),
-        LeftControlVirtualKey => nameof(LeftControlVirtualKey),
-        RightControlVirtualKey => nameof(RightControlVirtualKey),
-        LeftAlternateVirtualKey => nameof(LeftAlternateVirtualKey),
-        RightAlternateVirtualKey => nameof(RightAlternateVirtualKey),
-        LeftWindowsVirtualKey => nameof(LeftWindowsVirtualKey),
-        RightWindowsVirtualKey => nameof(RightWindowsVirtualKey),
-        _ => "Unknown"
-    };
 
     private static int GetIntersectionArea(ScreenRectangle firstRectangle, ScreenRectangle secondRectangle)
     {
@@ -513,24 +316,6 @@ public static class MouseHelper
         InputTriggerType.MouseRightButton => mouseButtonSnapshot.IsRightButtonPressed,
         _ => false
     };
-
-    private static KeyboardModifierKeys GetPressedKeyboardModifierKeys()
-    {
-        var pressedKeyboardModifierKeys = KeyboardModifierKeys.None;
-        if (IsVirtualKeyPressed(LeftShiftVirtualKey) || IsVirtualKeyPressed(RightShiftVirtualKey))
-            pressedKeyboardModifierKeys |= KeyboardModifierKeys.Shift;
-
-        if (IsVirtualKeyPressed(LeftControlVirtualKey) || IsVirtualKeyPressed(RightControlVirtualKey))
-            pressedKeyboardModifierKeys |= KeyboardModifierKeys.Control;
-
-        if (IsVirtualKeyPressed(LeftAlternateVirtualKey) || IsVirtualKeyPressed(RightAlternateVirtualKey))
-            pressedKeyboardModifierKeys |= KeyboardModifierKeys.Alternate;
-
-        if (IsVirtualKeyPressed(LeftWindowsVirtualKey) || IsVirtualKeyPressed(RightWindowsVirtualKey))
-            pressedKeyboardModifierKeys |= KeyboardModifierKeys.Windows;
-
-        return pressedKeyboardModifierKeys;
-    }
 
     private static bool IsVirtualKeyPressed(int virtualKey) => (Win32.GetAsyncKeyState(virtualKey) & Win32.AsyncKeyDownMask) == Win32.AsyncKeyDownMask;
 

@@ -10,6 +10,7 @@ public sealed class DesktopLifecycleService(
     IFileLogService fileLogService,
     IForegroundWindowFullscreenService foregroundWindowFullscreenService,
     IHotkeyService hotkeyService,
+    IKeyboardModifierAbsorptionService keyboardModifierAbsorptionService,
     ILocalizationService localizationService,
     INavigatorService navigatorService,
     IProcessDesktopPlacementService processDesktopPlacementService,
@@ -27,6 +28,7 @@ public sealed class DesktopLifecycleService(
     private readonly IFileLogService _fileLogService = fileLogService;
     private readonly IForegroundWindowFullscreenService _foregroundWindowFullscreenService = foregroundWindowFullscreenService;
     private readonly IHotkeyService _hotkeyService = hotkeyService;
+    private readonly IKeyboardModifierAbsorptionService _keyboardModifierAbsorptionService = keyboardModifierAbsorptionService;
     private readonly ILocalizationService _localizationService = localizationService;
     private readonly object _mouseLocationApplyStateGate = new();
     private readonly INavigatorService _navigatorService = navigatorService;
@@ -57,6 +59,9 @@ public sealed class DesktopLifecycleService(
         _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
         if (!_hotkeyService.IsInitialized)
             _hotkeyService.Initialize();
+
+        try { _keyboardModifierAbsorptionService.Start(); }
+        catch (Exception exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), "Failed to start keyboard modifier absorption service. Keyboard modifier consumption after desktop actions may be unavailable.", exception); }
 
         _desktopEdgeMonitorService.MonitoringStateChanged += OnDesktopEdgeMonitorServiceMonitoringStateChanged;
         _hotkeyService.HotkeyInvoked += OnHotkeyServiceHotkeyInvoked;
@@ -89,6 +94,7 @@ public sealed class DesktopLifecycleService(
         await WaitForMouseLocationApplyCancellationCleanupAsync();
         await _desktopEdgeMonitorService.StopAsync();
         await _processDesktopPlacementService.StopAsync();
+        _keyboardModifierAbsorptionService.Stop();
         await UiThreadHelper.ExecuteAsync(_navigatorService.Hide);
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Desktop lifecycle service stopped.");
     }
@@ -624,10 +630,10 @@ public sealed class DesktopLifecycleService(
         {
             try
             {
-                MouseHelper.ConsumePressedKeyboardModifierKeys(modifierGateSettings.RequiredKeyboardModifierKeys);
-                _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Consumed keyboard modifier keys after desktop action. ModifierKeys={modifierGateSettings.RequiredKeyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.");
+                _keyboardModifierAbsorptionService.AbsorbPressedKeyboardModifierKeys(modifierGateSettings.RequiredKeyboardModifierKeys);
+                _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Absorbed keyboard modifier keys after desktop action. ModifierKeys={modifierGateSettings.RequiredKeyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.");
             }
-            catch (InvalidOperationException exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to consume keyboard modifier keys after desktop action. ModifierKeys={modifierGateSettings.RequiredKeyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.", exception); }
+            catch (Exception exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to absorb keyboard modifier keys after desktop action. ModifierKeys={modifierGateSettings.RequiredKeyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.", exception); }
         }
 
         if (currentSettings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled

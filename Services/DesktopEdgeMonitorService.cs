@@ -3,7 +3,7 @@ using DeskBorder.Models;
 
 namespace DeskBorder.Services;
 
-public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, IFileLogService fileLogService, IForegroundWindowFullscreenService foregroundWindowFullscreenService, IMouseMovementTrackingService mouseMovementTrackingService, IGameBarProcessBlacklistService gameBarProcessBlacklistService) : IDesktopEdgeMonitorService, IDisposable
+public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, IFileLogService fileLogService, IForegroundWindowFullscreenService foregroundWindowFullscreenService, IMouseMovementTrackingService mouseMovementTrackingService, IGameBarProcessBlacklistService gameBarProcessBlacklistService, IKeyboardModifierAbsorptionService keyboardModifierAbsorptionService) : IDesktopEdgeMonitorService, IDisposable
 {
     private static readonly TimeSpan s_defaultPollingInterval = TimeSpan.FromMilliseconds(40);
     private static readonly TimeSpan s_refreshFailureLoggingWindow = TimeSpan.FromSeconds(2);
@@ -11,6 +11,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
     private readonly IFileLogService _fileLogService = fileLogService;
     private readonly IForegroundWindowFullscreenService _foregroundWindowFullscreenService = foregroundWindowFullscreenService;
     private readonly IGameBarProcessBlacklistService _gameBarProcessBlacklistService = gameBarProcessBlacklistService;
+    private readonly IKeyboardModifierAbsorptionService _keyboardModifierAbsorptionService = keyboardModifierAbsorptionService;
     private readonly IMouseMovementTrackingService _mouseMovementTrackingService = mouseMovementTrackingService;
     private readonly ISettingsService _settingsService = settingsService;
     private CancellationTokenSource? _monitoringCancellationTokenSource;
@@ -33,14 +34,14 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         var currentCursorPosition = MouseHelper.GetCurrentCursorPosition();
         var cursorClippingState = MouseHelper.GetCursorClippingState();
         var foregroundProcessSnapshot = MouseHelper.GetForegroundProcessSnapshot();
-        var modifierKeySnapshot = MouseHelper.GetModifierKeySnapshot();
+        var modifierKeySnapshot = _keyboardModifierAbsorptionService.GetModifierKeySnapshot();
         var mouseButtonSnapshot = MouseHelper.GetMouseButtonSnapshot();
-        var isSwitchDesktopModifierSatisfied = MouseHelper.AreRequiredModifierInputsPressed(currentSettings.SwitchDesktopModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
-        var isCreateDesktopModifierSatisfied = MouseHelper.AreRequiredModifierInputsPressed(currentSettings.CreateDesktopModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
+        var isSwitchDesktopModifierSatisfied = _keyboardModifierAbsorptionService.AreRequiredModifierInputsPressed(currentSettings.SwitchDesktopModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
+        var isCreateDesktopModifierSatisfied = _keyboardModifierAbsorptionService.AreRequiredModifierInputsPressed(currentSettings.CreateDesktopModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
         var hasActiveDesktopActionMouseModifierButtonTriggers = HasActiveDesktopActionMouseModifierButtonTriggers(currentSettings);
         var isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied = !hasActiveDesktopActionMouseModifierButtonTriggers
-            && MouseHelper.HasRequiredModifierInputs(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings)
-            && MouseHelper.AreRequiredModifierInputsPressed(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
+            && _keyboardModifierAbsorptionService.HasRequiredModifierInputs(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings)
+            && _keyboardModifierAbsorptionService.AreRequiredModifierInputsPressed(currentSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings, modifierKeySnapshot, mouseButtonSnapshot);
         var isDesktopSwitchingAndCreationAllowedWhileMouseButtonsArePressed = IsDesktopSwitchingAndCreationAllowedWhileMouseButtonsArePressed(
             currentSettings,
             isSwitchDesktopModifierSatisfied,

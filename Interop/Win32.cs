@@ -17,9 +17,12 @@ internal static partial class Win32
     public const uint MonitorInfoPrimary = 0x00000001;
     public const uint KeyboardEventKeyUpFlag = 0x0002;
     public const uint LowLevelKeyboardHookInjectedFlag = 0x00000010;
+    public const uint LowLevelKeyboardHookLowerIntegrityInjectedFlag = 0x00000002;
     public const uint LowLevelMouseHookInjectedFlag = 0x00000001;
     public const uint PeekMessageNoRemove = 0x0000;
+    public const nuint KeyDownWindowMessage = 0x0100;
     public const nuint KeyUpWindowMessage = 0x0101;
+    public const nuint SystemKeyDownWindowMessage = 0x0104;
     public const nuint SystemKeyUpWindowMessage = 0x0105;
     public const nuint LeftButtonDownWindowMessage = 0x0201;
     public const nuint RightButtonDownWindowMessage = 0x0204;
@@ -93,28 +96,28 @@ internal static partial class Win32
     [LibraryImport("user32.dll")]
     public static partial short GetAsyncKeyState(int virtualKey);
 
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern uint SendInput(uint inputCount, NativeInput[] inputs, int inputSize);
+    [LibraryImport("user32.dll", SetLastError = true)]
+    public static partial uint SendInput(uint inputCount, [In] NativeInput[] inputs, int inputSize);
 
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    public static extern nint SetWindowsHookEx(int hookIdentifier, LowLevelKeyboardHookProcedure hookProcedure, nint moduleHandle, uint threadIdentifier);
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowsHookExW", SetLastError = true)]
+    public static partial nint SetWindowsHookEx(int hookIdentifier, LowLevelKeyboardHookProcedure hookProcedure, nint moduleHandle, uint threadIdentifier);
 
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    public static extern nint SetWindowsHookEx(int hookIdentifier, LowLevelMouseHookProcedure hookProcedure, nint moduleHandle, uint threadIdentifier);
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowsHookExW", SetLastError = true)]
+    public static partial nint SetWindowsHookEx(int hookIdentifier, LowLevelMouseHookProcedure hookProcedure, nint moduleHandle, uint threadIdentifier);
 
-    [DllImport("user32.dll")]
-    public static extern nint CallNextHookEx(nint hookHandle, int code, nuint wParam, nint lParam);
+    [LibraryImport("user32.dll")]
+    public static partial nint CallNextHookEx(nint hookHandle, int code, nuint wParam, nint lParam);
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool UnhookWindowsHookEx(nint hookHandle);
+    public static partial bool UnhookWindowsHookEx(nint hookHandle);
 
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern nint SetWinEventHook(uint eventMinimum, uint eventMaximum, nint moduleHandle, WinEventProcedure winEventProcedure, uint processIdentifier, uint threadIdentifier, uint flags);
+    [LibraryImport("user32.dll", SetLastError = true)]
+    public static partial nint SetWinEventHook(uint eventMinimum, uint eventMaximum, nint moduleHandle, WinEventProcedure winEventProcedure, uint processIdentifier, uint threadIdentifier, uint flags);
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool UnhookWinEvent(nint winEventHook);
+    public static partial bool UnhookWinEvent(nint winEventHook);
 
     [LibraryImport("user32.dll")]
     public static partial nint GetForegroundWindow();
@@ -213,9 +216,9 @@ internal static partial class Win32
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool EnumDisplayMonitors(nint deviceContextHandle, nint clippingRectanglePointer, MonitorEnumerationProcedure enumerationProcedure, nint applicationData);
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool EnumWindows(WindowEnumerationProcedure enumerationProcedure, nint applicationData);
+    public static partial bool EnumWindows(WindowEnumerationProcedure enumerationProcedure, nint applicationData);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]

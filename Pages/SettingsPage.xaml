@@ -422,13 +422,27 @@
                             Toggled="OnSettingToggleSwitchToggled"
                             Visibility="{x:Bind GetDesktopEdgeActivationOnModifierPressVisibility(ViewModel.HasActiveDesktopActionModifierInputs), Mode=OneWay}" />
 
-                        <ToggleSwitch
-                            x:Name="KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
-                            x:Uid="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
-                            Header="데스크톱 동작 후 키보드 보조키 떼기"
-                            IsOn="{x:Bind ViewModel.IsKeyboardModifierConsumptionAfterDesktopActionEnabled, Mode=TwoWay}"
-                            Toggled="OnSettingToggleSwitchToggled"
-                            Visibility="{x:Bind GetKeyboardModifierConsumptionAfterDesktopActionVisibility(ViewModel.HasActiveDesktopActionKeyboardModifiers), Mode=OneWay}" />
+                        <StackPanel Spacing="8" Visibility="{x:Bind GetKeyboardModifierConsumptionAfterDesktopActionVisibility(ViewModel.HasActiveDesktopActionKeyboardModifiers), Mode=OneWay}">
+                            <ToggleSwitch
+                                x:Name="KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
+                                x:Uid="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch"
+                                Header="데스크톱 동작 후 키보드 보조키 떼기"
+                                IsOn="{x:Bind ViewModel.IsKeyboardModifierConsumptionAfterDesktopActionEnabled, Mode=TwoWay}"
+                                Toggled="OnSettingToggleSwitchToggled" />
+
+                            <Border
+                                Padding="12"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                CornerRadius="10"
+                                Visibility="{x:Bind GetKeyboardModifierPreemptiveAbsorptionOptionControlsVisibility(ViewModel.IsKeyboardModifierConsumptionAfterDesktopActionEnabled), Mode=OneWay}">
+                                <ToggleSwitch
+                                    x:Name="NonWindowsKeyboardModifierPreemptiveAbsorptionToggleSwitch"
+                                    x:Uid="SettingsPage_NonWindowsKeyboardModifierPreemptiveAbsorptionToggleSwitch"
+                                    Header="Windows 키 외 보조키도 먼저 가로채기"
+                                    IsOn="{x:Bind ViewModel.IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled, Mode=TwoWay}"
+                                    Toggled="OnSettingToggleSwitchToggled" />
+                            </Border>
+                        </StackPanel>
 
                         <ToggleSwitch
                             x:Name="MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch"

@@ -22,21 +22,13 @@ namespace DeskBorder.Pages;
 
 public sealed partial class SettingsPage : Page
 {
-    private const KeyboardModifierKeys WindowsOnlyKeyboardModifierKeys = KeyboardModifierKeys.Windows;
     private const string LogFileExtension = ".txt";
     private const string LogSuggestedFileNamePrefix = "DeskBorder_Logs";
     private const string CreateDesktopModifierSelectionTag = "CreateDesktopModifierSelection";
     private const string SwitchDesktopWhileMouseButtonsArePressedModifierSelectionTag = "SwitchDesktopWhileMouseButtonsArePressedModifierSelection";
-    private const string SwitchToNextDesktopHotkeyEditorTag = "SwitchToNextDesktopHotkeyEditor";
-    private const string SwitchToPreviousDesktopHotkeyEditorTag = "SwitchToPreviousDesktopHotkeyEditor";
-    private const string MoveFocusedWindowToNextDesktopHotkeyEditorTag = "MoveFocusedWindowToNextDesktopHotkeyEditor";
-    private const string MoveFocusedWindowToPreviousDesktopHotkeyEditorTag = "MoveFocusedWindowToPreviousDesktopHotkeyEditor";
-    private const string NavigatorToggleHotkeyEditorTag = "NavigatorToggleHotkeyEditor";
-    private const string ProcessDesktopPlacementQuickHotkeyEditorTag = "ProcessDesktopPlacementQuickHotkeyEditor";
     private const string SettingsFileExtension = ".dbs";
     private const string SettingsSuggestedFileName = "DeskBorder_Settings";
     private const string SwitchDesktopModifierSelectionTag = "SwitchDesktopModifierSelection";
-    private const string ToggleDeskBorderEnabledHotkeyEditorTag = "ToggleDeskBorderEnabledHotkeyEditor";
     private static readonly TimeSpan s_infoBarAutoHideDelay = TimeSpan.FromSeconds(4);
     private static bool s_shouldShowPendingAlwaysRunAsAdministratorImportExcludedStatus;
     private static bool s_shouldShowPendingLanguageRestartRecommendedStatus;
@@ -46,6 +38,7 @@ public sealed partial class SettingsPage : Page
     private readonly IDeskBorderRuntimeService _deskBorderRuntimeService;
     private readonly IFileLogService _fileLogService;
     private readonly IHotkeyService _hotkeyService;
+    private readonly IKeyboardModifierAbsorptionService _keyboardModifierAbsorptionService;
     private readonly ILocalizationService _localizationService;
     private readonly ManageWindow _manageWindow;
     private readonly IProcessDesktopPlacementService _processDesktopPlacementService;
@@ -76,6 +69,7 @@ public sealed partial class SettingsPage : Page
         _fileLogService = App.GetRequiredService<IFileLogService>();
         _settingsImportExportInfoBarAutoHideTimer = CreateInfoBarAutoHideTimer(SettingsImportExportInfoBar);
         _hotkeyService = App.GetRequiredService<IHotkeyService>();
+        _keyboardModifierAbsorptionService = App.GetRequiredService<IKeyboardModifierAbsorptionService>();
         _localizationService = App.GetRequiredService<ILocalizationService>();
         _manageWindow = App.GetRequiredService<ManageWindow>();
         _processDesktopPlacementService = App.GetRequiredService<IProcessDesktopPlacementService>();
@@ -163,6 +157,16 @@ public sealed partial class SettingsPage : Page
         _ => "Settings.HotkeyValidation.Disabled"
     });
 
+    private static ModifierKeySelectionViewModel? GetDesktopActionModifierSelectionViewModel(SettingsPageViewModel settingsPageViewModel, string modifierSelectionTag) => modifierSelectionTag switch
+    {
+        SwitchDesktopModifierSelectionTag => settingsPageViewModel.SwitchDesktopModifierSelection,
+        CreateDesktopModifierSelectionTag => settingsPageViewModel.CreateDesktopModifierSelection,
+        _ => null
+    };
+
+    private static bool IsWindowsOnlyModifierSelection(ModifierKeySelectionViewModel modifierKeySelectionViewModel) => modifierKeySelectionViewModel.CreateKeyboardModifierKeys() == KeyboardModifierKeys.Windows
+        && modifierKeySelectionViewModel.CreateMouseModifierButtonTriggers().Length == 0;
+
     private Visibility GetAutoDeleteCompletionToastVisibility(bool isAutoDeleteWarningEnabled) => !isAutoDeleteWarningEnabled
         ? Visibility.Visible
         : Visibility.Collapsed;
@@ -195,6 +199,10 @@ public sealed partial class SettingsPage : Page
         ? Visibility.Visible
         : Visibility.Collapsed;
 
+    private Visibility GetKeyboardModifierPreemptiveAbsorptionOptionControlsVisibility(bool isKeyboardModifierConsumptionAfterDesktopActionEnabled) => isKeyboardModifierConsumptionAfterDesktopActionEnabled
+        ? Visibility.Visible
+        : Visibility.Collapsed;
+
     private Visibility GetMouseModifierButtonConsumptionAfterDesktopActionVisibility(bool hasActiveDesktopActionMouseModifierButtons) => hasActiveDesktopActionMouseModifierButtons
         ? Visibility.Visible
         : Visibility.Collapsed;
@@ -224,24 +232,6 @@ public sealed partial class SettingsPage : Page
         ViewModel.UpdateHotkeyRegistrationFailureMessage(HotkeyActionType.ToggleNavigator, _hotkeyService.GetRegistrationFailureMessage(HotkeyActionType.ToggleNavigator));
         ViewModel.UpdateHotkeyRegistrationFailureMessage(HotkeyActionType.ShowProcessDesktopPlacementQuickConfiguration, _hotkeyService.GetRegistrationFailureMessage(HotkeyActionType.ShowProcessDesktopPlacementQuickConfiguration));
     }
-
-    private static ModifierKeySelectionViewModel? GetModifierSelectionViewModel(SettingsPageViewModel settingsPageViewModel, string modifierSelectionTag) => modifierSelectionTag switch
-    {
-        SwitchDesktopModifierSelectionTag => settingsPageViewModel.SwitchDesktopModifierSelection,
-        CreateDesktopModifierSelectionTag => settingsPageViewModel.CreateDesktopModifierSelection,
-        SwitchDesktopWhileMouseButtonsArePressedModifierSelectionTag => settingsPageViewModel.SwitchDesktopWhileMouseButtonsArePressedModifierSelection,
-        ToggleDeskBorderEnabledHotkeyEditorTag => settingsPageViewModel.ToggleDeskBorderEnabledHotkeyEditor.RequiredKeyboardModifierSelection,
-        SwitchToPreviousDesktopHotkeyEditorTag => settingsPageViewModel.SwitchToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
-        SwitchToNextDesktopHotkeyEditorTag => settingsPageViewModel.SwitchToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
-        MoveFocusedWindowToPreviousDesktopHotkeyEditorTag => settingsPageViewModel.MoveFocusedWindowToPreviousDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
-        MoveFocusedWindowToNextDesktopHotkeyEditorTag => settingsPageViewModel.MoveFocusedWindowToNextDesktopHotkeyEditor.RequiredKeyboardModifierSelection,
-        NavigatorToggleHotkeyEditorTag => settingsPageViewModel.NavigatorToggleHotkeyEditor.RequiredKeyboardModifierSelection,
-        ProcessDesktopPlacementQuickHotkeyEditorTag => settingsPageViewModel.ProcessDesktopPlacementQuickHotkeyEditor.RequiredKeyboardModifierSelection,
-        _ => null
-    };
-
-    private static bool IsWindowsOnlyModifierSelection(ModifierKeySelectionViewModel modifierKeySelectionViewModel) => modifierKeySelectionViewModel.CreateKeyboardModifierKeys() == WindowsOnlyKeyboardModifierKeys
-        && modifierKeySelectionViewModel.CreateMouseModifierButtonTriggers().Length == 0;
 
     private nint GetManageWindowHandle() => WindowNative.GetWindowHandle(_manageWindow);
 
@@ -473,7 +463,7 @@ public sealed partial class SettingsPage : Page
 
     private async void OnModifierSelectionCheckBoxClicked(object sender, RoutedEventArgs args)
     {
-        await ShowWindowsOnlyModifierWarningIfNeededAsync(sender);
+        await ShowWindowsModifierCompatibilityWarningIfNeededAsync(sender);
         QueueSettingsSave(
             shouldShowVerticalDesktopSwitchingModifierWarning: ShouldShowVerticalDesktopSwitchingModifierWarningForModifierSelectionChange(sender),
             shouldShowMouseModifierButtonBehaviorInformation: ShouldShowMouseModifierButtonBehaviorInformationForModifierSelectionChange(sender));
@@ -763,9 +753,9 @@ public sealed partial class SettingsPage : Page
         return await storeUpdateAvailableDialog.ShowAsync();
     }
 
-    private async Task<ContentDialogResult> ShowWindowsOnlyModifierWarningDialogAsync()
+    private async Task<ContentDialogResult> ShowWindowsModifierCompatibilityWarningDialogAsync()
     {
-        var windowsOnlyModifierWarningDialog = new ContentDialog
+        var windowsModifierCompatibilityWarningDialog = new ContentDialog
         {
             XamlRoot = XamlRoot,
             Title = LocalizedResourceAccessor.GetString("Settings.WindowsOnlyModifierWarning.Dialog.Title"),
@@ -774,8 +764,8 @@ public sealed partial class SettingsPage : Page
             SecondaryButtonText = LocalizedResourceAccessor.GetString("Settings.WindowsOnlyModifierWarning.Dialog.SecondaryButtonText"),
             DefaultButton = ContentDialogButton.Primary
         };
-        _themeService.RegisterFrameworkElement(windowsOnlyModifierWarningDialog);
-        return await windowsOnlyModifierWarningDialog.ShowAsync();
+        _themeService.RegisterFrameworkElement(windowsModifierCompatibilityWarningDialog);
+        return await windowsModifierCompatibilityWarningDialog.ShowAsync();
     }
 
     private async Task<ContentDialogResult> ShowResetSettingsConfirmationDialogAsync()
@@ -793,7 +783,7 @@ public sealed partial class SettingsPage : Page
         return await resetSettingsConfirmationDialog.ShowAsync();
     }
 
-    private async Task ShowWindowsOnlyModifierWarningIfNeededAsync(object sender)
+    private async Task ShowWindowsModifierCompatibilityWarningIfNeededAsync(object sender)
     {
         if (_isSynchronizingViewModel || !_isInitialSettingsLoadCompleted || ViewModel.IsWindowsOnlyModifierWarningSuppressed)
             return;
@@ -801,11 +791,11 @@ public sealed partial class SettingsPage : Page
         if (sender is not FrameworkElement { Tag: string modifierSelectionTag })
             return;
 
-        var modifierKeySelectionViewModel = GetModifierSelectionViewModel(ViewModel, modifierSelectionTag);
+        var modifierKeySelectionViewModel = GetDesktopActionModifierSelectionViewModel(ViewModel, modifierSelectionTag);
         if (modifierKeySelectionViewModel is null || !IsWindowsOnlyModifierSelection(modifierKeySelectionViewModel))
             return;
 
-        if (await ShowWindowsOnlyModifierWarningDialogAsync() != ContentDialogResult.Secondary)
+        if (await ShowWindowsModifierCompatibilityWarningDialogAsync() != ContentDialogResult.Secondary)
             return;
 
         ViewModel.IsWindowsOnlyModifierWarningSuppressed = true;
@@ -1118,6 +1108,8 @@ public sealed partial class SettingsPage : Page
 
         if (ReferenceEquals(settingToggleSwitch, KeyboardModifierConsumptionAfterDesktopActionToggleSwitch)) return currentSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled;
 
+        if (ReferenceEquals(settingToggleSwitch, NonWindowsKeyboardModifierPreemptiveAbsorptionToggleSwitch)) return currentSettings.IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled;
+
         if (ReferenceEquals(settingToggleSwitch, MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch)) return currentSettings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled;
 
         if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch))
@@ -1220,13 +1212,13 @@ public sealed partial class SettingsPage : Page
         return false;
     }
 
-    private static string? GetVerticalDesktopSwitchingModifierWarningMessage(DeskBorderSettings settings)
+    private string? GetVerticalDesktopSwitchingModifierWarningMessage(DeskBorderSettings settings)
     {
         if (!settings.IsVerticalDesktopSwitchingEnabled)
             return null;
 
-        var isSwitchDesktopModifierMissing = !MouseHelper.HasRequiredModifierInputs(settings.SwitchDesktopModifierSettings);
-        var isCreateDesktopModifierMissing = settings.IsDesktopCreationEnabled && !MouseHelper.HasRequiredModifierInputs(settings.CreateDesktopModifierSettings);
+        var isSwitchDesktopModifierMissing = !_keyboardModifierAbsorptionService.HasRequiredModifierInputs(settings.SwitchDesktopModifierSettings);
+        var isCreateDesktopModifierMissing = settings.IsDesktopCreationEnabled && !_keyboardModifierAbsorptionService.HasRequiredModifierInputs(settings.CreateDesktopModifierSettings);
         return (isSwitchDesktopModifierMissing, isCreateDesktopModifierMissing) switch
         {
             (true, true) => LocalizedResourceAccessor.GetString("Settings.Warning.VerticalDesktopSwitchingMissingSwitchAndCreateDesktopModifiers"),

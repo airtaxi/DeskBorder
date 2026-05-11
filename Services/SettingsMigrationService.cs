@@ -9,11 +9,12 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
     private const int SchemaVersionSeven = 7;
     private const int SchemaVersionEight = 8;
     private const int SchemaVersionNine = 9;
+    private const int SchemaVersionTen = 10;
     private const double DefaultHorizontalDesktopEdgeIgnorePercentage = 20.0;
 
     private readonly IFileLogService _fileLogService = fileLogService;
 
-    public int CurrentSchemaVersion => SchemaVersionNine;
+    public int CurrentSchemaVersion => SchemaVersionTen;
 
     public DeskBorderSettings MigrateSettings(DeskBorderSettings settings)
     {
@@ -23,6 +24,7 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
         if (migratedSettings.SchemaVersion < SchemaVersionSeven) migratedSettings = MigrateSettingsToSchemaVersionSeven(migratedSettings);
         if (migratedSettings.SchemaVersion < SchemaVersionEight) migratedSettings = MigrateSettingsToSchemaVersionEight(migratedSettings);
         if (migratedSettings.SchemaVersion < SchemaVersionNine) migratedSettings = MigrateSettingsToSchemaVersionNine(migratedSettings);
+        if (migratedSettings.SchemaVersion < SchemaVersionTen) migratedSettings = MigrateSettingsToSchemaVersionTen(migratedSettings);
 
         return migratedSettings;
     }
@@ -92,6 +94,16 @@ public sealed class SettingsMigrationService(IFileLogService fileLogService) : I
                     Key = Windows.System.VirtualKey.P
                 }
             }
+        };
+    }
+
+    private DeskBorderSettings MigrateSettingsToSchemaVersionTen(DeskBorderSettings settings)
+    {
+        _fileLogService.WriteInformation(nameof(SettingsMigrationService), $"Migrating settings from schema version {settings.SchemaVersion} to {SchemaVersionTen}.");
+        return settings with
+        {
+            SchemaVersion = SchemaVersionTen,
+            IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled = true
         };
     }
 

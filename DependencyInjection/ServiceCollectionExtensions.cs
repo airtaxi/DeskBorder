@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IGameBarProcessBlacklistService, GameBarProcessBlacklistService>();
         serviceCollection.AddSingleton<IForegroundWindowFullscreenService, ForegroundWindowFullscreenService>();
         serviceCollection.AddSingleton<IMouseMovementTrackingService, MouseMovementTrackingService>();
+        serviceCollection.AddSingleton<IKeyboardModifierAbsorptionService, KeyboardModifierAbsorptionService>();
         serviceCollection.AddSingleton<IHotkeyService, HotkeyService>();
         serviceCollection.AddSingleton<INavigatorService, NavigatorService>();
         serviceCollection.AddSingleton<IProcessDesktopPlacementService, ProcessDesktopPlacementService>();

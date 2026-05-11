@@ -627,6 +627,9 @@
   <data name="SettingsPage_KeyboardModifierConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
     <value>デスクトップ操作後にキーボード修飾キーを離す</value>
   </data>
+  <data name="SettingsPage_NonWindowsKeyboardModifierPreemptiveAbsorptionToggleSwitch.Header" xml:space="preserve">
+    <value>Windows 以外の修飾キーも先に捕捉</value>
+  </data>
   <data name="SettingsPage_MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch.Header" xml:space="preserve">
     <value>デスクトップ操作後にマウス修飾キーを離す</value>
   </data>
@@ -1053,6 +1056,7 @@
 • 端の追加移動距離を使用 / 追加移動距離 (%): 現在のモニター幅に対して指定した割合ぶん、端の外側へさらに押し込んだときだけ切り替えまたは作成を実行します。
 • エッジ上で修飾入力したら切り替え/作成: オンにすると、ポインターがすでにエッジ上にある状態で必要なキーボードまたはマウスの修飾入力を押しても、切り替えまたは作成を開始できます。
 • デスクトップ操作後に修飾キーを離す: キーボード修飾キーの解放とマウス修飾ボタンの解放を別々に切り替えられます。キーボード修飾キーの解放オプションはデスクトップ切り替えまたは作成の修飾キーにキーボード修飾キーを使う場合だけ表示され、マウス修飾ボタンの解放オプションはマウス ボタンを使う場合だけ表示されます。
+• Windows 以外の修飾キーも先に捕捉: Shift、Ctrl、Alt の修飾キーもデスクトップ操作の前に吸収します。このオプションをオンにすると、修飾キーを押したままデスクトップの切り替えや作成を複数回行えます。Windows キー単独の修飾キーは、スタート メニューを抑制するためこのオプションに関係なく先に捕捉されます。
 • 上端無視領域 / 下端無視領域: 画面の上端と下端で、エッジ切り替えとデスクトップ作成を無視する範囲を割合で調整します。
 • ホットキーでデスクトップ切り替え後のマウス位置 / 端でデスクトップ切り替え後のマウス位置: デスクトップ切り替え後にポインターを移動する位置を選びます。
 • デスクトップ切り替え修飾キー: 端によるデスクトップ切り替えを発動する前に必ず押しておく組み合わせです。
@@ -1296,7 +1300,7 @@
     <value>閉じる</value>
   </data>
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Content" xml:space="preserve">
-    <value>Windows キーだけを設定すると、スタート メニューも開くことがあります。Ctrl、Shift、Alt のいずれかを一緒に設定することをおすすめします。</value>
+    <value>Windows キーをデスクトップの切り替えまたは作成の修飾キーとして使用すると、スタート メニューが開かないように DeskBorder が先にキー入力を取得します。一部のキー リマップ ツール、ハードウェア入力を検出するアプリ、Windows キー ショートカットと競合する場合があります。</value>
   </data>
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.PrimaryButtonText" xml:space="preserve">
     <value>確認</value>
@@ -1305,7 +1309,7 @@
     <value>今後は表示しない</value>
   </data>
   <data name="Settings.WindowsOnlyModifierWarning.Dialog.Title" xml:space="preserve">
-    <value>Windows 単独修飾キーの注意</value>
+    <value>Windows キー修飾キーの互換性に関する注意</value>
   </data>
   <data name="DesktopEdgeKind.TopDisplayEdge" xml:space="preserve">
     <value>上端エッジ</value>

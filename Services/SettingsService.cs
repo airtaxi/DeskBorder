@@ -184,6 +184,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             DesktopEdgeAdditionalTriggerDistancePercentage = ClampDesktopEdgeAdditionalTriggerDistancePercentage(settings.DesktopEdgeAdditionalTriggerDistancePercentage),
             IsDesktopEdgeActivationOnModifierPressEnabled = settings.IsDesktopEdgeActivationOnModifierPressEnabled,
             IsKeyboardModifierConsumptionAfterDesktopActionEnabled = settings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled,
+            IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled = settings.IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled,
             IsMouseModifierButtonConsumptionAfterDesktopActionEnabled = settings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled,
             IsVerticalDesktopSwitchingEnabled = settings.IsVerticalDesktopSwitchingEnabled,
             IsVerticalDesktopSwitchDirectionReversed = settings.IsVerticalDesktopSwitchDirectionReversed,

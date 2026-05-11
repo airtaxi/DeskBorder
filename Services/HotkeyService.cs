@@ -7,7 +7,7 @@ using Windows.System;
 
 namespace DeskBorder.Services;
 
-public sealed partial class HotkeyService(ISettingsService settingsService, IFileLogService fileLogService) : IHotkeyService
+public sealed partial class HotkeyService(ISettingsService settingsService, IFileLogService fileLogService, IKeyboardModifierAbsorptionService keyboardModifierAbsorptionService) : IHotkeyService
 {
     private const int ToggleDeskBorderEnabledHotkeyIdentifier = 1;
     private const int SwitchToPreviousDesktopHotkeyIdentifier = 2;
@@ -21,6 +21,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     private const uint InvokeMouseHotkeyActionMessage = Win32.WindowApplicationMessage + 3;
 
     private readonly IFileLogService _fileLogService = fileLogService;
+    private readonly IKeyboardModifierAbsorptionService _keyboardModifierAbsorptionService = keyboardModifierAbsorptionService;
     private readonly ISettingsService _settingsService = settingsService;
     private readonly ManualResetEventSlim _messageLoopReadySignal = new(false);
     private readonly Dictionary<HotkeyActionType, string?> _registrationFailureMessages = CreateEmptyRegistrationFailureMessages();
@@ -281,7 +282,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     {
         if (code >= 0
             && TryGetInputTriggerTypeFromMouseMessage(wParam, lParam, out var inputTriggerType)
-            && TryGetRegisteredMouseHotkey(MouseHelper.GetModifierKeySnapshot().PressedKeyboardModifierKeys, inputTriggerType, out var registeredMouseHotkey))
+            && TryGetRegisteredMouseHotkey(_keyboardModifierAbsorptionService.GetModifierKeySnapshot().PressedKeyboardModifierKeys, inputTriggerType, out var registeredMouseHotkey))
         {
             if (!TryPostHotkeyActionMessage(registeredMouseHotkey.HotkeyActionType))
                 _fileLogService.WriteWarning(nameof(HotkeyService), $"Failed to queue mouse hotkey action. Action={registeredMouseHotkey.HotkeyActionType}.");

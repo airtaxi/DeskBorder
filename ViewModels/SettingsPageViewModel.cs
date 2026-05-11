@@ -220,6 +220,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public partial bool IsKeyboardModifierConsumptionAfterDesktopActionEnabled { get; set; } = true;
 
     [ObservableProperty]
+    public partial bool IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled { get; set; } = true;
+
+    [ObservableProperty]
     public partial bool IsMouseModifierButtonConsumptionAfterDesktopActionEnabled { get; set; } = true;
 
     [ObservableProperty]
@@ -516,7 +519,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public DeskBorderSettings CreateSettings() => new()
     {
-        SchemaVersion = 9,
+        SchemaVersion = 10,
         IsDeskBorderEnabled = IsDeskBorderEnabled,
         MultiDisplayBehavior = SelectedMultiDisplayBehaviorOption?.Value ?? MultiDisplayBehavior.DisableInMultiDisplayEnvironment,
         SwitchDesktopModifierSettings = new ModifierGateSettings
@@ -546,6 +549,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         DesktopEdgeAdditionalTriggerDistancePercentage = DesktopEdgeAdditionalTriggerDistancePercentage,
         IsDesktopEdgeActivationOnModifierPressEnabled = IsDesktopEdgeActivationOnModifierPressEnabled,
         IsKeyboardModifierConsumptionAfterDesktopActionEnabled = IsKeyboardModifierConsumptionAfterDesktopActionEnabled,
+        IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled = IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled,
         IsMouseModifierButtonConsumptionAfterDesktopActionEnabled = IsMouseModifierButtonConsumptionAfterDesktopActionEnabled,
         IsVerticalDesktopSwitchingEnabled = IsVerticalDesktopSwitchingEnabled,
         IsVerticalDesktopSwitchDirectionReversed = IsVerticalDesktopSwitchDirectionReversed,
@@ -624,6 +628,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         DesktopEdgeAdditionalTriggerDistancePercentage = deskBorderSettings.DesktopEdgeAdditionalTriggerDistancePercentage;
         IsDesktopEdgeActivationOnModifierPressEnabled = deskBorderSettings.IsDesktopEdgeActivationOnModifierPressEnabled;
         IsKeyboardModifierConsumptionAfterDesktopActionEnabled = deskBorderSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled;
+        IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled = deskBorderSettings.IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled;
         IsMouseModifierButtonConsumptionAfterDesktopActionEnabled = deskBorderSettings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled;
         IsVerticalDesktopSwitchingEnabled = deskBorderSettings.IsVerticalDesktopSwitchingEnabled;
         IsVerticalDesktopSwitchDirectionReversed = deskBorderSettings.IsVerticalDesktopSwitchDirectionReversed;
