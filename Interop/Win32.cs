@@ -64,6 +64,7 @@ internal static partial class Win32
     public const int ClassLongPointerSmallIcon = -34;
     public const uint SetWindowPositionDoNotResizeFlag = 0x0001;
     public const uint SetWindowPositionDoNotMoveFlag = 0x0002;
+    public const uint SetWindowPositionDoNotActivateFlag = 0x0010;
     public const uint SetWindowPositionShowWindowFlag = 0x0040;
     public const int DesktopWindowManagerWindowCornerPreferenceDoNotRound = 1;
     public const nint ExtendedWindowStyleApplicationWindow = 0x00040000;

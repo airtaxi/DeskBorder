@@ -48,10 +48,10 @@ public sealed partial class ToastWindow : WindowEx
     public void ShowToast()
     {
         UpdateWindowBounds();
-        if (!AppWindow.IsVisible) AppWindow.Show();
+        ApplyNoActivateStyle();
+        if (!AppWindow.IsVisible) AppWindow.Show(false);
 
-        Activate();
-        BringToFront();
+        ShowTopMostWithoutActivation();
     }
 
     private void RegisterCurrentWindowContentWithThemeService(IThemeService themeService)
@@ -71,6 +71,30 @@ public sealed partial class ToastWindow : WindowEx
         var targetDisplayMonitor = displayMonitors.FirstOrDefault(displayMonitor => displayMonitor.IsPrimaryDisplay) ?? displayMonitors.FirstOrDefault() ?? throw new InvalidOperationException("No display monitor is available for the toast window.");
         var workAreaBounds = targetDisplayMonitor.WorkAreaBounds;
         AppWindow.MoveAndResize(new RectInt32(workAreaBounds.Right - toastWidth - toastMargin, workAreaBounds.Bottom - toastHeight - toastMargin, toastWidth, toastHeight));
+    }
+
+    private void ApplyNoActivateStyle()
+    {
+        var windowHandle = this.GetWindowHandle();
+        var extendedWindowStyle = Win32.GetWindowLongPointer(windowHandle, Win32.ExtendedWindowStyleIndex);
+        if ((extendedWindowStyle & Win32.ExtendedWindowStyleNoActivate) != 0) return;
+
+        _ = Win32.SetWindowLongPointer(windowHandle, Win32.ExtendedWindowStyleIndex, extendedWindowStyle | Win32.ExtendedWindowStyleNoActivate);
+    }
+
+    private void ShowTopMostWithoutActivation()
+    {
+        _ = Win32.SetWindowPosition(
+            this.GetWindowHandle(),
+            Win32.TopMostWindowInsertAfterHandle,
+            0,
+            0,
+            0,
+            0,
+            Win32.SetWindowPositionDoNotMoveFlag
+                | Win32.SetWindowPositionDoNotResizeFlag
+                | Win32.SetWindowPositionDoNotActivateFlag
+                | Win32.SetWindowPositionShowWindowFlag);
     }
 
     private static int ScaleToWindowPixels(nint windowHandle, int logicalPixels) => (int)Math.Round(logicalPixels * Win32.GetDpiForWindow(windowHandle) / 96d, MidpointRounding.AwayFromZero);
