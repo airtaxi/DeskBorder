@@ -16,6 +16,8 @@ public sealed class ToastService(IThemeService themeService, IFileLogService fil
 
     public bool IsToastVisible { get; private set; }
 
+    public nint ActiveToastWindowHandle { get; private set; }
+
     public Task DismissAsync() => GetActiveToastContext() is { } activeToastContext
         ? CompleteToastAsync(activeToastContext, ToastPresentationResultKind.Dismissed)
         : Task.CompletedTask;
@@ -25,8 +27,7 @@ public sealed class ToastService(IThemeService themeService, IFileLogService fil
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(toastPresentationOptions);
-        if (toastPresentationOptions.Duration < TimeSpan.Zero)
-            throw new ArgumentOutOfRangeException(nameof(toastPresentationOptions), "Toast duration must be zero or positive.");
+        if (toastPresentationOptions.Duration < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(toastPresentationOptions), "Toast duration must be zero or positive.");
 
         await ReplaceActiveToastAsync();
 
@@ -40,6 +41,7 @@ public sealed class ToastService(IThemeService themeService, IFileLogService fil
             EnsureToastWindow();
             SetToastPage(toastPresentationOptions);
             _toastWindow?.ShowToast();
+            ActiveToastWindowHandle = _toastWindow?.ToastWindowHandle ?? 0;
             IsToastVisible = true;
         });
 
@@ -62,22 +64,21 @@ public sealed class ToastService(IThemeService themeService, IFileLogService fil
         {
             ResultKind = toastPresentationResultKind
         };
-        if (!activeToastContext.TaskCompletionSource.TrySetResult(toastPresentationResult))
-            return;
+        if (!activeToastContext.TaskCompletionSource.TrySetResult(toastPresentationResult)) return;
 
         activeToastContext.CancellationTokenSource.Cancel();
         activeToastContext.CancellationTokenSource.Dispose();
 
         lock (_synchronizationLock)
         {
-            if (ReferenceEquals(_activeToastContext, activeToastContext))
-                _activeToastContext = null;
+            if (ReferenceEquals(_activeToastContext, activeToastContext)) _activeToastContext = null;
         }
 
         await UiThreadHelper.ExecuteAsync(() =>
         {
             ResetToastPage();
             _toastWindow?.HideToast();
+            ActiveToastWindowHandle = 0;
             IsToastVisible = false;
         });
         _fileLogService.WriteInformation(nameof(ToastService), $"Completed toast with result {toastPresentationResultKind}.");
@@ -92,8 +93,7 @@ public sealed class ToastService(IThemeService themeService, IFileLogService fil
 
     private void EnsureToastWindow()
     {
-        if (_toastWindow is not null)
-            return;
+        if (_toastWindow is not null) return;
 
         _toastWindow = new ToastWindow(_themeService);
     }
@@ -110,8 +110,7 @@ public sealed class ToastService(IThemeService themeService, IFileLogService fil
         _ = eventArguments;
 
         var activeToastContext = GetActiveToastContext();
-        if (activeToastContext is null)
-            return;
+        if (activeToastContext is null) return;
 
         _fileLogService.WriteInformation(nameof(ToastService), "Toast action was invoked.");
         _ = CompleteToastAsync(activeToastContext, ToastPresentationResultKind.ActionInvoked);

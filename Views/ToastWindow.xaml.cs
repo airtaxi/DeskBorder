@@ -15,6 +15,7 @@ public sealed partial class ToastWindow : WindowEx
     private ToastPageBase? _toastPage;
     public int ToastWidth { get; set; } = 420;
     public int ToastHeight { get; set; } = 160;
+    public nint ToastWindowHandle => this.GetWindowHandle();
 
     public ToastWindow(IThemeService themeService)
     {
@@ -26,8 +27,7 @@ public sealed partial class ToastWindow : WindowEx
 
     public void HideToast()
     {
-        if (AppWindow.IsVisible)
-            AppWindow.Hide();
+        if (AppWindow.IsVisible) AppWindow.Hide();
     }
 
     public void ClearToastPage()
@@ -48,8 +48,7 @@ public sealed partial class ToastWindow : WindowEx
     public void ShowToast()
     {
         UpdateWindowBounds();
-        if (!AppWindow.IsVisible)
-            AppWindow.Show();
+        if (!AppWindow.IsVisible) AppWindow.Show();
 
         Activate();
         BringToFront();
@@ -57,8 +56,7 @@ public sealed partial class ToastWindow : WindowEx
 
     private void RegisterCurrentWindowContentWithThemeService(IThemeService themeService)
     {
-        if (Content is not FrameworkElement rootFrameworkElement)
-            throw new InvalidOperationException("Unable to resolve the toast window root content for theme application.");
+        if (Content is not FrameworkElement rootFrameworkElement) throw new InvalidOperationException("Unable to resolve the toast window root content for theme application.");
 
         themeService.RegisterFrameworkElement(rootFrameworkElement);
     }
