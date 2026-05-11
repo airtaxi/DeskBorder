@@ -372,16 +372,15 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             out var adjacentVirtualDesktop))
         {
             if (CanCreateDesktopForFocusedWindowMove(desktopSwitchDirection, previousWorkspaceSnapshot))
+            {
+                var shouldSkipDesktopCreationForFocusedWindowMove = ShouldSkipDesktopCreationForFocusedWindowMove(virtualDesktopShellConnection.VirtualDesktopShell, currentDesktopIdentifier.ToString(), focusedWindowHandle);
+                if (shouldSkipDesktopCreationForFocusedWindowMove) return CreateNoAdjacentDesktopNavigationResult(previousWorkspaceSnapshot);
+
                 return MoveFocusedWindowToCreatedDesktop(virtualDesktopShellConnection.VirtualDesktopShell, previousWorkspaceSnapshot, applicationView, focusedWindowHandle, desktopSwitchDirection);
+            }
 
             _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"MoveFocusedWindowToAdjacentDesktop found no adjacent desktop for direction {desktopSwitchDirection}.");
-            return new()
-            {
-                OperationStatus = VirtualDesktopOperationStatus.NoAdjacentDesktop,
-                PreviousWorkspaceSnapshot = previousWorkspaceSnapshot,
-                CurrentWorkspaceSnapshot = previousWorkspaceSnapshot,
-                SourceDesktopIdentifier = previousWorkspaceSnapshot.CurrentDesktopIdentifier
-            };
+            return CreateNoAdjacentDesktopNavigationResult(previousWorkspaceSnapshot);
         }
 
         var targetDesktopIdentifier = VirtualDesktopFoundation.GetDesktopIdentifier(adjacentVirtualDesktop);
@@ -517,6 +516,8 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         SourceDesktopIdentifier = workspaceSnapshot.CurrentDesktopIdentifier
     };
 
+    private static DesktopNavigationResult CreateNoAdjacentDesktopNavigationResult(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => CreateFailedNavigationResult(VirtualDesktopOperationStatus.NoAdjacentDesktop, workspaceSnapshot);
+
     private static bool HasWorkspaceChanged(VirtualDesktopWorkspaceSnapshot previousWorkspaceSnapshot, VirtualDesktopWorkspaceSnapshot currentWorkspaceSnapshot)
     {
         if (!string.Equals(previousWorkspaceSnapshot.CurrentDesktopIdentifier, currentWorkspaceSnapshot.CurrentDesktopIdentifier, StringComparison.Ordinal)) return true;
@@ -553,6 +554,16 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         return CreateFailedNavigationResult(VirtualDesktopOperationStatus.UnexpectedError, previousWorkspaceSnapshot);
     }
 
+    private bool ShouldSkipDesktopCreationForFocusedWindowMove(VirtualDesktopShell virtualDesktopShell, string desktopIdentifier, nint focusedWindowHandle)
+    {
+        if (!_settingsService.Settings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty) return false;
+
+        if (GetDesktopWindowInventory(virtualDesktopShell, desktopIdentifier, focusedWindowHandle).VisibleWindowCount > 0) return false;
+
+        _fileLogService.WriteInformation(nameof(VirtualDesktopService), $"Skipped desktop creation for focused window move because desktop '{desktopIdentifier}' only contains the moving focused window.");
+        return true;
+    }
+
     private DesktopNavigationResult MoveFocusedWindowToCreatedDesktop(
         VirtualDesktopShell virtualDesktopShell,
         VirtualDesktopWorkspaceSnapshot previousWorkspaceSnapshot,
@@ -561,8 +572,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         DesktopSwitchDirection desktopSwitchDirection)
     {
         var createdVirtualDesktop = VirtualDesktopFoundation.CreateDesktop(virtualDesktopShell);
-        if (desktopSwitchDirection == DesktopSwitchDirection.Previous)
-            VirtualDesktopFoundation.MoveDesktop(virtualDesktopShell, createdVirtualDesktop, previousWorkspaceSnapshot.CurrentDesktopNumber - 1);
+        if (desktopSwitchDirection == DesktopSwitchDirection.Previous) VirtualDesktopFoundation.MoveDesktop(virtualDesktopShell, createdVirtualDesktop, previousWorkspaceSnapshot.CurrentDesktopNumber - 1);
 
         var targetDesktopIdentifier = VirtualDesktopFoundation.GetDesktopIdentifier(createdVirtualDesktop);
         VirtualDesktopFoundation.MoveViewToDesktop(virtualDesktopShell, applicationView, createdVirtualDesktop);
@@ -737,10 +747,9 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         return true;
     }
 
-    private DesktopWindowInventory GetDesktopWindowInventory(VirtualDesktopShell virtualDesktopShell, string desktopIdentifier)
+    private DesktopWindowInventory GetDesktopWindowInventory(VirtualDesktopShell virtualDesktopShell, string desktopIdentifier, nint excludedWindowHandle = 0)
     {
-        if (!TryParseDesktopIdentifier(desktopIdentifier, out var parsedDesktopIdentifier))
-            return new(0, []);
+        if (!TryParseDesktopIdentifier(desktopIdentifier, out var parsedDesktopIdentifier)) return new(0, []);
 
         var shellWindowHandle = Win32.GetShellWindow();
         var blockedProcessNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -750,6 +759,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             var windowHandle = applicationViewSnapshot.ThumbnailWindowHandle;
             if (windowHandle == 0
                 || windowHandle == shellWindowHandle
+                || windowHandle == excludedWindowHandle
                 || applicationViewSnapshot.VirtualDesktopIdentifier != parsedDesktopIdentifier
                 || !applicationViewSnapshot.ShowsInSwitchers
                 || Win32.IsIconic(windowHandle))
@@ -758,8 +768,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             }
 
             var processName = TryGetProcessName(windowHandle);
-            if (string.IsNullOrWhiteSpace(processName))
-                continue;
+            if (string.IsNullOrWhiteSpace(processName)) continue;
 
             visibleWindowCount++;
             _ = blockedProcessNames.Add(processName);
