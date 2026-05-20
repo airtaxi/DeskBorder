@@ -5,6 +5,7 @@ namespace DeskBorder.Services;
 
 public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, IFileLogService fileLogService, IForegroundWindowFullscreenService foregroundWindowFullscreenService, IMouseMovementTrackingService mouseMovementTrackingService, IGameBarProcessBlacklistService gameBarProcessBlacklistService, IKeyboardModifierAbsorptionService keyboardModifierAbsorptionService) : IDesktopEdgeMonitorService, IDisposable
 {
+    private const int DesktopEdgeTriggerRearmDistanceInPixels = 24;
     private static readonly TimeSpan s_defaultPollingInterval = TimeSpan.FromMilliseconds(40);
     private static readonly TimeSpan s_refreshFailureLoggingWindow = TimeSpan.FromSeconds(2);
 
@@ -357,62 +358,67 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
 
     private static bool HasStateChanged(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState)
     {
-        if (previousState.CursorPosition != currentState.CursorPosition)
-            return true;
+        if (HasDesktopEdgeRearmBoundaryStateChanged(previousState, currentState)) return true;
 
-        if (previousState.CursorClippingState != currentState.CursorClippingState)
-            return true;
+        if (previousState.CursorClippingState != currentState.CursorClippingState) return true;
 
-        if (previousState.ModifierKeySnapshot != currentState.ModifierKeySnapshot)
-            return true;
+        if (previousState.ModifierKeySnapshot != currentState.ModifierKeySnapshot) return true;
 
-        if (previousState.MouseButtonSnapshot != currentState.MouseButtonSnapshot)
-            return true;
+        if (previousState.MouseButtonSnapshot != currentState.MouseButtonSnapshot) return true;
 
         if (previousState.ForegroundWindowFullscreenState != currentState.ForegroundWindowFullscreenState) return true;
 
-        if (previousState.CurrentDisplayMonitor != currentState.CurrentDisplayMonitor)
-            return true;
+        if (previousState.CurrentDisplayMonitor != currentState.CurrentDisplayMonitor) return true;
 
-        if (previousState.DesktopEdgeAvailabilityStatus != currentState.DesktopEdgeAvailabilityStatus)
-            return true;
+        if (previousState.DesktopEdgeAvailabilityStatus != currentState.DesktopEdgeAvailabilityStatus) return true;
 
-        if (previousState.ActiveDesktopEdge != currentState.ActiveDesktopEdge)
-            return true;
+        if (previousState.ActiveDesktopEdge != currentState.ActiveDesktopEdge) return true;
 
-        if (previousState.HasCursorEnteredDesktopEdge != currentState.HasCursorEnteredDesktopEdge)
-            return true;
+        if (previousState.IsSwitchDesktopModifierSatisfied != currentState.IsSwitchDesktopModifierSatisfied) return true;
 
-        if (previousState.HasCursorLeftDesktopEdge != currentState.HasCursorLeftDesktopEdge)
-            return true;
+        if (previousState.IsCreateDesktopModifierSatisfied != currentState.IsCreateDesktopModifierSatisfied) return true;
 
-        if (previousState.IsSwitchDesktopModifierSatisfied != currentState.IsSwitchDesktopModifierSatisfied)
-            return true;
+        if (previousState.IsSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied != currentState.IsSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied) return true;
 
-        if (previousState.IsCreateDesktopModifierSatisfied != currentState.IsCreateDesktopModifierSatisfied)
-            return true;
-
-        if (previousState.IsSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied != currentState.IsSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied)
-            return true;
-
-        if (previousState.NavigatorTriggerState != currentState.NavigatorTriggerState)
-            return true;
+        if (HasNavigatorTriggerStateChanged(previousState.NavigatorTriggerState, currentState.NavigatorTriggerState)) return true;
 
         return !HaveSameDisplayMonitors(previousState.DisplayMonitors, currentState.DisplayMonitors);
     }
 
+    private static bool HasDesktopEdgeRearmBoundaryStateChanged(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState)
+        => IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.LeftOuterDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.LeftOuterDisplayEdge)
+        || IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.RightOuterDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.RightOuterDisplayEdge)
+        || IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.TopDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.TopDisplayEdge)
+        || IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.BottomDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.BottomDisplayEdge);
+
+    private static bool IsCursorPastDesktopEdgeRearmBoundary(DesktopEdgeMonitoringState state, DesktopEdgeKind desktopEdgeKind)
+    {
+        if (state.CurrentDisplayMonitor is null || state.DisplayMonitors.Length == 0) return false;
+
+        return desktopEdgeKind switch
+        {
+            DesktopEdgeKind.LeftOuterDisplayEdge => state.CursorPosition.X >= state.DisplayMonitors.Min(displayMonitor => displayMonitor.MonitorBounds.Left) + DesktopEdgeTriggerRearmDistanceInPixels,
+            DesktopEdgeKind.RightOuterDisplayEdge => state.CursorPosition.X <= state.DisplayMonitors.Max(displayMonitor => displayMonitor.MonitorBounds.Right) - DesktopEdgeTriggerRearmDistanceInPixels - 1,
+            DesktopEdgeKind.TopDisplayEdge => state.CursorPosition.Y >= state.CurrentDisplayMonitor.MonitorBounds.Top + DesktopEdgeTriggerRearmDistanceInPixels,
+            DesktopEdgeKind.BottomDisplayEdge => state.CursorPosition.Y <= state.CurrentDisplayMonitor.MonitorBounds.Bottom - DesktopEdgeTriggerRearmDistanceInPixels - 1,
+            _ => false
+        };
+    }
+
+    private static bool HasNavigatorTriggerStateChanged(NavigatorTriggerState previousState, NavigatorTriggerState currentState)
+        => previousState.IsEnabled != currentState.IsEnabled
+        || previousState.TriggerRectangle != currentState.TriggerRectangle
+        || previousState.IsCursorInsideTriggerRectangle != currentState.IsCursorInsideTriggerRectangle;
+
     private static bool HaveSameDisplayMonitors(DisplayMonitorInfo[] previousDisplayMonitors, DisplayMonitorInfo[] currentDisplayMonitors)
     {
-        if (ReferenceEquals(previousDisplayMonitors, currentDisplayMonitors))
-            return true;
+        if (ReferenceEquals(previousDisplayMonitors, currentDisplayMonitors)) return true;
 
-        if (previousDisplayMonitors.Length != currentDisplayMonitors.Length)
-            return false;
+        if (previousDisplayMonitors.Length != currentDisplayMonitors.Length) return false;
 
         for (var index = 0; index < previousDisplayMonitors.Length; index++)
         {
-            if (previousDisplayMonitors[index] != currentDisplayMonitors[index])
-                return false;
+            if (previousDisplayMonitors[index] != currentDisplayMonitors[index]) return false;
         }
 
         return true;

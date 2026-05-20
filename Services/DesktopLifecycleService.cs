@@ -143,20 +143,20 @@ public sealed class DesktopLifecycleService(
 
     private static bool HaveDisplayMonitorsChanged(DisplayMonitorInfo[] previousDisplayMonitors, DisplayMonitorInfo[] currentDisplayMonitors)
     {
-        if (ReferenceEquals(previousDisplayMonitors, currentDisplayMonitors))
-            return false;
+        if (ReferenceEquals(previousDisplayMonitors, currentDisplayMonitors)) return false;
 
-        if (previousDisplayMonitors.Length != currentDisplayMonitors.Length)
-            return true;
+        if (previousDisplayMonitors.Length != currentDisplayMonitors.Length) return true;
 
         for (var index = 0; index < previousDisplayMonitors.Length; index++)
         {
-            if (previousDisplayMonitors[index] != currentDisplayMonitors[index])
-                return true;
+            if (previousDisplayMonitors[index] != currentDisplayMonitors[index]) return true;
         }
 
         return false;
     }
+
+    private static bool HasNavigatorTriggerAreaPointerStateChanged(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState)
+        => previousState.NavigatorTriggerState.IsCursorInsideTriggerRectangle != currentState.NavigatorTriggerState.IsCursorInsideTriggerRectangle;
 
     private static bool IsCurrentDesktopLeftOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.CurrentDesktopNumber == 1;
 
@@ -745,12 +745,11 @@ public sealed class DesktopLifecycleService(
             return;
         }
 
-        await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreviewIfVisible);
+        await RefreshNavigatorPreviewIfVisibleAsync();
         if (desktopNavigationResult.NavigationActionKind == DesktopNavigationActionKind.CreatedAndSwitched)
         {
             _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Created a new desktop and switched to it.");
-            if (_settingsService.Settings.IsDesktopCreationCompletionToastEnabled)
-                _ = ShowDesktopCreationCompletionToastAsync(desktopNavigationResult);
+            if (_settingsService.Settings.IsDesktopCreationCompletionToastEnabled) _ = ShowDesktopCreationCompletionToastAsync(desktopNavigationResult);
 
             return;
         }
@@ -780,8 +779,7 @@ public sealed class DesktopLifecycleService(
 
         if (!_settingsService.Settings.IsAutoDeleteWarningEnabled)
         {
-            if (cancellationToken.IsCancellationRequested)
-                return;
+            if (cancellationToken.IsCancellationRequested) return;
 
             _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Deleting desktop immediately without warning. DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}.");
             await DeleteDesktopAsync(pendingDesktopDeletion, _settingsService.Settings.IsAutoDeleteCompletionToastEnabled);
@@ -798,10 +796,17 @@ public sealed class DesktopLifecycleService(
         await UiThreadHelper.ExecuteAsync(() =>
         {
             var navigatorSettings = _settingsService.Settings.NavigatorSettings;
-            _navigatorService.RefreshPreview();
+            _navigatorService.RefreshPreviewIfVisible();
             _navigatorService.UpdateTriggerAreaState(navigatorSettings.IsTriggerAreaEnabled, navigatorSettings.TriggerRectangle);
             _navigatorService.UpdateTriggerAreaPointerState(currentMonitoringState.NavigatorTriggerState.IsCursorInsideTriggerRectangle);
         });
+    }
+
+    private Task RefreshNavigatorPreviewIfVisibleAsync()
+    {
+        if (!_navigatorService.IsVisible) return Task.CompletedTask;
+
+        return UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreviewIfVisible);
     }
 
     private async Task RunPendingDesktopDeletionAsync(PendingDesktopDeletion pendingDesktopDeletion, CancellationToken cancellationToken)
@@ -830,9 +835,8 @@ public sealed class DesktopLifecycleService(
         if (desktopDeletionResult.IsSuccessful)
         {
             _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Deleted desktop. DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}, FallbackDesktopIdentifier={pendingDesktopDeletion.FallbackDesktopIdentifier}.");
-            await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreviewIfVisible);
-            if (shouldShowCompletionToast)
-                _ = ShowAutoDeleteCompletionToastAsync(pendingDesktopDeletion);
+            await RefreshNavigatorPreviewIfVisibleAsync();
+            if (shouldShowCompletionToast) _ = ShowAutoDeleteCompletionToastAsync(pendingDesktopDeletion);
 
             return;
         }
@@ -885,13 +889,10 @@ public sealed class DesktopLifecycleService(
         var observedDesktopEdgeActivationStateVersion = Volatile.Read(ref _desktopEdgeActivationStateVersion);
         var previousState = desktopEdgeMonitoringStateChangedEventArgs.PreviousState;
         var currentState = desktopEdgeMonitoringStateChangedEventArgs.CurrentState;
-        if (_navigatorService.IsVisible
-            && HaveDisplayMonitorsChanged(previousState.DisplayMonitors, currentState.DisplayMonitors))
-        {
-            await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
-        }
+        if (_navigatorService.IsVisible && HaveDisplayMonitorsChanged(previousState.DisplayMonitors, currentState.DisplayMonitors)) await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
 
-        await UiThreadHelper.ExecuteAsync(() => _navigatorService.UpdateTriggerAreaPointerState(currentState.NavigatorTriggerState.IsCursorInsideTriggerRectangle));
+        if (HasNavigatorTriggerAreaPointerStateChanged(previousState, currentState)) await UiThreadHelper.ExecuteAsync(() => _navigatorService.UpdateTriggerAreaPointerState(currentState.NavigatorTriggerState.IsCursorInsideTriggerRectangle));
+
         await _operationSemaphore.WaitAsync();
         var hasDesktopEdgeActivationStarted = false;
         try
