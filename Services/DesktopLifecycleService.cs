@@ -745,7 +745,7 @@ public sealed class DesktopLifecycleService(
             return;
         }
 
-        await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
+        await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreviewIfVisible);
         if (desktopNavigationResult.NavigationActionKind == DesktopNavigationActionKind.CreatedAndSwitched)
         {
             _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Created a new desktop and switched to it.");
@@ -830,7 +830,7 @@ public sealed class DesktopLifecycleService(
         if (desktopDeletionResult.IsSuccessful)
         {
             _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Deleted desktop. DesktopIdentifier={pendingDesktopDeletion.DesktopIdentifier}, FallbackDesktopIdentifier={pendingDesktopDeletion.FallbackDesktopIdentifier}.");
-            await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreview);
+            await UiThreadHelper.ExecuteAsync(_navigatorService.RefreshPreviewIfVisible);
             if (shouldShowCompletionToast)
                 _ = ShowAutoDeleteCompletionToastAsync(pendingDesktopDeletion);
 

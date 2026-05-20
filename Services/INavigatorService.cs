@@ -20,6 +20,8 @@ public interface INavigatorService
 
     void RefreshPreview();
 
+    void RefreshPreviewIfVisible();
+
     bool ShowFromTriggerArea();
 
     void ToggleOverlay();

@@ -54,6 +54,13 @@ public sealed class NavigatorService(
             _navigatorWindow?.ShowOverlay(previewSnapshot.TargetDisplayMonitor);
     }
 
+    public void RefreshPreviewIfVisible()
+    {
+        if (!IsVisible) return;
+
+        RefreshPreview();
+    }
+
     public bool ShowFromTriggerArea()
     {
         if (!ViewModel.IsTriggerAreaEnabled)
