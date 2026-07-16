@@ -20,7 +20,6 @@ public sealed class DesktopLifecycleService(
 {
     private const int DesktopEdgeTriggerRearmDistanceInPixels = 24;
     private const int DesktopSwitchMouseLocationApplyAttemptCount = 5;
-    private const double DesktopSwitchMouseLocationApplyToleranceMonitorWidthRatio = 0.15;
     private static readonly TimeSpan s_desktopSwitchMouseLocationApplyRetryDelay = TimeSpan.FromMilliseconds(40);
     private static readonly TimeSpan s_desktopSwitchMouseLocationVerificationDelay = TimeSpan.FromMilliseconds(40);
 
@@ -304,26 +303,6 @@ public sealed class DesktopLifecycleService(
 
     private static string FormatLastWindowsErrorDetails(int lastWindowsErrorCode) => $"LastWindowsErrorCode={lastWindowsErrorCode} (0x{lastWindowsErrorCode:X8}, {new Win32Exception(lastWindowsErrorCode).Message})";
 
-    private static int CalculateDesktopSwitchMouseLocationApplyToleranceInPixels(ScreenPoint targetMouseLocation, ScreenPoint actualMouseLocation, DisplayMonitorInfo[] displayMonitors)
-    {
-        var targetDisplayMonitor = FindDisplayMonitor(displayMonitors, targetMouseLocation);
-        var actualDisplayMonitor = FindDisplayMonitor(displayMonitors, actualMouseLocation);
-        var referenceDisplayMonitor = targetDisplayMonitor ?? actualDisplayMonitor;
-        if (referenceDisplayMonitor is null) return 0;
-
-        return Math.Max(1, (int)Math.Round(referenceDisplayMonitor.MonitorBounds.Width * DesktopSwitchMouseLocationApplyToleranceMonitorWidthRatio, MidpointRounding.AwayFromZero));
-    }
-
-    private static bool IsMouseLocationCloseEnoughAfterDesktopSwitch(ScreenPoint targetMouseLocation, ScreenPoint actualMouseLocation, DisplayMonitorInfo[] displayMonitors)
-    {
-        var toleranceInPixels = CalculateDesktopSwitchMouseLocationApplyToleranceInPixels(targetMouseLocation, actualMouseLocation, displayMonitors);
-        var horizontalOffsetInPixels = actualMouseLocation.X - targetMouseLocation.X;
-        var verticalOffsetInPixels = actualMouseLocation.Y - targetMouseLocation.Y;
-        var squaredDistanceInPixels = (long)horizontalOffsetInPixels * horizontalOffsetInPixels + (long)verticalOffsetInPixels * verticalOffsetInPixels;
-        var squaredToleranceInPixels = (long)toleranceInPixels * toleranceInPixels;
-        return squaredDistanceInPixels <= squaredToleranceInPixels;
-    }
-
     private static string FormatCursorClippingDetails()
     {
         try
@@ -451,7 +430,6 @@ public sealed class DesktopLifecycleService(
                 triggerSource,
                 desktopSwitchMouseLocationOption,
                 targetMouseLocation.Value,
-                desktopSwitchMouseLocationContext!.Value.DisplayMonitors,
                 _mouseLocationApplyRequestVersion);
             _mouseLocationApplyCancellationTokenSource = currentMouseLocationApplyCancellationTokenSource;
             _mouseLocationApplyTask = Task.Run(() => ApplyMouseLocationAfterDesktopSwitchAsync(
@@ -530,23 +508,16 @@ public sealed class DesktopLifecycleService(
         {
             ThrowIfMouseLocationApplyRequestIsStale(mouseLocationApplyRequest.RequestVersion, cancellationToken);
             if (!MouseHelper.TrySetCursorPosition(mouseLocationApplyRequest.TargetMouseLocation, out var setCursorPositionLastWindowsErrorCode))
-                lastMouseLocationApplyResult = new(attemptNumber, false, false, false, null, setCursorPositionLastWindowsErrorCode, 0);
+                lastMouseLocationApplyResult = new(attemptNumber, false, false, null, setCursorPositionLastWindowsErrorCode, 0);
             else
             {
                 await Task.Delay(s_desktopSwitchMouseLocationVerificationDelay, cancellationToken);
                 ThrowIfMouseLocationApplyRequestIsStale(mouseLocationApplyRequest.RequestVersion, cancellationToken);
                 if (!MouseHelper.TryGetCurrentCursorPosition(out var actualMouseLocation, out var getCursorPositionLastWindowsErrorCode))
-                    lastMouseLocationApplyResult = new(attemptNumber, true, false, false, null, 0, getCursorPositionLastWindowsErrorCode);
+                    lastMouseLocationApplyResult = new(attemptNumber, true, false, null, 0, getCursorPositionLastWindowsErrorCode);
                 else
                 {
-                    lastMouseLocationApplyResult = new(
-                        attemptNumber,
-                        true,
-                        true,
-                        IsMouseLocationCloseEnoughAfterDesktopSwitch(mouseLocationApplyRequest.TargetMouseLocation, actualMouseLocation, mouseLocationApplyRequest.DisplayMonitors),
-                        actualMouseLocation,
-                        0,
-                        0);
+                    lastMouseLocationApplyResult = new(attemptNumber, true, true, actualMouseLocation, 0, 0);
                     if (lastMouseLocationApplyResult.IsSuccessful)
                         return lastMouseLocationApplyResult;
                 }
@@ -1055,19 +1026,17 @@ public sealed class DesktopLifecycleService(
         string TriggerSource,
         DesktopSwitchMouseLocationOption Option,
         ScreenPoint TargetMouseLocation,
-        DisplayMonitorInfo[] DisplayMonitors,
         int RequestVersion);
 
     private readonly record struct DesktopSwitchMouseLocationApplyResult(
         int AttemptNumber,
         bool DidSetCursorPosition,
         bool DidReadActualMouseLocation,
-        bool WasTargetMouseLocationApplied,
         ScreenPoint? ActualMouseLocation,
         int SetCursorPositionLastWindowsErrorCode,
         int GetCursorPositionLastWindowsErrorCode)
     {
-        public bool IsSuccessful => DidSetCursorPosition && DidReadActualMouseLocation && WasTargetMouseLocationApplied;
+        public bool IsSuccessful => DidSetCursorPosition && DidReadActualMouseLocation;
     }
 
     private readonly record struct DesktopEdgeActivationEvaluation(
