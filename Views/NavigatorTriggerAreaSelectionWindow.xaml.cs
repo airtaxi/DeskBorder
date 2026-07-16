@@ -1,4 +1,4 @@
-using DeskBorder.Interop;
+﻿using DeskBorder.Interop;
 using DeskBorder.Helpers;
 using DeskBorder.Models;
 using DeskBorder.Services;
@@ -36,8 +36,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     public Task<TriggerRectangleSettings?> ShowSelectionAsync()
     {
         PrepareBorderlessOverlayPresentation();
-        if (!AppWindow.IsVisible)
-            AppWindow.Show();
+        if (!AppWindow.IsVisible) AppWindow.Show();
 
         Activate();
         BringToFront();
@@ -50,8 +49,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     private TriggerRectangleSettings CreateTriggerRectangleSettings(ScreenRectangle selectionBounds)
     {
         var monitorBounds = _targetDisplayMonitor.MonitorBounds;
-        if (monitorBounds.Width <= 0 || monitorBounds.Height <= 0)
-            throw new InvalidOperationException("Unable to resolve the target display monitor bounds.");
+        if (monitorBounds.Width <= 0 || monitorBounds.Height <= 0) throw new InvalidOperationException("Unable to resolve the target display monitor bounds.");
 
         return new()
         {
@@ -64,8 +62,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
 
     private void CompleteSelection(TriggerRectangleSettings? triggerRectangleSettings)
     {
-        if (_isCompletingSelection)
-            return;
+        if (_isCompletingSelection) return;
 
         _isCompletingSelection = true;
         _selectionTaskCompletionSource.TrySetResult(triggerRectangleSettings);
@@ -83,8 +80,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
 
     private void RegisterCurrentWindowContentWithThemeService()
     {
-        if (Content is not FrameworkElement rootFrameworkElement)
-            throw new InvalidOperationException("Unable to resolve the navigator trigger selection window root content for theme application.");
+        if (Content is not FrameworkElement rootFrameworkElement) throw new InvalidOperationException("Unable to resolve the navigator trigger selection window root content for theme application.");
 
         _themeService.RegisterFrameworkElement(rootFrameworkElement);
     }
@@ -101,23 +97,14 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     private void ConfigureBorderlessOverlayPresenter()
     {
         AppWindow.SetPresenter(AppWindowPresenterKind.Overlapped);
-        if (AppWindow.Presenter is not OverlappedPresenter overlappedPresenter)
-            throw new InvalidOperationException("Unable to configure the navigator trigger area selection window presenter.");
+        if (AppWindow.Presenter is not OverlappedPresenter overlappedPresenter) throw new InvalidOperationException("Unable to configure the navigator trigger area selection window presenter.");
 
         overlappedPresenter.SetBorderAndTitleBar(false, false);
     }
 
     private void EnsureTopMostWindowState()
     {
-        if (Win32.SetWindowPosition(
-            this.GetWindowHandle(),
-            Win32.TopMostWindowInsertAfterHandle,
-            0,
-            0,
-            0,
-            0,
-            Win32.SetWindowPositionDoNotResizeFlag | Win32.SetWindowPositionDoNotMoveFlag | Win32.SetWindowPositionShowWindowFlag))
-            return;
+        if (Win32.SetWindowPosition(this.GetWindowHandle(), Win32.TopMostWindowInsertAfterHandle, 0, 0, 0, 0, Win32.SetWindowPositionDoNotResizeFlag | Win32.SetWindowPositionDoNotMoveFlag | Win32.SetWindowPositionShowWindowFlag)) return;
 
         throw new InvalidOperationException("Unable to place the navigator trigger area selection window above other windows.");
     }
@@ -125,12 +112,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     private void EnsureNonRoundedCorners()
     {
         var cornerPreference = Win32.DesktopWindowManagerWindowCornerPreferenceDoNotRound;
-        if (Win32.DwmSetWindowInt32Attribute(
-            this.GetWindowHandle(),
-            Win32.DesktopWindowManagerWindowCornerPreferenceAttribute,
-            cornerPreference,
-            sizeof(int)) >= 0)
-            return;
+        if (Win32.DwmSetWindowInt32Attribute(this.GetWindowHandle(), Win32.DesktopWindowManagerWindowCornerPreferenceAttribute, cornerPreference, sizeof(int)) >= 0) return;
 
         throw new InvalidOperationException("Unable to disable rounded corners for the navigator trigger area selection window.");
     }
@@ -146,8 +128,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     {
         _ = sender;
         _ = eventArguments;
-        if (DispatcherQueue.TryEnqueue(RefreshLocalizedText))
-            return;
+        if (DispatcherQueue.TryEnqueue(RefreshLocalizedText)) return;
 
         RefreshLocalizedText();
     }
@@ -155,8 +136,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     private void OnNavigatorTriggerAreaSelectionWindowActivated(object sender, WindowActivatedEventArgs windowActivatedEventArgs)
     {
         _ = sender;
-        if (windowActivatedEventArgs.WindowActivationState != WindowActivationState.Deactivated)
-            return;
+        if (windowActivatedEventArgs.WindowActivationState != WindowActivationState.Deactivated) return;
 
         CompleteSelection(null);
     }
@@ -168,8 +148,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
         _localizationService.LanguageChanged -= OnLocalizationServiceLanguageChanged;
         Activated -= OnNavigatorTriggerAreaSelectionWindowActivated;
         Closed -= OnNavigatorTriggerAreaSelectionWindowClosed;
-        if (!_isCompletingSelection)
-            _selectionTaskCompletionSource.TrySetResult(null);
+        if (!_isCompletingSelection) _selectionTaskCompletionSource.TrySetResult(null);
     }
 
     private void OnRootGridPointerCanceled(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
@@ -182,8 +161,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     private void OnRootGridPointerMoved(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
     {
         _ = sender;
-        if (!_isPointerPressed)
-            return;
+        if (!_isPointerPressed) return;
 
         UpdateSelectionVisual(GetClampedCurrentScreenPoint());
     }
@@ -200,13 +178,11 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     private void OnRootGridPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
     {
         _ = sender;
-        if (!_isPointerPressed)
-            return;
+        if (!_isPointerPressed) return;
 
         var selectionBounds = GetSelectionBounds(GetClampedCurrentScreenPoint());
         ResetPointerSelection();
-        if (selectionBounds.Width < MinimumSelectionLength || selectionBounds.Height < MinimumSelectionLength)
-            return;
+        if (selectionBounds.Width < MinimumSelectionLength || selectionBounds.Height < MinimumSelectionLength) return;
 
         CompleteSelection(CreateTriggerRectangleSettings(selectionBounds));
     }
@@ -234,9 +210,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     {
         var currentScreenPoint = MouseHelper.GetCurrentCursorPosition();
         var monitorBounds = _targetDisplayMonitor.MonitorBounds;
-        return new(
-            Math.Clamp(currentScreenPoint.X, monitorBounds.Left, monitorBounds.Right - 1),
-            Math.Clamp(currentScreenPoint.Y, monitorBounds.Top, monitorBounds.Bottom - 1));
+        return new(Math.Clamp(currentScreenPoint.X, monitorBounds.Left, monitorBounds.Right - 1), Math.Clamp(currentScreenPoint.Y, monitorBounds.Top, monitorBounds.Bottom - 1));
     }
 
     private void ResetPointerSelection()
@@ -250,8 +224,7 @@ public sealed partial class NavigatorTriggerAreaSelectionWindow : WindowEx
     {
         var actualCanvasWidth = SelectionCanvas.ActualWidth;
         var actualCanvasHeight = SelectionCanvas.ActualHeight;
-        if (actualCanvasWidth <= 0 || actualCanvasHeight <= 0)
-            return;
+        if (actualCanvasWidth <= 0 || actualCanvasHeight <= 0) return;
 
         var monitorBounds = _targetDisplayMonitor.MonitorBounds;
         var selectionBounds = GetSelectionBounds(currentScreenPoint);

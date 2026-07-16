@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using DeskBorder.Dialogs;
 using DeskBorder.Helpers;
 using DeskBorder.Models;
@@ -164,62 +164,35 @@ public sealed partial class SettingsPage : Page
         _ => null
     };
 
-    private static bool IsWindowsOnlyModifierSelection(ModifierKeySelectionViewModel modifierKeySelectionViewModel) => modifierKeySelectionViewModel.CreateKeyboardModifierKeys() == KeyboardModifierKeys.Windows
-        && modifierKeySelectionViewModel.CreateMouseModifierButtonTriggers().Length == 0;
+    private static bool IsWindowsOnlyModifierSelection(ModifierKeySelectionViewModel modifierKeySelectionViewModel) => modifierKeySelectionViewModel.CreateKeyboardModifierKeys() == KeyboardModifierKeys.Windows && modifierKeySelectionViewModel.CreateMouseModifierButtonTriggers().Length == 0;
 
-    private Visibility GetAutoDeleteCompletionToastVisibility(bool isAutoDeleteWarningEnabled) => !isAutoDeleteWarningEnabled
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetAutoDeleteCompletionToastVisibility(bool isAutoDeleteWarningEnabled) => !isAutoDeleteWarningEnabled ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetAutoDeleteOptionControlsVisibility(bool isAutoDeleteEnabled) => isAutoDeleteEnabled
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetAutoDeleteOptionControlsVisibility(bool isAutoDeleteEnabled) => isAutoDeleteEnabled ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetAutoDeleteWarningTimeoutVisibility(bool isAutoDeleteWarningEnabled) => isAutoDeleteWarningEnabled
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetAutoDeleteWarningTimeoutVisibility(bool isAutoDeleteWarningEnabled) => isAutoDeleteWarningEnabled ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetDesktopEdgeAdditionalTriggerDistanceVisibility(bool isDesktopEdgeAdditionalTriggerDistanceEnabled) => isDesktopEdgeAdditionalTriggerDistanceEnabled
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetDesktopEdgeAdditionalTriggerDistanceVisibility(bool isDesktopEdgeAdditionalTriggerDistanceEnabled) => isDesktopEdgeAdditionalTriggerDistanceEnabled ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetDesktopEdgeActivationOnModifierPressVisibility(bool hasActiveDesktopActionModifierInputs) => hasActiveDesktopActionModifierInputs
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetDesktopEdgeActivationOnModifierPressVisibility(bool hasActiveDesktopActionModifierInputs) => hasActiveDesktopActionModifierInputs ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetDesktopCreationOptionControlsVisibility(bool isDesktopCreationEnabled) => isDesktopCreationEnabled
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetDesktopCreationOptionControlsVisibility(bool isDesktopCreationEnabled) => isDesktopCreationEnabled ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetFullscreenOptionControlsVisibility(bool isDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen) => isDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetFullscreenOptionControlsVisibility(bool isDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen) => isDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetKeyboardModifierConsumptionAfterDesktopActionVisibility(bool hasActiveDesktopActionKeyboardModifiers) => hasActiveDesktopActionKeyboardModifiers
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetKeyboardModifierConsumptionAfterDesktopActionVisibility(bool hasActiveDesktopActionKeyboardModifiers) => hasActiveDesktopActionKeyboardModifiers ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetKeyboardModifierPreemptiveAbsorptionOptionControlsVisibility(bool isKeyboardModifierConsumptionAfterDesktopActionEnabled) => isKeyboardModifierConsumptionAfterDesktopActionEnabled
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetKeyboardModifierPreemptiveAbsorptionOptionControlsVisibility(bool isKeyboardModifierConsumptionAfterDesktopActionEnabled) => isKeyboardModifierConsumptionAfterDesktopActionEnabled ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetMouseModifierButtonConsumptionAfterDesktopActionVisibility(bool hasActiveDesktopActionMouseModifierButtons) => hasActiveDesktopActionMouseModifierButtons
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetMouseModifierButtonConsumptionAfterDesktopActionVisibility(bool hasActiveDesktopActionMouseModifierButtons) => hasActiveDesktopActionMouseModifierButtons ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetProcessDesktopPlacementOptionControlsVisibility(bool isProcessDesktopPlacementEnabled) => isProcessDesktopPlacementEnabled
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetProcessDesktopPlacementOptionControlsVisibility(bool isProcessDesktopPlacementEnabled) => isProcessDesktopPlacementEnabled ? Visibility.Visible : Visibility.Collapsed;
 
-    private Visibility GetProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingVisibility(bool isProcessDesktopPlacementMissingTargetDesktopCreationEnabled) => isProcessDesktopPlacementMissingTargetDesktopCreationEnabled
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingVisibility(bool isProcessDesktopPlacementMissingTargetDesktopCreationEnabled) => isProcessDesktopPlacementMissingTargetDesktopCreationEnabled ? Visibility.Visible : Visibility.Collapsed;
 
     private bool GetMultiDisplayBehaviorSelectionEnabled(bool isVerticalDesktopSwitchingEnabled) => !isVerticalDesktopSwitchingEnabled;
 
-    private Visibility GetVerticalDesktopSwitchingOptionsVisibility(bool areVerticalDesktopSwitchingOptionControlsVisible) => areVerticalDesktopSwitchingOptionControlsVisible
-        ? Visibility.Visible
-        : Visibility.Collapsed;
+    private Visibility GetVerticalDesktopSwitchingOptionsVisibility(bool areVerticalDesktopSwitchingOptionControlsVisible) => areVerticalDesktopSwitchingOptionControlsVisible ? Visibility.Visible : Visibility.Collapsed;
 #pragma warning restore CA1822 // Mark members as static => Used on XAML bindings
 
     private void ApplyHotkeyRegistrationState()
@@ -261,12 +234,10 @@ public sealed partial class SettingsPage : Page
         {
             using (runningProcess)
             {
-                if (runningProcess.Id == Environment.ProcessId)
-                    continue;
+                if (runningProcess.Id == Environment.ProcessId) continue;
 
                 var processName = TryGetForegroundProcessName(runningProcess);
-                if (string.IsNullOrWhiteSpace(processName))
-                    continue;
+                if (string.IsNullOrWhiteSpace(processName)) continue;
 
                 _ = availableProcessNames.Add(processName);
             }
@@ -279,8 +250,7 @@ public sealed partial class SettingsPage : Page
     {
         var whitelistedProcessNameSet = ViewModel.WhitelistedProcessNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
         var availableProcessNames = new HashSet<string>(GetAvailableRunningProcessNames(), StringComparer.OrdinalIgnoreCase);
-        foreach (var blacklistedProcessName in ViewModel.BlacklistedProcessNames)
-            _ = availableProcessNames.Add(blacklistedProcessName);
+        foreach (var blacklistedProcessName in ViewModel.BlacklistedProcessNames) _ = availableProcessNames.Add(blacklistedProcessName);
 
         return [.. availableProcessNames
             .Where(processName => !whitelistedProcessNameSet.Contains(processName))
@@ -299,24 +269,19 @@ public sealed partial class SettingsPage : Page
         TargetDesktopNumber = Math.Max(1, targetDesktopNumber)
     };
 
-    private static ProcessDesktopPlacementPopupInitialRule CreateProcessDesktopPlacementPopupInitialRule(ProcessDesktopPlacementRuleViewModel processDesktopPlacementRule) => new(
-        processDesktopPlacementRule.Lifetime,
-        GetRemainingProcessDesktopPlacementRuleDuration(processDesktopPlacementRule));
+    private static ProcessDesktopPlacementPopupInitialRule CreateProcessDesktopPlacementPopupInitialRule(ProcessDesktopPlacementRuleViewModel processDesktopPlacementRule) => new(processDesktopPlacementRule.Lifetime, GetRemainingProcessDesktopPlacementRuleDuration(processDesktopPlacementRule));
 
     private static TimeSpan? GetRemainingProcessDesktopPlacementRuleDuration(ProcessDesktopPlacementRuleViewModel processDesktopPlacementRule)
     {
         if (processDesktopPlacementRule.Lifetime != ProcessDesktopPlacementRuleLifetime.Timed || !processDesktopPlacementRule.ExpiresAt.HasValue) return null;
 
         var remainingDuration = processDesktopPlacementRule.ExpiresAt.Value - DateTimeOffset.UtcNow;
-        return remainingDuration <= TimeSpan.Zero
-            ? TimeSpan.FromMinutes(1)
-            : remainingDuration;
+        return remainingDuration <= TimeSpan.Zero ? TimeSpan.FromMinutes(1) : remainingDuration;
     }
 
     private async Task ImportSettingsAsync()
     {
-        if (_isSettingsTransferInProgress)
-            return;
+        if (_isSettingsTransferInProgress) return;
 
         SetSettingsTransferInProgress(true);
         try
@@ -324,10 +289,7 @@ public sealed partial class SettingsPage : Page
             var selectedSettingsFile = await PickImportSettingsFileAsync();
             if (selectedSettingsFile is null)
             {
-                ShowSettingsImportExportResult(
-                    LocalizedResourceAccessor.GetString("Settings.Import.CancelledTitle"),
-                    LocalizedResourceAccessor.GetString("Settings.Import.CancelledMessage"),
-                    InfoBarSeverity.Informational);
+                ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.CancelledTitle"), LocalizedResourceAccessor.GetString("Settings.Import.CancelledMessage"), InfoBarSeverity.Informational);
                 return;
             }
 
@@ -339,10 +301,7 @@ public sealed partial class SettingsPage : Page
                 ShowAlwaysRunAsAdministratorImportExcludedStatus();
             }
 
-            ShowSettingsImportExportResult(
-                LocalizedResourceAccessor.GetString("Settings.Import.SuccessTitle"),
-                LocalizedResourceAccessor.GetFormattedString("Settings.Import.SuccessMessageFormat", Path.GetFileName(selectedSettingsFile.Path)),
-                InfoBarSeverity.Success);
+            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.SuccessTitle"), LocalizedResourceAccessor.GetFormattedString("Settings.Import.SuccessMessageFormat", Path.GetFileName(selectedSettingsFile.Path)), InfoBarSeverity.Success);
         }
         catch (ArgumentException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
         catch (InvalidOperationException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Import.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
@@ -353,8 +312,7 @@ public sealed partial class SettingsPage : Page
 
     private async Task ExportIntegratedLogAsync()
     {
-        if (_isLogExportInProgress)
-            return;
+        if (_isLogExportInProgress) return;
 
         _isLogExportInProgress = true;
         ExportIntegratedLogButton.IsEnabled = false;
@@ -364,19 +322,13 @@ public sealed partial class SettingsPage : Page
             if (selectedLogFile is null)
             {
                 _fileLogService.WriteInformation(nameof(SettingsPage), "Integrated log export was canceled.");
-                ShowDeveloperLogResult(
-                    LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.CancelledTitle"),
-                    LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.CancelledMessage"),
-                    InfoBarSeverity.Informational);
+                ShowDeveloperLogResult(LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.CancelledTitle"), LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.CancelledMessage"), InfoBarSeverity.Informational);
                 return;
             }
 
             _fileLogService.WriteInformation(nameof(SettingsPage), $"Exporting integrated log to '{selectedLogFile.Path}'.");
             await _fileLogService.ExportAsync(selectedLogFile.Path);
-            ShowDeveloperLogResult(
-                LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.SuccessTitle"),
-                LocalizedResourceAccessor.GetFormattedString("Settings.DeveloperLogExport.SuccessMessageFormat", Path.GetFileName(selectedLogFile.Path)),
-                InfoBarSeverity.Success);
+            ShowDeveloperLogResult(LocalizedResourceAccessor.GetString("Settings.DeveloperLogExport.SuccessTitle"), LocalizedResourceAccessor.GetFormattedString("Settings.DeveloperLogExport.SuccessMessageFormat", Path.GetFileName(selectedLogFile.Path)), InfoBarSeverity.Success);
         }
         catch (ArgumentException exception)
         {
@@ -412,20 +364,11 @@ public sealed partial class SettingsPage : Page
         ShowPendingLanguageRestartRecommendedStatusIfNeeded();
     }
 
-    private async void OnAddBlacklistedProcessNameButtonClicked(object sender, RoutedEventArgs args)
-    {
-        await ShowBlacklistedProcessSelectionDialogAsync();
-    }
+    private async void OnAddBlacklistedProcessNameButtonClicked(object sender, RoutedEventArgs args) => await ShowBlacklistedProcessSelectionDialogAsync();
 
-    private async void OnAddWhitelistedProcessNameButtonClicked(object sender, RoutedEventArgs args)
-    {
-        await ShowWhitelistedProcessSelectionDialogAsync();
-    }
+    private async void OnAddWhitelistedProcessNameButtonClicked(object sender, RoutedEventArgs args) => await ShowWhitelistedProcessSelectionDialogAsync();
 
-    private async void OnAddProcessDesktopPlacementRuleButtonClicked(object sender, RoutedEventArgs args)
-    {
-        await ShowProcessDesktopPlacementProcessSelectionDialogAsync();
-    }
+    private async void OnAddProcessDesktopPlacementRuleButtonClicked(object sender, RoutedEventArgs args) => await ShowProcessDesktopPlacementProcessSelectionDialogAsync();
 
     private async void OnEditProcessDesktopPlacementRuleButtonClicked(object sender, RoutedEventArgs args)
     {
@@ -442,10 +385,7 @@ public sealed partial class SettingsPage : Page
 
     private async void OnResetSettingsButtonClicked(object sender, RoutedEventArgs args) => await ResetSettingsAsync();
 
-    private async void OnSelectNavigatorTriggerAreaButtonClicked(object sender, RoutedEventArgs args)
-    {
-        await SelectNavigatorTriggerAreaAsync();
-    }
+    private async void OnSelectNavigatorTriggerAreaButtonClicked(object sender, RoutedEventArgs args) => await SelectNavigatorTriggerAreaAsync();
 
     private void OnHotkeyServiceRegistrationStateChanged(object? _, EventArgs __)
     {
@@ -464,23 +404,16 @@ public sealed partial class SettingsPage : Page
     private async void OnModifierSelectionCheckBoxClicked(object sender, RoutedEventArgs args)
     {
         await ShowWindowsModifierCompatibilityWarningIfNeededAsync(sender);
-        QueueSettingsSave(
-            shouldShowVerticalDesktopSwitchingModifierWarning: ShouldShowVerticalDesktopSwitchingModifierWarningForModifierSelectionChange(sender),
-            shouldShowMouseModifierButtonBehaviorInformation: ShouldShowMouseModifierButtonBehaviorInformationForModifierSelectionChange(sender));
+        QueueSettingsSave(shouldShowVerticalDesktopSwitchingModifierWarning: ShouldShowVerticalDesktopSwitchingModifierWarningForModifierSelectionChange(sender), shouldShowMouseModifierButtonBehaviorInformation: ShouldShowMouseModifierButtonBehaviorInformationForModifierSelectionChange(sender));
     }
 
-    private async void OnCheckStoreUpdateButtonClicked(object sender, RoutedEventArgs args)
-    {
-        await CheckStoreUpdateAsync();
-    }
+    private async void OnCheckStoreUpdateButtonClicked(object sender, RoutedEventArgs args) => await CheckStoreUpdateAsync();
 
     private async void OnRemoveBlacklistedProcessNameButtonClicked(object sender, RoutedEventArgs routedEventArgs)
     {
-        if (sender is not Button { Tag: string blacklistedProcessName })
-            return;
+        if (sender is not Button { Tag: string blacklistedProcessName }) return;
 
-        if (!ViewModel.RemoveBlacklistedProcessName(blacklistedProcessName))
-            return;
+        if (!ViewModel.RemoveBlacklistedProcessName(blacklistedProcessName)) return;
 
         await SaveSettingsAsync();
     }
@@ -513,11 +446,9 @@ public sealed partial class SettingsPage : Page
 
     private async void OnRemoveWhitelistedProcessNameButtonClicked(object sender, RoutedEventArgs routedEventArgs)
     {
-        if (sender is not Button { Tag: string whitelistedProcessName })
-            return;
+        if (sender is not Button { Tag: string whitelistedProcessName }) return;
 
-        if (!ViewModel.RemoveWhitelistedProcessName(whitelistedProcessName))
-            return;
+        if (!ViewModel.RemoveWhitelistedProcessName(whitelistedProcessName)) return;
 
         await SaveSettingsAsync();
     }
@@ -547,8 +478,7 @@ public sealed partial class SettingsPage : Page
 
         if (ShouldRejectAlwaysRunAsAdministratorToggleChange(settingToggleSwitch)) return;
 
-        if (ReferenceEquals(settingToggleSwitch, ProcessDesktopPlacementMissingTargetDesktopCreationToggleSwitch)
-            && !settingToggleSwitch.IsOn)
+        if (ReferenceEquals(settingToggleSwitch, ProcessDesktopPlacementMissingTargetDesktopCreationToggleSwitch) && !settingToggleSwitch.IsOn)
         {
             ViewModel.IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled = false;
             RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates();
@@ -582,7 +512,10 @@ public sealed partial class SettingsPage : Page
 
     private void OnSectionTeachingTipClosed(TeachingTip sender, TeachingTipClosedEventArgs args)
     {
-        if (ReferenceEquals(_activeSectionTeachingTip, sender)) _activeSectionTeachingTip = null;
+        if (ReferenceEquals(_activeSectionTeachingTip, sender))
+        {
+            _activeSectionTeachingTip = null;
+        }
     }
 
     private void OnSettingsServiceSettingsChanged(object? _, EventArgs __)
@@ -598,8 +531,7 @@ public sealed partial class SettingsPage : Page
         ViewModel.RefreshProcessDesktopPlacementRuleLifetimeStatuses(DateTimeOffset.UtcNow);
     }
 
-    private void OnProcessDesktopPlacementWorkspaceRefreshTimerTick(object? _, object __)
-        => RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates(shouldSaveChanges: true);
+    private void OnProcessDesktopPlacementWorkspaceRefreshTimerTick(object? _, object __) => RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates(shouldSaveChanges: true);
 
     private void OnProcessDesktopPlacementServiceTemporaryRulesChanged(object? _, EventArgs __)
     {
@@ -687,8 +619,7 @@ public sealed partial class SettingsPage : Page
             if (await _storeUpdateService.GetAvailableUpdateCountAsync() > 0)
             {
                 SetStoreUpdateStatus("Settings.StoreUpdate.Status.UpdateAvailable");
-                if (await ShowStoreUpdateAvailableDialogAsync() == ContentDialogResult.Primary)
-                    await OpenStoreProductPageAsync();
+                if (await ShowStoreUpdateAvailableDialogAsync() == ContentDialogResult.Primary) await OpenStoreProductPageAsync();
 
                 return;
             }
@@ -703,13 +634,9 @@ public sealed partial class SettingsPage : Page
 
     private async Task OpenStoreProductPageAsync()
     {
-        if (await _storeUpdateService.OpenStoreProductPageAsync())
-            return;
+        if (await _storeUpdateService.OpenStoreProductPageAsync()) return;
 
-        ShowSettingsStatus(
-            LocalizedResourceAccessor.GetString("Settings.StoreUpdate.OpenStoreProductPageFailedTitle"),
-            LocalizedResourceAccessor.GetString("Settings.StoreUpdate.OpenStoreProductPageFailedMessage"),
-            InfoBarSeverity.Error);
+        ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.StoreUpdate.OpenStoreProductPageFailedTitle"), LocalizedResourceAccessor.GetString("Settings.StoreUpdate.OpenStoreProductPageFailedMessage"), InfoBarSeverity.Error);
     }
 
     private void RefreshStoreUpdateStatusText() => StoreUpdateStatusTextBlock.Text = LocalizedResourceAccessor.GetString(_storeUpdateStatusResourceName);
@@ -785,18 +712,14 @@ public sealed partial class SettingsPage : Page
 
     private async Task ShowWindowsModifierCompatibilityWarningIfNeededAsync(object sender)
     {
-        if (_isSynchronizingViewModel || !_isInitialSettingsLoadCompleted || ViewModel.IsWindowsOnlyModifierWarningSuppressed)
-            return;
+        if (_isSynchronizingViewModel || !_isInitialSettingsLoadCompleted || ViewModel.IsWindowsOnlyModifierWarningSuppressed) return;
 
-        if (sender is not FrameworkElement { Tag: string modifierSelectionTag })
-            return;
+        if (sender is not FrameworkElement { Tag: string modifierSelectionTag }) return;
 
         var modifierKeySelectionViewModel = GetDesktopActionModifierSelectionViewModel(ViewModel, modifierSelectionTag);
-        if (modifierKeySelectionViewModel is null || !IsWindowsOnlyModifierSelection(modifierKeySelectionViewModel))
-            return;
+        if (modifierKeySelectionViewModel is null || !IsWindowsOnlyModifierSelection(modifierKeySelectionViewModel)) return;
 
-        if (await ShowWindowsModifierCompatibilityWarningDialogAsync() != ContentDialogResult.Secondary)
-            return;
+        if (await ShowWindowsModifierCompatibilityWarningDialogAsync() != ContentDialogResult.Secondary) return;
 
         ViewModel.IsWindowsOnlyModifierWarningSuppressed = true;
     }
@@ -806,19 +729,12 @@ public sealed partial class SettingsPage : Page
         var availableBlacklistedProcessNames = GetAvailableBlacklistedProcessNames();
         if (availableBlacklistedProcessNames.Count == 0)
         {
-            ShowSettingsStatus(
-                LocalizedResourceAccessor.GetString("Settings.Blacklist.NoAvailableForegroundProcessesTitle"),
-                LocalizedResourceAccessor.GetString("Settings.Blacklist.NoAvailableForegroundProcessesMessage"),
-                InfoBarSeverity.Informational);
+            ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Blacklist.NoAvailableForegroundProcessesTitle"), LocalizedResourceAccessor.GetString("Settings.Blacklist.NoAvailableForegroundProcessesMessage"), InfoBarSeverity.Informational);
             return;
         }
 
-        var selectedProcessNames = await ShowProcessSelectionDialogAsync(
-            availableBlacklistedProcessNames,
-            "ForegroundProcessSelectionDialog.Title",
-            "ForegroundProcessSelectionDialog_DescriptionTextBlock.Text");
-        if (selectedProcessNames.Count == 0 || !ViewModel.AddBlacklistedProcessNames(selectedProcessNames))
-            return;
+        var selectedProcessNames = await ShowProcessSelectionDialogAsync(availableBlacklistedProcessNames, "ForegroundProcessSelectionDialog.Title", "ForegroundProcessSelectionDialog_DescriptionTextBlock.Text");
+        if (selectedProcessNames.Count == 0 || !ViewModel.AddBlacklistedProcessNames(selectedProcessNames)) return;
 
         await SaveSettingsAsync();
     }
@@ -828,17 +744,11 @@ public sealed partial class SettingsPage : Page
         var availableProcessNames = GetAvailableProcessDesktopPlacementProcessNames();
         if (availableProcessNames.Count == 0)
         {
-            ShowSettingsStatus(
-                LocalizedResourceAccessor.GetString("Settings.ProcessDesktopPlacement.NoAvailableProcessesTitle"),
-                LocalizedResourceAccessor.GetString("Settings.ProcessDesktopPlacement.NoAvailableProcessesMessage"),
-                InfoBarSeverity.Informational);
+            ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.ProcessDesktopPlacement.NoAvailableProcessesTitle"), LocalizedResourceAccessor.GetString("Settings.ProcessDesktopPlacement.NoAvailableProcessesMessage"), InfoBarSeverity.Informational);
             return;
         }
 
-        var selectedProcessNames = await ShowProcessSelectionDialogAsync(
-            availableProcessNames,
-            "Settings.ProcessDesktopPlacement.Dialog.Title",
-            "Settings.ProcessDesktopPlacement.Dialog.Description");
+        var selectedProcessNames = await ShowProcessSelectionDialogAsync(availableProcessNames, "Settings.ProcessDesktopPlacement.Dialog.Title", "Settings.ProcessDesktopPlacement.Dialog.Description");
         if (selectedProcessNames.Count == 0) return;
 
         var popupResult = await ShowProcessDesktopPlacementPopupWindowAsync(selectedProcessNames, _virtualDesktopService.GetCurrentProcessDesktopPlacementTargetNumber());
@@ -860,11 +770,7 @@ public sealed partial class SettingsPage : Page
         }
     }
 
-    private void AddTemporaryProcessDesktopPlacementRule(string processName, int targetDesktopNumber, ProcessDesktopPlacementPopupResult popupResult)
-        => _processDesktopPlacementService.AddTemporaryRule(
-            CreateProcessDesktopPlacementRule(processName, targetDesktopNumber),
-            popupResult.Lifetime,
-            popupResult.Duration);
+    private void AddTemporaryProcessDesktopPlacementRule(string processName, int targetDesktopNumber, ProcessDesktopPlacementPopupResult popupResult) => _processDesktopPlacementService.AddTemporaryRule(CreateProcessDesktopPlacementRule(processName, targetDesktopNumber), popupResult.Lifetime, popupResult.Duration);
 
     private async Task EditProcessDesktopPlacementRuleAsync(ProcessDesktopPlacementRuleViewModel processDesktopPlacementRule)
     {
@@ -873,10 +779,7 @@ public sealed partial class SettingsPage : Page
         if (popupResult is null) return;
 
         var targetDesktopNumber = Math.Max(1, popupResult.TargetDesktopNumber);
-        var updatedProcessDesktopPlacementRule = CreateProcessDesktopPlacementRule(
-            processDesktopPlacementRule.ProcessName,
-            targetDesktopNumber,
-            processDesktopPlacementRule.IsPersistentRule ? processDesktopPlacementRule.IsEnabled : true);
+        var updatedProcessDesktopPlacementRule = CreateProcessDesktopPlacementRule(processDesktopPlacementRule.ProcessName, targetDesktopNumber, processDesktopPlacementRule.IsPersistentRule ? processDesktopPlacementRule.IsEnabled : true);
         switch (popupResult.Lifetime)
         {
             case ProcessDesktopPlacementRuleLifetime.Permanent:
@@ -893,46 +796,27 @@ public sealed partial class SettingsPage : Page
                     await SaveSettingsAsync();
                 }
 
-                _processDesktopPlacementService.AddTemporaryRule(
-                    updatedProcessDesktopPlacementRule,
-                    popupResult.Lifetime,
-                    popupResult.Duration);
+                _processDesktopPlacementService.AddTemporaryRule(updatedProcessDesktopPlacementRule, popupResult.Lifetime, popupResult.Duration);
                 RefreshTemporaryProcessDesktopPlacementRules();
                 break;
         }
     }
 
-    private async Task<ProcessDesktopPlacementPopupResult?> ShowProcessDesktopPlacementPopupWindowAsync(
-        IReadOnlyList<string> processNames,
-        int targetDesktopNumber,
-        ProcessDesktopPlacementPopupInitialRule? initialRule = null)
+    private async Task<ProcessDesktopPlacementPopupResult?> ShowProcessDesktopPlacementPopupWindowAsync(IReadOnlyList<string> processNames, int targetDesktopNumber, ProcessDesktopPlacementPopupInitialRule? initialRule = null)
     {
         var processDesktopPlacementPopupWindow = new ProcessDesktopPlacementPopupWindow(processNames, targetDesktopNumber, _localizationService, _themeService, initialRule);
         if (!await processDesktopPlacementPopupWindow.ShowModalAsync(GetManageWindowHandle())) return null;
 
-        return new(
-            processDesktopPlacementPopupWindow.Lifetime,
-            processDesktopPlacementPopupWindow.Duration,
-            processDesktopPlacementPopupWindow.TargetDesktopNumber);
+        return new(processDesktopPlacementPopupWindow.Lifetime, processDesktopPlacementPopupWindow.Duration, processDesktopPlacementPopupWindow.TargetDesktopNumber);
     }
 
-    private async Task<IReadOnlyList<string>> ShowProcessSelectionDialogAsync(
-        IReadOnlyList<string> availableProcessNames,
-        string titleResourceName,
-        string descriptionResourceName)
+    private async Task<IReadOnlyList<string>> ShowProcessSelectionDialogAsync(IReadOnlyList<string> availableProcessNames, string titleResourceName, string descriptionResourceName)
     {
-        var foregroundProcessSelectionDialog = new ForegroundProcessSelectionDialog(
-            availableProcessNames,
-            LocalizedResourceAccessor.GetString(titleResourceName),
-            LocalizedResourceAccessor.GetString(descriptionResourceName),
-            LocalizedResourceAccessor.GetString("ForegroundProcessSelectionDialog.PrimaryButtonText"),
-            _themeService)
+        var foregroundProcessSelectionDialog = new ForegroundProcessSelectionDialog(availableProcessNames, LocalizedResourceAccessor.GetString(titleResourceName), LocalizedResourceAccessor.GetString(descriptionResourceName), LocalizedResourceAccessor.GetString("ForegroundProcessSelectionDialog.PrimaryButtonText"), _themeService)
         {
             XamlRoot = XamlRoot,
         };
-        return await foregroundProcessSelectionDialog.ShowAsync() == ContentDialogResult.Primary
-            ? foregroundProcessSelectionDialog.SelectedProcessNames
-            : [];
+        return await foregroundProcessSelectionDialog.ShowAsync() == ContentDialogResult.Primary ? foregroundProcessSelectionDialog.SelectedProcessNames : [];
     }
 
     private async Task ShowWhitelistedProcessSelectionDialogAsync()
@@ -940,27 +824,19 @@ public sealed partial class SettingsPage : Page
         var availableWhitelistedProcessNames = GetAvailableWhitelistedProcessNames();
         if (availableWhitelistedProcessNames.Count == 0)
         {
-            ShowSettingsStatus(
-                LocalizedResourceAccessor.GetString("Settings.Whitelist.NoAvailableProcessesTitle"),
-                LocalizedResourceAccessor.GetString("Settings.Whitelist.NoAvailableProcessesMessage"),
-                InfoBarSeverity.Informational);
+            ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Whitelist.NoAvailableProcessesTitle"), LocalizedResourceAccessor.GetString("Settings.Whitelist.NoAvailableProcessesMessage"), InfoBarSeverity.Informational);
             return;
         }
 
-        var selectedProcessNames = await ShowProcessSelectionDialogAsync(
-            availableWhitelistedProcessNames,
-            "Settings.Whitelist.Dialog.Title",
-            "Settings.Whitelist.Dialog.Description");
-        if (selectedProcessNames.Count == 0 || !ViewModel.AddWhitelistedProcessNames(selectedProcessNames))
-            return;
+        var selectedProcessNames = await ShowProcessSelectionDialogAsync(availableWhitelistedProcessNames, "Settings.Whitelist.Dialog.Title", "Settings.Whitelist.Dialog.Description");
+        if (selectedProcessNames.Count == 0 || !ViewModel.AddWhitelistedProcessNames(selectedProcessNames)) return;
 
         await SaveSettingsAsync();
     }
 
     private async Task ExportSettingsAsync()
     {
-        if (_isSettingsTransferInProgress)
-            return;
+        if (_isSettingsTransferInProgress) return;
 
         SetSettingsTransferInProgress(true);
         try
@@ -968,18 +844,12 @@ public sealed partial class SettingsPage : Page
             var selectedSettingsFile = await PickExportSettingsFileAsync();
             if (selectedSettingsFile is null)
             {
-                ShowSettingsImportExportResult(
-                    LocalizedResourceAccessor.GetString("Settings.Export.CancelledTitle"),
-                    LocalizedResourceAccessor.GetString("Settings.Export.CancelledMessage"),
-                    InfoBarSeverity.Informational);
+                ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.CancelledTitle"), LocalizedResourceAccessor.GetString("Settings.Export.CancelledMessage"), InfoBarSeverity.Informational);
                 return;
             }
 
             await _settingsService.ExportAsync(selectedSettingsFile.Path);
-            ShowSettingsImportExportResult(
-                LocalizedResourceAccessor.GetString("Settings.Export.SuccessTitle"),
-                LocalizedResourceAccessor.GetFormattedString("Settings.Export.SuccessMessageFormat", Path.GetFileName(selectedSettingsFile.Path)),
-                InfoBarSeverity.Success);
+            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.SuccessTitle"), LocalizedResourceAccessor.GetFormattedString("Settings.Export.SuccessMessageFormat", Path.GetFileName(selectedSettingsFile.Path)), InfoBarSeverity.Success);
         }
         catch (ArgumentException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
         catch (InvalidOperationException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Export.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
@@ -990,15 +860,11 @@ public sealed partial class SettingsPage : Page
 
     private async Task ResetSettingsAsync()
     {
-        if (_isSettingsTransferInProgress)
-            return;
+        if (_isSettingsTransferInProgress) return;
 
         if (await ShowResetSettingsConfirmationDialogAsync() != ContentDialogResult.Primary)
         {
-            ShowSettingsImportExportResult(
-                LocalizedResourceAccessor.GetString("Settings.Reset.CancelledTitle"),
-                LocalizedResourceAccessor.GetString("Settings.Reset.CancelledMessage"),
-                InfoBarSeverity.Informational);
+            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Reset.CancelledTitle"), LocalizedResourceAccessor.GetString("Settings.Reset.CancelledMessage"), InfoBarSeverity.Informational);
             return;
         }
 
@@ -1007,10 +873,7 @@ public sealed partial class SettingsPage : Page
         {
             await _settingsService.ResetAsync();
             ApplySettingsToViewModel();
-            ShowSettingsImportExportResult(
-                LocalizedResourceAccessor.GetString("Settings.Reset.SuccessTitle"),
-                LocalizedResourceAccessor.GetString("Settings.Reset.SuccessMessage"),
-                InfoBarSeverity.Success);
+            ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Reset.SuccessTitle"), LocalizedResourceAccessor.GetString("Settings.Reset.SuccessMessage"), InfoBarSeverity.Success);
         }
         catch (ArgumentException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Reset.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
         catch (InvalidOperationException exception) { ShowSettingsImportExportResult(LocalizedResourceAccessor.GetString("Settings.Reset.FailedTitle"), exception.Message, InfoBarSeverity.Error); }
@@ -1018,10 +881,7 @@ public sealed partial class SettingsPage : Page
         finally { SetSettingsTransferInProgress(false); }
     }
 
-    private void QueueSettingsSave(
-        ToggleSwitch? sourceToggleSwitch = null,
-        bool shouldShowVerticalDesktopSwitchingModifierWarning = false,
-        bool shouldShowMouseModifierButtonBehaviorInformation = false)
+    private void QueueSettingsSave(ToggleSwitch? sourceToggleSwitch = null, bool shouldShowVerticalDesktopSwitchingModifierWarning = false, bool shouldShowMouseModifierButtonBehaviorInformation = false)
     {
         if (DispatcherQueue.TryEnqueue(async () => await SaveSettingsAsync(sourceToggleSwitch, shouldShowVerticalDesktopSwitchingModifierWarning, shouldShowMouseModifierButtonBehaviorInformation))) return;
 
@@ -1030,81 +890,61 @@ public sealed partial class SettingsPage : Page
 
     private bool ShouldRejectAlwaysRunAsAdministratorToggleChange(ToggleSwitch settingToggleSwitch)
     {
-        if (!ReferenceEquals(settingToggleSwitch, AlwaysRunAsAdministratorToggleSwitch))
-            return false;
+        if (!ReferenceEquals(settingToggleSwitch, AlwaysRunAsAdministratorToggleSwitch)) return false;
 
         var currentSettings = _settingsService.Settings;
-        if (currentSettings.IsAlwaysRunAsAdministratorEnabled == settingToggleSwitch.IsOn)
-            return false;
+        if (currentSettings.IsAlwaysRunAsAdministratorEnabled == settingToggleSwitch.IsOn) return false;
 
-        if (Environment.IsPrivilegedProcess)
-            return false;
+        if (Environment.IsPrivilegedProcess) return false;
 
         _fileLogService.WriteWarning(nameof(SettingsPage), "Rejected an AlwaysRunAsAdministrator toggle change because the current process is not privileged.");
         RestoreToggleSwitchState(settingToggleSwitch, currentSettings);
         ApplySettingsToViewModel();
-        ShowSettingsStatus(
-            LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"),
-            LocalizedResourceAccessor.GetString("Settings.Validation.PrivilegedProcessRequiredForAlwaysRunAsAdministrator"),
-            InfoBarSeverity.Error);
+        ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), LocalizedResourceAccessor.GetString("Settings.Validation.PrivilegedProcessRequiredForAlwaysRunAsAdministrator"), InfoBarSeverity.Error);
         return true;
     }
 
     private void RestoreToggleSwitchState(ToggleSwitch settingToggleSwitch, DeskBorderSettings currentSettings)
     {
         var expectedToggleSwitchState = TryGetToggleSwitchState(settingToggleSwitch, currentSettings);
-        if (!expectedToggleSwitchState.HasValue || settingToggleSwitch.IsOn == expectedToggleSwitchState.Value)
-            return;
+        if (!expectedToggleSwitchState.HasValue || settingToggleSwitch.IsOn == expectedToggleSwitchState.Value) return;
 
         _isSynchronizingViewModel = true;
         settingToggleSwitch.IsOn = expectedToggleSwitchState.Value;
-        if (DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => _isSynchronizingViewModel = false))
-            return;
+        if (DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => _isSynchronizingViewModel = false)) return;
 
         _isSynchronizingViewModel = false;
     }
 
     private bool? TryGetToggleSwitchState(ToggleSwitch settingToggleSwitch, DeskBorderSettings currentSettings)
     {
-        if (ReferenceEquals(settingToggleSwitch, DeskBorderEnabledToggleSwitch))
-            return currentSettings.IsDeskBorderEnabled;
+        if (ReferenceEquals(settingToggleSwitch, DeskBorderEnabledToggleSwitch)) return currentSettings.IsDeskBorderEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, LaunchOnStartupToggleSwitch))
-            return currentSettings.IsLaunchOnStartupEnabled;
+        if (ReferenceEquals(settingToggleSwitch, LaunchOnStartupToggleSwitch)) return currentSettings.IsLaunchOnStartupEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, AlwaysRunAsAdministratorToggleSwitch))
-            return currentSettings.IsAlwaysRunAsAdministratorEnabled;
+        if (ReferenceEquals(settingToggleSwitch, AlwaysRunAsAdministratorToggleSwitch)) return currentSettings.IsAlwaysRunAsAdministratorEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, StoreUpdateCheckToggleSwitch))
-            return currentSettings.IsStoreUpdateCheckEnabled;
+        if (ReferenceEquals(settingToggleSwitch, StoreUpdateCheckToggleSwitch)) return currentSettings.IsStoreUpdateCheckEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, CreateDesktopEnabledToggleSwitch))
-            return currentSettings.IsDesktopCreationEnabled;
+        if (ReferenceEquals(settingToggleSwitch, CreateDesktopEnabledToggleSwitch)) return currentSettings.IsDesktopCreationEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch))
-            return currentSettings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty;
+        if (ReferenceEquals(settingToggleSwitch, DesktopCreationSkippedWhenCurrentDesktopIsEmptyToggleSwitch)) return currentSettings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty;
 
-        if (ReferenceEquals(settingToggleSwitch, DesktopCreationCompletionToastToggleSwitch))
-            return currentSettings.IsDesktopCreationCompletionToastEnabled;
+        if (ReferenceEquals(settingToggleSwitch, DesktopCreationCompletionToastToggleSwitch)) return currentSettings.IsDesktopCreationCompletionToastEnabled;
 
         if (ReferenceEquals(settingToggleSwitch, DesktopSwitchingAndCreationDisabledWhenFullscreenToggleSwitch)) return currentSettings.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen;
 
         if (ReferenceEquals(settingToggleSwitch, WindowedFullscreenIncludedToggleSwitch)) return currentSettings.IsWindowedFullscreenIncludedWhenDisablingDesktopSwitchingAndCreation;
 
-        if (ReferenceEquals(settingToggleSwitch, AutoDeleteToggleSwitch))
-            return currentSettings.IsAutoDeleteEnabled;
+        if (ReferenceEquals(settingToggleSwitch, AutoDeleteToggleSwitch)) return currentSettings.IsAutoDeleteEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, AutoDeleteWarningToggleSwitch))
-            return currentSettings.IsAutoDeleteWarningEnabled;
+        if (ReferenceEquals(settingToggleSwitch, AutoDeleteWarningToggleSwitch)) return currentSettings.IsAutoDeleteWarningEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, AutoDeleteCompletionToastToggleSwitch))
-            return currentSettings.IsAutoDeleteCompletionToastEnabled;
+        if (ReferenceEquals(settingToggleSwitch, AutoDeleteCompletionToastToggleSwitch)) return currentSettings.IsAutoDeleteCompletionToastEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, DesktopEdgeAdditionalTriggerDistanceToggleSwitch))
-            return currentSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
+        if (ReferenceEquals(settingToggleSwitch, DesktopEdgeAdditionalTriggerDistanceToggleSwitch)) return currentSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, DesktopEdgeActivationOnModifierPressToggleSwitch))
-            return currentSettings.IsDesktopEdgeActivationOnModifierPressEnabled;
+        if (ReferenceEquals(settingToggleSwitch, DesktopEdgeActivationOnModifierPressToggleSwitch)) return currentSettings.IsDesktopEdgeActivationOnModifierPressEnabled;
 
         if (ReferenceEquals(settingToggleSwitch, KeyboardModifierConsumptionAfterDesktopActionToggleSwitch)) return currentSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled;
 
@@ -1112,35 +952,25 @@ public sealed partial class SettingsPage : Page
 
         if (ReferenceEquals(settingToggleSwitch, MouseModifierButtonConsumptionAfterDesktopActionToggleSwitch)) return currentSettings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch))
-            return currentSettings.IsVerticalDesktopSwitchingEnabled;
+        if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch)) return currentSettings.IsVerticalDesktopSwitchingEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchDirectionReversedToggleSwitch))
-            return currentSettings.IsVerticalDesktopSwitchDirectionReversed;
+        if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchDirectionReversedToggleSwitch)) return currentSettings.IsVerticalDesktopSwitchDirectionReversed;
 
-        if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch))
-            return currentSettings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment;
+        if (ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingOnlyInMultiDisplayEnvironmentToggleSwitch)) return currentSettings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment;
 
-        if (ReferenceEquals(settingToggleSwitch, ToggleDeskBorderEnabledHotkeyToggleSwitch))
-            return currentSettings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey.IsEnabled;
+        if (ReferenceEquals(settingToggleSwitch, ToggleDeskBorderEnabledHotkeyToggleSwitch)) return currentSettings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey.IsEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, SwitchToPreviousDesktopHotkeyToggleSwitch))
-            return currentSettings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey.IsEnabled;
+        if (ReferenceEquals(settingToggleSwitch, SwitchToPreviousDesktopHotkeyToggleSwitch)) return currentSettings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey.IsEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, SwitchToNextDesktopHotkeyToggleSwitch))
-            return currentSettings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey.IsEnabled;
+        if (ReferenceEquals(settingToggleSwitch, SwitchToNextDesktopHotkeyToggleSwitch)) return currentSettings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey.IsEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, MoveFocusedWindowToNextDesktopHotkeyToggleSwitch))
-            return currentSettings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey.IsEnabled;
+        if (ReferenceEquals(settingToggleSwitch, MoveFocusedWindowToNextDesktopHotkeyToggleSwitch)) return currentSettings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey.IsEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, MoveFocusedWindowToPreviousDesktopHotkeyToggleSwitch))
-            return currentSettings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey.IsEnabled;
+        if (ReferenceEquals(settingToggleSwitch, MoveFocusedWindowToPreviousDesktopHotkeyToggleSwitch)) return currentSettings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey.IsEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, NavigatorToggleHotkeyToggleSwitch))
-            return currentSettings.NavigatorSettings.ToggleHotkey.IsEnabled;
+        if (ReferenceEquals(settingToggleSwitch, NavigatorToggleHotkeyToggleSwitch)) return currentSettings.NavigatorSettings.ToggleHotkey.IsEnabled;
 
-        if (ReferenceEquals(settingToggleSwitch, NavigatorTriggerAreaToggleSwitch))
-            return currentSettings.NavigatorSettings.IsTriggerAreaEnabled;
+        if (ReferenceEquals(settingToggleSwitch, NavigatorTriggerAreaToggleSwitch)) return currentSettings.NavigatorSettings.IsTriggerAreaEnabled;
 
         if (ReferenceEquals(settingToggleSwitch, ProcessDesktopPlacementEnabledToggleSwitch)) return currentSettings.ProcessDesktopPlacementSettings.IsEnabled;
 
@@ -1167,8 +997,7 @@ public sealed partial class SettingsPage : Page
 
     private bool ShouldShowVerticalDesktopSwitchingModifierWarningForModifierSelectionChange(object sender)
     {
-        if (!ViewModel.IsVerticalDesktopSwitchingEnabled || sender is not FrameworkElement { Tag: string modifierSelectionTag })
-            return false;
+        if (!ViewModel.IsVerticalDesktopSwitchingEnabled || sender is not FrameworkElement { Tag: string modifierSelectionTag }) return false;
 
         return modifierSelectionTag switch
         {
@@ -1194,28 +1023,20 @@ public sealed partial class SettingsPage : Page
 
     private bool ShouldShowVerticalDesktopSwitchingModifierWarningForToggleChange(ToggleSwitch settingToggleSwitch)
     {
-        if (ReferenceEquals(settingToggleSwitch, CreateDesktopEnabledToggleSwitch)
-            && settingToggleSwitch.IsOn
-            && ViewModel.IsVerticalDesktopSwitchingEnabled
-            && !ViewModel.CreateDesktopModifierSelection.HasAnyModifierInput())
-            return true;
+        if (ReferenceEquals(settingToggleSwitch, CreateDesktopEnabledToggleSwitch) && settingToggleSwitch.IsOn && ViewModel.IsVerticalDesktopSwitchingEnabled && !ViewModel.CreateDesktopModifierSelection.HasAnyModifierInput()) return true;
 
-        if (!ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch) || !settingToggleSwitch.IsOn)
-            return false;
+        if (!ReferenceEquals(settingToggleSwitch, VerticalDesktopSwitchingToggleSwitch) || !settingToggleSwitch.IsOn) return false;
 
-        if (!ViewModel.SwitchDesktopModifierSelection.HasAnyModifierInput())
-            return true;
+        if (!ViewModel.SwitchDesktopModifierSelection.HasAnyModifierInput()) return true;
 
-        if (ViewModel.IsDesktopCreationEnabled && !ViewModel.CreateDesktopModifierSelection.HasAnyModifierInput())
-            return true;
+        if (ViewModel.IsDesktopCreationEnabled && !ViewModel.CreateDesktopModifierSelection.HasAnyModifierInput()) return true;
 
         return false;
     }
 
     private string? GetVerticalDesktopSwitchingModifierWarningMessage(DeskBorderSettings settings)
     {
-        if (!settings.IsVerticalDesktopSwitchingEnabled)
-            return null;
+        if (!settings.IsVerticalDesktopSwitchingEnabled) return null;
 
         var isSwitchDesktopModifierMissing = !_keyboardModifierAbsorptionService.HasRequiredModifierInputs(settings.SwitchDesktopModifierSettings);
         var isCreateDesktopModifierMissing = settings.IsDesktopCreationEnabled && !_keyboardModifierAbsorptionService.HasRequiredModifierInputs(settings.CreateDesktopModifierSettings);
@@ -1228,13 +1049,9 @@ public sealed partial class SettingsPage : Page
         };
     }
 
-    private async Task SaveSettingsAsync(
-        ToggleSwitch? sourceToggleSwitch = null,
-        bool shouldShowVerticalDesktopSwitchingModifierWarning = false,
-        bool shouldShowMouseModifierButtonBehaviorInformation = false)
+    private async Task SaveSettingsAsync(ToggleSwitch? sourceToggleSwitch = null, bool shouldShowVerticalDesktopSwitchingModifierWarning = false, bool shouldShowMouseModifierButtonBehaviorInformation = false)
     {
-        if (!_isInitialSettingsLoadCompleted || _isSynchronizingViewModel || _isSettingsTransferInProgress)
-            return;
+        if (!_isInitialSettingsLoadCompleted || _isSynchronizingViewModel || _isSettingsTransferInProgress) return;
 
         await _settingsUpdateSemaphore.WaitAsync();
         try
@@ -1243,31 +1060,15 @@ public sealed partial class SettingsPage : Page
             var updatedSettings = ViewModel.CreateSettings();
             var isLanguagePreferenceChanged = currentSettings.AppLanguagePreference != updatedSettings.AppLanguagePreference;
             var isThemePreferenceChanged = currentSettings.ApplicationThemePreference != updatedSettings.ApplicationThemePreference;
-            if (isLanguagePreferenceChanged)
-                s_shouldShowPendingLanguageRestartRecommendedStatus = true;
+            if (isLanguagePreferenceChanged) s_shouldShowPendingLanguageRestartRecommendedStatus = true;
 
             await _settingsService.UpdateSettingsAsync(updatedSettings);
-            if (isLanguagePreferenceChanged)
-                return;
+            if (isLanguagePreferenceChanged) return;
 
-            var verticalDesktopSwitchingModifierWarningMessage = shouldShowVerticalDesktopSwitchingModifierWarning
-                ? GetVerticalDesktopSwitchingModifierWarningMessage(updatedSettings)
-                : null;
-            if (!string.IsNullOrWhiteSpace(verticalDesktopSwitchingModifierWarningMessage))
-                ShowSettingsStatus(
-                    LocalizedResourceAccessor.GetString("Settings.Status.VerticalDesktopSwitchingModifierWarningTitle"),
-                    verticalDesktopSwitchingModifierWarningMessage,
-                    InfoBarSeverity.Warning);
-            else if (shouldShowMouseModifierButtonBehaviorInformation)
-                ShowSettingsStatus(
-                    LocalizedResourceAccessor.GetString("Settings.Status.MouseModifierButtonBehaviorInformationTitle"),
-                    LocalizedResourceAccessor.GetString("Settings.Status.MouseModifierButtonBehaviorInformationMessage"),
-                    InfoBarSeverity.Informational);
-            else if (isThemePreferenceChanged)
-                ShowSettingsStatus(
-                    LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedTitle"),
-                    LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedMessage"),
-                    InfoBarSeverity.Informational);
+            var verticalDesktopSwitchingModifierWarningMessage = shouldShowVerticalDesktopSwitchingModifierWarning ? GetVerticalDesktopSwitchingModifierWarningMessage(updatedSettings) : null;
+            if (!string.IsNullOrWhiteSpace(verticalDesktopSwitchingModifierWarningMessage)) ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.VerticalDesktopSwitchingModifierWarningTitle"), verticalDesktopSwitchingModifierWarningMessage, InfoBarSeverity.Warning);
+            else if (shouldShowMouseModifierButtonBehaviorInformation) ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.MouseModifierButtonBehaviorInformationTitle"), LocalizedResourceAccessor.GetString("Settings.Status.MouseModifierButtonBehaviorInformationMessage"), InfoBarSeverity.Informational);
+            else if (isThemePreferenceChanged) ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedTitle"), LocalizedResourceAccessor.GetString("Settings.Status.ThemeRestartRecommendedMessage"), InfoBarSeverity.Informational);
             else
                 ClearSettingsStatus();
         }
@@ -1278,25 +1079,17 @@ public sealed partial class SettingsPage : Page
 
     private void ShowPendingLanguageRestartRecommendedStatusIfNeeded()
     {
-        if (!s_shouldShowPendingLanguageRestartRecommendedStatus)
-            return;
+        if (!s_shouldShowPendingLanguageRestartRecommendedStatus) return;
 
         s_shouldShowPendingLanguageRestartRecommendedStatus = false;
-        ShowSettingsStatus(
-            LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedTitle"),
-            LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedMessage"),
-            InfoBarSeverity.Informational);
+        ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedTitle"), LocalizedResourceAccessor.GetString("Settings.Status.LanguageRestartRecommendedMessage"), InfoBarSeverity.Informational);
     }
 
-    private void ShowAlwaysRunAsAdministratorImportExcludedStatus() => ShowSettingsStatus(
-        LocalizedResourceAccessor.GetString("Settings.Import.AlwaysRunAsAdministratorExcludedTitle"),
-        LocalizedResourceAccessor.GetString("Settings.Import.AlwaysRunAsAdministratorExcludedMessage"),
-        InfoBarSeverity.Informational);
+    private void ShowAlwaysRunAsAdministratorImportExcludedStatus() => ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Import.AlwaysRunAsAdministratorExcludedTitle"), LocalizedResourceAccessor.GetString("Settings.Import.AlwaysRunAsAdministratorExcludedMessage"), InfoBarSeverity.Informational);
 
     private void ShowPendingAlwaysRunAsAdministratorImportExcludedStatusIfNeeded()
     {
-        if (!s_shouldShowPendingAlwaysRunAsAdministratorImportExcludedStatus)
-            return;
+        if (!s_shouldShowPendingAlwaysRunAsAdministratorImportExcludedStatus) return;
 
         s_shouldShowPendingAlwaysRunAsAdministratorImportExcludedStatus = false;
         ShowAlwaysRunAsAdministratorImportExcludedStatus();
@@ -1304,8 +1097,7 @@ public sealed partial class SettingsPage : Page
 
     private async Task SelectNavigatorTriggerAreaAsync()
     {
-        if (_isNavigatorTriggerAreaSelectionInProgress)
-            return;
+        if (_isNavigatorTriggerAreaSelectionInProgress) return;
 
         _isNavigatorTriggerAreaSelectionInProgress = true;
         SelectNavigatorTriggerAreaButton.IsEnabled = false;
@@ -1316,8 +1108,7 @@ public sealed partial class SettingsPage : Page
             var targetDisplayMonitor = MouseHelper.GetDisplayMonitorFromWindow(GetManageWindowHandle());
             var navigatorTriggerAreaSelectionWindow = new NavigatorTriggerAreaSelectionWindow(_localizationService, _themeService, targetDisplayMonitor);
             var selectedTriggerRectangleSettings = await navigatorTriggerAreaSelectionWindow.ShowSelectionAsync();
-            if (selectedTriggerRectangleSettings is null)
-                return;
+            if (selectedTriggerRectangleSettings is null) return;
 
             ViewModel.SetNavigatorTriggerRectangle(selectedTriggerRectangleSettings);
             await SaveSettingsAsync();
@@ -1341,10 +1132,7 @@ public sealed partial class SettingsPage : Page
     private void ShowStoreUpdateCheckFailedStatus()
     {
         SetStoreUpdateStatus("Settings.StoreUpdate.Status.CheckFailed");
-        ShowSettingsStatus(
-            LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedTitle"),
-            LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedMessage"),
-            InfoBarSeverity.Error);
+        ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedTitle"), LocalizedResourceAccessor.GetString("Settings.StoreUpdate.CheckFailedMessage"), InfoBarSeverity.Error);
     }
 
     private static void ShowInfoBar(InfoBar infoBar, DispatcherQueueTimer infoBarAutoHideTimer, string title, string message, InfoBarSeverity infoBarSeverity)
@@ -1365,8 +1153,7 @@ public sealed partial class SettingsPage : Page
     private void HandleSaveSettingsFailure(string message, ToggleSwitch? sourceToggleSwitch = null)
     {
         s_shouldShowPendingLanguageRestartRecommendedStatus = false;
-        if (sourceToggleSwitch is not null)
-            RestoreToggleSwitchState(sourceToggleSwitch, _settingsService.Settings);
+        if (sourceToggleSwitch is not null) RestoreToggleSwitchState(sourceToggleSwitch, _settingsService.Settings);
         ApplySettingsToViewModel();
         ShowSettingsStatus(LocalizedResourceAccessor.GetString("Settings.Status.ApplyFailedTitle"), message, InfoBarSeverity.Error);
     }
@@ -1375,8 +1162,7 @@ public sealed partial class SettingsPage : Page
     {
         try
         {
-            if (runningProcess.HasExited || runningProcess.MainWindowHandle == 0)
-                return null;
+            if (runningProcess.HasExited || runningProcess.MainWindowHandle == 0) return null;
 
             var processName = runningProcess.ProcessName.Trim();
             return string.IsNullOrWhiteSpace(processName) ? null : processName;

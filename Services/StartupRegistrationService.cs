@@ -10,10 +10,7 @@ public sealed class StartupRegistrationService(IFileLogService fileLogService) :
 
     public async Task<StartupRegistrationState> GetStateAsync()
     {
-        try
-        {
-            return await StartupRegistrationHelper.GetStartupRegistrationStateAsync();
-        }
+        try { return await StartupRegistrationHelper.GetStartupRegistrationStateAsync(); }
         catch (Exception exception)
         {
             _fileLogService.WriteWarning(nameof(StartupRegistrationService), "Failed to read startup registration state.", exception);
@@ -25,19 +22,9 @@ public sealed class StartupRegistrationService(IFileLogService fileLogService) :
     {
         try
         {
-            await StartupRegistrationHelper.SetStartupRegistrationStateAsync(
-                startupRegistrationState.IsLaunchOnStartupEnabled,
-                startupRegistrationState.IsAlwaysRunAsAdministratorEnabled);
-            _fileLogService.WriteInformation(
-                nameof(StartupRegistrationService),
-                $"Applied startup registration state. LaunchOnStartup={startupRegistrationState.IsLaunchOnStartupEnabled}, AlwaysRunAsAdministrator={startupRegistrationState.IsAlwaysRunAsAdministratorEnabled}.");
+            await StartupRegistrationHelper.SetStartupRegistrationStateAsync(startupRegistrationState.IsLaunchOnStartupEnabled, startupRegistrationState.IsAlwaysRunAsAdministratorEnabled);
+            _fileLogService.WriteInformation(nameof(StartupRegistrationService), $"Applied startup registration state. LaunchOnStartup={startupRegistrationState.IsLaunchOnStartupEnabled}, AlwaysRunAsAdministrator={startupRegistrationState.IsAlwaysRunAsAdministratorEnabled}.");
         }
-        catch (Exception exception)
-        {
-            _fileLogService.WriteWarning(
-                nameof(StartupRegistrationService),
-                $"Failed to set startup registration state. LaunchOnStartup={startupRegistrationState.IsLaunchOnStartupEnabled}, AlwaysRunAsAdministrator={startupRegistrationState.IsAlwaysRunAsAdministratorEnabled}.",
-                exception);
-        }
+        catch (Exception exception) { _fileLogService.WriteWarning(nameof(StartupRegistrationService), $"Failed to set startup registration state. LaunchOnStartup={startupRegistrationState.IsLaunchOnStartupEnabled}, AlwaysRunAsAdministrator={startupRegistrationState.IsAlwaysRunAsAdministratorEnabled}.", exception); }
     }
 }

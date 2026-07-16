@@ -13,22 +13,14 @@ public sealed class MouseMovementTrackingService(IFileLogService fileLogService)
 
     public bool IsRawInputRegistered { get; private set; }
 
-    public MouseMovementDelta ConsumePendingMouseMovementDelta() => new(
-        Interlocked.Exchange(ref _pendingHorizontalMovement, 0),
-        Interlocked.Exchange(ref _pendingVerticalMovement, 0));
+    public MouseMovementDelta ConsumePendingMouseMovementDelta() => new(Interlocked.Exchange(ref _pendingHorizontalMovement, 0), Interlocked.Exchange(ref _pendingVerticalMovement, 0));
 
     public void ProcessRawInputMessage(nint rawInputHandle)
     {
         if (!IsRawInputRegistered) return;
 
         var rawInput = GetRawInput(rawInputHandle);
-        if (rawInput is null
-            || rawInput.Value.Header.Type != Win32.RawInputTypeMouse
-            || (rawInput.Value.Mouse.Flags & Win32.RawMouseMoveAbsoluteFlag) != 0
-            || (rawInput.Value.Mouse.LastX == 0 && rawInput.Value.Mouse.LastY == 0))
-        {
-            return;
-        }
+        if (rawInput is null || rawInput.Value.Header.Type != Win32.RawInputTypeMouse || (rawInput.Value.Mouse.Flags & Win32.RawMouseMoveAbsoluteFlag) != 0 || (rawInput.Value.Mouse.LastX == 0 && rawInput.Value.Mouse.LastY == 0)) return;
 
         if (rawInput.Value.Mouse.LastX != 0) _ = Interlocked.Add(ref _pendingHorizontalMovement, rawInput.Value.Mouse.LastX);
 
@@ -129,9 +121,6 @@ public sealed class MouseMovementTrackingService(IFileLogService fileLogService)
 
             return Marshal.PtrToStructure<Win32.NativeRawInput>(rawInputBuffer);
         }
-        finally
-        {
-            Marshal.FreeHGlobal(rawInputBuffer);
-        }
+        finally { Marshal.FreeHGlobal(rawInputBuffer); }
     }
 }

@@ -16,15 +16,11 @@ public static class Program
     {
         WinRT.ComWrappersSupport.InitializeComWrappers();
         var currentAppActivationArguments = AppInstance.GetCurrent().GetActivatedEventArgs();
-        if (TryRedirectToExistingRegisteredInstance(currentAppActivationArguments))
-            return;
+        if (TryRedirectToExistingRegisteredInstance(currentAppActivationArguments)) return;
 
-        if (StartupRegistrationHelper.ShouldTryLaunchAsAdministratorFromStoredSettings(currentAppActivationArguments)
-            && StartupRegistrationHelper.TryLaunchAsAdministratorAsync().GetAwaiter().GetResult())
-            return;
+        if (StartupRegistrationHelper.ShouldTryLaunchAsAdministratorFromStoredSettings(currentAppActivationArguments) && StartupRegistrationHelper.TryLaunchAsAdministratorAsync().GetAwaiter().GetResult()) return;
 
-        if (TryRegisterOrRedirectToMainInstance(currentAppActivationArguments))
-            return;
+        if (TryRegisterOrRedirectToMainInstance(currentAppActivationArguments)) return;
 
         Application.Start(applicationInitializationCallbackParameters =>
         {
@@ -38,8 +34,7 @@ public static class Program
     private static bool TryRedirectToExistingRegisteredInstance(AppActivationArguments currentAppActivationArguments)
     {
         var existingMainInstance = AppInstance.GetInstances().FirstOrDefault(appInstance => string.Equals(appInstance.Key, SingleInstanceKey, StringComparison.Ordinal));
-        if (existingMainInstance is null)
-            return false;
+        if (existingMainInstance is null) return false;
 
         existingMainInstance.RedirectActivationToAsync(currentAppActivationArguments).AsTask().GetAwaiter().GetResult();
         return true;

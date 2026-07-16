@@ -1,4 +1,4 @@
-using DeskBorder.Models;
+﻿using DeskBorder.Models;
 using Microsoft.Win32;
 using System.Collections.Concurrent;
 
@@ -29,8 +29,7 @@ public sealed class GameBarProcessBlacklistService(ISettingsService settingsServ
     public bool IsAutoBlacklisted(ForegroundProcessSnapshot foregroundProcessSnapshot)
     {
         var executablePath = foregroundProcessSnapshot.ExecutablePath;
-        return !string.IsNullOrWhiteSpace(executablePath)
-            && s_autoBlacklistedGameBarExecutablePaths.ContainsKey(executablePath);
+        return !string.IsNullOrWhiteSpace(executablePath) && s_autoBlacklistedGameBarExecutablePaths.ContainsKey(executablePath);
     }
 
     private static bool IsGameBarRecognizedGame(string targetExecutablePath)
@@ -94,13 +93,11 @@ public sealed class GameBarProcessBlacklistService(ISettingsService settingsServ
 
     private void LogInvalidProcessNamePersistenceFailure(Exception exception) => _fileLogService.WriteWarning(nameof(GameBarProcessBlacklistService), "Failed to persist Game Bar recognized foreground process to blacklist because the process name was invalid.", exception);
 
-    private void LogPersistedAutoBlacklist(string processName, string executablePath) => _fileLogService.WriteInformation(
-        nameof(GameBarProcessBlacklistService),
-        $"Persisted Game Bar recognized foreground process to blacklist. ProcessName={processName}, ExecutablePath={executablePath}.");
+    private void LogPersistedAutoBlacklist(string processName, string executablePath)
+        => _fileLogService.WriteInformation(nameof(GameBarProcessBlacklistService), $"Persisted Game Bar recognized foreground process to blacklist. ProcessName={processName}, ExecutablePath={executablePath}.");
 
     private void LogRejectedSettingsPersistenceFailure(Exception exception) => _fileLogService.WriteWarning(nameof(GameBarProcessBlacklistService), "Failed to persist Game Bar recognized foreground process to blacklist because settings update was rejected.", exception);
 
-    private void LogRuntimeAutoBlacklist(string processName, string executablePath) => _fileLogService.WriteInformation(
-        nameof(GameBarProcessBlacklistService),
-        $"Auto-registered Game Bar recognized foreground process to the runtime blacklist. ProcessName={processName}, ExecutablePath={executablePath}.");
+    private void LogRuntimeAutoBlacklist(string processName, string executablePath)
+        => _fileLogService.WriteInformation(nameof(GameBarProcessBlacklistService), $"Auto-registered Game Bar recognized foreground process to the runtime blacklist. ProcessName={processName}, ExecutablePath={executablePath}.");
 }

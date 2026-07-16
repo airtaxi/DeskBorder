@@ -7,7 +7,8 @@ public sealed partial class ForegroundProcessSelectionDialog : ContentDialog
 {
     public List<string> AvailableProcessNames { get; }
 
-    public IReadOnlyList<string> SelectedProcessNames => [.. AvailableProcessNamesListView.SelectedItems.Cast<string>()];
+    public IReadOnlyList<string> SelectedProcessNames =>
+    [.. AvailableProcessNamesListView.SelectedItems.Cast<string>()];
 
     public ForegroundProcessSelectionDialog(IEnumerable<string> availableProcessNames, string title, string description, string primaryButtonText, IThemeService themeService)
     {

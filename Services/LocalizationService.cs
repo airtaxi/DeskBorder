@@ -51,11 +51,8 @@ public sealed class LocalizationService(IFileLogService fileLogService) : ILocal
 
     private static void ApplyCurrentThreadCultures(string languageTag)
     {
-        var resolvedLanguageTag = string.IsNullOrWhiteSpace(languageTag)
-            ? ApplicationLanguages.Languages[0]
-            : languageTag;
-        if (string.IsNullOrWhiteSpace(resolvedLanguageTag))
-            return;
+        var resolvedLanguageTag = string.IsNullOrWhiteSpace(languageTag) ? ApplicationLanguages.Languages[0] : languageTag;
+        if (string.IsNullOrWhiteSpace(resolvedLanguageTag)) return;
 
         try
         {

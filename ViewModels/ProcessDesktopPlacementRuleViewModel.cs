@@ -77,14 +77,10 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
         var ruleLifetimeStatusText = Lifetime switch
         {
             ProcessDesktopPlacementRuleLifetime.Timed => FormatTimedLifetimeStatus(currentTimestamp),
-            ProcessDesktopPlacementRuleLifetime.UntilProcessExit => LocalizedResourceAccessor.GetString(IsLifetimeProcessRunning
-                ? "Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitRunning"
-                : "Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitNotRunning"),
+            ProcessDesktopPlacementRuleLifetime.UntilProcessExit => LocalizedResourceAccessor.GetString(IsLifetimeProcessRunning ? "Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitRunning" : "Settings.ProcessDesktopPlacement.RuleLifetime.UntilProcessExitNotRunning"),
             _ => LocalizedResourceAccessor.GetString("Settings.ProcessDesktopPlacement.RuleLifetime.Permanent")
         };
-        RuleLifetimeStatusText = IsDisabledBecauseTargetDesktopIsMissing
-            ? LocalizedResourceAccessor.GetFormattedString("Settings.ProcessDesktopPlacement.RuleDisabledBecauseTargetDesktopIsMissingFormat", ruleLifetimeStatusText)
-            : ruleLifetimeStatusText;
+        RuleLifetimeStatusText = IsDisabledBecauseTargetDesktopIsMissing ? LocalizedResourceAccessor.GetFormattedString("Settings.ProcessDesktopPlacement.RuleDisabledBecauseTargetDesktopIsMissingFormat", ruleLifetimeStatusText) : ruleLifetimeStatusText;
     }
 
     public void UpdateFromSettings(ProcessDesktopPlacementRuleSettings processDesktopPlacementRuleSettings)
@@ -120,9 +116,7 @@ public sealed partial class ProcessDesktopPlacementRuleViewModel : ObservableObj
         if (remainingDuration <= TimeSpan.Zero) return LocalizedResourceAccessor.GetString("Settings.ProcessDesktopPlacement.RuleLifetime.TimedExpired");
 
         var displayDuration = TimeSpan.FromSeconds(Math.Ceiling(remainingDuration.TotalSeconds));
-        var durationText = displayDuration.TotalHours >= 1
-            ? $"{(int)displayDuration.TotalHours:00}:{displayDuration.Minutes:00}:{displayDuration.Seconds:00}"
-            : $"{displayDuration.Minutes:00}:{displayDuration.Seconds:00}";
+        var durationText = displayDuration.TotalHours >= 1 ? $"{(int)displayDuration.TotalHours:00}:{displayDuration.Minutes:00}:{displayDuration.Seconds:00}" : $"{displayDuration.Minutes:00}:{displayDuration.Seconds:00}";
         return LocalizedResourceAccessor.GetFormattedString("Settings.ProcessDesktopPlacement.RuleLifetime.TimedRemainingFormat", durationText);
     }
 }

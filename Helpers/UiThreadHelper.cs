@@ -1,4 +1,4 @@
-using DeskBorder.Views;
+﻿using DeskBorder.Views;
 
 namespace DeskBorder.Helpers;
 
@@ -16,7 +16,7 @@ public static class UiThreadHelper
         }
 
         var taskCompletionSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        if (!dispatcherQueue.TryEnqueue(() =>
+        var enqueueSuccess = dispatcherQueue.TryEnqueue(() =>
         {
             try
             {
@@ -24,10 +24,8 @@ public static class UiThreadHelper
                 taskCompletionSource.SetResult();
             }
             catch (Exception exception) { taskCompletionSource.SetException(exception); }
-        }))
-        {
-            taskCompletionSource.SetException(new InvalidOperationException("Failed to enqueue the UI operation."));
-        }
+        });
+        if (!enqueueSuccess) taskCompletionSource.SetException(new InvalidOperationException("Failed to enqueue the UI operation."));
 
         return taskCompletionSource.Task;
     }
@@ -50,14 +48,12 @@ public static class UiThreadHelper
         if (dispatcherQueue.HasThreadAccess) return action();
 
         var taskCompletionSource = new TaskCompletionSource<TResult>(TaskCreationOptions.RunContinuationsAsynchronously);
-        if (!dispatcherQueue.TryEnqueue(async () =>
+        var enqueueSuccess = dispatcherQueue.TryEnqueue(async () =>
         {
             try { taskCompletionSource.SetResult(await action()); }
             catch (Exception exception) { taskCompletionSource.SetException(exception); }
-        }))
-        {
-            taskCompletionSource.SetException(new InvalidOperationException("Failed to enqueue the UI operation."));
-        }
+        });
+        if (!enqueueSuccess) taskCompletionSource.SetException(new InvalidOperationException("Failed to enqueue the UI operation."));
 
         return taskCompletionSource.Task;
     }

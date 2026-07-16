@@ -23,8 +23,7 @@ public sealed class ManageWindowService(IFileLogService fileLogService) : IManag
 
     public void Initialize(ManageWindow manageWindow)
     {
-        if (_manageWindow is not null)
-            return;
+        if (_manageWindow is not null) return;
 
         _manageWindow = manageWindow;
         _fileLogService.WriteInformation(nameof(ManageWindowService), "Initialized the manage window service.");
@@ -32,11 +31,9 @@ public sealed class ManageWindowService(IFileLogService fileLogService) : IManag
 
     public void Show()
     {
-        if (_manageWindow is null)
-            return;
+        if (_manageWindow is null) return;
 
-        if (!_manageWindow.AppWindow.IsVisible)
-            _manageWindow.AppWindow.Show();
+        if (!_manageWindow.AppWindow.IsVisible) _manageWindow.AppWindow.Show();
 
         _manageWindow.Activate();
         _manageWindow.BringToFront();

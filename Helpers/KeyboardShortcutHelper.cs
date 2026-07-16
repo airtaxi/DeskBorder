@@ -1,4 +1,4 @@
-using DeskBorder.Models;
+﻿using DeskBorder.Models;
 using Windows.System;
 
 namespace DeskBorder.Helpers;
@@ -12,8 +12,7 @@ public static class KeyboardShortcutHelper
         keyboardShortcutSettings.TriggerType,
         keyboardShortcutSettings.TriggerType == InputTriggerType.VirtualKey ? keyboardShortcutSettings.Key : VirtualKey.None);
 
-    public static bool IsKeyboardShortcutSpecified(KeyboardShortcutSettings keyboardShortcutSettings) => keyboardShortcutSettings.TriggerType != InputTriggerType.VirtualKey
-        || keyboardShortcutSettings.Key != VirtualKey.None;
+    public static bool IsKeyboardShortcutSpecified(KeyboardShortcutSettings keyboardShortcutSettings) => keyboardShortcutSettings.TriggerType != InputTriggerType.VirtualKey || keyboardShortcutSettings.Key != VirtualKey.None;
 
     public static bool IsReservedByWindowsDesktopSwitchHotkey(KeyboardShortcutSettings keyboardShortcutSettings) => keyboardShortcutSettings.TriggerType == InputTriggerType.VirtualKey
         && keyboardShortcutSettings.RequiredKeyboardModifierKeys == WindowsDesktopSwitchKeyboardModifierKeys

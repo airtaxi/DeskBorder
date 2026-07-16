@@ -17,11 +17,7 @@ public sealed class DeskBorderRuntimeService(IDesktopLifecycleService desktopLif
 
     public bool IsSuspended => _suspensionCount > 0;
 
-    public string StatusMessage => IsSuspended
-        ? LocalizedResourceAccessor.GetString("Runtime.Status.Paused")
-        : IsRunning
-            ? LocalizedResourceAccessor.GetString("Runtime.Status.Running")
-            : LocalizedResourceAccessor.GetString("Runtime.Status.Stopped");
+    public string StatusMessage => IsSuspended ? LocalizedResourceAccessor.GetString("Runtime.Status.Paused") : IsRunning ? LocalizedResourceAccessor.GetString("Runtime.Status.Running") : LocalizedResourceAccessor.GetString("Runtime.Status.Stopped");
 
     public Task StartAsync() => SetRunningStateAsync(true);
 
@@ -65,15 +61,11 @@ public sealed class DeskBorderRuntimeService(IDesktopLifecycleService desktopLif
     private async Task ApplyEffectiveRunningStateAsync()
     {
         var shouldRunLifecycle = IsRunning && !IsSuspended;
-        if (_isLifecycleRunning == shouldRunLifecycle)
-            return;
+        if (_isLifecycleRunning == shouldRunLifecycle) return;
 
         if (shouldRunLifecycle)
         {
-            try
-            {
-                await _desktopLifecycleService.StartAsync();
-            }
+            try { await _desktopLifecycleService.StartAsync(); }
             catch (Exception exception)
             {
                 _fileLogService.WriteError(nameof(DeskBorderRuntimeService), "Failed to start desktop lifecycle service.", exception);
@@ -82,14 +74,8 @@ public sealed class DeskBorderRuntimeService(IDesktopLifecycleService desktopLif
         }
         else
         {
-            try
-            {
-                await _desktopLifecycleService.StopAsync();
-            }
-            catch (Exception exception)
-            {
-                _fileLogService.WriteError(nameof(DeskBorderRuntimeService), "Failed to stop desktop lifecycle service.", exception);
-            }
+            try { await _desktopLifecycleService.StopAsync(); }
+            catch (Exception exception) { _fileLogService.WriteError(nameof(DeskBorderRuntimeService), "Failed to stop desktop lifecycle service.", exception); }
         }
 
         _isLifecycleRunning = shouldRunLifecycle;
@@ -101,8 +87,7 @@ public sealed class DeskBorderRuntimeService(IDesktopLifecycleService desktopLif
         await _stateTransitionSemaphore.WaitAsync();
         try
         {
-            if (_suspensionCount == 0)
-                return;
+            if (_suspensionCount == 0) return;
 
             _suspensionCount--;
             _fileLogService.WriteInformation(nameof(DeskBorderRuntimeService), $"Released runtime suspension. SuspensionCount={_suspensionCount}.");
@@ -120,8 +105,7 @@ public sealed class DeskBorderRuntimeService(IDesktopLifecycleService desktopLif
 
         public async ValueTask DisposeAsync()
         {
-            if (_isDisposed)
-                return;
+            if (_isDisposed) return;
 
             _isDisposed = true;
             await _deskBorderRuntimeService.ReleaseSuspensionAsync();

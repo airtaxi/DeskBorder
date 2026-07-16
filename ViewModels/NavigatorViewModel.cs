@@ -29,7 +29,6 @@ public sealed partial class NavigatorViewModel : ObservableObject
         PreviewCanvasHeight = Math.Max(1, previewCanvasHeight);
 
         DesktopItems.Clear();
-        foreach (var desktopItem in desktopItems)
-            DesktopItems.Add(new NavigatorDesktopItemViewModel(desktopItem, PreviewCanvasWidth, PreviewCanvasHeight));
+        foreach (var desktopItem in desktopItems) DesktopItems.Add(new NavigatorDesktopItemViewModel(desktopItem, PreviewCanvasWidth, PreviewCanvasHeight));
     }
 }

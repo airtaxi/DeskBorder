@@ -119,12 +119,10 @@ public sealed partial class NavigatorDesktopWindowItemViewModel : ObservableObje
     private static async Task<ImageSource?> TryCreateWindowIconImageSourceAsync(nint windowHandle)
     {
         var windowIconHandle = TryGetWindowIconHandle(windowHandle);
-        if (windowIconHandle == 0)
-            return null;
+        if (windowIconHandle == 0) return null;
 
         var copiedIconHandle = Win32.CopyIcon(windowIconHandle);
-        if (copiedIconHandle == 0)
-            return null;
+        if (copiedIconHandle == 0) return null;
 
         try
         {
@@ -140,24 +138,19 @@ public sealed partial class NavigatorDesktopWindowItemViewModel : ObservableObje
 
     private static nint TryGetWindowIconHandle(nint windowHandle)
     {
-        if (windowHandle == 0)
-            return 0;
+        if (windowHandle == 0) return 0;
 
         var iconHandle = Win32.SendMessage(windowHandle, Win32.WindowGetIconMessage, Win32.WindowIconSmallSecondary, 0);
-        if (iconHandle != 0)
-            return iconHandle;
+        if (iconHandle != 0) return iconHandle;
 
         iconHandle = Win32.SendMessage(windowHandle, Win32.WindowGetIconMessage, Win32.WindowIconSmall, 0);
-        if (iconHandle != 0)
-            return iconHandle;
+        if (iconHandle != 0) return iconHandle;
 
         iconHandle = Win32.SendMessage(windowHandle, Win32.WindowGetIconMessage, Win32.WindowIconBig, 0);
-        if (iconHandle != 0)
-            return iconHandle;
+        if (iconHandle != 0) return iconHandle;
 
         iconHandle = Win32.GetClassLongPointer(windowHandle, Win32.ClassLongPointerSmallIcon);
-        if (iconHandle != 0)
-            return iconHandle;
+        if (iconHandle != 0) return iconHandle;
 
         return Win32.GetClassLongPointer(windowHandle, Win32.ClassLongPointerIcon);
     }
@@ -165,8 +158,7 @@ public sealed partial class NavigatorDesktopWindowItemViewModel : ObservableObje
     private async Task LoadApplicationIconImageSourceAsync(nint windowHandle, string? executablePath)
     {
         ApplicationIconImageSource = await TryCreateWindowIconImageSourceAsync(windowHandle);
-        if (ApplicationIconImageSource is not null || string.IsNullOrWhiteSpace(executablePath))
-            return;
+        if (ApplicationIconImageSource is not null || string.IsNullOrWhiteSpace(executablePath)) return;
 
         var applicationIconImageSourceTask = s_executableIconImageSourceCache.GetOrAdd(executablePath, CreateExecutableIconImageSourceAsync);
         ApplicationIconImageSource = await applicationIconImageSourceTask;

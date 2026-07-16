@@ -30,27 +30,22 @@ public sealed class ManageNavigationService(IFileLogService fileLogService) : IM
 
     public bool NavigateTo(ManageNavigationTarget manageNavigationTarget, object? navigationParameter = null, bool clearBackStack = false)
     {
-        if (_navigationFrame is null)
-            return false;
+        if (_navigationFrame is null) return false;
 
         var targetPageType = s_pageTypes[manageNavigationTarget];
-        if (_navigationFrame.CurrentSourcePageType == targetPageType)
-            return false;
+        if (_navigationFrame.CurrentSourcePageType == targetPageType) return false;
 
         var didNavigate = _navigationFrame.Navigate(targetPageType, navigationParameter);
-        if (didNavigate && clearBackStack)
-            _navigationFrame.BackStack.Clear();
+        if (didNavigate && clearBackStack) _navigationFrame.BackStack.Clear();
 
-        if (didNavigate)
-            _fileLogService.WriteInformation(nameof(ManageNavigationService), $"Navigated to {manageNavigationTarget}.");
+        if (didNavigate) _fileLogService.WriteInformation(nameof(ManageNavigationService), $"Navigated to {manageNavigationTarget}.");
 
         return didNavigate;
     }
 
     public void RegisterFrame(Frame navigationFrame)
     {
-        if (ReferenceEquals(_navigationFrame, navigationFrame))
-            return;
+        if (ReferenceEquals(_navigationFrame, navigationFrame)) return;
 
         _navigationFrame = navigationFrame;
         _fileLogService.WriteInformation(nameof(ManageNavigationService), "Registered the manage navigation frame.");
@@ -58,13 +53,11 @@ public sealed class ManageNavigationService(IFileLogService fileLogService) : IM
 
     public void ReloadCurrentPage()
     {
-        if (_navigationFrame?.CurrentSourcePageType is not { } currentPageType)
-            return;
+        if (_navigationFrame?.CurrentSourcePageType is not { } currentPageType) return;
 
         var previousBackStackCount = _navigationFrame.BackStack.Count;
         _ = _navigationFrame.Navigate(currentPageType);
-        while (_navigationFrame.BackStack.Count > previousBackStackCount)
-            _navigationFrame.BackStack.RemoveAt(_navigationFrame.BackStack.Count - 1);
+        while (_navigationFrame.BackStack.Count > previousBackStackCount) _navigationFrame.BackStack.RemoveAt(_navigationFrame.BackStack.Count - 1);
 
         _fileLogService.WriteInformation(nameof(ManageNavigationService), $"Reloaded page {currentPageType.Name}.");
     }
@@ -79,8 +72,7 @@ public sealed class ManageNavigationService(IFileLogService fileLogService) : IM
 
         foreach (var pageTypeEntry in s_pageTypes)
         {
-            if (pageTypeEntry.Value != _navigationFrame.Content.GetType())
-                continue;
+            if (pageTypeEntry.Value != _navigationFrame.Content.GetType()) continue;
 
             currentNavigationTarget = pageTypeEntry.Key;
             return true;

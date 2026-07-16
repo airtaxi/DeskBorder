@@ -75,8 +75,7 @@ public static class MouseHelper
 
     public static CursorClippingState GetCursorClippingState()
     {
-        if (!Win32.GetClipCursor(out var clippingRectangle))
-            throw new InvalidOperationException("Unable to retrieve the cursor clipping rectangle.");
+        if (!Win32.GetClipCursor(out var clippingRectangle)) throw new InvalidOperationException("Unable to retrieve the cursor clipping rectangle.");
 
         var actualClippingRectangle = CreateScreenRectangle(clippingRectangle);
         var virtualScreenBounds = GetVirtualScreenBounds();
@@ -104,14 +103,12 @@ public static class MouseHelper
                     _ = deviceContextHandle;
                     _ = monitorRectanglePointer;
                     var monitorEnumerationContext = (MonitorEnumerationContext?)GCHandle.FromIntPtr(applicationData).Target;
-                    if (monitorEnumerationContext is null)
-                        return false;
+                    if (monitorEnumerationContext is null) return false;
 
                     try
                     {
                         var monitorInfo = Win32.MonitorInfoExtended.Create();
-                        if (!Win32.GetMonitorInfo(monitorHandle, ref monitorInfo))
-                            throw new InvalidOperationException("Unable to retrieve display monitor information.");
+                        if (!Win32.GetMonitorInfo(monitorHandle, ref monitorInfo)) throw new InvalidOperationException("Unable to retrieve display monitor information.");
 
                         monitorEnumerationContext.DisplayMonitorInfos.Add(new()
                         {
@@ -131,8 +128,7 @@ public static class MouseHelper
                 },
                 GCHandle.ToIntPtr(monitorEnumerationContextHandle));
 
-            if (!didEnumerateDisplayMonitors)
-                throw monitorEnumerationContext.Exception ?? new InvalidOperationException("Unable to enumerate display monitors.");
+            if (!didEnumerateDisplayMonitors) throw monitorEnumerationContext.Exception ?? new InvalidOperationException("Unable to enumerate display monitors.");
 
             return [.. displayMonitorInfos
                 .OrderBy(displayMonitorInfo => displayMonitorInfo.MonitorBounds.Left)
@@ -144,13 +140,11 @@ public static class MouseHelper
 
     public static DisplayMonitorInfo GetDisplayMonitorFromWindow(nint windowHandle)
     {
-        if (!Win32.GetWindowRect(windowHandle, out var nativeWindowRectangle))
-            throw new InvalidOperationException("Unable to retrieve the window bounds.");
+        if (!Win32.GetWindowRect(windowHandle, out var nativeWindowRectangle)) throw new InvalidOperationException("Unable to retrieve the window bounds.");
 
         var windowRectangle = CreateScreenRectangle(nativeWindowRectangle);
         var displayMonitors = GetDisplayMonitors();
-        if (displayMonitors.Length == 0)
-            throw new InvalidOperationException("No display monitor is available.");
+        if (displayMonitors.Length == 0) throw new InvalidOperationException("No display monitor is available.");
 
         return displayMonitors
             .OrderByDescending(displayMonitorInfo => GetIntersectionArea(displayMonitorInfo.MonitorBounds, windowRectangle))
@@ -168,12 +162,10 @@ public static class MouseHelper
     public static ForegroundProcessSnapshot GetForegroundProcessSnapshot()
     {
         var foregroundWindowHandle = Win32.GetForegroundWindow();
-        if (foregroundWindowHandle == 0)
-            return new();
+        if (foregroundWindowHandle == 0) return new();
 
         _ = Win32.GetWindowThreadProcessId(foregroundWindowHandle, out var processIdentifier);
-        if (processIdentifier == 0)
-            return new();
+        if (processIdentifier == 0) return new();
 
         try
         {
@@ -209,7 +201,10 @@ public static class MouseHelper
         var mouseInputs = new List<Win32.NativeInput>(requestedInputTriggerTypes.Length);
         foreach (var inputTriggerType in requestedInputTriggerTypes)
         {
-            if (IsMouseModifierButtonPressed(inputTriggerType, mouseButtonSnapshotBeforeConsume)) mouseInputs.Add(CreateMouseInput(GetMouseButtonUpEventFlag(inputTriggerType)));
+            if (IsMouseModifierButtonPressed(inputTriggerType, mouseButtonSnapshotBeforeConsume))
+            {
+                mouseInputs.Add(CreateMouseInput(GetMouseButtonUpEventFlag(inputTriggerType)));
+            }
         }
 
         if (mouseInputs.Count == 0) return;
@@ -231,8 +226,7 @@ public static class MouseHelper
         var top = Win32.GetSystemMetrics(VirtualScreenTopSystemMetricIndex);
         var width = Win32.GetSystemMetrics(VirtualScreenWidthSystemMetricIndex);
         var height = Win32.GetSystemMetrics(VirtualScreenHeightSystemMetricIndex);
-        if (width <= 0 || height <= 0)
-            throw new InvalidOperationException("Unable to retrieve the virtual screen bounds.");
+        if (width <= 0 || height <= 0) throw new InvalidOperationException("Unable to retrieve the virtual screen bounds.");
 
         return new(left, top, left + width, top + height);
     }
@@ -251,13 +245,7 @@ public static class MouseHelper
         }
     };
 
-    private static InvalidOperationException CreateMouseModifierButtonConsumeException(
-        InputTriggerType[] requestedInputTriggerTypes,
-        MouseButtonSnapshot mouseButtonSnapshotBeforeConsume,
-        string pressedMouseButtonStateSummaryBeforeConsume,
-        List<Win32.NativeInput> mouseInputs,
-        uint sentInputCount,
-        int nativeInputSize)
+    private static InvalidOperationException CreateMouseModifierButtonConsumeException(InputTriggerType[] requestedInputTriggerTypes, MouseButtonSnapshot mouseButtonSnapshotBeforeConsume, string pressedMouseButtonStateSummaryBeforeConsume, List<Win32.NativeInput> mouseInputs, uint sentInputCount, int nativeInputSize)
     {
         var lastWindowsErrorCode = Marshal.GetLastWin32Error();
         var lastWindowsErrorMessage = new Win32Exception(lastWindowsErrorCode).Message;
@@ -274,11 +262,7 @@ public static class MouseHelper
         return $"RelativeX={mouseInputData.RelativeX}, RelativeY={mouseInputData.RelativeY}, MouseData=0x{mouseInputData.MouseData:X8}, Flags=0x{mouseInputData.Flags:X4}, Time={mouseInputData.Time}, ExtraInfo={mouseInputData.ExtraInfo}";
     }
 
-    private static string CreatePressedMouseButtonStateSummary() => string.Join(", ", [
-        $"LeftButton={IsVirtualKeyPressed(LeftMouseButtonVirtualKey)}",
-        $"MiddleButton={IsVirtualKeyPressed(MiddleMouseButtonVirtualKey)}",
-        $"RightButton={IsVirtualKeyPressed(RightMouseButtonVirtualKey)}"
-    ]);
+    private static string CreatePressedMouseButtonStateSummary() => string.Join(", ", [$"LeftButton={IsVirtualKeyPressed(LeftMouseButtonVirtualKey)}", $"MiddleButton={IsVirtualKeyPressed(MiddleMouseButtonVirtualKey)}", $"RightButton={IsVirtualKeyPressed(RightMouseButtonVirtualKey)}"]);
 
     private static string CreateForegroundWindowSummary()
     {
@@ -296,9 +280,7 @@ public static class MouseHelper
         var top = Math.Max(firstRectangle.Top, secondRectangle.Top);
         var right = Math.Min(firstRectangle.Right, secondRectangle.Right);
         var bottom = Math.Min(firstRectangle.Bottom, secondRectangle.Bottom);
-        return right <= left || bottom <= top
-            ? 0
-            : (right - left) * (bottom - top);
+        return right <= left || bottom <= top ? 0 : (right - left) * (bottom - top);
     }
 
     private static uint GetMouseButtonUpEventFlag(InputTriggerType inputTriggerType) => inputTriggerType switch

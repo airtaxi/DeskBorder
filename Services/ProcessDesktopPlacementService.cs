@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using DeskBorder.Helpers;
 using DeskBorder.Interop;
 using DeskBorder.Models;
@@ -8,10 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace DeskBorder.Services;
 
-public sealed class ProcessDesktopPlacementService(
-    ISettingsService settingsService,
-    IFileLogService fileLogService,
-    IVirtualDesktopService virtualDesktopService) : IProcessDesktopPlacementService
+public sealed class ProcessDesktopPlacementService(ISettingsService settingsService, IFileLogService fileLogService, IVirtualDesktopService virtualDesktopService) : IProcessDesktopPlacementService
 {
     private const uint ShutdownWindowEventHookMessage = Win32.WindowApplicationMessage + 20;
     private static readonly TimeSpan s_eventDrivenRefreshDelay = TimeSpan.FromMilliseconds(200);
@@ -43,9 +40,7 @@ public sealed class ProcessDesktopPlacementService(
     {
         if (lifetime == ProcessDesktopPlacementRuleLifetime.Permanent) throw new InvalidOperationException("Permanent process desktop placement rules must be stored in settings.");
 
-        var expiresAt = lifetime == ProcessDesktopPlacementRuleLifetime.Timed
-            ? DateTimeOffset.UtcNow + (duration ?? TimeSpan.FromMinutes(30))
-            : (DateTimeOffset?)null;
+        var expiresAt = lifetime == ProcessDesktopPlacementRuleLifetime.Timed ? DateTimeOffset.UtcNow + (duration ?? TimeSpan.FromMinutes(30)) : (DateTimeOffset?)null;
         var temporaryRule = new TemporaryProcessDesktopPlacementRule(processDesktopPlacementRule, lifetime, expiresAt, DateTimeOffset.UtcNow);
         lock (_temporaryRulesLock)
         {
@@ -94,10 +89,7 @@ public sealed class ProcessDesktopPlacementService(
         if (string.IsNullOrWhiteSpace(normalizedProcessName)) return false;
 
         var wasRemoved = false;
-        lock (_temporaryRulesLock)
-        {
-            wasRemoved = _temporaryRules.RemoveAll(rule => string.Equals(rule.Rule.ProcessName, normalizedProcessName, StringComparison.OrdinalIgnoreCase)) > 0;
-        }
+        lock (_temporaryRulesLock) wasRemoved = _temporaryRules.RemoveAll(rule => string.Equals(rule.Rule.ProcessName, normalizedProcessName, StringComparison.OrdinalIgnoreCase)) > 0;
 
         if (!wasRemoved) return false;
 
@@ -169,7 +161,10 @@ public sealed class ProcessDesktopPlacementService(
             try { return processes.Length == 0; }
             finally
             {
-                foreach (var process in processes) process.Dispose();
+                foreach (var process in processes)
+                {
+                    process.Dispose();
+                }
             }
         }
         catch (InvalidOperationException) { return true; }
@@ -187,8 +182,7 @@ public sealed class ProcessDesktopPlacementService(
         catch (Win32Exception) { return true; }
     }
 
-    private static bool IsRuleTargetAlreadySatisfied(ProcessDesktopPlacementWindowSnapshot windowSnapshot, ProcessDesktopPlacementRuleSettings processDesktopPlacementRule)
-        => windowSnapshot.DesktopNumber == Math.Max(1, processDesktopPlacementRule.TargetDesktopNumber);
+    private static bool IsRuleTargetAlreadySatisfied(ProcessDesktopPlacementWindowSnapshot windowSnapshot, ProcessDesktopPlacementRuleSettings processDesktopPlacementRule) => windowSnapshot.DesktopNumber == Math.Max(1, processDesktopPlacementRule.TargetDesktopNumber);
 
     private static bool IsWindowEventCandidate(nint windowHandle)
     {
@@ -202,8 +196,7 @@ public sealed class ProcessDesktopPlacementService(
     private static bool ShouldCreateMissingTargetDesktopForPlacement(DeskBorderSettings currentSettings, bool isPersistentRule)
     {
         var processDesktopPlacementSettings = currentSettings.ProcessDesktopPlacementSettings;
-        return processDesktopPlacementSettings.ShouldCreateMissingTargetDesktop
-            && (!isPersistentRule || !processDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing);
+        return processDesktopPlacementSettings.ShouldCreateMissingTargetDesktop && (!isPersistentRule || !processDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing);
     }
 
     private TemporaryProcessDesktopPlacementRule[] GetActiveTemporaryRulesSnapshot()
@@ -239,12 +232,7 @@ public sealed class ProcessDesktopPlacementService(
         foreach (var persistentRule in currentSettings.ProcessDesktopPlacementSettings.Rules)
         {
             var isDisabledBecauseTargetDesktopIsMissing = shouldSkipMissingTargetDisabledRules && persistentRule.IsDisabledBecauseTargetDesktopIsMissing;
-            if (!persistentRule.IsEnabled
-                || isDisabledBecauseTargetDesktopIsMissing
-                || !string.Equals(persistentRule.ProcessName, windowSnapshot.ProcessName, StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
+            if (!persistentRule.IsEnabled || isDisabledBecauseTargetDesktopIsMissing || !string.Equals(persistentRule.ProcessName, windowSnapshot.ProcessName, StringComparison.OrdinalIgnoreCase)) continue;
 
             isPersistentRule = true;
             return persistentRule;
@@ -258,20 +246,10 @@ public sealed class ProcessDesktopPlacementService(
         if (processDesktopPlacementResult.OperationStatus != ProcessDesktopPlacementOperationStatus.TargetDesktopNotFound) return;
 
         var currentSettings = _settingsService.Settings;
-        if (isPersistentRule
-            && currentSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing)
-        {
-            await UpdatePersistentRulesByTargetDesktopNumberAsync(
-                currentSettings,
-                processDesktopPlacementRule.TargetDesktopNumber,
-                rule => rule with { IsDisabledBecauseTargetDesktopIsMissing = true });
-        }
+        if (isPersistentRule && currentSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing) await UpdatePersistentRulesByTargetDesktopNumberAsync(currentSettings, processDesktopPlacementRule.TargetDesktopNumber, rule => rule with { IsDisabledBecauseTargetDesktopIsMissing = true });
     }
 
-    private static PendingProcessDesktopPlacementOperation? FindPendingPlacementOperation(
-        IReadOnlyList<PendingProcessDesktopPlacementOperation> placementOperations,
-        ProcessDesktopPlacementRuleSettings processDesktopPlacementRule,
-        bool isPersistentRule)
+    private static PendingProcessDesktopPlacementOperation? FindPendingPlacementOperation(IReadOnlyList<PendingProcessDesktopPlacementOperation> placementOperations, ProcessDesktopPlacementRuleSettings processDesktopPlacementRule, bool isPersistentRule)
     {
         foreach (var placementOperation in placementOperations)
         {
@@ -284,11 +262,7 @@ public sealed class ProcessDesktopPlacementService(
         return null;
     }
 
-    private static void AddPendingPlacementOperation(
-        List<PendingProcessDesktopPlacementOperation> placementOperations,
-        ProcessDesktopPlacementWindowSnapshot windowSnapshot,
-        ProcessDesktopPlacementRuleSettings processDesktopPlacementRule,
-        bool isPersistentRule)
+    private static void AddPendingPlacementOperation(List<PendingProcessDesktopPlacementOperation> placementOperations, ProcessDesktopPlacementWindowSnapshot windowSnapshot, ProcessDesktopPlacementRuleSettings processDesktopPlacementRule, bool isPersistentRule)
     {
         var placementOperation = FindPendingPlacementOperation(placementOperations, processDesktopPlacementRule, isPersistentRule);
         if (placementOperation is null)
@@ -300,10 +274,7 @@ public sealed class ProcessDesktopPlacementService(
         placementOperation.WindowHandles.Add(windowSnapshot.WindowHandle);
     }
 
-    private void TryQueuePlacementOperation(
-        List<PendingProcessDesktopPlacementOperation> placementOperations,
-        ProcessDesktopPlacementWindowSnapshot windowSnapshot,
-        DeskBorderSettings currentSettings)
+    private void TryQueuePlacementOperation(List<PendingProcessDesktopPlacementOperation> placementOperations, ProcessDesktopPlacementWindowSnapshot windowSnapshot, DeskBorderSettings currentSettings)
     {
         if (TryFindRuleForWindow(windowSnapshot, currentSettings, out var isPersistentRule) is not { } processDesktopPlacementRule) return;
 
@@ -326,10 +297,7 @@ public sealed class ProcessDesktopPlacementService(
                 ShouldCreateMissingTargetDesktopForPlacement(currentSettings, placementOperation.IsPersistentRule));
             hasSwitchedToTargetDesktop |= processDesktopPlacementResult.DidSwitchToTargetDesktop;
 
-            await HandlePlacementResultAsync(
-                originalProcessDesktopPlacementRule,
-                processDesktopPlacementResult,
-                placementOperation.IsPersistentRule);
+            await HandlePlacementResultAsync(originalProcessDesktopPlacementRule, processDesktopPlacementResult, placementOperation.IsPersistentRule);
         }
     }
 
@@ -357,8 +325,7 @@ public sealed class ProcessDesktopPlacementService(
             {
                 if (!_knownWindowHandles.Add(windowSnapshot.WindowHandle)) continue;
 
-                var isNewProcessInstance = windowSnapshot.ProcessIdentifier != 0
-                    && !knownProcessIdentifiersBeforeRefresh.Contains(windowSnapshot.ProcessIdentifier);
+                var isNewProcessInstance = windowSnapshot.ProcessIdentifier != 0 && !knownProcessIdentifiersBeforeRefresh.Contains(windowSnapshot.ProcessIdentifier);
                 if (!currentSettings.ProcessDesktopPlacementSettings.ShouldApplyRulesWhenProcessStarts && isNewProcessInstance) continue;
 
                 TryQueuePlacementOperation(placementOperations, windowSnapshot, currentSettings);
@@ -434,14 +401,7 @@ public sealed class ProcessDesktopPlacementService(
                 return;
             }
 
-            _windowEventHookHandle = Win32.SetWinEventHook(
-                Win32.EventObjectShow,
-                Win32.EventObjectShow,
-                0,
-                _windowEventHookCallback,
-                0,
-                0,
-                Win32.WinEventOutOfContext | Win32.WinEventSkipOwnProcess);
+            _windowEventHookHandle = Win32.SetWinEventHook(Win32.EventObjectShow, Win32.EventObjectShow, 0, _windowEventHookCallback, 0, 0, Win32.WinEventOutOfContext | Win32.WinEventSkipOwnProcess);
             if (_windowEventHookHandle == 0)
             {
                 _fileLogService.WriteWarning(nameof(ProcessDesktopPlacementService), $"Failed to install process desktop placement window event hook. {FormatLastWindowsErrorDetails(Marshal.GetLastWin32Error())}. Fallback polling remains active.");
@@ -465,10 +425,7 @@ public sealed class ProcessDesktopPlacementService(
                 Win32.PostQuitMessage(0);
             }
         }
-        catch (Exception exception)
-        {
-            _fileLogService.WriteError(nameof(ProcessDesktopPlacementService), $"Process desktop placement window event hook failed unexpectedly. ExceptionHResult=0x{exception.HResult:X8}, {FormatLastWindowsErrorDetails(Marshal.GetLastWin32Error())}.", exception);
-        }
+        catch (Exception exception) { _fileLogService.WriteError(nameof(ProcessDesktopPlacementService), $"Process desktop placement window event hook failed unexpectedly. ExceptionHResult=0x{exception.HResult:X8}, {FormatLastWindowsErrorDetails(Marshal.GetLastWin32Error())}.", exception); }
         finally
         {
             if (_windowEventHookHandle != 0 && !Win32.UnhookWinEvent(_windowEventHookHandle)) _fileLogService.WriteWarning(nameof(ProcessDesktopPlacementService), $"Failed to uninstall process desktop placement window event hook. {FormatLastWindowsErrorDetails(Marshal.GetLastWin32Error())}.");
@@ -527,10 +484,7 @@ public sealed class ProcessDesktopPlacementService(
 
     private void OnTemporaryRulesChanged() => TemporaryRulesChanged?.Invoke(this, EventArgs.Empty);
 
-    private bool PruneExpiredTemporaryRules(DateTimeOffset currentTimestamp)
-        => _temporaryRules.RemoveAll(rule =>
-            rule.ExpiresAt <= currentTimestamp
-            || rule.Lifetime == ProcessDesktopPlacementRuleLifetime.UntilProcessExit && HasProcessExited(rule.Rule.ProcessName)) > 0;
+    private bool PruneExpiredTemporaryRules(DateTimeOffset currentTimestamp) => _temporaryRules.RemoveAll(rule => rule.ExpiresAt <= currentTimestamp || rule.Lifetime == ProcessDesktopPlacementRuleLifetime.UntilProcessExit && HasProcessExited(rule.Rule.ProcessName)) > 0;
 
     private async Task RefreshAfterSettingsChangedAsync()
     {
@@ -555,11 +509,7 @@ public sealed class ProcessDesktopPlacementService(
         if (processDesktopPlacementSettings.Rules.Length == 0) return;
 
         var desktopCount = Math.Max(1, workspaceSnapshot?.DesktopCount ?? _virtualDesktopService.GetWorkspaceSnapshot().DesktopCount);
-        var updatedRules = ProcessDesktopPlacementRuleStateHelper.CreateRulesWithMissingTargetDisabledState(
-            processDesktopPlacementSettings.Rules,
-            processDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing,
-            desktopCount,
-            out var hasRuleChanged);
+        var updatedRules = ProcessDesktopPlacementRuleStateHelper.CreateRulesWithMissingTargetDisabledState(processDesktopPlacementSettings.Rules, processDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing, desktopCount, out var hasRuleChanged);
         if (!hasRuleChanged) return;
 
         await _settingsService.UpdateSettingsAsync(currentSettings with
@@ -585,11 +535,7 @@ public sealed class ProcessDesktopPlacementService(
         });
     }
 
-    private sealed record TemporaryProcessDesktopPlacementRule(
-        ProcessDesktopPlacementRuleSettings Rule,
-        ProcessDesktopPlacementRuleLifetime Lifetime,
-        DateTimeOffset? ExpiresAt,
-        DateTimeOffset CreatedAt);
+    private sealed record TemporaryProcessDesktopPlacementRule(ProcessDesktopPlacementRuleSettings Rule, ProcessDesktopPlacementRuleLifetime Lifetime, DateTimeOffset? ExpiresAt, DateTimeOffset CreatedAt);
 
     private sealed class PendingProcessDesktopPlacementOperation(ProcessDesktopPlacementRuleSettings processDesktopPlacementRule, bool isPersistentRule)
     {

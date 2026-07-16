@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DeskBorder.Helpers;
 using DeskBorder.Models;
 using DeskBorder.Services;
@@ -437,11 +437,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public bool AreVerticalDesktopSwitchingOptionControlsVisible => IsVerticalDesktopSwitchingEnabled;
 
-    public bool HasActiveDesktopActionKeyboardModifiers => HasKeyboardModifierKeys(SwitchDesktopModifierSelection)
-        || (IsDesktopCreationEnabled && HasKeyboardModifierKeys(CreateDesktopModifierSelection));
+    public bool HasActiveDesktopActionKeyboardModifiers => HasKeyboardModifierKeys(SwitchDesktopModifierSelection) || (IsDesktopCreationEnabled && HasKeyboardModifierKeys(CreateDesktopModifierSelection));
 
-    public bool HasActiveDesktopActionMouseModifierButtons => HasMouseModifierButtonTriggers(SwitchDesktopModifierSelection)
-        || (IsDesktopCreationEnabled && HasMouseModifierButtonTriggers(CreateDesktopModifierSelection));
+    public bool HasActiveDesktopActionMouseModifierButtons => HasMouseModifierButtonTriggers(SwitchDesktopModifierSelection) || (IsDesktopCreationEnabled && HasMouseModifierButtonTriggers(CreateDesktopModifierSelection));
 
     public bool HasActiveDesktopActionModifierInputs => HasActiveDesktopActionKeyboardModifiers || HasActiveDesktopActionMouseModifierButtons;
 
@@ -449,8 +447,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public bool IsMultiDisplayBehaviorSelectionEnabled => !IsVerticalDesktopSwitchingEnabled;
 
-    public bool ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing => IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled
-        && IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled;
+    public bool ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing => IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled && IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled;
 
     public string NavigatorTriggerAreaSummary => SettingsDisplayFormatter.FormatTriggerRectangle(CreateNavigatorTriggerRectangleSettings());
 
@@ -460,11 +457,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         var normalizedProcessNames = NormalizeProcessNames(processNames)
             .Where(blacklistedProcessNameSet.Add)
             .ToArray();
-        if (normalizedProcessNames.Length == 0)
-            return false;
+        if (normalizedProcessNames.Length == 0) return false;
 
-        foreach (var normalizedProcessName in normalizedProcessNames)
-            BlacklistedProcessNames.Add(normalizedProcessName);
+        foreach (var normalizedProcessName in normalizedProcessNames) BlacklistedProcessNames.Add(normalizedProcessName);
 
         SortBlacklistedProcessNames();
         return true;
@@ -503,8 +498,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         var normalizedProcessNames = NormalizeProcessNames(processNames)
             .Where(whitelistedProcessNameSet.Add)
             .ToArray();
-        if (normalizedProcessNames.Length == 0)
-            return false;
+        if (normalizedProcessNames.Length == 0) return false;
 
         foreach (var normalizedProcessName in normalizedProcessNames)
         {
@@ -595,12 +589,10 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             ShouldCreateMissingTargetDesktop = IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled,
             ShouldDisableRuleWhenTargetDesktopIsMissing = ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing,
             QuickConfigurationHotkey = ProcessDesktopPlacementQuickHotkeyEditor.CreateKeyboardShortcutSettings(),
-            Rules = [.. ProcessDesktopPlacementRules
-                .Where(rule => rule.IsPersistentRule)
-                .Select(rule => rule.CreateSettings(ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing))]
+            Rules = [..ProcessDesktopPlacementRules.Where(rule => rule.IsPersistentRule).Select(rule => rule.CreateSettings(ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing))]
         },
-        BlacklistedProcessNames = [.. BlacklistedProcessNames],
-        WhitelistedProcessNames = [.. WhitelistedProcessNames],
+        BlacklistedProcessNames = [..BlacklistedProcessNames],
+        WhitelistedProcessNames = [..WhitelistedProcessNames],
         IsLaunchOnStartupEnabled = IsLaunchOnStartupEnabled,
         IsAlwaysRunAsAdministratorEnabled = IsAlwaysRunAsAdministratorEnabled,
         IsStoreUpdateCheckEnabled = IsStoreUpdateCheckEnabled,
@@ -643,24 +635,13 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         IsProcessDesktopPlacementSwitchToTargetDesktopEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldSwitchToTargetDesktopAfterPlacement;
         IsProcessDesktopPlacementRuleApplicationOnProcessStartEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldApplyRulesWhenProcessStarts;
         IsProcessDesktopPlacementMissingTargetDesktopCreationEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldCreateMissingTargetDesktop;
-        IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldCreateMissingTargetDesktop
-            && deskBorderSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing;
+        IsProcessDesktopPlacementRuleDisabledWhenTargetDesktopIsMissingEnabled = deskBorderSettings.ProcessDesktopPlacementSettings.ShouldCreateMissingTargetDesktop && deskBorderSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing;
         SetNavigatorTriggerRectangle(deskBorderSettings.NavigatorSettings.TriggerRectangle);
-        SelectedMultiDisplayBehaviorOption = FindSelectionOption(
-            MultiDisplayBehaviorOptions,
-            deskBorderSettings.MultiDisplayBehavior);
-        SelectedAppLanguagePreferenceOption = FindSelectionOption(
-            AppLanguagePreferenceOptions,
-            deskBorderSettings.AppLanguagePreference);
-        SelectedApplicationThemePreferenceOption = FindSelectionOption(
-            ApplicationThemePreferenceOptions,
-            deskBorderSettings.ApplicationThemePreference);
-        SelectedHotkeyTriggeredMouseLocationOption = FindSelectionOption(
-            DesktopSwitchMouseLocationOptions,
-            deskBorderSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption);
-        SelectedDesktopEdgeTriggeredMouseLocationOption = FindSelectionOption(
-            DesktopSwitchMouseLocationOptions,
-            deskBorderSettings.DesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption);
+        SelectedMultiDisplayBehaviorOption = FindSelectionOption(MultiDisplayBehaviorOptions, deskBorderSettings.MultiDisplayBehavior);
+        SelectedAppLanguagePreferenceOption = FindSelectionOption(AppLanguagePreferenceOptions, deskBorderSettings.AppLanguagePreference);
+        SelectedApplicationThemePreferenceOption = FindSelectionOption(ApplicationThemePreferenceOptions, deskBorderSettings.ApplicationThemePreference);
+        SelectedHotkeyTriggeredMouseLocationOption = FindSelectionOption(DesktopSwitchMouseLocationOptions, deskBorderSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption);
+        SelectedDesktopEdgeTriggeredMouseLocationOption = FindSelectionOption(DesktopSwitchMouseLocationOptions, deskBorderSettings.DesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption);
         SwitchDesktopModifierSelection.Load(deskBorderSettings.SwitchDesktopModifierSettings);
         CreateDesktopModifierSelection.Load(deskBorderSettings.CreateDesktopModifierSettings);
         SwitchDesktopWhileMouseButtonsArePressedModifierSelection.Load(deskBorderSettings.SwitchDesktopWhileMouseButtonsArePressedModifierSettings);
@@ -673,12 +654,10 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         ProcessDesktopPlacementQuickHotkeyEditor.Load(deskBorderSettings.ProcessDesktopPlacementSettings.QuickConfigurationHotkey);
 
         BlacklistedProcessNames.Clear();
-        foreach (var blacklistedProcessName in deskBorderSettings.BlacklistedProcessNames)
-            BlacklistedProcessNames.Add(blacklistedProcessName);
+        foreach (var blacklistedProcessName in deskBorderSettings.BlacklistedProcessNames) BlacklistedProcessNames.Add(blacklistedProcessName);
 
         WhitelistedProcessNames.Clear();
-        foreach (var whitelistedProcessName in deskBorderSettings.WhitelistedProcessNames)
-            WhitelistedProcessNames.Add(whitelistedProcessName);
+        foreach (var whitelistedProcessName in deskBorderSettings.WhitelistedProcessNames) WhitelistedProcessNames.Add(whitelistedProcessName);
 
         ProcessDesktopPlacementRules.Clear();
         foreach (var processDesktopPlacementRule in deskBorderSettings.ProcessDesktopPlacementSettings.Rules) ProcessDesktopPlacementRules.Add(ProcessDesktopPlacementRuleViewModel.Load(processDesktopPlacementRule));
@@ -698,9 +677,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     public void UpsertProcessDesktopPlacementRule(ProcessDesktopPlacementRuleSettings processDesktopPlacementRuleSettings)
     {
-        var existingProcessDesktopPlacementRule = ProcessDesktopPlacementRules.FirstOrDefault(processDesktopPlacementRule =>
-            processDesktopPlacementRule.IsPersistentRule
-            && string.Equals(processDesktopPlacementRule.ProcessName, processDesktopPlacementRuleSettings.ProcessName, StringComparison.OrdinalIgnoreCase));
+        var existingProcessDesktopPlacementRule = ProcessDesktopPlacementRules.FirstOrDefault(processDesktopPlacementRule => processDesktopPlacementRule.IsPersistentRule && string.Equals(processDesktopPlacementRule.ProcessName, processDesktopPlacementRuleSettings.ProcessName, StringComparison.OrdinalIgnoreCase));
         if (existingProcessDesktopPlacementRule is null) ProcessDesktopPlacementRules.Add(ProcessDesktopPlacementRuleViewModel.Load(processDesktopPlacementRuleSettings));
         else existingProcessDesktopPlacementRule.UpdateFromSettings(processDesktopPlacementRuleSettings);
 
@@ -711,7 +688,9 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     public void RefreshProcessDesktopPlacementRuleLifetimeStatuses(DateTimeOffset currentTimestamp)
     {
         foreach (var processDesktopPlacementRule in ProcessDesktopPlacementRules)
+        {
             processDesktopPlacementRule.RefreshLifetimeStatus(currentTimestamp);
+        }
     }
 
     public bool RefreshProcessDesktopPlacementMissingTargetDisabledRuleStates(int desktopCount)
@@ -719,10 +698,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         var hasRuleChanged = false;
         foreach (var processDesktopPlacementRule in ProcessDesktopPlacementRules.Where(processDesktopPlacementRule => processDesktopPlacementRule.IsPersistentRule))
         {
-            var isDisabledBecauseTargetDesktopIsMissing = ProcessDesktopPlacementRuleStateHelper.ShouldDisableBecauseTargetDesktopIsMissing(
-                ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing,
-                processDesktopPlacementRule.TargetDesktopNumber,
-                desktopCount);
+            var isDisabledBecauseTargetDesktopIsMissing = ProcessDesktopPlacementRuleStateHelper.ShouldDisableBecauseTargetDesktopIsMissing(ShouldDisableProcessDesktopPlacementRulesWhenTargetDesktopIsMissing, processDesktopPlacementRule.TargetDesktopNumber, desktopCount);
             if (processDesktopPlacementRule.IsDisabledBecauseTargetDesktopIsMissing == isDisabledBecauseTargetDesktopIsMissing) continue;
 
             processDesktopPlacementRule.IsDisabledBecauseTargetDesktopIsMissing = isDisabledBecauseTargetDesktopIsMissing;
@@ -779,7 +755,8 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         }
     }
 
-    private static List<SelectionOption<TValue>> CreateSelectionOptions<TValue>(IReadOnlyList<TValue> values, Func<TValue, string> displayTextSelector) where TValue : notnull => [.. values.Select(value => new SelectionOption<TValue>(value, displayTextSelector(value)))];
+    private static List<SelectionOption<TValue>> CreateSelectionOptions<TValue>(IReadOnlyList<TValue> values, Func<TValue, string> displayTextSelector) where TValue : notnull =>
+    [.. values.Select(value => new SelectionOption<TValue>(value, displayTextSelector(value)))];
 
     private static bool HasKeyboardModifierKeys(ModifierKeySelectionViewModel modifierKeySelectionViewModel) => modifierKeySelectionViewModel.CreateKeyboardModifierKeys() != KeyboardModifierKeys.None;
 
@@ -788,31 +765,17 @@ public sealed partial class SettingsPageViewModel : ObservableObject
     private static List<SelectionOption<InputTriggerOptionValue>> CreateInputTriggerOptions()
     {
         var inputTriggerOptions = new List<SelectionOption<InputTriggerOptionValue>>(s_virtualKeys.Length + s_mouseInputTriggerTypes.Length);
-        foreach (var virtualKey in s_virtualKeys)
-        {
-            inputTriggerOptions.Add(new(
-                new InputTriggerOptionValue(InputTriggerType.VirtualKey, virtualKey),
-                SettingsDisplayFormatter.FormatInputTrigger(InputTriggerType.VirtualKey, virtualKey)));
-        }
+        foreach (var virtualKey in s_virtualKeys) inputTriggerOptions.Add(new(new InputTriggerOptionValue(InputTriggerType.VirtualKey, virtualKey), SettingsDisplayFormatter.FormatInputTrigger(InputTriggerType.VirtualKey, virtualKey)));
 
-        foreach (var mouseInputTriggerType in s_mouseInputTriggerTypes)
-        {
-            inputTriggerOptions.Add(new(
-                new InputTriggerOptionValue(mouseInputTriggerType, VirtualKey.None),
-                SettingsDisplayFormatter.FormatInputTrigger(mouseInputTriggerType, VirtualKey.None)));
-        }
+        foreach (var mouseInputTriggerType in s_mouseInputTriggerTypes) inputTriggerOptions.Add(new(new InputTriggerOptionValue(mouseInputTriggerType, VirtualKey.None), SettingsDisplayFormatter.FormatInputTrigger(mouseInputTriggerType, VirtualKey.None)));
 
         return inputTriggerOptions;
     }
 
     private TriggerRectangleSettings CreateNavigatorTriggerRectangleSettings() => new()
     {
-        Left = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedOffset(
-            NavigatorTriggerLeftPercentage,
-            TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerWidthPercentage)),
-        Top = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedOffset(
-            NavigatorTriggerTopPercentage,
-            TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerHeightPercentage)),
+        Left = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedOffset(NavigatorTriggerLeftPercentage, TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerWidthPercentage)),
+        Top = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedOffset(NavigatorTriggerTopPercentage, TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerHeightPercentage)),
         Width = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerWidthPercentage),
         Height = TriggerRectangleDisplayConverter.ConvertDisplayPercentageToNormalizedLength(NavigatorTriggerHeightPercentage)
     };
@@ -822,39 +785,32 @@ public sealed partial class SettingsPageViewModel : ObservableObject
         foreach (var selectionOption in selectionOptions)
         {
             if (EqualityComparer<TValue>.Default.Equals(selectionOption.Value, value))
+            {
                 return selectionOption;
+            }
         }
 
         return selectionOptions[0];
     }
 
-    private static KeyboardShortcutValidationState GetKeyboardShortcutValidationState(
-        KeyboardShortcutSettings currentKeyboardShortcutSettings,
-        IReadOnlyList<KeyboardShortcutSettings> otherKeyboardShortcutSettings,
-        string? registrationFailureMessage)
+    private static KeyboardShortcutValidationState GetKeyboardShortcutValidationState(KeyboardShortcutSettings currentKeyboardShortcutSettings, IReadOnlyList<KeyboardShortcutSettings> otherKeyboardShortcutSettings, string? registrationFailureMessage)
     {
-        if (!currentKeyboardShortcutSettings.IsEnabled)
-            return KeyboardShortcutValidationState.Disabled;
+        if (!currentKeyboardShortcutSettings.IsEnabled) return KeyboardShortcutValidationState.Disabled;
 
-        if (!KeyboardShortcutHelper.IsKeyboardShortcutSpecified(currentKeyboardShortcutSettings))
-            return KeyboardShortcutValidationState.MissingKey;
+        if (!KeyboardShortcutHelper.IsKeyboardShortcutSpecified(currentKeyboardShortcutSettings)) return KeyboardShortcutValidationState.MissingKey;
 
-        if (KeyboardShortcutHelper.IsReservedByWindowsDesktopSwitchHotkey(currentKeyboardShortcutSettings))
-            return KeyboardShortcutValidationState.ReservedByWindowsDesktopSwitch;
+        if (KeyboardShortcutHelper.IsReservedByWindowsDesktopSwitchHotkey(currentKeyboardShortcutSettings)) return KeyboardShortcutValidationState.ReservedByWindowsDesktopSwitch;
 
         foreach (var otherKeyboardShortcutSetting in otherKeyboardShortcutSettings)
         {
-            if (!otherKeyboardShortcutSetting.IsEnabled || !KeyboardShortcutHelper.IsKeyboardShortcutSpecified(otherKeyboardShortcutSetting))
-                continue;
+            if (!otherKeyboardShortcutSetting.IsEnabled || !KeyboardShortcutHelper.IsKeyboardShortcutSpecified(otherKeyboardShortcutSetting)) continue;
 
-            if (KeyboardShortcutHelper.CreateKeyboardShortcutIdentity(otherKeyboardShortcutSetting) != KeyboardShortcutHelper.CreateKeyboardShortcutIdentity(currentKeyboardShortcutSettings))
-                continue;
+            if (KeyboardShortcutHelper.CreateKeyboardShortcutIdentity(otherKeyboardShortcutSetting) != KeyboardShortcutHelper.CreateKeyboardShortcutIdentity(currentKeyboardShortcutSettings)) continue;
 
             return KeyboardShortcutValidationState.Duplicate;
         }
 
-        if (!string.IsNullOrWhiteSpace(registrationFailureMessage))
-            return KeyboardShortcutValidationState.RegistrationFailed;
+        if (!string.IsNullOrWhiteSpace(registrationFailureMessage)) return KeyboardShortcutValidationState.RegistrationFailed;
 
         return KeyboardShortcutValidationState.Valid;
     }
@@ -897,9 +853,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
         foreach (var temporaryRuleSnapshot in temporaryRuleSnapshots)
         {
-            var existingTemporaryRule = ProcessDesktopPlacementRules.FirstOrDefault(processDesktopPlacementRule =>
-                !processDesktopPlacementRule.IsPersistentRule
-                && string.Equals(processDesktopPlacementRule.ProcessName, temporaryRuleSnapshot.Rule.ProcessName, StringComparison.OrdinalIgnoreCase));
+            var existingTemporaryRule = ProcessDesktopPlacementRules.FirstOrDefault(processDesktopPlacementRule => !processDesktopPlacementRule.IsPersistentRule && string.Equals(processDesktopPlacementRule.ProcessName, temporaryRuleSnapshot.Rule.ProcessName, StringComparison.OrdinalIgnoreCase));
             if (existingTemporaryRule is null)
             {
                 ProcessDesktopPlacementRules.Add(ProcessDesktopPlacementRuleViewModel.Load(temporaryRuleSnapshot));
@@ -916,13 +870,10 @@ public sealed partial class SettingsPageViewModel : ObservableObject
 
     private void OnDesktopActionModifierSelectionPropertyChanged(object? _, PropertyChangedEventArgs propertyChangedEventArgs)
     {
-        if (propertyChangedEventArgs.PropertyName is nameof(ModifierKeySelectionViewModel.IsLeftMouseButtonEnabled)
-            or nameof(ModifierKeySelectionViewModel.IsMiddleMouseButtonEnabled)
-            or nameof(ModifierKeySelectionViewModel.IsRightMouseButtonEnabled)
-            or nameof(ModifierKeySelectionViewModel.IsControlEnabled)
-            or nameof(ModifierKeySelectionViewModel.IsShiftEnabled)
-            or nameof(ModifierKeySelectionViewModel.IsAlternateEnabled)
-            or nameof(ModifierKeySelectionViewModel.IsWindowsEnabled)) NotifyActiveDesktopActionModifierStatesChanged();
+        if (propertyChangedEventArgs.PropertyName is nameof(ModifierKeySelectionViewModel.IsLeftMouseButtonEnabled) or nameof(ModifierKeySelectionViewModel.IsMiddleMouseButtonEnabled) or nameof(ModifierKeySelectionViewModel.IsRightMouseButtonEnabled) or nameof(ModifierKeySelectionViewModel.IsControlEnabled) or nameof(ModifierKeySelectionViewModel.IsShiftEnabled) or nameof(ModifierKeySelectionViewModel.IsAlternateEnabled) or nameof(ModifierKeySelectionViewModel.IsWindowsEnabled))
+        {
+            NotifyActiveDesktopActionModifierStatesChanged();
+        }
     }
 
     private void OnKeyboardShortcutEditorPropertyChanged(object? _, PropertyChangedEventArgs __) => NotifyKeyboardShortcutValidationStatesChanged();
@@ -944,8 +895,7 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             .Order(StringComparer.OrdinalIgnoreCase)
             .ToArray();
         BlacklistedProcessNames.Clear();
-        foreach (var blacklistedProcessName in sortedBlacklistedProcessNames)
-            BlacklistedProcessNames.Add(blacklistedProcessName);
+        foreach (var blacklistedProcessName in sortedBlacklistedProcessNames) BlacklistedProcessNames.Add(blacklistedProcessName);
     }
 
     private void SortProcessDesktopPlacementRules()
@@ -964,7 +914,6 @@ public sealed partial class SettingsPageViewModel : ObservableObject
             .Order(StringComparer.OrdinalIgnoreCase)
             .ToArray();
         WhitelistedProcessNames.Clear();
-        foreach (var whitelistedProcessName in sortedWhitelistedProcessNames)
-            WhitelistedProcessNames.Add(whitelistedProcessName);
+        foreach (var whitelistedProcessName in sortedWhitelistedProcessNames) WhitelistedProcessNames.Add(whitelistedProcessName);
     }
 }

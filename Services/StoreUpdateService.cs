@@ -26,8 +26,7 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService,
 
     public void Initialize()
     {
-        if (_isInitialized)
-            return;
+        if (_isInitialized) return;
 
         _fileLogService.WriteInformation(nameof(StoreUpdateService), "Initializing store update service.");
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
@@ -43,13 +42,11 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService,
         return storePackageUpdates.Count;
     }
 
-    public async Task<bool> OpenStoreProductPageAsync() => await Launcher.LaunchUriAsync(s_storePackageFamilyNameProductPageUri)
-        || await Launcher.LaunchUriAsync(s_storeProductIdentifierProductPageUri);
+    public async Task<bool> OpenStoreProductPageAsync() => await Launcher.LaunchUriAsync(s_storePackageFamilyNameProductPageUri) || await Launcher.LaunchUriAsync(s_storeProductIdentifierProductPageUri);
 
     public void Dispose()
     {
-        if (_isInitialized)
-            _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
+        if (_isInitialized) _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
 
         StopMonitoring();
         _fileLogService.WriteInformation(nameof(StoreUpdateService), "Disposed store update service.");
@@ -78,10 +75,7 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService,
                 catch (UnauthorizedAccessException exception) { _fileLogService.WriteWarning(nameof(StoreUpdateService), "Store update check failed with an unauthorized access exception.", exception); }
             }
         }
-        catch (OperationCanceledException)
-        {
-            _fileLogService.WriteInformation(nameof(StoreUpdateService), "Store update monitoring loop was canceled.");
-        }
+        catch (OperationCanceledException) { _fileLogService.WriteInformation(nameof(StoreUpdateService), "Store update monitoring loop was canceled."); }
     }
 
     private static void ShowSystemToast()
@@ -111,8 +105,7 @@ public sealed partial class StoreUpdateService(ISettingsService settingsService,
 
     private void StartMonitoring()
     {
-        if (_updateCheckCancellationTokenSource is not null)
-            return;
+        if (_updateCheckCancellationTokenSource is not null) return;
 
         _updateCheckCancellationTokenSource = new CancellationTokenSource();
         _ = RunPeriodicUpdateCheckLoopAsync(_updateCheckCancellationTokenSource.Token);

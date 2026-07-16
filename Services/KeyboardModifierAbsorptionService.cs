@@ -1,4 +1,4 @@
-using DeskBorder.Helpers;
+﻿using DeskBorder.Helpers;
 using DeskBorder.Interop;
 using DeskBorder.Models;
 using System.ComponentModel;
@@ -93,14 +93,12 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
 
         _fileLogService.WriteInformation(nameof(KeyboardModifierAbsorptionService), "Stopping keyboard modifier absorption service.");
         _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
-        if (_messageLoopThreadIdentifier != 0
-            && !Win32.PostThreadMessage(_messageLoopThreadIdentifier, ShutdownMessage, 0, 0))
+        if (_messageLoopThreadIdentifier != 0 && !Win32.PostThreadMessage(_messageLoopThreadIdentifier, ShutdownMessage, 0, 0))
         {
             _fileLogService.WriteWarning(nameof(KeyboardModifierAbsorptionService), $"Failed to schedule keyboard modifier absorption shutdown. {FormatLastWindowsErrorDetails(Marshal.GetLastWin32Error())}.");
         }
 
-        if (_messageLoopThread is not null && !_messageLoopThread.Join(s_messageLoopShutdownTimeout))
-            _fileLogService.WriteWarning(nameof(KeyboardModifierAbsorptionService), "Timed out while stopping the keyboard modifier absorption hook.");
+        if (_messageLoopThread is not null && !_messageLoopThread.Join(s_messageLoopShutdownTimeout)) _fileLogService.WriteWarning(nameof(KeyboardModifierAbsorptionService), "Timed out while stopping the keyboard modifier absorption hook.");
 
         _messageLoopThread = null;
         IsRunning = false;
@@ -138,15 +136,11 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
             foreach (var pressedModifierVirtualKey in pendingPhysicalModifierVirtualKeys)
             {
                 _pendingAbsorbedModifierVirtualKeys.Add(pressedModifierVirtualKey);
-                if (IsWindowsVirtualKey(pressedModifierVirtualKey))
-                    _pendingSyntheticKeyUpAfterPhysicalKeyUpVirtualKeys.Add(pressedModifierVirtualKey);
+                if (IsWindowsVirtualKey(pressedModifierVirtualKey)) _pendingSyntheticKeyUpAfterPhysicalKeyUpVirtualKeys.Add(pressedModifierVirtualKey);
             }
         }
 
-        try
-        {
-            SendSyntheticModifierKeyUps(immediatelyReleasedModifierVirtualKeys);
-        }
+        try { SendSyntheticModifierKeyUps(immediatelyReleasedModifierVirtualKeys); }
         catch
         {
             RemovePendingAbsorptions(pendingPhysicalModifierVirtualKeys);
@@ -156,8 +150,7 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
         _fileLogService.WriteInformation(nameof(KeyboardModifierAbsorptionService), $"Armed keyboard modifier absorption. ModifierKeys={keyboardModifierKeys}, PressedVirtualKeys={string.Join("|", pressedModifierVirtualKeys)}, PreemptivelyConsumedVirtualKeys={string.Join("|", preemptivelyConsumedModifierVirtualKeys)}.");
     }
 
-    public bool AreRequiredModifierInputsPressed(ModifierGateSettings modifierGateSettings, ModifierKeySnapshot modifierKeySnapshot, MouseButtonSnapshot mouseButtonSnapshot) => AreRequiredKeyboardModifierKeysPressed(modifierGateSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys)
-        && MouseHelper.AreRequiredMouseModifierButtonTriggersPressed(modifierGateSettings.RequiredMouseModifierButtonTriggers, mouseButtonSnapshot);
+    public bool AreRequiredModifierInputsPressed(ModifierGateSettings modifierGateSettings, ModifierKeySnapshot modifierKeySnapshot, MouseButtonSnapshot mouseButtonSnapshot) => AreRequiredKeyboardModifierKeysPressed(modifierGateSettings.RequiredKeyboardModifierKeys, modifierKeySnapshot.PressedKeyboardModifierKeys) && MouseHelper.AreRequiredMouseModifierButtonTriggersPressed(modifierGateSettings.RequiredMouseModifierButtonTriggers, mouseButtonSnapshot);
 
     public ModifierKeySnapshot GetModifierKeySnapshot()
     {
@@ -169,8 +162,7 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
         return CreateModifierKeySnapshot(pressedKeyboardModifierKeys);
     }
 
-    public bool HasRequiredModifierInputs(ModifierGateSettings modifierGateSettings) => modifierGateSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None
-        || modifierGateSettings.RequiredMouseModifierButtonTriggers.Length > 0;
+    public bool HasRequiredModifierInputs(ModifierGateSettings modifierGateSettings) => modifierGateSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None || modifierGateSettings.RequiredMouseModifierButtonTriggers.Length > 0;
 
     private static bool AreRequiredKeyboardModifierKeysPressed(KeyboardModifierKeys requiredKeyboardModifierKeys, KeyboardModifierKeys pressedKeyboardModifierKeys) => (pressedKeyboardModifierKeys & requiredKeyboardModifierKeys) == requiredKeyboardModifierKeys;
 
@@ -272,12 +264,12 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
 
     private static KeyboardModifierKeys GetKeyboardModifierKey(uint virtualKey) => GetKeyboardModifierKey((int)virtualKey);
 
-    private static bool IsWindowsOnlyModifierGate(ModifierGateSettings modifierGateSettings) => modifierGateSettings.RequiredKeyboardModifierKeys == KeyboardModifierKeys.Windows
-        && modifierGateSettings.RequiredMouseModifierButtonTriggers.Length == 0;
+    private static bool IsWindowsOnlyModifierGate(ModifierGateSettings modifierGateSettings) => modifierGateSettings.RequiredKeyboardModifierKeys == KeyboardModifierKeys.Windows && modifierGateSettings.RequiredMouseModifierButtonTriggers.Length == 0;
 
-    private static bool ShouldPreemptivelyAbsorbWindowsKey(DeskBorderSettings settings) => settings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled
+    private static bool ShouldPreemptivelyAbsorbWindowsKey(DeskBorderSettings settings)
+        => settings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled
         && (IsWindowsOnlyModifierGate(settings.SwitchDesktopModifierSettings)
-            || (settings.IsDesktopCreationEnabled && IsWindowsOnlyModifierGate(settings.CreateDesktopModifierSettings)));
+        || (settings.IsDesktopCreationEnabled && IsWindowsOnlyModifierGate(settings.CreateDesktopModifierSettings)));
 
     private static KeyboardModifierKeys CreateActiveDesktopActionKeyboardModifierKeys(DeskBorderSettings settings)
     {
@@ -289,9 +281,7 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
 
     private static KeyboardModifierKeys CreatePreemptiveAbsorptionKeyboardModifierKeys(DeskBorderSettings settings)
     {
-        var preemptiveAbsorptionKeyboardModifierKeys = ShouldPreemptivelyAbsorbWindowsKey(settings)
-            ? KeyboardModifierKeys.Windows
-            : KeyboardModifierKeys.None;
+        var preemptiveAbsorptionKeyboardModifierKeys = ShouldPreemptivelyAbsorbWindowsKey(settings) ? KeyboardModifierKeys.Windows : KeyboardModifierKeys.None;
         if (settings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled && settings.IsNonWindowsKeyboardModifierPreemptiveAbsorptionEnabled) preemptiveAbsorptionKeyboardModifierKeys |= CreateActiveDesktopActionKeyboardModifierKeys(settings) & ~KeyboardModifierKeys.Windows;
 
         return preemptiveAbsorptionKeyboardModifierKeys;
@@ -358,7 +348,10 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
         {
             foreach (var heldNonModifierVirtualKey in _heldNonModifierVirtualKeys.ToArray())
             {
-                if (!IsVirtualKeyPressed((int)heldNonModifierVirtualKey)) _heldNonModifierVirtualKeys.Remove(heldNonModifierVirtualKey);
+                if (!IsVirtualKeyPressed((int)heldNonModifierVirtualKey))
+                {
+                    _heldNonModifierVirtualKeys.Remove(heldNonModifierVirtualKey);
+                }
             }
 
             return _heldNonModifierVirtualKeys.Count > 0;
@@ -382,7 +375,10 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
         var keyboardModifierKeys = KeyboardModifierKeys.None;
         lock (_stateGate)
         {
-            foreach (var virtualKey in _preemptivelyAbsorbedModifierKeys.Keys) keyboardModifierKeys |= GetKeyboardModifierKey(virtualKey);
+            foreach (var virtualKey in _preemptivelyAbsorbedModifierKeys.Keys)
+            {
+                keyboardModifierKeys |= GetKeyboardModifierKey(virtualKey);
+            }
         }
 
         return keyboardModifierKeys;
@@ -460,7 +456,10 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
 
         if (includeKeyUp)
         {
-            foreach (var modifierVirtualKey in modifierVirtualKeys.Reverse()) keyboardInputs.Add(CreateKeyboardInput((ushort)modifierVirtualKey.VirtualKey, Win32.KeyboardEventKeyUpFlag | GetKeyboardEventFlags(modifierVirtualKey.VirtualKey), modifierVirtualKey.ScanCode));
+            foreach (var modifierVirtualKey in modifierVirtualKeys.Reverse())
+            {
+                keyboardInputs.Add(CreateKeyboardInput((ushort)modifierVirtualKey.VirtualKey, Win32.KeyboardEventKeyUpFlag | GetKeyboardEventFlags(modifierVirtualKey.VirtualKey), modifierVirtualKey.ScanCode));
+            }
         }
 
         SendSyntheticKeyboardInputs(keyboardInputs, [.. modifierVirtualKeys.Select(modifierVirtualKey => modifierVirtualKey.VirtualKey)]);
@@ -526,8 +525,7 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
                     try { ReplayUnconsumedPreemptivelyAbsorbedModifierKeys(includeKeyUp: false); }
                     catch (Exception exception) { _fileLogService.WriteWarning(nameof(KeyboardModifierAbsorptionService), $"Failed to replay preemptively absorbed modifier keys before forwarding a physical key-down. VirtualKey={hookData.VirtualKey}.", exception); }
 
-                    if (IsModifierVirtualKey(hookData.VirtualKey) && TryRemovePendingModifierAbsorption(hookData.VirtualKey))
-                        _fileLogService.WriteInformation(nameof(KeyboardModifierAbsorptionService), $"Cleared stale keyboard modifier absorption on a new physical key-down. VirtualKey={hookData.VirtualKey}.");
+                    if (IsModifierVirtualKey(hookData.VirtualKey) && TryRemovePendingModifierAbsorption(hookData.VirtualKey)) _fileLogService.WriteInformation(nameof(KeyboardModifierAbsorptionService), $"Cleared stale keyboard modifier absorption on a new physical key-down. VirtualKey={hookData.VirtualKey}.");
 
                     return Win32.CallNextHookEx(_keyboardHookHandle, code, wParam, lParam);
                 }
@@ -596,8 +594,7 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
         }
         catch (Exception exception)
         {
-            if (!_messageLoopReadySignal.IsSet)
-                _startupException = exception;
+            if (!_messageLoopReadySignal.IsSet) _startupException = exception;
 
             _fileLogService.WriteError(nameof(KeyboardModifierAbsorptionService), "The keyboard modifier absorption hook failed unexpectedly.", exception);
             _messageLoopReadySignal.Set();
@@ -638,7 +635,6 @@ public sealed class KeyboardModifierAbsorptionService(IFileLogService fileLogSer
 
         var keyboardHookHandle = _keyboardHookHandle;
         _keyboardHookHandle = 0;
-        if (!Win32.UnhookWindowsHookEx(keyboardHookHandle))
-            _fileLogService.WriteWarning(nameof(KeyboardModifierAbsorptionService), $"Failed to uninstall keyboard modifier absorption hook. {FormatLastWindowsErrorDetails(Marshal.GetLastWin32Error())}.");
+        if (!Win32.UnhookWindowsHookEx(keyboardHookHandle)) _fileLogService.WriteWarning(nameof(KeyboardModifierAbsorptionService), $"Failed to uninstall keyboard modifier absorption hook. {FormatLastWindowsErrorDetails(Marshal.GetLastWin32Error())}.");
     }
 }

@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using DeskBorder.Interop;
 using DeskBorder.Helpers;
 using DeskBorder.Interop.VirtualDesktop;
@@ -145,9 +145,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             };
         }
 
-        var isTargetDesktopAdjacentInward =
-            sourceDesktopEntry.IsLeftOuterDesktop && targetDesktopEntry.DesktopNumber == sourceDesktopEntry.DesktopNumber + 1
-            || sourceDesktopEntry.IsRightOuterDesktop && targetDesktopEntry.DesktopNumber == sourceDesktopEntry.DesktopNumber - 1;
+        var isTargetDesktopAdjacentInward =  (sourceDesktopEntry.IsLeftOuterDesktop && targetDesktopEntry.DesktopNumber == sourceDesktopEntry.DesktopNumber + 1) || (sourceDesktopEntry.IsRightOuterDesktop && targetDesktopEntry.DesktopNumber == sourceDesktopEntry.DesktopNumber - 1);
         if (!isTargetDesktopAdjacentInward)
         {
             return new()
@@ -213,9 +211,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
                 DesktopIdentifier = desktopEntry.DesktopIdentifier,
                 DisplayName = desktopEntry.DisplayName,
                 IsCurrentDesktop = desktopEntry.IsCurrentDesktop,
-                WindowItems = navigatorWindowItemsByDesktopIdentifier.TryGetValue(desktopEntry.DesktopIdentifier, out var navigatorDesktopWindowItems)
-                    ? [.. navigatorDesktopWindowItems]
-                    : []
+                WindowItems = navigatorWindowItemsByDesktopIdentifier.TryGetValue(desktopEntry.DesktopIdentifier, out var navigatorDesktopWindowItems) ? [..navigatorDesktopWindowItems] : []
             })]
         };
     }
@@ -233,9 +229,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         if (foregroundWindowHandle == 0) return null;
 
         using var virtualDesktopShellConnection = CreateVirtualDesktopShellConnection();
-        return TryCreateProcessDesktopPlacementWindowSnapshot(virtualDesktopShellConnection.VirtualDesktopShell, foregroundWindowHandle, out var processDesktopPlacementWindowSnapshot)
-            ? processDesktopPlacementWindowSnapshot
-            : null;
+        return TryCreateProcessDesktopPlacementWindowSnapshot(virtualDesktopShellConnection.VirtualDesktopShell, foregroundWindowHandle, out var processDesktopPlacementWindowSnapshot) ? processDesktopPlacementWindowSnapshot : null;
     }
 
     public ProcessDesktopPlacementWindowSnapshot[] GetProcessDesktopPlacementWindowSnapshots()
@@ -271,21 +265,14 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         return [.. processDesktopPlacementWindowSnapshots];
     }
 
-    public ProcessDesktopPlacementResult PlaceWindowsOnDesktop(
-        IReadOnlyList<nint> windowHandles,
-        ProcessDesktopPlacementRuleSettings processDesktopPlacementRule,
-        bool shouldSwitchToTargetDesktop,
-        bool shouldCreateMissingTargetDesktop)
+    public ProcessDesktopPlacementResult PlaceWindowsOnDesktop(IReadOnlyList<nint> windowHandles, ProcessDesktopPlacementRuleSettings processDesktopPlacementRule, bool shouldSwitchToTargetDesktop, bool shouldCreateMissingTargetDesktop)
     {
         try
         {
             using var virtualDesktopShellConnection = CreateVirtualDesktopShellConnection();
             var previousWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
             var targetDesktopNumber = Math.Max(1, processDesktopPlacementRule.TargetDesktopNumber);
-            var targetResolution = ResolveProcessDesktopPlacementTargetDesktop(
-                virtualDesktopShellConnection.VirtualDesktopShell,
-                targetDesktopNumber,
-                shouldCreateMissingTargetDesktop);
+            var targetResolution = ResolveProcessDesktopPlacementTargetDesktop(virtualDesktopShellConnection.VirtualDesktopShell, targetDesktopNumber, shouldCreateMissingTargetDesktop);
             if (targetResolution.TargetVirtualDesktop is null)
             {
                 _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"Process desktop placement could not resolve target desktop number {targetDesktopNumber}. ProcessName={processDesktopPlacementRule.ProcessName}.");
@@ -364,11 +351,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             return CreateFailedNavigationResult(VirtualDesktopOperationStatus.DesktopNotFound, previousWorkspaceSnapshot);
         }
 
-        if (!VirtualDesktopFoundation.TryGetAdjacentDesktop(
-            virtualDesktopShellConnection.VirtualDesktopShell,
-            currentVirtualDesktop,
-            ConvertToAdjacentVirtualDesktopDirection(desktopSwitchDirection),
-            out var adjacentVirtualDesktop))
+        if (!VirtualDesktopFoundation.TryGetAdjacentDesktop(virtualDesktopShellConnection.VirtualDesktopShell, currentVirtualDesktop, ConvertToAdjacentVirtualDesktopDirection(desktopSwitchDirection), out var adjacentVirtualDesktop))
         {
             if (CanCreateDesktopForFocusedWindowMove(desktopSwitchDirection, previousWorkspaceSnapshot))
             {
@@ -407,11 +390,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         using var virtualDesktopShellConnection = CreateVirtualDesktopShellConnection();
         var previousWorkspaceSnapshot = CreateWorkspaceSnapshot(virtualDesktopShellConnection.VirtualDesktopShell);
         var currentVirtualDesktop = VirtualDesktopFoundation.GetCurrentDesktop(virtualDesktopShellConnection.VirtualDesktopShell);
-        if (!VirtualDesktopFoundation.TryGetAdjacentDesktop(
-            virtualDesktopShellConnection.VirtualDesktopShell,
-            currentVirtualDesktop,
-            ConvertToAdjacentVirtualDesktopDirection(desktopSwitchDirection),
-            out var adjacentVirtualDesktop))
+        if (!VirtualDesktopFoundation.TryGetAdjacentDesktop(virtualDesktopShellConnection.VirtualDesktopShell, currentVirtualDesktop, ConvertToAdjacentVirtualDesktopDirection(desktopSwitchDirection), out var adjacentVirtualDesktop))
         {
             _fileLogService.WriteWarning(nameof(VirtualDesktopService), $"SwitchDesktop found no adjacent desktop for direction {desktopSwitchDirection}.");
             return new()
@@ -505,7 +484,12 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         && targetThreadIdentifier != currentThreadIdentifier
         && Win32.AttachThreadInput(currentThreadIdentifier, targetThreadIdentifier, true);
 
-    private static DesktopDeletionResult CreateFailedDeletionResult(VirtualDesktopOperationStatus virtualDesktopOperationStatus, VirtualDesktopWorkspaceSnapshot? workspaceSnapshot = null) => new() { OperationStatus = virtualDesktopOperationStatus, PreviousWorkspaceSnapshot = workspaceSnapshot ?? new(), CurrentWorkspaceSnapshot = workspaceSnapshot ?? new() };
+    private static DesktopDeletionResult CreateFailedDeletionResult(VirtualDesktopOperationStatus virtualDesktopOperationStatus, VirtualDesktopWorkspaceSnapshot? workspaceSnapshot = null) => new()
+    {
+        OperationStatus = virtualDesktopOperationStatus,
+        PreviousWorkspaceSnapshot = workspaceSnapshot ?? new(),
+        CurrentWorkspaceSnapshot = workspaceSnapshot ?? new()
+    };
 
     private static DesktopNavigationResult CreateFailedNavigationResult(VirtualDesktopOperationStatus virtualDesktopOperationStatus, VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => new()
     {
@@ -525,7 +509,10 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
 
         for (var index = 0; index < previousWorkspaceSnapshot.DesktopEntries.Length; index++)
         {
-            if (!string.Equals(previousWorkspaceSnapshot.DesktopEntries[index].DesktopIdentifier, currentWorkspaceSnapshot.DesktopEntries[index].DesktopIdentifier, StringComparison.Ordinal)) return true;
+            if (!string.Equals(previousWorkspaceSnapshot.DesktopEntries[index].DesktopIdentifier, currentWorkspaceSnapshot.DesktopEntries[index].DesktopIdentifier, StringComparison.Ordinal))
+            {
+                return true;
+            }
         }
 
         return false;
@@ -542,9 +529,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
 
     private static string FormatPrivilegeDiagnostic(Exception exception) => exception is UnauthorizedAccessException
         || exception is Win32Exception { NativeErrorCode: 5 }
-        || exception.HResult == unchecked((int)0x80070005)
-            ? ", PossibleAdministratorPrivilegeMismatch=True"
-            : string.Empty;
+        || exception.HResult == unchecked((int)0x80070005) ? ", PossibleAdministratorPrivilegeMismatch=True" : string.Empty;
 
     private DesktopNavigationResult CreateFailedDesktopSwitchNavigationResult(VirtualDesktopWorkspaceSnapshot previousWorkspaceSnapshot, string message, Exception exception)
     {
@@ -563,12 +548,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         return true;
     }
 
-    private DesktopNavigationResult MoveFocusedWindowToCreatedDesktop(
-        VirtualDesktopShell virtualDesktopShell,
-        VirtualDesktopWorkspaceSnapshot previousWorkspaceSnapshot,
-        IApplicationView applicationView,
-        nint focusedWindowHandle,
-        DesktopSwitchDirection desktopSwitchDirection)
+    private DesktopNavigationResult MoveFocusedWindowToCreatedDesktop(VirtualDesktopShell virtualDesktopShell, VirtualDesktopWorkspaceSnapshot previousWorkspaceSnapshot, IApplicationView applicationView, nint focusedWindowHandle, DesktopSwitchDirection desktopSwitchDirection)
     {
         var createdVirtualDesktop = VirtualDesktopFoundation.CreateDesktop(virtualDesktopShell);
         if (desktopSwitchDirection == DesktopSwitchDirection.Previous) VirtualDesktopFoundation.MoveDesktop(virtualDesktopShell, createdVirtualDesktop, previousWorkspaceSnapshot.CurrentDesktopNumber - 1);
@@ -626,22 +606,18 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
     {
         for (var retryIndex = 0; retryIndex < WindowActivationRetryCount; retryIndex++)
         {
-            if (!VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopManager, windowHandle, out var currentDesktopIdentifier))
-                return;
+            if (!VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopManager, windowHandle, out var currentDesktopIdentifier)) return;
 
-            if (!VirtualDesktopFoundation.TryIsWindowOnCurrentDesktop(virtualDesktopManager, windowHandle, out var isWindowOnCurrentDesktop))
-                return;
+            if (!VirtualDesktopFoundation.TryIsWindowOnCurrentDesktop(virtualDesktopManager, windowHandle, out var isWindowOnCurrentDesktop)) return;
 
-            if (currentDesktopIdentifier != targetDesktopIdentifier
-                || !isWindowOnCurrentDesktop)
+            if (currentDesktopIdentifier != targetDesktopIdentifier || !isWindowOnCurrentDesktop)
             {
                 Thread.Sleep(WindowActivationRetryDelayInMilliseconds);
                 continue;
             }
 
             TryActivateWindow(windowHandle);
-            if (Win32.GetForegroundWindow() == windowHandle)
-                return;
+            if (Win32.GetForegroundWindow() == windowHandle) return;
 
             Thread.Sleep(WindowActivationRetryDelayInMilliseconds);
         }
@@ -674,11 +650,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         return new(virtualDesktops[targetDesktopNumber - 1], wasTargetDesktopCreated);
     }
 
-    private List<nint> MoveProcessWindowsToTargetDesktop(
-        VirtualDesktopShell virtualDesktopShell,
-        IReadOnlyList<nint> windowHandles,
-        VirtualDesktopHandle targetVirtualDesktop,
-        VirtualDesktopIdentifier targetDesktopIdentifier)
+    private List<nint> MoveProcessWindowsToTargetDesktop(VirtualDesktopShell virtualDesktopShell, IReadOnlyList<nint> windowHandles, VirtualDesktopHandle targetVirtualDesktop, VirtualDesktopIdentifier targetDesktopIdentifier)
     {
         var movedWindowHandles = new List<nint>();
         foreach (var windowHandle in windowHandles.Distinct())
@@ -698,8 +670,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
                 continue;
             }
 
-            var isAlreadyOnTargetDesktop = VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopShell.VirtualDesktopManager, windowHandle, out var currentDesktopIdentifier)
-                && currentDesktopIdentifier == targetDesktopIdentifier;
+            var isAlreadyOnTargetDesktop = VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopShell.VirtualDesktopManager, windowHandle, out var currentDesktopIdentifier) && currentDesktopIdentifier == targetDesktopIdentifier;
             if (isAlreadyOnTargetDesktop) continue;
 
             VirtualDesktopFoundation.MoveViewToDesktop(virtualDesktopShell, applicationView, targetVirtualDesktop);
@@ -709,14 +680,9 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         return movedWindowHandles;
     }
 
-    private bool TryCreateProcessDesktopPlacementWindowSnapshot(
-        VirtualDesktopShell virtualDesktopShell,
-        nint windowHandle,
-        out ProcessDesktopPlacementWindowSnapshot processDesktopPlacementWindowSnapshot)
+    private bool TryCreateProcessDesktopPlacementWindowSnapshot(VirtualDesktopShell virtualDesktopShell, nint windowHandle, out ProcessDesktopPlacementWindowSnapshot processDesktopPlacementWindowSnapshot)
     {
-        if (windowHandle == 0
-            || windowHandle == Win32.GetShellWindow()
-            || !VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopShell.VirtualDesktopManager, windowHandle, out var desktopIdentifier))
+        if (windowHandle == 0 || windowHandle == Win32.GetShellWindow() || !VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopShell.VirtualDesktopManager, windowHandle, out var desktopIdentifier))
         {
             processDesktopPlacementWindowSnapshot = new();
             return false;
@@ -765,15 +731,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         foreach (var applicationViewSnapshot in VirtualDesktopFoundation.GetApplicationViewSnapshots(virtualDesktopShell.ApplicationViewCollection))
         {
             var windowHandle = applicationViewSnapshot.ThumbnailWindowHandle;
-            if (windowHandle == 0
-                || windowHandle == shellWindowHandle
-                || desktopWindowInventoryExcludedWindowHandles.Contains(windowHandle)
-                || applicationViewSnapshot.VirtualDesktopIdentifier != parsedDesktopIdentifier
-                || !applicationViewSnapshot.ShowsInSwitchers
-                || Win32.IsIconic(windowHandle))
-            {
-                continue;
-            }
+            if (windowHandle == 0 || windowHandle == shellWindowHandle || desktopWindowInventoryExcludedWindowHandles.Contains(windowHandle) || applicationViewSnapshot.VirtualDesktopIdentifier != parsedDesktopIdentifier || !applicationViewSnapshot.ShowsInSwitchers || Win32.IsIconic(windowHandle)) continue;
 
             var processName = TryGetProcessName(windowHandle);
             if (string.IsNullOrWhiteSpace(processName)) continue;
@@ -784,10 +742,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         return new(visibleWindowCount, [.. blockedProcessNames.Order(StringComparer.OrdinalIgnoreCase)]);
     }
 
-    private bool ShouldExcludeActiveToastWindowHandle(nint activeToastWindowHandle) => _toastService.IsToastVisible
-        && activeToastWindowHandle != 0
-        && Win32.IsWindow(activeToastWindowHandle)
-        && Win32.IsWindowVisible(activeToastWindowHandle);
+    private bool ShouldExcludeActiveToastWindowHandle(nint activeToastWindowHandle) => _toastService.IsToastVisible && activeToastWindowHandle != 0 && Win32.IsWindow(activeToastWindowHandle) && Win32.IsWindowVisible(activeToastWindowHandle);
 
     private static VirtualDesktopShellConnection CreateVirtualDesktopShellConnection() => new(VirtualDesktopFoundation.Connect());
 
@@ -803,36 +758,24 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         var top = Math.Max(windowBounds.Top, previewAreaBounds.Top);
         var right = Math.Min(windowBounds.Right, previewAreaBounds.Right);
         var bottom = Math.Min(windowBounds.Bottom, previewAreaBounds.Bottom);
-        return right <= left || bottom <= top
-            ? new()
-            : new(left - previewAreaBounds.Left, top - previewAreaBounds.Top, right - previewAreaBounds.Left, bottom - previewAreaBounds.Top);
+        return right <= left || bottom <= top ? new() : new(left - previewAreaBounds.Left, top - previewAreaBounds.Top, right - previewAreaBounds.Left, bottom - previewAreaBounds.Top);
     }
 
     private static ScreenRectangle CreateScreenRectangle(Win32.NativeRectangle nativeRectangle) => new(nativeRectangle.Left, nativeRectangle.Top, nativeRectangle.Right, nativeRectangle.Bottom);
 
-    private Dictionary<string, List<NavigatorDesktopWindowItemModel>> GetNavigatorWindowItemsByDesktopIdentifier(
-        VirtualDesktopShell virtualDesktopShell,
-        DisplayMonitorInfo targetDisplayMonitor)
+    private Dictionary<string, List<NavigatorDesktopWindowItemModel>> GetNavigatorWindowItemsByDesktopIdentifier(VirtualDesktopShell virtualDesktopShell, DisplayMonitorInfo targetDisplayMonitor)
     {
         var navigatorWindowItemsByDesktopIdentifier = new Dictionary<string, List<NavigatorDesktopWindowItemModel>>(StringComparer.Ordinal);
         var shellWindowHandle = Win32.GetShellWindow();
         foreach (var applicationViewSnapshot in VirtualDesktopFoundation.GetApplicationViewSnapshots(virtualDesktopShell.ApplicationViewCollection))
         {
             var windowHandle = applicationViewSnapshot.ThumbnailWindowHandle;
-            if (windowHandle == 0
-                || windowHandle == shellWindowHandle
-                || !applicationViewSnapshot.ShowsInSwitchers
-                || Win32.IsIconic(windowHandle))
-            {
-                continue;
-            }
+            if (windowHandle == 0 || windowHandle == shellWindowHandle || !applicationViewSnapshot.ShowsInSwitchers || Win32.IsIconic(windowHandle)) continue;
 
-            if (!TryGetNavigatorWindowBounds(applicationViewSnapshot, out var windowBounds))
-                continue;
+            if (!TryGetNavigatorWindowBounds(applicationViewSnapshot, out var windowBounds)) continue;
 
             var previewBounds = CreateNavigatorPreviewBounds(windowBounds, targetDisplayMonitor.WorkAreaBounds);
-            if (previewBounds.IsEmpty)
-                continue;
+            if (previewBounds.IsEmpty) continue;
 
             var desktopIdentifier = applicationViewSnapshot.VirtualDesktopIdentifier.ToString();
             if (!navigatorWindowItemsByDesktopIdentifier.TryGetValue(desktopIdentifier, out var navigatorDesktopWindowItems))
@@ -849,8 +792,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
             });
         }
 
-        foreach (var navigatorWindowItems in navigatorWindowItemsByDesktopIdentifier.Values)
-            navigatorWindowItems.Reverse();
+        foreach (var navigatorWindowItems in navigatorWindowItemsByDesktopIdentifier.Values) navigatorWindowItems.Reverse();
 
         return navigatorWindowItemsByDesktopIdentifier;
     }
@@ -862,36 +804,18 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         _ = Win32.EnumWindows((windowHandle, applicationData) =>
         {
             _ = applicationData;
-            if (TryCreateVisibleDesktopWindowSnapshot(virtualDesktopShell, shellWindowHandle, windowHandle, out var visibleDesktopWindowSnapshot))
-                visibleDesktopWindowSnapshots.Add(visibleDesktopWindowSnapshot);
+            if (TryCreateVisibleDesktopWindowSnapshot(virtualDesktopShell, shellWindowHandle, windowHandle, out var visibleDesktopWindowSnapshot)) visibleDesktopWindowSnapshots.Add(visibleDesktopWindowSnapshot);
 
             return true;
         }, 0);
         return visibleDesktopWindowSnapshots;
     }
 
-    private static bool IsNavigatorWindowCloaked(nint windowHandle)
-    {
-        return Win32.DwmGetWindowInt32Attribute(
-            windowHandle,
-            Win32.DesktopWindowManagerCloakedAttribute,
-            out var cloakState,
-            (uint)Marshal.SizeOf<int>()) >= 0
-            && cloakState != 0;
-    }
+    private static bool IsNavigatorWindowCloaked(nint windowHandle) => Win32.DwmGetWindowInt32Attribute(windowHandle, Win32.DesktopWindowManagerCloakedAttribute, out var cloakState, (uint)Marshal.SizeOf<int>()) >= 0 && cloakState != 0;
 
-    private static bool TryCreateVisibleDesktopWindowSnapshot(
-        VirtualDesktopShell virtualDesktopShell,
-        nint shellWindowHandle,
-        nint windowHandle,
-        out VisibleDesktopWindowSnapshot visibleDesktopWindowSnapshot)
+    private static bool TryCreateVisibleDesktopWindowSnapshot(VirtualDesktopShell virtualDesktopShell, nint shellWindowHandle, nint windowHandle, out VisibleDesktopWindowSnapshot visibleDesktopWindowSnapshot)
     {
-        if (windowHandle == 0
-            || windowHandle == shellWindowHandle
-            || !Win32.IsWindowVisible(windowHandle)
-            || Win32.IsIconic(windowHandle)
-            || IsNavigatorWindowCloaked(windowHandle)
-            || !TryGetWindowDesktopIdentifier(virtualDesktopShell, windowHandle, out var desktopIdentifier))
+        if (windowHandle == 0 || windowHandle == shellWindowHandle || !Win32.IsWindowVisible(windowHandle) || Win32.IsIconic(windowHandle) || IsNavigatorWindowCloaked(windowHandle) || !TryGetWindowDesktopIdentifier(virtualDesktopShell, windowHandle, out var desktopIdentifier))
         {
             visibleDesktopWindowSnapshot = default;
             return false;
@@ -936,8 +860,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
     private string? TryGetProcessExecutablePath(nint windowHandle)
     {
         _ = Win32.GetWindowThreadProcessId(windowHandle, out var processIdentifier);
-        if (processIdentifier == 0)
-            return null;
+        if (processIdentifier == 0) return null;
 
         try
         {
@@ -968,12 +891,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
 
     private static bool TryGetNavigatorWindowBounds(nint windowHandle, out ScreenRectangle windowBounds)
     {
-        if (Win32.DwmGetWindowRectangleAttribute(
-            windowHandle,
-            Win32.DesktopWindowManagerExtendedFrameBoundsAttribute,
-            out var nativeWindowRectangle,
-            (uint)Marshal.SizeOf<Win32.NativeRectangle>()) >= 0
-            && !nativeWindowRectangle.IsEmpty)
+        if (Win32.DwmGetWindowRectangleAttribute(windowHandle, Win32.DesktopWindowManagerExtendedFrameBoundsAttribute, out var nativeWindowRectangle, (uint)Marshal.SizeOf<Win32.NativeRectangle>()) >= 0 && !nativeWindowRectangle.IsEmpty)
         {
             windowBounds = CreateScreenRectangle(nativeWindowRectangle);
             return true;
@@ -1002,16 +920,14 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
 
     private static void TryActivateWindow(nint windowHandle)
     {
-        if (Win32.IsIconic(windowHandle))
-            _ = Win32.ShowWindowAsync(windowHandle, Win32.ShowWindowRestore);
+        if (Win32.IsIconic(windowHandle)) _ = Win32.ShowWindowAsync(windowHandle, Win32.ShowWindowRestore);
 
         var currentThreadIdentifier = Win32.GetCurrentThreadId();
         var foregroundWindowHandle = Win32.GetForegroundWindow();
         var foregroundThreadIdentifier = foregroundWindowHandle == 0 ? 0 : Win32.GetWindowThreadProcessId(foregroundWindowHandle, out _);
         var targetWindowThreadIdentifier = Win32.GetWindowThreadProcessId(windowHandle, out _);
         var isForegroundThreadAttached = AttachThreadInputIfNeeded(currentThreadIdentifier, foregroundThreadIdentifier);
-        var isTargetThreadAttached = targetWindowThreadIdentifier != foregroundThreadIdentifier
-            && AttachThreadInputIfNeeded(currentThreadIdentifier, targetWindowThreadIdentifier);
+        var isTargetThreadAttached = targetWindowThreadIdentifier != foregroundThreadIdentifier && AttachThreadInputIfNeeded(currentThreadIdentifier, targetWindowThreadIdentifier);
         try
         {
             _ = Win32.BringWindowToTop(windowHandle);
@@ -1019,16 +935,13 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         }
         finally
         {
-            if (isTargetThreadAttached)
-                _ = Win32.AttachThreadInput(currentThreadIdentifier, targetWindowThreadIdentifier, false);
+            if (isTargetThreadAttached) _ = Win32.AttachThreadInput(currentThreadIdentifier, targetWindowThreadIdentifier, false);
 
-            if (isForegroundThreadAttached)
-                _ = Win32.AttachThreadInput(currentThreadIdentifier, foregroundThreadIdentifier, false);
+            if (isForegroundThreadAttached) _ = Win32.AttachThreadInput(currentThreadIdentifier, foregroundThreadIdentifier, false);
         }
     }
 
-    private static bool TryGetWindowDesktopIdentifier(VirtualDesktopShell virtualDesktopShell, nint windowHandle, out VirtualDesktopIdentifier desktopIdentifier)
-        => VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopShell.VirtualDesktopManager, windowHandle, out desktopIdentifier);
+    private static bool TryGetWindowDesktopIdentifier(VirtualDesktopShell virtualDesktopShell, nint windowHandle, out VirtualDesktopIdentifier desktopIdentifier) => VirtualDesktopFoundation.TryGetWindowDesktopIdentifier(virtualDesktopShell.VirtualDesktopManager, windowHandle, out desktopIdentifier);
 
     private static bool TryParseDesktopIdentifier(string desktopIdentifier, out VirtualDesktopIdentifier parsedDesktopIdentifier)
     {
@@ -1042,12 +955,7 @@ public sealed partial class VirtualDesktopService(ISettingsService settingsServi
         return true;
     }
 
-    private static VirtualDesktopHandle? TryFindVirtualDesktop(VirtualDesktopShell virtualDesktopShell, VirtualDesktopIdentifier desktopIdentifier)
-    {
-        return VirtualDesktopFoundation.TryFindDesktop(virtualDesktopShell, desktopIdentifier, out var virtualDesktop)
-            ? virtualDesktop
-            : null;
-    }
+    private static VirtualDesktopHandle? TryFindVirtualDesktop(VirtualDesktopShell virtualDesktopShell, VirtualDesktopIdentifier desktopIdentifier) => VirtualDesktopFoundation.TryFindDesktop(virtualDesktopShell, desktopIdentifier, out var virtualDesktop) ? virtualDesktop : null;
 
     private sealed partial class VirtualDesktopShellConnection(VirtualDesktopShell virtualDesktopShell) : IDisposable
     {

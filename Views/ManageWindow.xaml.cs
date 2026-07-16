@@ -1,4 +1,4 @@
-using DeskBorder.Navigation;
+﻿using DeskBorder.Navigation;
 using DeskBorder.Models;
 using DeskBorder.Services;
 using DeskBorder.Interop;
@@ -38,15 +38,7 @@ public sealed partial class ManageWindow : WindowEx
     [LibraryImport("comctl32.dll")]
     private static partial nint DefSubclassProc(nint windowHandle, uint message, nint wParam, nint lParam);
 
-    public ManageWindow(
-        IManageNavigationService manageNavigationService,
-        IDeskBorderRuntimeService deskBorderRuntimeService,
-        INavigatorService navigatorService,
-        IMouseMovementTrackingService mouseMovementTrackingService,
-        ITrayIconService trayIconService,
-        ISettingsService settingsService,
-        ILocalizationService localizationService,
-        IThemeService themeService)
+    public ManageWindow(IManageNavigationService manageNavigationService, IDeskBorderRuntimeService deskBorderRuntimeService, INavigatorService navigatorService, IMouseMovementTrackingService mouseMovementTrackingService, ITrayIconService trayIconService, ISettingsService settingsService, ILocalizationService localizationService, IThemeService themeService)
     {
         _manageNavigationService = manageNavigationService;
         _deskBorderRuntimeService = deskBorderRuntimeService;
@@ -151,8 +143,7 @@ public sealed partial class ManageWindow : WindowEx
 
     private void OnOpenManageWindowMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => App.GetRequiredService<IManageWindowService>().Show();
 
-    private async void OnRuntimeMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs)
-        => await _settingsService.UpdateSettingsAsync(_settingsService.Settings with { IsDeskBorderEnabled = !_trayIconService.IsRuntimeEnabled });
+    private async void OnRuntimeMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => await _settingsService.UpdateSettingsAsync(_settingsService.Settings with { IsDeskBorderEnabled = !_trayIconService.IsRuntimeEnabled });
 
     private void OnShowNavigatorMenuFlyoutItemClicked(object sender, RoutedEventArgs routedEventArgs) => _navigatorService.ToggleOverlay();
 
@@ -207,14 +198,12 @@ public sealed partial class ManageWindow : WindowEx
                 return 1;
 
             case WindowEndSessionMessage:
-                if (wParam != 0)
-                    Environment.Exit(0);
+                if (wParam != 0) Environment.Exit(0);
 
                 return 0;
 
             case WindowCloseMessage:
-                if (_forceClose || _systemShutdown)
-                    break;
+                if (_forceClose || _systemShutdown) break;
 
                 AppWindow.Hide();
                 return 0;

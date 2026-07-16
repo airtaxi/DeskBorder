@@ -16,21 +16,13 @@ public sealed class TrayIconService : ITrayIconService, IDisposable
 
     public bool IsStoreUpdateCheckEnabled => _settingsService.Settings.IsStoreUpdateCheckEnabled;
 
-    public string LaunchOnStartupActionText => LocalizedResourceAccessor.GetString(IsLaunchOnStartupEnabled
-        ? "Tray.LaunchOnStartupDisableAction"
-        : "Tray.LaunchOnStartupEnableAction");
+    public string LaunchOnStartupActionText => LocalizedResourceAccessor.GetString(IsLaunchOnStartupEnabled ? "Tray.LaunchOnStartupDisableAction" : "Tray.LaunchOnStartupEnableAction");
 
-    public string RuntimeStatusText => _deskBorderRuntimeService.IsRunning && !_deskBorderRuntimeService.IsSuspended
-        ? LocalizedResourceAccessor.GetString("Tray.RuntimeStatus.Running")
-        : LocalizedResourceAccessor.GetString("Tray.RuntimeStatus.Paused");
+    public string RuntimeStatusText => _deskBorderRuntimeService.IsRunning && !_deskBorderRuntimeService.IsSuspended ? LocalizedResourceAccessor.GetString("Tray.RuntimeStatus.Running") : LocalizedResourceAccessor.GetString("Tray.RuntimeStatus.Paused");
 
-    public string RuntimeActionText => LocalizedResourceAccessor.GetString(IsRuntimeEnabled
-        ? "Tray.RuntimeDisableAction"
-        : "Tray.RuntimeEnableAction");
+    public string RuntimeActionText => LocalizedResourceAccessor.GetString(IsRuntimeEnabled ? "Tray.RuntimeDisableAction" : "Tray.RuntimeEnableAction");
 
-    public string StoreUpdateCheckActionText => LocalizedResourceAccessor.GetString(IsStoreUpdateCheckEnabled
-        ? "Tray.StoreUpdateCheckDisableAction"
-        : "Tray.StoreUpdateCheckEnableAction");
+    public string StoreUpdateCheckActionText => LocalizedResourceAccessor.GetString(IsStoreUpdateCheckEnabled ? "Tray.StoreUpdateCheckDisableAction" : "Tray.StoreUpdateCheckEnableAction");
 
     public TrayIconService(IDeskBorderRuntimeService deskBorderRuntimeService, ISettingsService settingsService, IFileLogService fileLogService)
     {

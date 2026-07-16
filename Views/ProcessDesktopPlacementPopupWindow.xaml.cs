@@ -1,4 +1,4 @@
-using DeskBorder.Helpers;
+﻿using DeskBorder.Helpers;
 using DeskBorder.Interop;
 using DeskBorder.Models;
 using DeskBorder.Services;
@@ -29,12 +29,7 @@ public sealed partial class ProcessDesktopPlacementPopupWindow : WindowEx
     private int _lastResizedPopupWindowHeight;
     private nint _ownerWindowHandle;
 
-    public ProcessDesktopPlacementPopupWindow(
-        IReadOnlyList<string> processNames,
-        int targetDesktopNumber,
-        ILocalizationService localizationService,
-        IThemeService themeService,
-        ProcessDesktopPlacementPopupInitialRule? initialRule = null)
+    public ProcessDesktopPlacementPopupWindow(IReadOnlyList<string> processNames, int targetDesktopNumber, ILocalizationService localizationService, IThemeService themeService, ProcessDesktopPlacementPopupInitialRule? initialRule = null)
     {
         _localizationService = localizationService;
         _themeService = themeService;
@@ -50,10 +45,7 @@ public sealed partial class ProcessDesktopPlacementPopupWindow : WindowEx
 
     public TimeSpan Duration => TimeSpan.FromMinutes(Math.Clamp(double.IsFinite(TimedDurationMinutesNumberBox.Value) ? TimedDurationMinutesNumberBox.Value : 30, 1, 1440));
 
-    public ProcessDesktopPlacementRuleLifetime Lifetime => LifetimeComboBox.SelectedItem is ComboBoxItem { Tag: string tag }
-        && Enum.TryParse<ProcessDesktopPlacementRuleLifetime>(tag, out var lifetime)
-            ? lifetime
-            : ProcessDesktopPlacementRuleLifetime.Permanent;
+    public ProcessDesktopPlacementRuleLifetime Lifetime => LifetimeComboBox.SelectedItem is ComboBoxItem { Tag: string tag } && Enum.TryParse<ProcessDesktopPlacementRuleLifetime>(tag, out var lifetime) ? lifetime : ProcessDesktopPlacementRuleLifetime.Permanent;
 
     public int TargetDesktopNumber => Math.Clamp(double.IsFinite(TargetDesktopNumberBox.Value) ? (int)Math.Round(TargetDesktopNumberBox.Value, MidpointRounding.AwayFromZero) : 1, 1, 99);
 
@@ -75,19 +67,13 @@ public sealed partial class ProcessDesktopPlacementPopupWindow : WindowEx
 
         SelectLifetime(initialRule.Lifetime);
         if (initialRule.Duration.HasValue) TimedDurationMinutesNumberBox.Value = Math.Clamp(Math.Ceiling(initialRule.Duration.Value.TotalMinutes), 1, 1440);
-        TimedDurationMinutesNumberBox.Visibility = initialRule.Lifetime == ProcessDesktopPlacementRuleLifetime.Timed
-            ? Visibility.Visible
-            : Visibility.Collapsed;
+        TimedDurationMinutesNumberBox.Visibility = initialRule.Lifetime == ProcessDesktopPlacementRuleLifetime.Timed ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void ApplyLocalizedText(bool isEditingExistingRule)
     {
-        var titleResourceName = isEditingExistingRule
-            ? "ProcessDesktopPlacementPopup.EditTitle"
-            : "ProcessDesktopPlacementPopupWindow.Title";
-        var descriptionResourceName = isEditingExistingRule
-            ? "ProcessDesktopPlacementPopup.EditDescription"
-            : "ProcessDesktopPlacementPopupWindow_DescriptionTextBlock.Text";
+        var titleResourceName = isEditingExistingRule ? "ProcessDesktopPlacementPopup.EditTitle" : "ProcessDesktopPlacementPopupWindow.Title";
+        var descriptionResourceName = isEditingExistingRule ? "ProcessDesktopPlacementPopup.EditDescription" : "ProcessDesktopPlacementPopupWindow_DescriptionTextBlock.Text";
         var title = _localizationService.GetString(titleResourceName);
         Title = title;
         TitleTextBlock.Text = title;
@@ -154,9 +140,7 @@ public sealed partial class ProcessDesktopPlacementPopupWindow : WindowEx
     private void PrepareModalPopupWindow()
     {
         ConfigurePopupPresenter();
-        PositionPopupWindow(
-            ScaleToWindowPixels(this.GetWindowHandle(), PopupWindowWidth),
-            ScaleToWindowPixels(this.GetWindowHandle(), FallbackPopupWindowHeight));
+        PositionPopupWindow(ScaleToWindowPixels(this.GetWindowHandle(), PopupWindowWidth), ScaleToWindowPixels(this.GetWindowHandle(), FallbackPopupWindowHeight));
         SetOwnerWindow();
         DisableOwnerWindow();
     }
@@ -225,9 +209,7 @@ public sealed partial class ProcessDesktopPlacementPopupWindow : WindowEx
     {
         if (TimedDurationMinutesNumberBox is null) return;
 
-        TimedDurationMinutesNumberBox.Visibility = Lifetime == ProcessDesktopPlacementRuleLifetime.Timed
-            ? Visibility.Visible
-            : Visibility.Collapsed;
+        TimedDurationMinutesNumberBox.Visibility = Lifetime == ProcessDesktopPlacementRuleLifetime.Timed ? Visibility.Visible : Visibility.Collapsed;
         ResizePopupWindowToContent(RootGrid, true);
     }
 
@@ -265,12 +247,7 @@ public sealed partial class ProcessDesktopPlacementPopupWindow : WindowEx
         ResizePopupWindowToContent(RootGrid, true);
     }
 
-    private void UpdateTargetDesktopText()
-    {
-        TargetDesktopTextBlock.Text = _localizationService.GetFormattedString(
-            "ProcessDesktopPlacementPopup.TargetDesktopFormat",
-            SettingsDisplayFormatter.FormatDesktopDisplayName(TargetDesktopNumber));
-    }
+    private void UpdateTargetDesktopText() => TargetDesktopTextBlock.Text = _localizationService.GetFormattedString("ProcessDesktopPlacementPopup.TargetDesktopFormat", SettingsDisplayFormatter.FormatDesktopDisplayName(TargetDesktopNumber));
 
     private void SelectLifetime(ProcessDesktopPlacementRuleLifetime lifetime)
     {
@@ -291,9 +268,7 @@ public sealed partial class ProcessDesktopPlacementPopupWindow : WindowEx
         var top = Math.Max(firstRectangle.Top, secondRectangle.Top);
         var right = Math.Min(firstRectangle.Right, secondRectangle.Right);
         var bottom = Math.Min(firstRectangle.Bottom, secondRectangle.Bottom);
-        return right <= left || bottom <= top
-            ? 0
-            : (right - left) * (bottom - top);
+        return right <= left || bottom <= top ? 0 : (right - left) * (bottom - top);
     }
 
     private static int ScaleToWindowPixels(nint windowHandle, int logicalPixels) => (int)Math.Round(logicalPixels * Win32.GetDpiForWindow(windowHandle) / 96d, MidpointRounding.AwayFromZero);

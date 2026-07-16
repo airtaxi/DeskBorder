@@ -31,24 +31,17 @@ public sealed partial class KeyboardShortcutEditorViewModel(List<SelectionOption
     {
         IsEnabled = keyboardShortcutSettings.IsEnabled;
         RequiredKeyboardModifierSelection.Load(keyboardShortcutSettings.RequiredKeyboardModifierKeys);
-        SelectedInputTriggerOption = InputTriggerOptions.FirstOrDefault(selectionOption => selectionOption.Value.TriggerType == keyboardShortcutSettings.TriggerType && selectionOption.Value.VirtualKey == keyboardShortcutSettings.Key)
-            ?? InputTriggerOptions.First(selectionOption => selectionOption.Value.TriggerType == InputTriggerType.VirtualKey && selectionOption.Value.VirtualKey == VirtualKey.None);
+        SelectedInputTriggerOption = InputTriggerOptions.FirstOrDefault(selectionOption => selectionOption.Value.TriggerType == keyboardShortcutSettings.TriggerType && selectionOption.Value.VirtualKey == keyboardShortcutSettings.Key) ?? InputTriggerOptions.First(selectionOption => selectionOption.Value.TriggerType == InputTriggerType.VirtualKey && selectionOption.Value.VirtualKey == VirtualKey.None);
     }
 
     partial void OnIsEnabledChanged(bool value)
     {
-        if (!value)
-            return;
+        if (!value) return;
 
-        if (SelectedInputTriggerOption is not null
-            && KeyboardShortcutHelper.IsKeyboardShortcutSpecified(CreateKeyboardShortcutSettings()))
-        {
-            return;
-        }
+        if (SelectedInputTriggerOption is not null && KeyboardShortcutHelper.IsKeyboardShortcutSpecified(CreateKeyboardShortcutSettings())) return;
 
         SelectedInputTriggerOption = GetDefaultInputTriggerOption();
     }
 
-    private SelectionOption<InputTriggerOptionValue> GetDefaultInputTriggerOption() => InputTriggerOptions.FirstOrDefault(selectionOption => selectionOption.Value.TriggerType != InputTriggerType.VirtualKey || selectionOption.Value.VirtualKey != VirtualKey.None)
-        ?? InputTriggerOptions.First(selectionOption => selectionOption.Value.TriggerType == InputTriggerType.VirtualKey && selectionOption.Value.VirtualKey == VirtualKey.None);
+    private SelectionOption<InputTriggerOptionValue> GetDefaultInputTriggerOption() => InputTriggerOptions.FirstOrDefault(selectionOption => selectionOption.Value.TriggerType != InputTriggerType.VirtualKey || selectionOption.Value.VirtualKey != VirtualKey.None) ?? InputTriggerOptions.First(selectionOption => selectionOption.Value.TriggerType == InputTriggerType.VirtualKey && selectionOption.Value.VirtualKey == VirtualKey.None);
 }

@@ -30,24 +30,9 @@ internal static partial class VirtualDesktopFoundation
         var applicationViewCollection = QueryService<IApplicationViewCollection>(nativeServiceProvider, s_applicationViewCollectionServiceIdentifier);
         return virtualDesktopApiVersion switch
         {
-            VirtualDesktopApiVersion.Windows10 => new(
-                virtualDesktopApiVersion,
-                nativeServiceProvider,
-                virtualDesktopManager,
-                applicationViewCollection,
-                windows10VirtualDesktopManagerInternal: QueryService<IWindows10VirtualDesktopManagerInternal>(nativeServiceProvider, s_virtualDesktopManagerInternalServiceIdentifier)),
-            VirtualDesktopApiVersion.Windows11 => new(
-                virtualDesktopApiVersion,
-                nativeServiceProvider,
-                virtualDesktopManager,
-                applicationViewCollection,
-                windows11VirtualDesktopManagerInternal: QueryService<IWindows11VirtualDesktopManagerInternal>(nativeServiceProvider, s_virtualDesktopManagerInternalServiceIdentifier)),
-            VirtualDesktopApiVersion.Windows11Version24H2OrGreater => new(
-                virtualDesktopApiVersion,
-                nativeServiceProvider,
-                virtualDesktopManager,
-                applicationViewCollection,
-                windows11Version24H2OrGreaterVirtualDesktopManagerInternal: QueryService<IWindows11Version24H2OrGreaterVirtualDesktopManagerInternal>(nativeServiceProvider, s_virtualDesktopManagerInternalServiceIdentifier)),
+            VirtualDesktopApiVersion.Windows10 => new(virtualDesktopApiVersion, nativeServiceProvider, virtualDesktopManager, applicationViewCollection, windows10VirtualDesktopManagerInternal: QueryService<IWindows10VirtualDesktopManagerInternal>(nativeServiceProvider, s_virtualDesktopManagerInternalServiceIdentifier)),
+            VirtualDesktopApiVersion.Windows11 => new(virtualDesktopApiVersion, nativeServiceProvider, virtualDesktopManager, applicationViewCollection, windows11VirtualDesktopManagerInternal: QueryService<IWindows11VirtualDesktopManagerInternal>(nativeServiceProvider, s_virtualDesktopManagerInternalServiceIdentifier)),
+            VirtualDesktopApiVersion.Windows11Version24H2OrGreater => new(virtualDesktopApiVersion, nativeServiceProvider, virtualDesktopManager, applicationViewCollection, windows11Version24H2OrGreaterVirtualDesktopManagerInternal: QueryService<IWindows11Version24H2OrGreaterVirtualDesktopManagerInternal>(nativeServiceProvider, s_virtualDesktopManagerInternalServiceIdentifier)),
             _ => throw new PlatformNotSupportedException("The current Windows version is not supported.")
         };
     }
@@ -106,7 +91,9 @@ internal static partial class VirtualDesktopFoundation
             try
             {
                 if (TryCreateApplicationViewSnapshot(applicationViewPointer, out var applicationViewSnapshot))
+                {
                     applicationViewSnapshots.Add(applicationViewSnapshot);
+                }
             }
             finally { _ = Marshal.Release(applicationViewPointer); }
         }
@@ -470,14 +457,11 @@ internal static partial class VirtualDesktopFoundation
     private static VirtualDesktopApiVersion GetVirtualDesktopApiVersion()
     {
         var currentWindowsBuildNumber = Environment.OSVersion.Version.Build;
-        if (currentWindowsBuildNumber >= MinimumWindows11Version24H2BuildNumber)
-            return VirtualDesktopApiVersion.Windows11Version24H2OrGreater;
+        if (currentWindowsBuildNumber >= MinimumWindows11Version24H2BuildNumber) return VirtualDesktopApiVersion.Windows11Version24H2OrGreater;
 
-        if (currentWindowsBuildNumber >= MinimumWindows11BuildNumber)
-            return VirtualDesktopApiVersion.Windows11;
+        if (currentWindowsBuildNumber >= MinimumWindows11BuildNumber) return VirtualDesktopApiVersion.Windows11;
 
-        if (currentWindowsBuildNumber >= MinimumSupportedWindowsBuildNumber)
-            return VirtualDesktopApiVersion.Windows10;
+        if (currentWindowsBuildNumber >= MinimumSupportedWindowsBuildNumber) return VirtualDesktopApiVersion.Windows10;
 
         throw new PlatformNotSupportedException($"Windows build {currentWindowsBuildNumber} is not supported.");
     }
@@ -499,8 +483,7 @@ internal static partial class VirtualDesktopFoundation
         ThrowIfFailed(GetWindows10VirtualDesktopManagerInternal(virtualDesktopShell).GetDesktops(out var objectArray));
         var desktopCount = GetObjectCount(objectArray);
         var virtualDesktops = new List<VirtualDesktopHandle>(desktopCount);
-        for (var index = 0; index < desktopCount; index++)
-            virtualDesktops.Add(new(VirtualDesktopApiVersion.Windows10, GetObjectAt<IWindows10VirtualDesktop>(objectArray, index)));
+        for (var index = 0; index < desktopCount; index++) virtualDesktops.Add(new(VirtualDesktopApiVersion.Windows10, GetObjectAt<IWindows10VirtualDesktop>(objectArray, index)));
 
         return virtualDesktops;
     }
@@ -510,8 +493,7 @@ internal static partial class VirtualDesktopFoundation
         ThrowIfFailed(GetWindows11VirtualDesktopManagerInternal(virtualDesktopShell).GetDesktops(out var objectArray));
         var desktopCount = GetObjectCount(objectArray);
         var virtualDesktops = new List<VirtualDesktopHandle>(desktopCount);
-        for (var index = 0; index < desktopCount; index++)
-            virtualDesktops.Add(new(VirtualDesktopApiVersion.Windows11, GetObjectAt<IWindows11VirtualDesktop>(objectArray, index)));
+        for (var index = 0; index < desktopCount; index++) virtualDesktops.Add(new(VirtualDesktopApiVersion.Windows11, GetObjectAt<IWindows11VirtualDesktop>(objectArray, index)));
 
         return virtualDesktops;
     }
@@ -521,28 +503,20 @@ internal static partial class VirtualDesktopFoundation
         ThrowIfFailed(GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(virtualDesktopShell).GetDesktops(out var objectArray));
         var desktopCount = GetObjectCount(objectArray);
         var virtualDesktops = new List<VirtualDesktopHandle>(desktopCount);
-        for (var index = 0; index < desktopCount; index++)
-            virtualDesktops.Add(new(VirtualDesktopApiVersion.Windows11Version24H2OrGreater, GetObjectAt<IWindows11VirtualDesktop>(objectArray, index)));
+        for (var index = 0; index < desktopCount; index++) virtualDesktops.Add(new(VirtualDesktopApiVersion.Windows11Version24H2OrGreater, GetObjectAt<IWindows11VirtualDesktop>(objectArray, index)));
 
         return virtualDesktops;
     }
 
-    private static IWindows10VirtualDesktop GetWindows10VirtualDesktop(VirtualDesktopHandle virtualDesktop) => virtualDesktop.VirtualDesktopApiVersion == VirtualDesktopApiVersion.Windows10
-        ? (IWindows10VirtualDesktop)virtualDesktop.NativeVirtualDesktop
-        : throw new InvalidOperationException("The virtual desktop handle is not a Windows 10 desktop.");
+    private static IWindows10VirtualDesktop GetWindows10VirtualDesktop(VirtualDesktopHandle virtualDesktop) => virtualDesktop.VirtualDesktopApiVersion == VirtualDesktopApiVersion.Windows10 ? (IWindows10VirtualDesktop)virtualDesktop.NativeVirtualDesktop : throw new InvalidOperationException("The virtual desktop handle is not a Windows 10 desktop.");
 
-    private static IWindows11VirtualDesktop GetWindows11VirtualDesktop(VirtualDesktopHandle virtualDesktop) => virtualDesktop.VirtualDesktopApiVersion is VirtualDesktopApiVersion.Windows11 or VirtualDesktopApiVersion.Windows11Version24H2OrGreater
-        ? (IWindows11VirtualDesktop)virtualDesktop.NativeVirtualDesktop
-        : throw new InvalidOperationException("The virtual desktop handle is not a Windows 11 desktop.");
+    private static IWindows11VirtualDesktop GetWindows11VirtualDesktop(VirtualDesktopHandle virtualDesktop) => virtualDesktop.VirtualDesktopApiVersion is VirtualDesktopApiVersion.Windows11 or VirtualDesktopApiVersion.Windows11Version24H2OrGreater ? (IWindows11VirtualDesktop)virtualDesktop.NativeVirtualDesktop : throw new InvalidOperationException("The virtual desktop handle is not a Windows 11 desktop.");
 
-    private static IWindows10VirtualDesktopManagerInternal GetWindows10VirtualDesktopManagerInternal(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.Windows10VirtualDesktopManagerInternal
-        ?? throw new InvalidOperationException("The Windows 10 virtual desktop manager internal interface is unavailable.");
+    private static IWindows10VirtualDesktopManagerInternal GetWindows10VirtualDesktopManagerInternal(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.Windows10VirtualDesktopManagerInternal ?? throw new InvalidOperationException("The Windows 10 virtual desktop manager internal interface is unavailable.");
 
-    private static IWindows11VirtualDesktopManagerInternal GetWindows11VirtualDesktopManagerInternal(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.Windows11VirtualDesktopManagerInternal
-        ?? throw new InvalidOperationException("The Windows 11 virtual desktop manager internal interface is unavailable.");
+    private static IWindows11VirtualDesktopManagerInternal GetWindows11VirtualDesktopManagerInternal(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.Windows11VirtualDesktopManagerInternal ?? throw new InvalidOperationException("The Windows 11 virtual desktop manager internal interface is unavailable.");
 
-    private static IWindows11Version24H2OrGreaterVirtualDesktopManagerInternal GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.Windows11Version24H2OrGreaterVirtualDesktopManagerInternal
-        ?? throw new InvalidOperationException("The Windows 11 24H2 virtual desktop manager internal interface is unavailable.");
+    private static IWindows11Version24H2OrGreaterVirtualDesktopManagerInternal GetWindows11Version24H2OrGreaterVirtualDesktopManagerInternal(VirtualDesktopShell virtualDesktopShell) => virtualDesktopShell.Windows11Version24H2OrGreaterVirtualDesktopManagerInternal ?? throw new InvalidOperationException("The Windows 11 24H2 virtual desktop manager internal interface is unavailable.");
 
     private static int GetObjectCount(IObjectArray objectArray)
     {
@@ -565,9 +539,7 @@ internal static partial class VirtualDesktopFoundation
 
     private static unsafe bool TryCreateApplicationViewSnapshot(nint applicationViewPointer, out ApplicationViewSnapshot applicationViewSnapshot)
     {
-        if (!TryInvokeApplicationViewMethod(applicationViewPointer, 9, out nint thumbnailWindowHandle)
-            || thumbnailWindowHandle == 0
-            || !TryInvokeApplicationViewMethod(applicationViewPointer, 25, out Guid virtualDesktopIdentifier))
+        if (!TryInvokeApplicationViewMethod(applicationViewPointer, 9, out nint thumbnailWindowHandle) || thumbnailWindowHandle == 0 || !TryInvokeApplicationViewMethod(applicationViewPointer, 25, out Guid virtualDesktopIdentifier))
         {
             applicationViewSnapshot = default;
             return false;
@@ -575,8 +547,7 @@ internal static partial class VirtualDesktopFoundation
 
         var isVisible = !TryInvokeApplicationViewMethod(applicationViewPointer, 11, out int visibility) || visibility != 0;
         var showsInSwitchers = !TryInvokeApplicationViewMethod(applicationViewPointer, 27, out int showInSwitchers) || showInSwitchers != 0;
-        var hasExtendedFrameBounds = TryInvokeApplicationViewMethod(applicationViewPointer, 16, out Win32.NativeRectangle extendedFrameBounds)
-            && !extendedFrameBounds.IsEmpty;
+        var hasExtendedFrameBounds = TryInvokeApplicationViewMethod(applicationViewPointer, 16, out Win32.NativeRectangle extendedFrameBounds) && !extendedFrameBounds.IsEmpty;
 
         applicationViewSnapshot = new()
         {
@@ -624,17 +595,17 @@ internal static partial class VirtualDesktopFoundation
 
     private static unsafe TInterface ConvertToManaged<TInterface>(nint objectPointer) where TInterface : class
     {
-        if (objectPointer == 0)
-            throw new InvalidOperationException("The COM interface pointer is null.");
+        if (objectPointer == 0) throw new InvalidOperationException("The COM interface pointer is null.");
 
-        return ComInterfaceMarshaller<TInterface>.ConvertToManaged((void*)objectPointer)
-            ?? throw new InvalidOperationException("The COM interface pointer could not be converted to a managed interface.");
+        return ComInterfaceMarshaller<TInterface>.ConvertToManaged((void*)objectPointer) ?? throw new InvalidOperationException("The COM interface pointer could not be converted to a managed interface.");
     }
 
     private static void ThrowIfFailed(int resultCode)
     {
         if (resultCode < 0)
+        {
             throw new COMException($"The COM interop call failed with HRESULT 0x{resultCode:X8}.", resultCode);
+        }
     }
 
     [LibraryImport("ole32.dll", SetLastError = true)]

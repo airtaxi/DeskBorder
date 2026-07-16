@@ -416,9 +416,14 @@ internal static partial class Win32
         public readonly string GetDeviceName()
         {
             fixed (char* deviceNamePointer = DeviceName)
+            {
                 return new string(deviceNamePointer);
+            }
         }
 
-        public static MonitorInfoExtended Create() => new() { Size = (uint)sizeof(MonitorInfoExtended) };
+        public static MonitorInfoExtended Create() => new()
+        {
+            Size = (uint)sizeof(MonitorInfoExtended)
+        };
     }
 }

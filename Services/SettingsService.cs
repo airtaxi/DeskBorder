@@ -1,4 +1,4 @@
-using DeskBorder.Models;
+﻿using DeskBorder.Models;
 using System.IO;
 using System.Text.Json;
 using Windows.System;
@@ -56,9 +56,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
             IsAlwaysRunAsAdministratorEnabled = _settings.IsAlwaysRunAsAdministratorEnabled
         };
         await UpdateSettingsAsync(settingsToImport);
-        _fileLogService.WriteInformation(
-            nameof(SettingsService),
-            $"Imported settings from '{sourceFilePath}'. AlwaysRunAsAdministratorExcluded={wasAlwaysRunAsAdministratorSettingExcluded}.");
+        _fileLogService.WriteInformation(nameof(SettingsService), $"Imported settings from '{sourceFilePath}'. AlwaysRunAsAdministratorExcluded={wasAlwaysRunAsAdministratorSettingExcluded}.");
         return new()
         {
             WasAlwaysRunAsAdministratorSettingExcluded = wasAlwaysRunAsAdministratorSettingExcluded
@@ -103,8 +101,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     public async Task SetLaunchOnStartupEnabledAsync(bool isEnabled)
     {
-        if (!_isInitialized)
-            await InitializeAsync();
+        if (!_isInitialized) await InitializeAsync();
 
         await UpdateSettingsAsync(_settings with { IsLaunchOnStartupEnabled = isEnabled });
         _fileLogService.WriteInformation(nameof(SettingsService), $"Requested launch on startup state {isEnabled}.");
@@ -115,9 +112,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         if (!_isInitialized) await InitializeAsync();
 
         var normalizedSettings = NormalizeSettings(settings);
-        if (normalizedSettings.IsLaunchOnStartupEnabled != _settings.IsLaunchOnStartupEnabled
-            || normalizedSettings.IsAlwaysRunAsAdministratorEnabled != _settings.IsAlwaysRunAsAdministratorEnabled)
-            await _startupRegistrationService.SetStateAsync(CreateStartupRegistrationState(normalizedSettings));
+        if (normalizedSettings.IsLaunchOnStartupEnabled != _settings.IsLaunchOnStartupEnabled || normalizedSettings.IsAlwaysRunAsAdministratorEnabled != _settings.IsAlwaysRunAsAdministratorEnabled) await _startupRegistrationService.SetStateAsync(CreateStartupRegistrationState(normalizedSettings));
 
         await ApplySettingsAsync(normalizedSettings);
         _fileLogService.WriteInformation(nameof(SettingsService), "Applied updated settings.");
@@ -263,9 +258,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         };
     }
 
-    private static DesktopSwitchMouseLocationOption NormalizeDesktopSwitchMouseLocationOption(DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption) => Enum.IsDefined(typeof(DesktopSwitchMouseLocationOption), desktopSwitchMouseLocationOption)
-        ? desktopSwitchMouseLocationOption
-        : DesktopSwitchMouseLocationOption.OppositeSide;
+    private static DesktopSwitchMouseLocationOption NormalizeDesktopSwitchMouseLocationOption(DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption) => Enum.IsDefined(typeof(DesktopSwitchMouseLocationOption), desktopSwitchMouseLocationOption) ? desktopSwitchMouseLocationOption : DesktopSwitchMouseLocationOption.OppositeSide;
 
     private static KeyboardShortcutSettings NormalizeKeyboardShortcutSettings(KeyboardShortcutSettings? keyboardShortcutSettings)
     {
@@ -279,33 +272,19 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         };
     }
 
-    private static ModifierGateSettings NormalizeModifierGateSettings(
-        ModifierGateSettings? modifierGateSettings,
-        KeyboardModifierKeys defaultKeyboardModifierKeys = KeyboardModifierKeys.None,
-        bool areMouseModifierButtonTriggersAllowed = true)
+    private static ModifierGateSettings NormalizeModifierGateSettings(ModifierGateSettings? modifierGateSettings, KeyboardModifierKeys defaultKeyboardModifierKeys = KeyboardModifierKeys.None, bool areMouseModifierButtonTriggersAllowed = true)
     {
-        var actualModifierGateSettings = modifierGateSettings ?? new()
-        {
-            RequiredKeyboardModifierKeys = defaultKeyboardModifierKeys
-        };
+        var actualModifierGateSettings = modifierGateSettings ?? new() { RequiredKeyboardModifierKeys = defaultKeyboardModifierKeys };
         return actualModifierGateSettings with
         {
             RequiredKeyboardModifierKeys = actualModifierGateSettings.RequiredKeyboardModifierKeys,
-            RequiredMouseModifierButtonTriggers = areMouseModifierButtonTriggersAllowed
-                ? NormalizeMouseModifierButtonTriggers(actualModifierGateSettings.RequiredMouseModifierButtonTriggers)
-                : []
+            RequiredMouseModifierButtonTriggers = areMouseModifierButtonTriggersAllowed ? NormalizeMouseModifierButtonTriggers(actualModifierGateSettings.RequiredMouseModifierButtonTriggers) : []
         };
     }
 
-    private static InputTriggerType NormalizeInputTriggerType(InputTriggerType inputTriggerType) => Enum.IsDefined(typeof(InputTriggerType), inputTriggerType)
-        ? inputTriggerType
-        : InputTriggerType.VirtualKey;
+    private static InputTriggerType NormalizeInputTriggerType(InputTriggerType inputTriggerType) => Enum.IsDefined(typeof(InputTriggerType), inputTriggerType) ? inputTriggerType : InputTriggerType.VirtualKey;
 
-    private static InputTriggerType[] NormalizeMouseModifierButtonTriggers(InputTriggerType[]? inputTriggerTypes) => [.. (inputTriggerTypes ?? [])
-        .Where(IsMouseModifierButtonTrigger)
-        .Distinct()
-        .OrderBy(GetMouseModifierButtonTriggerSortOrder)];
-
+    private static InputTriggerType[] NormalizeMouseModifierButtonTriggers(InputTriggerType[]? inputTriggerTypes) => [.. (inputTriggerTypes ?? []).Where(IsMouseModifierButtonTrigger).Distinct()];
     private static bool IsMouseModifierButtonTrigger(InputTriggerType inputTriggerType) => inputTriggerType is InputTriggerType.MouseLeftButton or InputTriggerType.MouseMiddleButton or InputTriggerType.MouseRightButton;
 
     private static int GetMouseModifierButtonTriggerSortOrder(InputTriggerType inputTriggerType) => inputTriggerType switch
@@ -329,16 +308,13 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private static ProcessDesktopPlacementSettings NormalizeProcessDesktopPlacementSettings(ProcessDesktopPlacementSettings? processDesktopPlacementSettings)
     {
         var actualProcessDesktopPlacementSettings = processDesktopPlacementSettings ?? new();
-        var shouldPreserveMissingTargetDisabledFlag = actualProcessDesktopPlacementSettings.ShouldCreateMissingTargetDesktop
-            && actualProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing;
+        var shouldPreserveMissingTargetDisabledFlag = actualProcessDesktopPlacementSettings.ShouldCreateMissingTargetDesktop && actualProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing;
         return actualProcessDesktopPlacementSettings with
         {
             ShouldDisableRuleWhenTargetDesktopIsMissing = shouldPreserveMissingTargetDisabledFlag,
             ShouldApplyRulesWhenProcessStarts = actualProcessDesktopPlacementSettings.ShouldApplyRulesWhenProcessStarts,
             QuickConfigurationHotkey = NormalizeKeyboardShortcutSettings(actualProcessDesktopPlacementSettings.QuickConfigurationHotkey),
-            Rules = NormalizeProcessDesktopPlacementRules(
-                actualProcessDesktopPlacementSettings.Rules,
-                shouldPreserveMissingTargetDisabledFlag)
+            Rules = NormalizeProcessDesktopPlacementRules(actualProcessDesktopPlacementSettings.Rules, shouldPreserveMissingTargetDisabledFlag)
         };
     }
 
@@ -376,18 +352,13 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
     private static double ClampNormalizedOffset(double value, double length) => double.IsFinite(value) ? Math.Clamp(value, 0.0, 1.0 - length) : 0.0;
 
-    private static double ClampAutoDeleteWarningTimeoutSeconds(double value) => double.IsFinite(value)
-        ? Math.Clamp(value, MinimumAutoDeleteWarningTimeoutSeconds, MaximumAutoDeleteWarningTimeoutSeconds)
-        : DefaultAutoDeleteWarningTimeoutSeconds;
+    private static double ClampAutoDeleteWarningTimeoutSeconds(double value) => double.IsFinite(value) ? Math.Clamp(value, MinimumAutoDeleteWarningTimeoutSeconds, MaximumAutoDeleteWarningTimeoutSeconds) : DefaultAutoDeleteWarningTimeoutSeconds;
 
     private static double ClampDesktopEdgeAdditionalTriggerDistancePercentage(double value)
     {
         if (!double.IsFinite(value)) return DefaultDesktopEdgeAdditionalTriggerDistancePercentage;
 
-        return Math.Round(
-            Math.Clamp(value, MinimumDesktopEdgeAdditionalTriggerDistancePercentage, MaximumDesktopEdgeAdditionalTriggerDistancePercentage),
-            DesktopEdgeAdditionalTriggerDistancePercentageDecimalPlaces,
-            MidpointRounding.AwayFromZero);
+        return Math.Round(Math.Clamp(value, MinimumDesktopEdgeAdditionalTriggerDistancePercentage, MaximumDesktopEdgeAdditionalTriggerDistancePercentage), DesktopEdgeAdditionalTriggerDistancePercentageDecimalPlaces, MidpointRounding.AwayFromZero);
     }
 
     private static double ClampDesktopEdgeIgnorePercentage(double value) => double.IsFinite(value) ? Math.Clamp(value, 0.0, MaximumDesktopEdgeIgnorePercentage) : 0.0;
@@ -398,8 +369,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     {
         if (!keyboardShortcutSettings.IsEnabled) return;
 
-        if (!KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutSettings))
-            throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyMissingKeyFormat", GetKeyboardShortcutDisplayName(keyboardShortcutDisplayNameResourceKey)));
+        if (!KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutSettings)) throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyMissingKeyFormat", GetKeyboardShortcutDisplayName(keyboardShortcutDisplayNameResourceKey)));
 
         if (KeyboardShortcutHelper.IsReservedByWindowsDesktopSwitchHotkey(keyboardShortcutSettings))
             throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyReservedByWindowsDesktopSwitchFormat", GetKeyboardShortcutDisplayName(keyboardShortcutDisplayNameResourceKey)));
@@ -426,8 +396,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
         ]);
     }
 
-    private static void ValidateUniqueKeyboardShortcutSettings(
-        IReadOnlyList<(string KeyboardShortcutDisplayNameResourceKey, KeyboardShortcutSettings KeyboardShortcutSettings)> keyboardShortcutEntries)
+    private static void ValidateUniqueKeyboardShortcutSettings(IReadOnlyList<(string KeyboardShortcutDisplayNameResourceKey, KeyboardShortcutSettings KeyboardShortcutSettings)> keyboardShortcutEntries)
     {
         var registeredKeyboardShortcuts = new Dictionary<(KeyboardModifierKeys RequiredKeyboardModifierKeys, InputTriggerType TriggerType, VirtualKey Key), string>();
         foreach (var keyboardShortcutEntry in keyboardShortcutEntries)
@@ -436,9 +405,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
 
             var keyboardShortcutIdentity = KeyboardShortcutHelper.CreateKeyboardShortcutIdentity(keyboardShortcutEntry.KeyboardShortcutSettings);
             if (registeredKeyboardShortcuts.TryGetValue(keyboardShortcutIdentity, out var existingKeyboardShortcutDisplayNameResourceKey))
-                throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyDuplicateFormat",
-                    GetKeyboardShortcutDisplayName(keyboardShortcutEntry.KeyboardShortcutDisplayNameResourceKey),
-                    GetKeyboardShortcutDisplayName(existingKeyboardShortcutDisplayNameResourceKey)));
+                throw new InvalidOperationException(LocalizedResourceAccessor.GetFormattedString("Settings.Validation.HotkeyDuplicateFormat", GetKeyboardShortcutDisplayName(keyboardShortcutEntry.KeyboardShortcutDisplayNameResourceKey), GetKeyboardShortcutDisplayName(existingKeyboardShortcutDisplayNameResourceKey)));
 
             registeredKeyboardShortcuts.Add(keyboardShortcutIdentity, keyboardShortcutEntry.KeyboardShortcutDisplayNameResourceKey);
         }
@@ -501,8 +468,7 @@ public sealed class SettingsService(IStartupRegistrationService startupRegistrat
     private async Task ReloadStoredSettingsAsync(bool shouldApplyDefaultLaunchOnStartupWhenMissing)
     {
         var hasStoredSettings = TryLoadStoredSettings(out var storedSettings);
-        if (!hasStoredSettings && !shouldApplyDefaultLaunchOnStartupWhenMissing)
-            storedSettings = storedSettings with { IsLaunchOnStartupEnabled = false };
+        if (!hasStoredSettings && !shouldApplyDefaultLaunchOnStartupWhenMissing) storedSettings = storedSettings with { IsLaunchOnStartupEnabled = false };
 
         await _startupRegistrationService.SetStateAsync(CreateStartupRegistrationState(storedSettings));
 

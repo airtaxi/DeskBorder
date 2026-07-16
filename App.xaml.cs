@@ -36,15 +36,13 @@ public partial class App : Application
 
     public static void HandleRedirectedActivation(AppActivationArguments appActivationArguments)
     {
-        if (Current is not App currentApplication)
-            return;
+        if (Current is not App currentApplication) return;
 
         var manageWindowService = GetRequiredService<IManageWindowService>();
         if (manageWindowService.IsInitialized)
         {
             var manageWindow = GetRequiredService<Views.ManageWindow>();
-            if (manageWindow.DispatcherQueue.TryEnqueue(() => currentApplication.OnRedirectedActivation(appActivationArguments)))
-                return;
+            if (manageWindow.DispatcherQueue.TryEnqueue(() => currentApplication.OnRedirectedActivation(appActivationArguments))) return;
         }
 
         currentApplication.OnRedirectedActivation(appActivationArguments);
@@ -65,10 +63,7 @@ public partial class App : Application
         return serviceProvider;
     }
 
-    private async void OnRedirectedActivation(AppActivationArguments appActivationArguments)
-    {
-        await InitializeApplicationAsync(appActivationArguments);
-    }
+    private async void OnRedirectedActivation(AppActivationArguments appActivationArguments) => await InitializeApplicationAsync(appActivationArguments);
 
     private async Task InitializeApplicationAsync(AppActivationArguments appActivationArguments) => await GetRequiredService<IApplicationBootstrapService>().InitializeAsync(StartupRegistrationHelper.ShouldActivateManageWindow(appActivationArguments));
 
@@ -80,8 +75,7 @@ public partial class App : Application
 
     private void ApplyInitialThemePreferenceOverride(ApplicationThemePreference applicationThemePreference)
     {
-        if (applicationThemePreference == ApplicationThemePreference.System)
-            return;
+        if (applicationThemePreference == ApplicationThemePreference.System) return;
 
         RequestedTheme = applicationThemePreference switch
         {
@@ -106,7 +100,9 @@ public partial class App : Application
     private static void OnCurrentDomainUnhandledException(object sender, System.UnhandledExceptionEventArgs unhandledExceptionEventArgs)
     {
         if (unhandledExceptionEventArgs.ExceptionObject is Exception exception)
+        {
             WriteException("AppDomain.CurrentDomain.UnhandledException", exception);
+        }
     }
 
     private static void OnTaskSchedulerUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs unobservedTaskExceptionEventArgs)
@@ -138,8 +134,7 @@ public partial class App : Application
             stringBuilder.AppendLine(currentException.StackTrace);
 
             currentException = currentException.InnerException;
-            if (currentException is not null)
-                stringBuilder.AppendLine("--->");
+            if (currentException is not null) stringBuilder.AppendLine("--->");
         }
 
         return stringBuilder.ToString();

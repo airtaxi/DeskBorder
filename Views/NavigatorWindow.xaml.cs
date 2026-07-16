@@ -1,4 +1,4 @@
-using DeskBorder.Interop;
+﻿using DeskBorder.Interop;
 using DeskBorder.Models;
 using DeskBorder.Services;
 using DeskBorder.ViewModels;
@@ -28,8 +28,7 @@ public sealed partial class NavigatorWindow : WindowEx
     public void ShowOverlay(DisplayMonitorInfo targetDisplayMonitor)
     {
         UpdateWindowBounds(targetDisplayMonitor);
-        if (!AppWindow.IsVisible)
-            AppWindow.Show();
+        if (!AppWindow.IsVisible) AppWindow.Show();
 
         BringToFront();
     }
@@ -55,8 +54,7 @@ public sealed partial class NavigatorWindow : WindowEx
 
     private void RegisterCurrentWindowContentWithThemeService()
     {
-        if (Content is not FrameworkElement rootFrameworkElement)
-            throw new InvalidOperationException("Unable to resolve the navigator window root content for theme application.");
+        if (Content is not FrameworkElement rootFrameworkElement) throw new InvalidOperationException("Unable to resolve the navigator window root content for theme application.");
 
         _themeService.RegisterFrameworkElement(rootFrameworkElement);
     }
@@ -65,8 +63,7 @@ public sealed partial class NavigatorWindow : WindowEx
     {
         _ = sender;
         _ = eventArguments;
-        if (DispatcherQueue.TryEnqueue(RefreshLocalizedText))
-            return;
+        if (DispatcherQueue.TryEnqueue(RefreshLocalizedText)) return;
 
         RefreshLocalizedText();
     }

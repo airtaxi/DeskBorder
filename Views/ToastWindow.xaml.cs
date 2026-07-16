@@ -27,7 +27,10 @@ public sealed partial class ToastWindow : WindowEx
 
     public void HideToast()
     {
-        if (AppWindow.IsVisible) AppWindow.Hide();
+        if (AppWindow.IsVisible)
+        {
+            AppWindow.Hide();
+        }
     }
 
     public void ClearToastPage()
@@ -82,20 +85,7 @@ public sealed partial class ToastWindow : WindowEx
         _ = Win32.SetWindowLongPointer(windowHandle, Win32.ExtendedWindowStyleIndex, extendedWindowStyle | Win32.ExtendedWindowStyleNoActivate);
     }
 
-    private void ShowTopMostWithoutActivation()
-    {
-        _ = Win32.SetWindowPosition(
-            this.GetWindowHandle(),
-            Win32.TopMostWindowInsertAfterHandle,
-            0,
-            0,
-            0,
-            0,
-            Win32.SetWindowPositionDoNotMoveFlag
-                | Win32.SetWindowPositionDoNotResizeFlag
-                | Win32.SetWindowPositionDoNotActivateFlag
-                | Win32.SetWindowPositionShowWindowFlag);
-    }
+    private void ShowTopMostWithoutActivation() => _ = Win32.SetWindowPosition(this.GetWindowHandle(), Win32.TopMostWindowInsertAfterHandle, 0, 0, 0, 0, Win32.SetWindowPositionDoNotMoveFlag | Win32.SetWindowPositionDoNotResizeFlag | Win32.SetWindowPositionDoNotActivateFlag | Win32.SetWindowPositionShowWindowFlag);
 
     private static int ScaleToWindowPixels(nint windowHandle, int logicalPixels) => (int)Math.Round(logicalPixels * Win32.GetDpiForWindow(windowHandle) / 96d, MidpointRounding.AwayFromZero);
 }

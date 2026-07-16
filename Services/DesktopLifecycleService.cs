@@ -1,22 +1,11 @@
-using DeskBorder.Helpers;
+﻿using DeskBorder.Helpers;
 using DeskBorder.Models;
 using System.ComponentModel;
 using System.Diagnostics;
 
 namespace DeskBorder.Services;
 
-public sealed class DesktopLifecycleService(
-    IDesktopEdgeMonitorService desktopEdgeMonitorService,
-    IFileLogService fileLogService,
-    IForegroundWindowFullscreenService foregroundWindowFullscreenService,
-    IHotkeyService hotkeyService,
-    IKeyboardModifierAbsorptionService keyboardModifierAbsorptionService,
-    ILocalizationService localizationService,
-    INavigatorService navigatorService,
-    IProcessDesktopPlacementService processDesktopPlacementService,
-    ISettingsService settingsService,
-    IToastService toastService,
-    IVirtualDesktopService virtualDesktopService) : IDesktopLifecycleService
+public sealed class DesktopLifecycleService(IDesktopEdgeMonitorService desktopEdgeMonitorService, IFileLogService fileLogService, IForegroundWindowFullscreenService foregroundWindowFullscreenService, IHotkeyService hotkeyService, IKeyboardModifierAbsorptionService keyboardModifierAbsorptionService, ILocalizationService localizationService, INavigatorService navigatorService, IProcessDesktopPlacementService processDesktopPlacementService, ISettingsService settingsService, IToastService toastService, IVirtualDesktopService virtualDesktopService) : IDesktopLifecycleService
 {
     private const int DesktopEdgeTriggerRearmDistanceInPixels = 24;
     private const int DesktopSwitchMouseLocationApplyAttemptCount = 5;
@@ -50,14 +39,12 @@ public sealed class DesktopLifecycleService(
 
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
-        if (IsRunning)
-            return;
+        if (IsRunning) return;
 
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Starting desktop lifecycle service.");
         _isDesktopEdgeActivationArmed = true;
         _lastTriggeredDesktopEdge = DesktopEdgeKind.None;
-        if (!_hotkeyService.IsInitialized)
-            _hotkeyService.Initialize();
+        if (!_hotkeyService.IsInitialized) _hotkeyService.Initialize();
 
         try { _keyboardModifierAbsorptionService.Start(); }
         catch (Exception exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), "Failed to start keyboard modifier absorption service. Keyboard modifier consumption after desktop actions may be unavailable.", exception); }
@@ -76,8 +63,7 @@ public sealed class DesktopLifecycleService(
 
     public async Task StopAsync()
     {
-        if (!IsRunning)
-            return;
+        if (!IsRunning) return;
 
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Stopping desktop lifecycle service.");
         IsRunning = false;
@@ -118,17 +104,14 @@ public sealed class DesktopLifecycleService(
     {
         var sourceDesktopEntry = desktopNavigationResult.PreviousWorkspaceSnapshot.DesktopEntries.FirstOrDefault(desktopEntry => string.Equals(desktopEntry.DesktopIdentifier, desktopNavigationResult.SourceDesktopIdentifier, StringComparison.Ordinal));
         var targetDesktopEntry = desktopNavigationResult.CurrentWorkspaceSnapshot.DesktopEntries.FirstOrDefault(desktopEntry => string.Equals(desktopEntry.DesktopIdentifier, desktopNavigationResult.TargetDesktopIdentifier, StringComparison.Ordinal));
-        if (sourceDesktopEntry is null || targetDesktopEntry is null)
-            return false;
+        if (sourceDesktopEntry is null || targetDesktopEntry is null) return false;
 
-        return sourceDesktopEntry.IsLeftOuterDesktop && targetDesktopEntry.DesktopNumber == sourceDesktopEntry.DesktopNumber + 1
-            || sourceDesktopEntry.IsRightOuterDesktop && targetDesktopEntry.DesktopNumber == sourceDesktopEntry.DesktopNumber - 1;
+        return sourceDesktopEntry.IsLeftOuterDesktop && targetDesktopEntry.DesktopNumber == sourceDesktopEntry.DesktopNumber + 1 || sourceDesktopEntry.IsRightOuterDesktop && targetDesktopEntry.DesktopNumber == sourceDesktopEntry.DesktopNumber - 1;
     }
 
     private static bool HasPointerMovedAwayFromDesktopEdge(DesktopEdgeMonitoringState currentState, DesktopEdgeKind lastTriggeredDesktopEdge)
     {
-        if (currentState.CurrentDisplayMonitor is null || currentState.DisplayMonitors.Length == 0)
-            return false;
+        if (currentState.CurrentDisplayMonitor is null || currentState.DisplayMonitors.Length == 0) return false;
 
         return lastTriggeredDesktopEdge switch
         {
@@ -148,19 +131,20 @@ public sealed class DesktopLifecycleService(
 
         for (var index = 0; index < previousDisplayMonitors.Length; index++)
         {
-            if (previousDisplayMonitors[index] != currentDisplayMonitors[index]) return true;
+            if (previousDisplayMonitors[index] != currentDisplayMonitors[index])
+            {
+                return true;
+            }
         }
 
         return false;
     }
 
-    private static bool HasNavigatorTriggerAreaPointerStateChanged(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState)
-        => previousState.NavigatorTriggerState.IsCursorInsideTriggerRectangle != currentState.NavigatorTriggerState.IsCursorInsideTriggerRectangle;
+    private static bool HasNavigatorTriggerAreaPointerStateChanged(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState) => previousState.NavigatorTriggerState.IsCursorInsideTriggerRectangle != currentState.NavigatorTriggerState.IsCursorInsideTriggerRectangle;
 
     private static bool IsCurrentDesktopLeftOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.CurrentDesktopNumber == 1;
 
-    private static bool IsCurrentDesktopRightOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.DesktopEntries.Length > 0
-        && workspaceSnapshot.CurrentDesktopNumber == workspaceSnapshot.DesktopEntries.Length;
+    private static bool IsCurrentDesktopRightOuter(VirtualDesktopWorkspaceSnapshot workspaceSnapshot) => workspaceSnapshot.DesktopEntries.Length > 0 && workspaceSnapshot.CurrentDesktopNumber == workspaceSnapshot.DesktopEntries.Length;
 
     private static bool IsCurrentDesktopOuterForDesktopSwitchDirection(VirtualDesktopWorkspaceSnapshot workspaceSnapshot, DesktopSwitchDirection desktopSwitchDirection) => desktopSwitchDirection switch
     {
@@ -182,23 +166,14 @@ public sealed class DesktopLifecycleService(
 
     private static string ResolveCreatedDesktopDisplayName(DesktopNavigationResult desktopNavigationResult)
     {
-        var createdDesktopIdentifier = string.IsNullOrWhiteSpace(desktopNavigationResult.TargetDesktopIdentifier)
-            ? desktopNavigationResult.CurrentWorkspaceSnapshot.CurrentDesktopIdentifier
-            : desktopNavigationResult.TargetDesktopIdentifier;
+        var createdDesktopIdentifier = string.IsNullOrWhiteSpace(desktopNavigationResult.TargetDesktopIdentifier) ? desktopNavigationResult.CurrentWorkspaceSnapshot.CurrentDesktopIdentifier : desktopNavigationResult.TargetDesktopIdentifier;
         var createdDesktopEntry = desktopNavigationResult.CurrentWorkspaceSnapshot.DesktopEntries.FirstOrDefault(desktopEntry => string.Equals(desktopEntry.DesktopIdentifier, createdDesktopIdentifier, StringComparison.Ordinal));
         return createdDesktopEntry?.DisplayName ?? SettingsDisplayFormatter.FormatDesktopDisplayName(desktopNavigationResult.CurrentWorkspaceSnapshot.CurrentDesktopNumber);
     }
 
-    private static DesktopSwitchMouseLocationContext CreateDesktopSwitchMouseLocationContext(DesktopEdgeMonitoringState currentState, DesktopSwitchDirection desktopSwitchDirection) => new(
-        currentState.DisplayMonitors,
-        currentState.CurrentDisplayMonitor,
-        currentState.CursorPosition,
-        desktopSwitchDirection,
-        currentState.ActiveDesktopEdge);
+    private static DesktopSwitchMouseLocationContext CreateDesktopSwitchMouseLocationContext(DesktopEdgeMonitoringState currentState, DesktopSwitchDirection desktopSwitchDirection) => new(currentState.DisplayMonitors, currentState.CurrentDisplayMonitor, currentState.CursorPosition, desktopSwitchDirection, currentState.ActiveDesktopEdge);
 
-    private static ScreenPoint CreateScreenRectangleCenterPoint(ScreenRectangle screenRectangle) => new(
-        screenRectangle.Left + screenRectangle.Width / 2,
-        screenRectangle.Top + screenRectangle.Height / 2);
+    private static ScreenPoint CreateScreenRectangleCenterPoint(ScreenRectangle screenRectangle) => new(screenRectangle.Left + screenRectangle.Width / 2, screenRectangle.Top + screenRectangle.Height / 2);
 
     private static DisplayMonitorInfo? FindDisplayMonitor(DisplayMonitorInfo[] displayMonitors, ScreenPoint screenPoint) => displayMonitors.FirstOrDefault(displayMonitor => displayMonitor.MonitorBounds.Contains(screenPoint));
 
@@ -206,19 +181,12 @@ public sealed class DesktopLifecycleService(
 
     private static ScreenPoint? TryCreateHorizontalOppositeSideMouseLocation(DesktopSwitchMouseLocationContext desktopSwitchMouseLocationContext)
     {
-        if (desktopSwitchMouseLocationContext.DisplayMonitors.Length == 0)
-            return null;
+        if (desktopSwitchMouseLocationContext.DisplayMonitors.Length == 0) return null;
 
         var leftmostDisplayEdge = desktopSwitchMouseLocationContext.DisplayMonitors.Min(displayMonitor => displayMonitor.MonitorBounds.Left);
         var rightmostDisplayEdge = desktopSwitchMouseLocationContext.DisplayMonitors.Max(displayMonitor => displayMonitor.MonitorBounds.Right);
-        var newX = desktopSwitchMouseLocationContext.DesktopSwitchDirection == DesktopSwitchDirection.Next
-            ? leftmostDisplayEdge + DesktopEdgeTriggerRearmDistanceInPixels
-            : rightmostDisplayEdge - DesktopEdgeTriggerRearmDistanceInPixels;
-        var newY = MapCursorVerticalPosition(
-            desktopSwitchMouseLocationContext.DisplayMonitors,
-            desktopSwitchMouseLocationContext.InputDisplayMonitor,
-            desktopSwitchMouseLocationContext.InputCursorPosition.Y,
-            newX);
+        var newX = desktopSwitchMouseLocationContext.DesktopSwitchDirection == DesktopSwitchDirection.Next ? leftmostDisplayEdge + DesktopEdgeTriggerRearmDistanceInPixels : rightmostDisplayEdge - DesktopEdgeTriggerRearmDistanceInPixels;
+        var newY = MapCursorVerticalPosition(desktopSwitchMouseLocationContext.DisplayMonitors, desktopSwitchMouseLocationContext.InputDisplayMonitor, desktopSwitchMouseLocationContext.InputCursorPosition.Y, newX);
         return new(newX, newY);
     }
 
@@ -243,54 +211,29 @@ public sealed class DesktopLifecycleService(
 
     private static ScreenPoint? TryCreateVerticalOppositeSideMouseLocation(DesktopSwitchMouseLocationContext desktopSwitchMouseLocationContext, bool isTopEdgeTriggered)
     {
-        if (desktopSwitchMouseLocationContext.InputDisplayMonitor is not { } inputDisplayMonitor)
-            return null;
+        if (desktopSwitchMouseLocationContext.InputDisplayMonitor is not { } inputDisplayMonitor) return null;
 
-        var newY = isTopEdgeTriggered
-            ? Math.Max(inputDisplayMonitor.MonitorBounds.Top, inputDisplayMonitor.MonitorBounds.Bottom - DesktopEdgeTriggerRearmDistanceInPixels)
-            : Math.Min(inputDisplayMonitor.MonitorBounds.Bottom - 1, inputDisplayMonitor.MonitorBounds.Top + DesktopEdgeTriggerRearmDistanceInPixels);
-        var newX = Math.Clamp(
-            desktopSwitchMouseLocationContext.InputCursorPosition.X,
-            inputDisplayMonitor.MonitorBounds.Left,
-            inputDisplayMonitor.MonitorBounds.Right - 1);
+        var newY = isTopEdgeTriggered ? Math.Max(inputDisplayMonitor.MonitorBounds.Top, inputDisplayMonitor.MonitorBounds.Bottom - DesktopEdgeTriggerRearmDistanceInPixels) : Math.Min(inputDisplayMonitor.MonitorBounds.Bottom - 1, inputDisplayMonitor.MonitorBounds.Top + DesktopEdgeTriggerRearmDistanceInPixels);
+        var newX = Math.Clamp(desktopSwitchMouseLocationContext.InputCursorPosition.X, inputDisplayMonitor.MonitorBounds.Left, inputDisplayMonitor.MonitorBounds.Right - 1);
         return new(newX, newY);
     }
 
     private static ScreenPoint? TryResolveMouseLocationAfterDesktopSwitch(DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption, DesktopSwitchMouseLocationContext desktopSwitchMouseLocationContext) => desktopSwitchMouseLocationOption switch
     {
         DesktopSwitchMouseLocationOption.OppositeSide => TryCreateOppositeSideMouseLocation(desktopSwitchMouseLocationContext),
-        DesktopSwitchMouseLocationOption.VirtualScreenCenter => desktopSwitchMouseLocationContext.DisplayMonitors.Length == 0
-            ? null
-            : CreateScreenRectangleCenterPoint(CreateCombinedMonitorBounds(desktopSwitchMouseLocationContext.DisplayMonitors)),
-        DesktopSwitchMouseLocationOption.PrimaryMonitorCenter => FindPrimaryDisplayMonitor(desktopSwitchMouseLocationContext.DisplayMonitors) is { } primaryDisplayMonitor
-            ? CreateScreenRectangleCenterPoint(primaryDisplayMonitor.MonitorBounds)
-            : null,
-        DesktopSwitchMouseLocationOption.TargetMonitorCenter => TryCreateOppositeSideMouseLocation(desktopSwitchMouseLocationContext) is { } targetMouseLocation
-            && FindDisplayMonitor(desktopSwitchMouseLocationContext.DisplayMonitors, targetMouseLocation) is { } targetDisplayMonitor
-                ? CreateScreenRectangleCenterPoint(targetDisplayMonitor.MonitorBounds)
-                : null,
-        DesktopSwitchMouseLocationOption.InputMonitorCenter => desktopSwitchMouseLocationContext.InputDisplayMonitor is { } inputDisplayMonitor
-            ? CreateScreenRectangleCenterPoint(inputDisplayMonitor.MonitorBounds)
-            : null,
+        DesktopSwitchMouseLocationOption.VirtualScreenCenter => desktopSwitchMouseLocationContext.DisplayMonitors.Length == 0 ? null : CreateScreenRectangleCenterPoint(CreateCombinedMonitorBounds(desktopSwitchMouseLocationContext.DisplayMonitors)),
+        DesktopSwitchMouseLocationOption.PrimaryMonitorCenter => FindPrimaryDisplayMonitor(desktopSwitchMouseLocationContext.DisplayMonitors) is { } primaryDisplayMonitor ? CreateScreenRectangleCenterPoint(primaryDisplayMonitor.MonitorBounds) : null,
+        DesktopSwitchMouseLocationOption.TargetMonitorCenter => TryCreateOppositeSideMouseLocation(desktopSwitchMouseLocationContext) is { } targetMouseLocation && FindDisplayMonitor(desktopSwitchMouseLocationContext.DisplayMonitors, targetMouseLocation) is { } targetDisplayMonitor ? CreateScreenRectangleCenterPoint(targetDisplayMonitor.MonitorBounds) : null,
+        DesktopSwitchMouseLocationOption.InputMonitorCenter => desktopSwitchMouseLocationContext.InputDisplayMonitor is { } inputDisplayMonitor ? CreateScreenRectangleCenterPoint(inputDisplayMonitor.MonitorBounds) : null,
         DesktopSwitchMouseLocationOption.DoNotMove => desktopSwitchMouseLocationContext.InputCursorPosition,
         _ => null
     };
 
     private static bool HasActivationModifierBecomeSatisfiedWhileRemainingOnDesktopEdge(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState)
-        => previousState.ActiveDesktopEdge == currentState.ActiveDesktopEdge
-        && currentState.ActiveDesktopEdge != DesktopEdgeKind.None
-        && ((!previousState.IsSwitchDesktopModifierSatisfied && currentState.IsSwitchDesktopModifierSatisfied)
-            || (!previousState.IsCreateDesktopModifierSatisfied && currentState.IsCreateDesktopModifierSatisfied));
+        => previousState.ActiveDesktopEdge == currentState.ActiveDesktopEdge && currentState.ActiveDesktopEdge != DesktopEdgeKind.None && ((!previousState.IsSwitchDesktopModifierSatisfied && currentState.IsSwitchDesktopModifierSatisfied) || (!previousState.IsCreateDesktopModifierSatisfied && currentState.IsCreateDesktopModifierSatisfied));
 
-    private static bool ShouldHandleDesktopEdgeActivation(
-        DesktopEdgeMonitoringState previousState,
-        DesktopEdgeMonitoringState currentState,
-        bool isDesktopEdgeActivationArmed,
-        bool isDesktopEdgeActivationOnModifierPressEnabled)
-        => isDesktopEdgeActivationArmed
-        && currentState.ActiveDesktopEdge != DesktopEdgeKind.None
-        && (currentState.HasCursorEnteredDesktopEdge
-            || (isDesktopEdgeActivationOnModifierPressEnabled && HasActivationModifierBecomeSatisfiedWhileRemainingOnDesktopEdge(previousState, currentState)));
+    private static bool ShouldHandleDesktopEdgeActivation(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState, bool isDesktopEdgeActivationArmed, bool isDesktopEdgeActivationOnModifierPressEnabled)
+        => isDesktopEdgeActivationArmed && currentState.ActiveDesktopEdge != DesktopEdgeKind.None && (currentState.HasCursorEnteredDesktopEdge || (isDesktopEdgeActivationOnModifierPressEnabled && HasActivationModifierBecomeSatisfiedWhileRemainingOnDesktopEdge(previousState, currentState)));
 
     private void MarkDesktopEdgeActivationStarted(DesktopEdgeKind triggeredDesktopEdge)
     {
@@ -319,12 +262,7 @@ public sealed class DesktopLifecycleService(
         {
             var inputCursorPosition = MouseHelper.GetCurrentCursorPosition();
             var displayMonitors = MouseHelper.GetDisplayMonitors();
-            return new(
-                displayMonitors,
-                FindDisplayMonitor(displayMonitors, inputCursorPosition),
-                inputCursorPosition,
-                desktopSwitchDirection,
-                DesktopEdgeKind.None);
+            return new(displayMonitors, FindDisplayMonitor(displayMonitors, inputCursorPosition), inputCursorPosition, desktopSwitchDirection, DesktopEdgeKind.None);
         }
         catch (InvalidOperationException exception)
         {
@@ -338,11 +276,11 @@ public sealed class DesktopLifecycleService(
         try
         {
             if (mouseLocationApplyTask is not null)
+            {
                 await mouseLocationApplyTask;
+            }
         }
-        catch (OperationCanceledException)
-        {
-        }
+        catch (OperationCanceledException) { }
         finally { mouseLocationApplyCancellationTokenSource?.Dispose(); }
     }
 
@@ -366,40 +304,21 @@ public sealed class DesktopLifecycleService(
     private static async Task ContinueMouseLocationApplyCancellationCleanupAsync(Task previousMouseLocationApplyCancellationCleanupTask, Task? mouseLocationApplyTask, CancellationTokenSource? mouseLocationApplyCancellationTokenSource)
     {
         try { await previousMouseLocationApplyCancellationCleanupTask; }
-        catch (OperationCanceledException)
-        {
-        }
+        catch (OperationCanceledException) { }
         await CompleteMouseLocationApplyCancellationAsync(mouseLocationApplyTask, mouseLocationApplyCancellationTokenSource);
     }
 
-    private static bool ShouldApplyMouseLocationAfterDesktopSwitch(
-        DesktopNavigationResult desktopNavigationResult,
-        DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption,
-        DesktopSwitchMouseLocationContext? desktopSwitchMouseLocationContext) => desktopNavigationResult.IsSuccessful
-            && desktopNavigationResult.NavigationActionKind is (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched)
-            && desktopSwitchMouseLocationOption != DesktopSwitchMouseLocationOption.DoNotMove
-            && desktopSwitchMouseLocationContext is not null;
+    private static bool ShouldApplyMouseLocationAfterDesktopSwitch(DesktopNavigationResult desktopNavigationResult, DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption, DesktopSwitchMouseLocationContext? desktopSwitchMouseLocationContext)
+        => desktopNavigationResult.IsSuccessful && desktopNavigationResult.NavigationActionKind is (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched) && desktopSwitchMouseLocationOption != DesktopSwitchMouseLocationOption.DoNotMove && desktopSwitchMouseLocationContext is not null;
 
-    private void ScheduleMouseLocationAfterDesktopSwitch(
-        DesktopNavigationResult desktopNavigationResult,
-        DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption,
-        DesktopSwitchMouseLocationContext? desktopSwitchMouseLocationContext,
-        string triggerSource)
+    private void ScheduleMouseLocationAfterDesktopSwitch(DesktopNavigationResult desktopNavigationResult, DesktopSwitchMouseLocationOption desktopSwitchMouseLocationOption, DesktopSwitchMouseLocationContext? desktopSwitchMouseLocationContext, string triggerSource)
     {
-        var didDesktopSwitchSucceed = desktopNavigationResult.IsSuccessful
-            && desktopNavigationResult.NavigationActionKind is (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched);
-        if (!didDesktopSwitchSucceed)
-            return;
+        var didDesktopSwitchSucceed = desktopNavigationResult.IsSuccessful && desktopNavigationResult.NavigationActionKind is (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched);
+        if (!didDesktopSwitchSucceed) return;
 
-        var shouldApplyMouseLocation = ShouldApplyMouseLocationAfterDesktopSwitch(
-            desktopNavigationResult,
-            desktopSwitchMouseLocationOption,
-            desktopSwitchMouseLocationContext);
-        var targetMouseLocation = shouldApplyMouseLocation
-            ? TryResolveMouseLocationAfterDesktopSwitch(desktopSwitchMouseLocationOption, desktopSwitchMouseLocationContext!.Value)
-            : null;
-        if (shouldApplyMouseLocation && targetMouseLocation is null)
-            _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to resolve mouse location after desktop switch. TriggerSource={triggerSource}, Option={desktopSwitchMouseLocationOption}.");
+        var shouldApplyMouseLocation = ShouldApplyMouseLocationAfterDesktopSwitch(desktopNavigationResult, desktopSwitchMouseLocationOption, desktopSwitchMouseLocationContext);
+        var targetMouseLocation = shouldApplyMouseLocation ? TryResolveMouseLocationAfterDesktopSwitch(desktopSwitchMouseLocationOption, desktopSwitchMouseLocationContext!.Value) : null;
+        if (shouldApplyMouseLocation && targetMouseLocation is null) _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to resolve mouse location after desktop switch. TriggerSource={triggerSource}, Option={desktopSwitchMouseLocationOption}.");
 
         Task? previousMouseLocationApplyTask;
         CancellationTokenSource? previousMouseLocationApplyCancellationTokenSource;
@@ -426,26 +345,16 @@ public sealed class DesktopLifecycleService(
             _mouseLocationApplyRequestVersion++;
             previousMouseLocationApplyTask = _mouseLocationApplyTask;
             previousMouseLocationApplyCancellationTokenSource = _mouseLocationApplyCancellationTokenSource;
-            mouseLocationApplyRequest = new(
-                triggerSource,
-                desktopSwitchMouseLocationOption,
-                targetMouseLocation.Value,
-                _mouseLocationApplyRequestVersion);
+            mouseLocationApplyRequest = new(triggerSource, desktopSwitchMouseLocationOption, targetMouseLocation.Value, _mouseLocationApplyRequestVersion);
             _mouseLocationApplyCancellationTokenSource = currentMouseLocationApplyCancellationTokenSource;
-            _mouseLocationApplyTask = Task.Run(() => ApplyMouseLocationAfterDesktopSwitchAsync(
-                mouseLocationApplyRequest,
-                currentMouseLocationApplyCancellationTokenSource.Token,
-                currentMouseLocationApplyCancellationTokenSource));
+            _mouseLocationApplyTask = Task.Run(() => ApplyMouseLocationAfterDesktopSwitchAsync(mouseLocationApplyRequest, currentMouseLocationApplyCancellationTokenSource.Token, currentMouseLocationApplyCancellationTokenSource));
         }
 
         previousMouseLocationApplyCancellationTokenSource?.Cancel();
         QueueMouseLocationApplyCancellationCleanup(previousMouseLocationApplyTask, previousMouseLocationApplyCancellationTokenSource);
     }
 
-    private async Task ApplyMouseLocationAfterDesktopSwitchAsync(
-        DesktopSwitchMouseLocationApplyRequest mouseLocationApplyRequest,
-        CancellationToken cancellationToken,
-        CancellationTokenSource currentMouseLocationApplyCancellationTokenSource)
+    private async Task ApplyMouseLocationAfterDesktopSwitchAsync(DesktopSwitchMouseLocationApplyRequest mouseLocationApplyRequest, CancellationToken cancellationToken, CancellationTokenSource currentMouseLocationApplyCancellationTokenSource)
     {
         var startedTimestamp = Stopwatch.GetTimestamp();
         try
@@ -473,20 +382,14 @@ public sealed class DesktopLifecycleService(
 
             _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Mouse location after desktop switch was constrained or changed after SetCursorPos. TriggerSource={mouseLocationApplyRequest.TriggerSource}, Option={mouseLocationApplyRequest.Option}, RequestedX={mouseLocationApplyRequest.TargetMouseLocation.X}, RequestedY={mouseLocationApplyRequest.TargetMouseLocation.Y}, ActualX={mouseLocationApplyResult.ActualMouseLocation!.Value.X}, ActualY={mouseLocationApplyResult.ActualMouseLocation!.Value.Y}, AttemptNumber={mouseLocationApplyResult.AttemptNumber}, ElapsedMilliseconds={elapsedMilliseconds:F1}, {FormatCursorClippingDetails()}.");
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested || !IsLatestMouseLocationApplyRequest(mouseLocationApplyRequest.RequestVersion))
-        {
-        }
-        catch (Exception exception)
-        {
-            _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Unexpected mouse location apply failure after desktop switch. TriggerSource={mouseLocationApplyRequest.TriggerSource}, Option={mouseLocationApplyRequest.Option}.", exception);
-        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested || !IsLatestMouseLocationApplyRequest(mouseLocationApplyRequest.RequestVersion)) { }
+        catch (Exception exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Unexpected mouse location apply failure after desktop switch. TriggerSource={mouseLocationApplyRequest.TriggerSource}, Option={mouseLocationApplyRequest.Option}.", exception); }
         finally
         {
             var shouldDisposeCurrentMouseLocationApplyCancellationTokenSource = false;
             lock (_mouseLocationApplyStateGate)
             {
-                if (_mouseLocationApplyRequestVersion == mouseLocationApplyRequest.RequestVersion
-                    && ReferenceEquals(_mouseLocationApplyCancellationTokenSource, currentMouseLocationApplyCancellationTokenSource))
+                if (_mouseLocationApplyRequestVersion == mouseLocationApplyRequest.RequestVersion && ReferenceEquals(_mouseLocationApplyCancellationTokenSource, currentMouseLocationApplyCancellationTokenSource))
                 {
                     _mouseLocationApplyTask = null;
                     _mouseLocationApplyCancellationTokenSource = null;
@@ -494,14 +397,11 @@ public sealed class DesktopLifecycleService(
                 }
             }
 
-            if (shouldDisposeCurrentMouseLocationApplyCancellationTokenSource)
-                currentMouseLocationApplyCancellationTokenSource.Dispose();
+            if (shouldDisposeCurrentMouseLocationApplyCancellationTokenSource) currentMouseLocationApplyCancellationTokenSource.Dispose();
         }
     }
 
-    private async Task<DesktopSwitchMouseLocationApplyResult> ApplyResolvedMouseLocationAfterDesktopSwitchAsync(
-        DesktopSwitchMouseLocationApplyRequest mouseLocationApplyRequest,
-        CancellationToken cancellationToken)
+    private async Task<DesktopSwitchMouseLocationApplyResult> ApplyResolvedMouseLocationAfterDesktopSwitchAsync(DesktopSwitchMouseLocationApplyRequest mouseLocationApplyRequest, CancellationToken cancellationToken)
     {
         var lastMouseLocationApplyResult = default(DesktopSwitchMouseLocationApplyResult);
         for (var attemptNumber = 1; attemptNumber <= DesktopSwitchMouseLocationApplyAttemptCount; attemptNumber++)
@@ -518,13 +418,11 @@ public sealed class DesktopLifecycleService(
                 else
                 {
                     lastMouseLocationApplyResult = new(attemptNumber, true, true, actualMouseLocation, 0, 0);
-                    if (lastMouseLocationApplyResult.IsSuccessful)
-                        return lastMouseLocationApplyResult;
+                    if (lastMouseLocationApplyResult.IsSuccessful) return lastMouseLocationApplyResult;
                 }
             }
 
-            if (attemptNumber < DesktopSwitchMouseLocationApplyAttemptCount)
-                await Task.Delay(s_desktopSwitchMouseLocationApplyRetryDelay, cancellationToken);
+            if (attemptNumber < DesktopSwitchMouseLocationApplyAttemptCount) await Task.Delay(s_desktopSwitchMouseLocationApplyRetryDelay, cancellationToken);
         }
 
         return lastMouseLocationApplyResult;
@@ -533,26 +431,22 @@ public sealed class DesktopLifecycleService(
     private bool IsLatestMouseLocationApplyRequest(int requestVersion)
     {
         lock (_mouseLocationApplyStateGate)
+        {
             return _mouseLocationApplyRequestVersion == requestVersion;
+        }
     }
 
     private void QueueMouseLocationApplyCancellationCleanup(Task? mouseLocationApplyTask, CancellationTokenSource? mouseLocationApplyCancellationTokenSource)
     {
-        if (mouseLocationApplyTask is null && mouseLocationApplyCancellationTokenSource is null)
-            return;
+        if (mouseLocationApplyTask is null && mouseLocationApplyCancellationTokenSource is null) return;
 
-        lock (_mouseLocationApplyStateGate)
-            _mouseLocationApplyCancellationCleanupTask = ContinueMouseLocationApplyCancellationCleanupAsync(
-                _mouseLocationApplyCancellationCleanupTask,
-                mouseLocationApplyTask,
-                mouseLocationApplyCancellationTokenSource);
+        lock (_mouseLocationApplyStateGate) _mouseLocationApplyCancellationCleanupTask = ContinueMouseLocationApplyCancellationCleanupAsync(_mouseLocationApplyCancellationCleanupTask, mouseLocationApplyTask, mouseLocationApplyCancellationTokenSource);
     }
 
     private void ThrowIfMouseLocationApplyRequestIsStale(int requestVersion, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (IsLatestMouseLocationApplyRequest(requestVersion))
-            return;
+        if (IsLatestMouseLocationApplyRequest(requestVersion)) return;
 
         throw new OperationCanceledException(cancellationToken);
     }
@@ -560,13 +454,10 @@ public sealed class DesktopLifecycleService(
     private async Task WaitForMouseLocationApplyCancellationCleanupAsync()
     {
         Task mouseLocationApplyCancellationCleanupTask;
-        lock (_mouseLocationApplyStateGate)
-            mouseLocationApplyCancellationCleanupTask = _mouseLocationApplyCancellationCleanupTask;
+        lock (_mouseLocationApplyStateGate) mouseLocationApplyCancellationCleanupTask = _mouseLocationApplyCancellationCleanupTask;
 
         try { await mouseLocationApplyCancellationCleanupTask; }
-        catch (OperationCanceledException)
-        {
-        }
+        catch (OperationCanceledException) { }
     }
 
     private async Task CancelPendingDesktopDeletionAsync()
@@ -576,28 +467,22 @@ public sealed class DesktopLifecycleService(
         if (_pendingDesktopDeletionTask is not null)
         {
             try { await _pendingDesktopDeletionTask; }
-            catch (OperationCanceledException)
-            {
-                _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Pending desktop deletion task was canceled.");
-            }
+            catch (OperationCanceledException) { _fileLogService.WriteInformation(nameof(DesktopLifecycleService), "Pending desktop deletion task was canceled."); }
         }
 
         _pendingDesktopDeletionCancellationTokenSource?.Dispose();
         _pendingDesktopDeletionCancellationTokenSource = null;
         _pendingDesktopDeletionTask = null;
-        if (hadPendingDesktopDeletion)
-            await _toastService.DismissAsync();
+        if (hadPendingDesktopDeletion) await _toastService.DismissAsync();
     }
 
-    private static bool ShouldConsumeModifierInputs(DesktopNavigationResult desktopNavigationResult) => desktopNavigationResult.IsSuccessful
-        && desktopNavigationResult.NavigationActionKind is (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched);
+    private static bool ShouldConsumeModifierInputs(DesktopNavigationResult desktopNavigationResult) => desktopNavigationResult.IsSuccessful && desktopNavigationResult.NavigationActionKind is (DesktopNavigationActionKind.Switched or DesktopNavigationActionKind.CreatedAndSwitched);
 
     private void ConsumeModifierInputsAfterDesktopActionIfEnabled(DeskBorderSettings currentSettings, DesktopNavigationResult desktopNavigationResult, ModifierGateSettings modifierGateSettings)
     {
         if (!ShouldConsumeModifierInputs(desktopNavigationResult)) return;
 
-        if (currentSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled
-            && modifierGateSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None)
+        if (currentSettings.IsKeyboardModifierConsumptionAfterDesktopActionEnabled && modifierGateSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None)
         {
             try
             {
@@ -607,8 +492,7 @@ public sealed class DesktopLifecycleService(
             catch (Exception exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Failed to absorb keyboard modifier keys after desktop action. ModifierKeys={modifierGateSettings.RequiredKeyboardModifierKeys}, Action={desktopNavigationResult.NavigationActionKind}.", exception); }
         }
 
-        if (currentSettings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled
-            && modifierGateSettings.RequiredMouseModifierButtonTriggers.Length > 0)
+        if (currentSettings.IsMouseModifierButtonConsumptionAfterDesktopActionEnabled && modifierGateSettings.RequiredMouseModifierButtonTriggers.Length > 0)
         {
             try
             {
@@ -621,12 +505,7 @@ public sealed class DesktopLifecycleService(
 
     private bool ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(DeskBorderSettings currentSettings, VirtualDesktopWorkspaceSnapshot currentWorkspaceSnapshot)
     {
-        if (!currentSettings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty
-            || string.IsNullOrWhiteSpace(currentWorkspaceSnapshot.CurrentDesktopIdentifier)
-            || !_virtualDesktopService.IsDesktopEmpty(currentWorkspaceSnapshot.CurrentDesktopIdentifier))
-        {
-            return false;
-        }
+        if (!currentSettings.IsDesktopCreationSkippedWhenCurrentDesktopIsEmpty || string.IsNullOrWhiteSpace(currentWorkspaceSnapshot.CurrentDesktopIdentifier) || !_virtualDesktopService.IsDesktopEmpty(currentWorkspaceSnapshot.CurrentDesktopIdentifier)) return false;
 
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Skipped desktop creation because the current desktop '{currentWorkspaceSnapshot.CurrentDesktopIdentifier}' is empty.");
         return true;
@@ -643,53 +522,34 @@ public sealed class DesktopLifecycleService(
 
     private DesktopEdgeActivationEvaluation EvaluateDesktopEdgeActivation(DesktopEdgeMonitoringState currentState, DeskBorderSettings currentSettings)
     {
-        if (!currentState.IsDesktopEdgeAvailable || currentState.ActiveDesktopEdge == DesktopEdgeKind.None)
-            return new(false, false, CreateNoOperationNavigationResult(_virtualDesktopService.GetWorkspaceSnapshot()), DesktopSwitchDirection.Previous);
+        if (!currentState.IsDesktopEdgeAvailable || currentState.ActiveDesktopEdge == DesktopEdgeKind.None) return new(false, false, CreateNoOperationNavigationResult(_virtualDesktopService.GetWorkspaceSnapshot()), DesktopSwitchDirection.Previous);
 
         var desktopSwitchDirection = ConvertToDesktopSwitchDirection(currentState.ActiveDesktopEdge, currentSettings.IsVerticalDesktopSwitchDirectionReversed);
         var currentWorkspaceSnapshot = _virtualDesktopService.GetWorkspaceSnapshot();
-        var canCreateDesktop = currentState.IsCreateDesktopModifierSatisfied
-            && currentSettings.IsDesktopCreationEnabled
-            && IsCurrentDesktopOuterForDesktopSwitchDirection(currentWorkspaceSnapshot, desktopSwitchDirection)
-            && !ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(currentSettings, currentWorkspaceSnapshot);
+        var canCreateDesktop = currentState.IsCreateDesktopModifierSatisfied && currentSettings.IsDesktopCreationEnabled && IsCurrentDesktopOuterForDesktopSwitchDirection(currentWorkspaceSnapshot, desktopSwitchDirection) && !ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(currentSettings, currentWorkspaceSnapshot);
         var shouldAttemptActivation = currentState.IsSwitchDesktopModifierSatisfied || canCreateDesktop;
         return new(shouldAttemptActivation, canCreateDesktop, CreateNoOperationNavigationResult(currentWorkspaceSnapshot), desktopSwitchDirection);
     }
 
-    private bool ShouldCreateDesktopAfterFailedSwitch(
-        DeskBorderSettings currentSettings,
-        DesktopNavigationResult switchDesktopNavigationResult,
-        DesktopSwitchDirection desktopSwitchDirection,
-        bool isDesktopCreationRequested)
+    private bool ShouldCreateDesktopAfterFailedSwitch(DeskBorderSettings currentSettings, DesktopNavigationResult switchDesktopNavigationResult, DesktopSwitchDirection desktopSwitchDirection, bool isDesktopCreationRequested)
     {
-        if (!isDesktopCreationRequested
-            || !currentSettings.IsDesktopCreationEnabled
-            || switchDesktopNavigationResult.OperationStatus != VirtualDesktopOperationStatus.NoAdjacentDesktop)
-        {
-            return false;
-        }
+        if (!isDesktopCreationRequested || !currentSettings.IsDesktopCreationEnabled || switchDesktopNavigationResult.OperationStatus != VirtualDesktopOperationStatus.NoAdjacentDesktop) return false;
 
         var currentWorkspaceSnapshot = switchDesktopNavigationResult.PreviousWorkspaceSnapshot;
-        return IsCurrentDesktopOuterForDesktopSwitchDirection(currentWorkspaceSnapshot, desktopSwitchDirection)
-            && !ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(currentSettings, currentWorkspaceSnapshot);
+        return IsCurrentDesktopOuterForDesktopSwitchDirection(currentWorkspaceSnapshot, desktopSwitchDirection) && !ShouldSkipDesktopCreationWhenCurrentDesktopIsEmpty(currentSettings, currentWorkspaceSnapshot);
     }
 
-    private DesktopNavigationResult SwitchDesktopWithOptionalCreation(
-        DeskBorderSettings currentSettings,
-        DesktopSwitchDirection desktopSwitchDirection,
-        bool isDesktopCreationRequested)
+    private DesktopNavigationResult SwitchDesktopWithOptionalCreation(DeskBorderSettings currentSettings, DesktopSwitchDirection desktopSwitchDirection, bool isDesktopCreationRequested)
     {
         var switchDesktopNavigationResult = _virtualDesktopService.SwitchDesktop(desktopSwitchDirection);
-        if (!ShouldCreateDesktopAfterFailedSwitch(currentSettings, switchDesktopNavigationResult, desktopSwitchDirection, isDesktopCreationRequested))
-            return switchDesktopNavigationResult;
+        if (!ShouldCreateDesktopAfterFailedSwitch(currentSettings, switchDesktopNavigationResult, desktopSwitchDirection, isDesktopCreationRequested)) return switchDesktopNavigationResult;
 
         return _virtualDesktopService.CreateDesktopAndSwitch(desktopSwitchDirection);
     }
 
     private DesktopNavigationResult HandleEdgeActivation(DesktopEdgeMonitoringState currentState, DeskBorderSettings currentSettings, DesktopEdgeActivationEvaluation desktopEdgeActivationEvaluation)
     {
-        if (!desktopEdgeActivationEvaluation.ShouldAttemptActivation)
-            return desktopEdgeActivationEvaluation.NoOperationNavigationResult;
+        if (!desktopEdgeActivationEvaluation.ShouldAttemptActivation) return desktopEdgeActivationEvaluation.NoOperationNavigationResult;
 
         if (currentState.IsSwitchDesktopModifierSatisfied)
         {
@@ -725,20 +585,13 @@ public sealed class DesktopLifecycleService(
             return;
         }
 
-        if (!IsInwardSwitch(desktopNavigationResult)
-            || string.IsNullOrWhiteSpace(desktopNavigationResult.SourceDesktopIdentifier)
-            || string.IsNullOrWhiteSpace(desktopNavigationResult.TargetDesktopIdentifier))
-        {
-            return;
-        }
+        if (!IsInwardSwitch(desktopNavigationResult) || string.IsNullOrWhiteSpace(desktopNavigationResult.SourceDesktopIdentifier) || string.IsNullOrWhiteSpace(desktopNavigationResult.TargetDesktopIdentifier)) return;
 
         var autoDeletionValidationResult = _virtualDesktopService.EvaluateAutoDeletion(desktopNavigationResult.SourceDesktopIdentifier, desktopNavigationResult.TargetDesktopIdentifier);
-        if (!autoDeletionValidationResult.CanAutoDelete)
-            return;
+        if (!autoDeletionValidationResult.CanAutoDelete) return;
 
         var sourceDesktopEntry = desktopNavigationResult.PreviousWorkspaceSnapshot.DesktopEntries.FirstOrDefault(desktopEntry => string.Equals(desktopEntry.DesktopIdentifier, desktopNavigationResult.SourceDesktopIdentifier, StringComparison.Ordinal));
-        if (sourceDesktopEntry is null)
-            return;
+        if (sourceDesktopEntry is null) return;
 
         var pendingDesktopDeletion = new PendingDesktopDeletion
         {
@@ -792,8 +645,7 @@ public sealed class DesktopLifecycleService(
             WindowWidth = 420,
             WindowHeight = 170
         }, cancellationToken);
-        if (toastPresentationResult.ResultKind != ToastPresentationResultKind.TimedOut || cancellationToken.IsCancellationRequested)
-            return;
+        if (toastPresentationResult.ResultKind != ToastPresentationResultKind.TimedOut || cancellationToken.IsCancellationRequested) return;
 
         await _operationSemaphore.WaitAsync(cancellationToken);
         try { await DeleteDesktopAsync(pendingDesktopDeletion); }
@@ -877,11 +729,7 @@ public sealed class DesktopLifecycleService(
             }
 
             var currentSettings = _settingsService.Settings;
-            if (!ShouldHandleDesktopEdgeActivation(
-                previousState,
-                currentState,
-                _isDesktopEdgeActivationArmed,
-                currentSettings.IsDesktopEdgeActivationOnModifierPressEnabled)) return;
+            if (!ShouldHandleDesktopEdgeActivation(previousState, currentState, _isDesktopEdgeActivationArmed, currentSettings.IsDesktopEdgeActivationOnModifierPressEnabled)) return;
 
             await CancelPendingDesktopDeletionAsync();
             var desktopEdgeActivationEvaluation = EvaluateDesktopEdgeActivation(currentState, currentSettings);
@@ -893,11 +741,7 @@ public sealed class DesktopLifecycleService(
             if (desktopNavigationResult.NavigationActionKind != DesktopNavigationActionKind.None)
             {
                 _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Handled desktop edge activation. Action={desktopNavigationResult.NavigationActionKind}, Status={desktopNavigationResult.OperationStatus}.");
-                ScheduleMouseLocationAfterDesktopSwitch(
-                    desktopNavigationResult,
-                    currentSettings.DesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption,
-                    CreateDesktopSwitchMouseLocationContext(currentState, desktopEdgeActivationEvaluation.DesktopSwitchDirection),
-                    "DesktopEdge");
+                ScheduleMouseLocationAfterDesktopSwitch(desktopNavigationResult, currentSettings.DesktopSwitchMouseLocationSettings.DesktopEdgeTriggeredMouseLocationOption, CreateDesktopSwitchMouseLocationContext(currentState, desktopEdgeActivationEvaluation.DesktopSwitchDirection), "DesktopEdge");
             }
             await HandleNavigationResultAsync(desktopNavigationResult);
         }
@@ -917,8 +761,7 @@ public sealed class DesktopLifecycleService(
 
     private async Task HandleHotkeyServiceHotkeyInvokedAsync(HotkeyInvokedEventArgs hotkeyInvokedEventArgs)
     {
-        if (!IsRunning)
-            return;
+        if (!IsRunning) return;
 
         _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Handling hotkey action. Action={hotkeyInvokedEventArgs.HotkeyActionType}.");
         var currentSettings = _settingsService.Settings;
@@ -931,57 +774,33 @@ public sealed class DesktopLifecycleService(
             {
                 case HotkeyActionType.SwitchToPreviousDesktop:
                     await CancelPendingDesktopDeletionAsync();
-                    var switchToPreviousDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove
-                        ? null
-                        : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Previous);
+                    var switchToPreviousDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove ? null : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Previous);
                     var switchToPreviousDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, DesktopSwitchDirection.Previous, true);
-                    ScheduleMouseLocationAfterDesktopSwitch(
-                        switchToPreviousDesktopNavigationResult,
-                        currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
-                        switchToPreviousDesktopMouseLocationContext,
-                        "Hotkey");
+                    ScheduleMouseLocationAfterDesktopSwitch(switchToPreviousDesktopNavigationResult, currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption, switchToPreviousDesktopMouseLocationContext, "Hotkey");
                     await HandleNavigationResultAsync(switchToPreviousDesktopNavigationResult);
                     return;
 
                 case HotkeyActionType.SwitchToNextDesktop:
                     await CancelPendingDesktopDeletionAsync();
-                    var switchToNextDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove
-                        ? null
-                        : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Next);
+                    var switchToNextDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove ? null : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Next);
                     var switchToNextDesktopNavigationResult = SwitchDesktopWithOptionalCreation(currentSettings, DesktopSwitchDirection.Next, true);
-                    ScheduleMouseLocationAfterDesktopSwitch(
-                        switchToNextDesktopNavigationResult,
-                        currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
-                        switchToNextDesktopMouseLocationContext,
-                        "Hotkey");
+                    ScheduleMouseLocationAfterDesktopSwitch(switchToNextDesktopNavigationResult, currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption, switchToNextDesktopMouseLocationContext, "Hotkey");
                     await HandleNavigationResultAsync(switchToNextDesktopNavigationResult);
                     return;
 
                 case HotkeyActionType.MoveFocusedWindowToPreviousDesktop:
                     await CancelPendingDesktopDeletionAsync();
-                    var moveFocusedWindowToPreviousDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove
-                        ? null
-                        : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Previous);
+                    var moveFocusedWindowToPreviousDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove ? null : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Previous);
                     var moveFocusedWindowToPreviousDesktopNavigationResult = _virtualDesktopService.MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection.Previous);
-                    ScheduleMouseLocationAfterDesktopSwitch(
-                        moveFocusedWindowToPreviousDesktopNavigationResult,
-                        currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
-                        moveFocusedWindowToPreviousDesktopMouseLocationContext,
-                        "Hotkey");
+                    ScheduleMouseLocationAfterDesktopSwitch(moveFocusedWindowToPreviousDesktopNavigationResult, currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption, moveFocusedWindowToPreviousDesktopMouseLocationContext, "Hotkey");
                     await HandleNavigationResultAsync(moveFocusedWindowToPreviousDesktopNavigationResult);
                     return;
 
                 case HotkeyActionType.MoveFocusedWindowToNextDesktop:
                     await CancelPendingDesktopDeletionAsync();
-                    var moveFocusedWindowToNextDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove
-                        ? null
-                        : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Next);
+                    var moveFocusedWindowToNextDesktopMouseLocationContext = currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption == DesktopSwitchMouseLocationOption.DoNotMove ? null : TryCreateHotkeyDesktopSwitchMouseLocationContext(DesktopSwitchDirection.Next);
                     var moveFocusedWindowToNextDesktopNavigationResult = _virtualDesktopService.MoveFocusedWindowToAdjacentDesktop(DesktopSwitchDirection.Next);
-                    ScheduleMouseLocationAfterDesktopSwitch(
-                        moveFocusedWindowToNextDesktopNavigationResult,
-                        currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption,
-                        moveFocusedWindowToNextDesktopMouseLocationContext,
-                        "Hotkey");
+                    ScheduleMouseLocationAfterDesktopSwitch(moveFocusedWindowToNextDesktopNavigationResult, currentSettings.DesktopSwitchMouseLocationSettings.HotkeyTriggeredMouseLocationOption, moveFocusedWindowToNextDesktopMouseLocationContext, "Hotkey");
                     await HandleNavigationResultAsync(moveFocusedWindowToNextDesktopNavigationResult);
                     return;
 
@@ -1000,48 +819,27 @@ public sealed class DesktopLifecycleService(
 
     private async Task HandleSettingsServiceSettingsChangedAsync()
     {
-        if (!IsRunning)
-            return;
+        if (!IsRunning) return;
 
         await _operationSemaphore.WaitAsync();
         try
         {
             var currentSettings = _settingsService.Settings;
-            if (!currentSettings.IsAutoDeleteEnabled || !currentSettings.IsAutoDeleteWarningEnabled)
-                await CancelPendingDesktopDeletionAsync();
+            if (!currentSettings.IsAutoDeleteEnabled || !currentSettings.IsAutoDeleteWarningEnabled) await CancelPendingDesktopDeletionAsync();
 
             await RefreshNavigatorAsync();
         }
         finally { _operationSemaphore.Release(); }
     }
 
-    private readonly record struct DesktopSwitchMouseLocationContext(
-        DisplayMonitorInfo[] DisplayMonitors,
-        DisplayMonitorInfo? InputDisplayMonitor,
-        ScreenPoint InputCursorPosition,
-        DesktopSwitchDirection DesktopSwitchDirection,
-        DesktopEdgeKind TriggeredDesktopEdge);
+    private readonly record struct DesktopSwitchMouseLocationContext(DisplayMonitorInfo[] DisplayMonitors, DisplayMonitorInfo? InputDisplayMonitor, ScreenPoint InputCursorPosition, DesktopSwitchDirection DesktopSwitchDirection, DesktopEdgeKind TriggeredDesktopEdge);
 
-    private readonly record struct DesktopSwitchMouseLocationApplyRequest(
-        string TriggerSource,
-        DesktopSwitchMouseLocationOption Option,
-        ScreenPoint TargetMouseLocation,
-        int RequestVersion);
+    private readonly record struct DesktopSwitchMouseLocationApplyRequest(string TriggerSource, DesktopSwitchMouseLocationOption Option, ScreenPoint TargetMouseLocation, int RequestVersion);
 
-    private readonly record struct DesktopSwitchMouseLocationApplyResult(
-        int AttemptNumber,
-        bool DidSetCursorPosition,
-        bool DidReadActualMouseLocation,
-        ScreenPoint? ActualMouseLocation,
-        int SetCursorPositionLastWindowsErrorCode,
-        int GetCursorPositionLastWindowsErrorCode)
+    private readonly record struct DesktopSwitchMouseLocationApplyResult(int AttemptNumber, bool DidSetCursorPosition, bool DidReadActualMouseLocation, ScreenPoint? ActualMouseLocation, int SetCursorPositionLastWindowsErrorCode, int GetCursorPositionLastWindowsErrorCode)
     {
         public bool IsSuccessful => DidSetCursorPosition && DidReadActualMouseLocation;
     }
 
-    private readonly record struct DesktopEdgeActivationEvaluation(
-        bool ShouldAttemptActivation,
-        bool CanCreateDesktop,
-        DesktopNavigationResult NoOperationNavigationResult,
-        DesktopSwitchDirection DesktopSwitchDirection);
+    private readonly record struct DesktopEdgeActivationEvaluation(bool ShouldAttemptActivation, bool CanCreateDesktop, DesktopNavigationResult NoOperationNavigationResult, DesktopSwitchDirection DesktopSwitchDirection);
 }

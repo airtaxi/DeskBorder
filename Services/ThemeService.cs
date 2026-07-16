@@ -15,8 +15,7 @@ public sealed class ThemeService(IFileLogService fileLogService) : IThemeService
     {
         CurrentApplicationThemePreference = applicationThemePreference;
         var requestedTheme = ConvertToElementTheme(applicationThemePreference);
-        foreach (var registeredFrameworkElement in GetRegisteredFrameworkElementsSnapshot())
-            ApplyRequestedTheme(registeredFrameworkElement, requestedTheme);
+        foreach (var registeredFrameworkElement in GetRegisteredFrameworkElementsSnapshot()) ApplyRequestedTheme(registeredFrameworkElement, requestedTheme);
 
         _fileLogService.WriteInformation(nameof(ThemeService), $"Applied application theme preference {applicationThemePreference}.");
     }
@@ -28,8 +27,7 @@ public sealed class ThemeService(IFileLogService fileLogService) : IThemeService
         lock (_registeredFrameworkElementsLock)
         {
             _registeredFrameworkElements.RemoveAll(static registeredFrameworkElementReference => !registeredFrameworkElementReference.TryGetTarget(out _));
-            if (!_registeredFrameworkElements.Exists(registeredFrameworkElementReference => registeredFrameworkElementReference.TryGetTarget(out var registeredFrameworkElement) && ReferenceEquals(registeredFrameworkElement, frameworkElement)))
-                _registeredFrameworkElements.Add(new(frameworkElement));
+            if (!_registeredFrameworkElements.Exists(registeredFrameworkElementReference => registeredFrameworkElementReference.TryGetTarget(out var registeredFrameworkElement) && ReferenceEquals(registeredFrameworkElement, frameworkElement))) _registeredFrameworkElements.Add(new(frameworkElement));
         }
 
         ApplyRequestedTheme(frameworkElement, ConvertToElementTheme(CurrentApplicationThemePreference));
@@ -38,8 +36,7 @@ public sealed class ThemeService(IFileLogService fileLogService) : IThemeService
 
     private static void ApplyRequestedTheme(FrameworkElement frameworkElement, ElementTheme requestedTheme)
     {
-        if (frameworkElement.DispatcherQueue.TryEnqueue(() => frameworkElement.RequestedTheme = requestedTheme))
-            return;
+        if (frameworkElement.DispatcherQueue.TryEnqueue(() => frameworkElement.RequestedTheme = requestedTheme)) return;
 
         frameworkElement.RequestedTheme = requestedTheme;
     }

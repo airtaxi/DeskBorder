@@ -1,4 +1,4 @@
-using DeskBorder.Models;
+﻿using DeskBorder.Models;
 using DeskBorder.Services;
 using Microsoft.Windows.AppLifecycle;
 using System.Diagnostics;
@@ -29,11 +29,7 @@ public static class StartupRegistrationHelper
 
     private static readonly XNamespace s_taskSchedulerNamespace = "http://schemas.microsoft.com/windows/2004/02/mit/task";
 
-    private readonly record struct ScheduledTaskDefinition(
-        string Command,
-        string? Arguments,
-        string? WorkingDirectory,
-        string RunLevel);
+    private readonly record struct ScheduledTaskDefinition(string Command, string? Arguments, string? WorkingDirectory, string RunLevel);
 
     public static async Task<StartupRegistrationState> GetStartupRegistrationStateAsync() => new()
     {
@@ -49,13 +45,11 @@ public static class StartupRegistrationHelper
 
     public static bool IsStartupActivation(string commandLineArguments) => string.Equals(ParseLaunchActivationToken(commandLineArguments), StartupActivationToken, StringComparison.OrdinalIgnoreCase);
 
-    public static bool ShouldActivateManageWindow(AppActivationArguments appActivationArguments) => appActivationArguments.Kind != ExtendedActivationKind.StartupTask
-        && !string.Equals(GetActivationToken(appActivationArguments), StartupActivationToken, StringComparison.OrdinalIgnoreCase);
+    public static bool ShouldActivateManageWindow(AppActivationArguments appActivationArguments) => appActivationArguments.Kind != ExtendedActivationKind.StartupTask && !string.Equals(GetActivationToken(appActivationArguments), StartupActivationToken, StringComparison.OrdinalIgnoreCase);
 
     public static DeskBorderSettings? TryLoadStoredSettings()
     {
-        if (ApplicationData.Current.LocalSettings.Values[SettingsKey] is not string serializedSettings)
-            return null;
+        if (ApplicationData.Current.LocalSettings.Values[SettingsKey] is not string serializedSettings) return null;
 
         try { return JsonSerializer.Deserialize(serializedSettings, DeskBorderSettingsSerializationContext.Default.DeskBorderSettings); }
         catch (JsonException) { return null; }
@@ -70,8 +64,7 @@ public static class StartupRegistrationHelper
 
     public static bool ShouldTryLaunchAsAdministratorFromStoredSettings(AppActivationArguments appActivationArguments)
     {
-        if (IsCurrentProcessElevated() || string.Equals(GetActivationToken(appActivationArguments), AdministratorTaskActivationToken, StringComparison.OrdinalIgnoreCase))
-            return false;
+        if (IsCurrentProcessElevated() || string.Equals(GetActivationToken(appActivationArguments), AdministratorTaskActivationToken, StringComparison.OrdinalIgnoreCase)) return false;
 
         return TryLoadStoredSettings()?.IsAlwaysRunAsAdministratorEnabled == true;
     }
@@ -86,23 +79,20 @@ public static class StartupRegistrationHelper
             if (isAlwaysRunAsAdministratorEnabled)
             {
                 var expectedStartupTaskDefinition = CreateExpectedScheduledTaskDefinition(StartupActivationToken, HighestAvailableRunLevel);
-                if (!AreScheduledTaskDefinitionsEquivalent(startupTaskDefinition, expectedStartupTaskDefinition))
-                    await RegisterScheduledTaskAsync(StartupScheduledTaskName, CreateScheduledTaskXml(expectedStartupTaskDefinition, hasLogonTrigger: true));
+                if (!AreScheduledTaskDefinitionsEquivalent(startupTaskDefinition, expectedStartupTaskDefinition)) await RegisterScheduledTaskAsync(StartupScheduledTaskName, CreateScheduledTaskXml(expectedStartupTaskDefinition, hasLogonTrigger: true));
 
                 await SetStartupTaskEnabledAsync(false);
             }
             else
             {
-                if (startupTaskDefinition is not null)
-                    await DeleteScheduledTaskAsync(StartupScheduledTaskName);
+                if (startupTaskDefinition is not null) await DeleteScheduledTaskAsync(StartupScheduledTaskName);
 
                 await SetStartupTaskEnabledAsync(true);
             }
         }
         else
         {
-            if (startupTaskDefinition is not null)
-                await DeleteScheduledTaskAsync(StartupScheduledTaskName);
+            if (startupTaskDefinition is not null) await DeleteScheduledTaskAsync(StartupScheduledTaskName);
 
             await SetStartupTaskEnabledAsync(false);
         }
@@ -110,8 +100,7 @@ public static class StartupRegistrationHelper
         if (isAlwaysRunAsAdministratorEnabled)
         {
             var expectedAdministratorTaskDefinition = CreateExpectedScheduledTaskDefinition(AdministratorTaskActivationToken, HighestAvailableRunLevel);
-            if (!AreScheduledTaskDefinitionsEquivalent(administratorTaskDefinition, expectedAdministratorTaskDefinition))
-                await RegisterScheduledTaskAsync(AdministratorScheduledTaskName, CreateScheduledTaskXml(expectedAdministratorTaskDefinition, hasLogonTrigger: false));
+            if (!AreScheduledTaskDefinitionsEquivalent(administratorTaskDefinition, expectedAdministratorTaskDefinition)) await RegisterScheduledTaskAsync(AdministratorScheduledTaskName, CreateScheduledTaskXml(expectedAdministratorTaskDefinition, hasLogonTrigger: false));
         }
         else if (administratorTaskDefinition is not null)
             await DeleteScheduledTaskAsync(AdministratorScheduledTaskName);
@@ -119,8 +108,7 @@ public static class StartupRegistrationHelper
 
     private static bool AreScheduledTaskDefinitionsEquivalent(ScheduledTaskDefinition? scheduledTaskDefinition, ScheduledTaskDefinition expectedScheduledTaskDefinition)
     {
-        if (scheduledTaskDefinition is null)
-            return false;
+        if (scheduledTaskDefinition is null) return false;
 
         return string.Equals(NormalizePath(scheduledTaskDefinition.Value.Command), NormalizePath(expectedScheduledTaskDefinition.Command), StringComparison.OrdinalIgnoreCase)
             && string.Equals(scheduledTaskDefinition.Value.Arguments?.Trim(), expectedScheduledTaskDefinition.Arguments?.Trim(), StringComparison.Ordinal)
@@ -131,11 +119,7 @@ public static class StartupRegistrationHelper
     private static ScheduledTaskDefinition CreateExpectedScheduledTaskDefinition(string activationToken, string runLevel)
     {
         var commandProcessorPath = GetCommandProcessorPath();
-        return new(
-            commandProcessorPath,
-            CreateCommandProcessorArguments(activationToken),
-            Path.GetDirectoryName(commandProcessorPath),
-            runLevel);
+        return new(commandProcessorPath, CreateCommandProcessorArguments(activationToken), Path.GetDirectoryName(commandProcessorPath), runLevel);
     }
 
     private static string CreateScheduledTaskXml(ScheduledTaskDefinition scheduledTaskDefinition, bool hasLogonTrigger)
@@ -200,8 +184,7 @@ public static class StartupRegistrationHelper
     private static async Task DeleteScheduledTaskAsync(string scheduledTaskName)
     {
         var scheduledTaskCommandResult = await RunScheduledTaskCommandAsync([ "/Delete", "/TN", scheduledTaskName, "/F" ]);
-        if (scheduledTaskCommandResult.ExitCode != 0)
-            throw new InvalidOperationException(CreateScheduledTaskCommandFailureMessage("delete", scheduledTaskName, scheduledTaskCommandResult));
+        if (scheduledTaskCommandResult.ExitCode != 0) throw new InvalidOperationException(CreateScheduledTaskCommandFailureMessage("delete", scheduledTaskName, scheduledTaskCommandResult));
     }
 
     private static string CreateScheduledTaskCommandFailureMessage(string operationName, string scheduledTaskName, ScheduledTaskCommandResult scheduledTaskCommandResult)
@@ -228,8 +211,7 @@ public static class StartupRegistrationHelper
         return stringBuilder.ToString();
     }
 
-    private static string GetCurrentUserSecurityIdentifier() => WindowsIdentity.GetCurrent().User?.Value
-        ?? throw new InvalidOperationException("The current user security identifier could not be resolved.");
+    private static string GetCurrentUserSecurityIdentifier() => WindowsIdentity.GetCurrent().User?.Value ?? throw new InvalidOperationException("The current user security identifier could not be resolved.");
 
     private static string? GetActivationToken(AppActivationArguments appActivationArguments)
     {
@@ -256,15 +238,13 @@ public static class StartupRegistrationHelper
         var startupTask = await GetStartupTaskAsync();
         if (isEnabled)
         {
-            if (startupTask.State is StartupTaskState.Enabled or StartupTaskState.EnabledByPolicy)
-                return;
+            if (startupTask.State is StartupTaskState.Enabled or StartupTaskState.EnabledByPolicy) return;
 
             _ = await startupTask.RequestEnableAsync();
             return;
         }
 
-        if (startupTask.State is StartupTaskState.Enabled or StartupTaskState.EnabledByPolicy)
-            startupTask.Disable();
+        if (startupTask.State is StartupTaskState.Enabled or StartupTaskState.EnabledByPolicy) startupTask.Disable();
     }
 
     private static string CreateCommandProcessorArguments(string activationToken)
@@ -277,38 +257,27 @@ public static class StartupRegistrationHelper
 
     private static string? ParseLaunchActivationToken(string? commandLineArguments)
     {
-        if (string.IsNullOrWhiteSpace(commandLineArguments))
-            return null;
+        if (string.IsNullOrWhiteSpace(commandLineArguments)) return null;
 
         var trimmedCommandLineArguments = commandLineArguments.Trim();
-        if (string.Equals(trimmedCommandLineArguments, StartupLaunchCommandLineArgument, StringComparison.OrdinalIgnoreCase))
-            return StartupActivationToken;
+        if (string.Equals(trimmedCommandLineArguments, StartupLaunchCommandLineArgument, StringComparison.OrdinalIgnoreCase)) return StartupActivationToken;
 
-        if (string.Equals(trimmedCommandLineArguments, AdministratorTaskLaunchCommandLineArgument, StringComparison.OrdinalIgnoreCase))
-            return AdministratorTaskActivationToken;
+        if (string.Equals(trimmedCommandLineArguments, AdministratorTaskLaunchCommandLineArgument, StringComparison.OrdinalIgnoreCase)) return AdministratorTaskActivationToken;
 
-        return Uri.TryCreate(trimmedCommandLineArguments, UriKind.Absolute, out var protocolActivationUri)
-            ? ParseProtocolActivationToken(protocolActivationUri)
-            : null;
+        return Uri.TryCreate(trimmedCommandLineArguments, UriKind.Absolute, out var protocolActivationUri) ? ParseProtocolActivationToken(protocolActivationUri) : null;
     }
 
     private static string? ParseProtocolActivationToken(Uri? protocolActivationUri)
     {
-        if (protocolActivationUri is null || !string.Equals(protocolActivationUri.Scheme, ActivationProtocolName, StringComparison.OrdinalIgnoreCase))
-            return null;
+        if (protocolActivationUri is null || !string.Equals(protocolActivationUri.Scheme, ActivationProtocolName, StringComparison.OrdinalIgnoreCase)) return null;
 
-        if (!string.IsNullOrWhiteSpace(protocolActivationUri.Host))
-            return protocolActivationUri.Host;
+        if (!string.IsNullOrWhiteSpace(protocolActivationUri.Host)) return protocolActivationUri.Host;
 
         var normalizedAbsolutePath = protocolActivationUri.AbsolutePath.Trim('/');
-        return string.IsNullOrWhiteSpace(normalizedAbsolutePath)
-            ? null
-            : normalizedAbsolutePath;
+        return string.IsNullOrWhiteSpace(normalizedAbsolutePath) ? null : normalizedAbsolutePath;
     }
 
-    private static string? NormalizePath(string? path) => string.IsNullOrWhiteSpace(path)
-        ? null
-        : Path.GetFullPath(Environment.ExpandEnvironmentVariables(path.Trim()), Environment.SystemDirectory);
+    private static string? NormalizePath(string? path) => string.IsNullOrWhiteSpace(path) ? null : Path.GetFullPath(Environment.ExpandEnvironmentVariables(path.Trim()), Environment.SystemDirectory);
 
     private static async Task RegisterScheduledTaskAsync(string scheduledTaskName, string scheduledTaskXml)
     {
@@ -317,22 +286,19 @@ public static class StartupRegistrationHelper
         try
         {
             var scheduledTaskCommandResult = await RunScheduledTaskCommandAsync([ "/Create", "/TN", scheduledTaskName, "/XML", temporaryTaskDefinitionPath, "/F" ]);
-            if (scheduledTaskCommandResult.ExitCode != 0)
-                throw new InvalidOperationException(CreateScheduledTaskCommandFailureMessage("register", scheduledTaskName, scheduledTaskCommandResult));
+            if (scheduledTaskCommandResult.ExitCode != 0) throw new InvalidOperationException(CreateScheduledTaskCommandFailureMessage("register", scheduledTaskName, scheduledTaskCommandResult));
         }
         finally
         {
             try
             {
                 if (File.Exists(temporaryTaskDefinitionPath))
+                {
                     File.Delete(temporaryTaskDefinitionPath);
+                }
             }
-            catch (IOException)
-            {
-            }
-            catch (UnauthorizedAccessException)
-            {
-            }
+            catch (IOException) { }
+            catch (UnauthorizedAccessException) { }
         }
     }
 
@@ -345,8 +311,7 @@ public static class StartupRegistrationHelper
             RedirectStandardOutput = true,
             UseShellExecute = false
         };
-        foreach (var argument in arguments)
-            processStartInfo.ArgumentList.Add(argument);
+        foreach (var argument in arguments) processStartInfo.ArgumentList.Add(argument);
 
         using var scheduledTaskProcess = Process.Start(processStartInfo) ?? throw new InvalidOperationException("Failed to start schtasks.exe.");
         var outputTask = scheduledTaskProcess.StandardOutput.ReadToEndAsync();
@@ -358,13 +323,11 @@ public static class StartupRegistrationHelper
     private static async Task<ScheduledTaskDefinition?> TryGetScheduledTaskDefinitionAsync(string scheduledTaskName)
     {
         var scheduledTaskCommandResult = await RunScheduledTaskCommandAsync([ "/Query", "/TN", scheduledTaskName, "/XML" ]);
-        if (scheduledTaskCommandResult.ExitCode != 0)
-            return null;
+        if (scheduledTaskCommandResult.ExitCode != 0) return null;
 
         var scheduledTaskDocument = XDocument.Parse(scheduledTaskCommandResult.Output);
         var execElement = scheduledTaskDocument.Descendants(s_taskSchedulerNamespace + "Exec").FirstOrDefault();
-        if (execElement is null)
-            return null;
+        if (execElement is null) return null;
 
         return new(
             execElement.Element(s_taskSchedulerNamespace + "Command")?.Value ?? string.Empty,

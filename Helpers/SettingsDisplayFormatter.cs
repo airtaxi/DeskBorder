@@ -61,8 +61,7 @@ public static class SettingsDisplayFormatter
 
     public static string FormatKeyboardModifierKeys(KeyboardModifierKeys keyboardModifierKeys)
     {
-        if (keyboardModifierKeys == KeyboardModifierKeys.None)
-            return LocalizedResourceAccessor.GetString("Common.None");
+        if (keyboardModifierKeys == KeyboardModifierKeys.None) return LocalizedResourceAccessor.GetString("Common.None");
 
         return string.Join(" + ", CreateKeyboardModifierKeyNames(keyboardModifierKeys));
     }
@@ -71,40 +70,31 @@ public static class SettingsDisplayFormatter
     {
         var modifierNames = CreateKeyboardModifierKeyNames(modifierGateSettings.RequiredKeyboardModifierKeys);
         modifierNames.AddRange(modifierGateSettings.RequiredMouseModifierButtonTriggers.Select(FormatMouseModifierButtonTrigger));
-        return modifierNames.Count == 0
-            ? LocalizedResourceAccessor.GetString("Common.None")
-            : string.Join(" + ", modifierNames);
+        return modifierNames.Count == 0 ? LocalizedResourceAccessor.GetString("Common.None") : string.Join(" + ", modifierNames);
     }
 
     private static List<string> CreateKeyboardModifierKeyNames(KeyboardModifierKeys keyboardModifierKeys)
     {
         var keyboardModifierNames = new List<string>(4);
-        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Control))
-            keyboardModifierNames.Add(LocalizedResourceAccessor.GetString("KeyboardModifier.Control"));
+        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Control)) keyboardModifierNames.Add(LocalizedResourceAccessor.GetString("KeyboardModifier.Control"));
 
-        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Shift))
-            keyboardModifierNames.Add(LocalizedResourceAccessor.GetString("KeyboardModifier.Shift"));
+        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Shift)) keyboardModifierNames.Add(LocalizedResourceAccessor.GetString("KeyboardModifier.Shift"));
 
-        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Alternate))
-            keyboardModifierNames.Add(LocalizedResourceAccessor.GetString("KeyboardModifier.Alt"));
+        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Alternate)) keyboardModifierNames.Add(LocalizedResourceAccessor.GetString("KeyboardModifier.Alt"));
 
-        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows))
-            keyboardModifierNames.Add(LocalizedResourceAccessor.GetString("KeyboardModifier.Windows"));
+        if (keyboardModifierKeys.HasFlag(KeyboardModifierKeys.Windows)) keyboardModifierNames.Add(LocalizedResourceAccessor.GetString("KeyboardModifier.Windows"));
 
         return keyboardModifierNames;
     }
 
     public static string FormatKeyboardShortcut(KeyboardShortcutSettings keyboardShortcutSettings)
     {
-        if (!keyboardShortcutSettings.IsEnabled)
-            return LocalizedResourceAccessor.GetString("Common.Disabled");
+        if (!keyboardShortcutSettings.IsEnabled) return LocalizedResourceAccessor.GetString("Common.Disabled");
 
-        if (!KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutSettings))
-            return LocalizedResourceAccessor.GetString("KeyboardShortcut.KeyNotSpecified");
+        if (!KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutSettings)) return LocalizedResourceAccessor.GetString("KeyboardShortcut.KeyNotSpecified");
 
         var keyNames = new List<string>(5);
-        if (keyboardShortcutSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None)
-            keyNames.Add(FormatKeyboardModifierKeys(keyboardShortcutSettings.RequiredKeyboardModifierKeys));
+        if (keyboardShortcutSettings.RequiredKeyboardModifierKeys != KeyboardModifierKeys.None) keyNames.Add(FormatKeyboardModifierKeys(keyboardShortcutSettings.RequiredKeyboardModifierKeys));
 
         keyNames.Add(FormatInputTrigger(keyboardShortcutSettings.TriggerType, keyboardShortcutSettings.Key));
         return string.Join(" + ", keyNames);
@@ -130,13 +120,7 @@ public static class SettingsDisplayFormatter
         _ => multiDisplayBehavior.ToString()
     };
 
-    public static string FormatTriggerRectangle(TriggerRectangleSettings triggerRectangleSettings) => string.Format(
-        CultureInfo.CurrentCulture,
-        LocalizedResourceAccessor.GetString("TriggerRectangle.Format"),
-        triggerRectangleSettings.Left,
-        triggerRectangleSettings.Top,
-        triggerRectangleSettings.Width,
-        triggerRectangleSettings.Height);
+    public static string FormatTriggerRectangle(TriggerRectangleSettings triggerRectangleSettings) => string.Format(CultureInfo.CurrentCulture, LocalizedResourceAccessor.GetString("TriggerRectangle.Format"), triggerRectangleSettings.Left, triggerRectangleSettings.Top, triggerRectangleSettings.Width, triggerRectangleSettings.Height);
 
     public static string FormatDesktopDisplayName(int desktopNumber) => LocalizedResourceAccessor.GetFormattedString("Desktop.DisplayNameFormat", desktopNumber);
 

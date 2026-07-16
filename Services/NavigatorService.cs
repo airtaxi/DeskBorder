@@ -1,13 +1,10 @@
-using DeskBorder.Models;
+﻿using DeskBorder.Models;
 using DeskBorder.ViewModels;
 using DeskBorder.Views;
 
 namespace DeskBorder.Services;
 
-public sealed class NavigatorService(
-    IDesktopEdgeMonitorService desktopEdgeMonitorService,
-    IVirtualDesktopService virtualDesktopService,
-    IFileLogService fileLogService) : INavigatorService
+public sealed class NavigatorService(IDesktopEdgeMonitorService desktopEdgeMonitorService, IVirtualDesktopService virtualDesktopService, IFileLogService fileLogService) : INavigatorService
 {
     private readonly IDesktopEdgeMonitorService _desktopEdgeMonitorService = desktopEdgeMonitorService;
     private readonly IFileLogService _fileLogService = fileLogService;
@@ -26,16 +23,14 @@ public sealed class NavigatorService(
     public void Hide()
     {
         ViewModel.IsVisible = false;
-        if (_navigatorWindow?.AppWindow.IsVisible == true)
-            _navigatorWindow.AppWindow.Hide();
+        if (_navigatorWindow?.AppWindow.IsVisible == true) _navigatorWindow.AppWindow.Hide();
 
         _fileLogService.WriteInformation(nameof(NavigatorService), "Hid the navigator overlay.");
     }
 
     public void Initialize(NavigatorWindow navigatorWindow)
     {
-        if (_navigatorWindow is not null)
-            return;
+        if (_navigatorWindow is not null) return;
 
         _navigatorWindow = navigatorWindow;
         RefreshPreview();
@@ -46,12 +41,8 @@ public sealed class NavigatorService(
     {
         var previewSnapshot = _virtualDesktopService.GetNavigatorPreviewSnapshot(ResolveTargetDisplayMonitor());
         _targetDisplayMonitor = previewSnapshot.TargetDisplayMonitor;
-        ViewModel.ReplaceDesktopItems(
-            previewSnapshot.DesktopItems,
-            previewSnapshot.TargetDisplayMonitor.WorkAreaBounds.Width,
-            previewSnapshot.TargetDisplayMonitor.WorkAreaBounds.Height);
-        if (IsVisible)
-            _navigatorWindow?.ShowOverlay(previewSnapshot.TargetDisplayMonitor);
+        ViewModel.ReplaceDesktopItems(previewSnapshot.DesktopItems, previewSnapshot.TargetDisplayMonitor.WorkAreaBounds.Width, previewSnapshot.TargetDisplayMonitor.WorkAreaBounds.Height);
+        if (IsVisible) _navigatorWindow?.ShowOverlay(previewSnapshot.TargetDisplayMonitor);
     }
 
     public void RefreshPreviewIfVisible()
@@ -63,8 +54,7 @@ public sealed class NavigatorService(
 
     public bool ShowFromTriggerArea()
     {
-        if (!ViewModel.IsTriggerAreaEnabled)
-            return false;
+        if (!ViewModel.IsTriggerAreaEnabled) return false;
 
         ShowOverlay();
         _fileLogService.WriteInformation(nameof(NavigatorService), "Displayed the navigator overlay from the trigger area.");
@@ -92,12 +82,10 @@ public sealed class NavigatorService(
 
     public bool UpdateTriggerAreaPointerState(bool isPointerInsideTriggerArea)
     {
-        if (ViewModel.IsPointerInsideTriggerArea == isPointerInsideTriggerArea)
-            return false;
+        if (ViewModel.IsPointerInsideTriggerArea == isPointerInsideTriggerArea) return false;
 
         ViewModel.IsPointerInsideTriggerArea = isPointerInsideTriggerArea;
-        if (isPointerInsideTriggerArea)
-            return ShowFromTriggerArea();
+        if (isPointerInsideTriggerArea) return ShowFromTriggerArea();
 
         Hide();
         return true;

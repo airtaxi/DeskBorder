@@ -5,19 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DeskBorder.Services;
 
-public sealed class ApplicationBootstrapService(
-    IServiceProvider serviceProvider,
-    IHotkeyService hotkeyService,
-    IManageWindowService manageWindowService,
-    IDeskBorderRuntimeService deskBorderRuntimeService,
-    IProcessDesktopPlacementService processDesktopPlacementService,
-    IVirtualDesktopService virtualDesktopService,
-    ILocalizationService localizationService,
-    ISettingsService settingsService,
-    IStoreUpdateService storeUpdateService,
-    IThemeService themeService,
-    IToastService toastService,
-    IFileLogService fileLogService) : IApplicationBootstrapService
+public sealed class ApplicationBootstrapService(IServiceProvider serviceProvider, IHotkeyService hotkeyService, IManageWindowService manageWindowService, IDeskBorderRuntimeService deskBorderRuntimeService, IProcessDesktopPlacementService processDesktopPlacementService, IVirtualDesktopService virtualDesktopService, ILocalizationService localizationService, ISettingsService settingsService, IStoreUpdateService storeUpdateService, IThemeService themeService, IToastService toastService, IFileLogService fileLogService) : IApplicationBootstrapService
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IHotkeyService _hotkeyService = hotkeyService;
@@ -87,9 +75,7 @@ public sealed class ApplicationBootstrapService(
         await _toastService.ShowToastAsync(new HotkeyToastPresentationOptions
         {
             Title = LocalizedResourceAccessor.GetString("Toast.Hotkey.ToggleDeskBorder.Title"),
-            Message = LocalizedResourceAccessor.GetString(updatedSettings.IsDeskBorderEnabled
-                ? "Toast.Hotkey.ToggleDeskBorder.EnabledMessage"
-                : "Toast.Hotkey.ToggleDeskBorder.DisabledMessage"),
+            Message = LocalizedResourceAccessor.GetString(updatedSettings.IsDeskBorderEnabled ? "Toast.Hotkey.ToggleDeskBorder.EnabledMessage" : "Toast.Hotkey.ToggleDeskBorder.DisabledMessage"),
             Duration = TimeSpan.FromSeconds(2),
             WindowWidth = 360,
             WindowHeight = 100
@@ -114,41 +100,26 @@ public sealed class ApplicationBootstrapService(
         return remainingDuration <= TimeSpan.Zero ? TimeSpan.FromMinutes(1) : remainingDuration;
     }
 
-    private static bool IsCurrentProcessWindow(ProcessDesktopPlacementWindowSnapshot windowSnapshot)
-        => windowSnapshot.ProcessIdentifier == (uint)Environment.ProcessId;
+    private static bool IsCurrentProcessWindow(ProcessDesktopPlacementWindowSnapshot windowSnapshot) => windowSnapshot.ProcessIdentifier == (uint)Environment.ProcessId;
 
-    private async Task<ProcessDesktopPlacementPopupResult?> ShowProcessDesktopPlacementPopupWindowAsync(
-        int targetDesktopNumber,
-        ProcessDesktopPlacementWindowSnapshot windowSnapshot,
-        ProcessDesktopPlacementPopupInitialRule? initialRule)
+    private async Task<ProcessDesktopPlacementPopupResult?> ShowProcessDesktopPlacementPopupWindowAsync(int targetDesktopNumber, ProcessDesktopPlacementWindowSnapshot windowSnapshot, ProcessDesktopPlacementPopupInitialRule? initialRule)
         => await UiThreadHelper.ExecuteAsync<ProcessDesktopPlacementPopupResult?>(async () =>
         {
             var processDesktopPlacementPopupWindow = new ProcessDesktopPlacementPopupWindow([windowSnapshot.ProcessName], targetDesktopNumber, _localizationService, _themeService, initialRule);
             if (!await processDesktopPlacementPopupWindow.ShowModalAsync(windowSnapshot.WindowHandle)) return null;
 
-            return new(
-                processDesktopPlacementPopupWindow.Lifetime,
-                processDesktopPlacementPopupWindow.Duration,
-                processDesktopPlacementPopupWindow.TargetDesktopNumber);
+            return new(processDesktopPlacementPopupWindow.Lifetime, processDesktopPlacementPopupWindow.Duration, processDesktopPlacementPopupWindow.TargetDesktopNumber);
         });
 
     private ExistingProcessDesktopPlacementRule? TryFindExistingProcessDesktopPlacementRule(string processName)
     {
         var temporaryRuleSnapshot = _processDesktopPlacementService.GetTemporaryRules()
             .FirstOrDefault(ruleSnapshot => string.Equals(ruleSnapshot.Rule.ProcessName, processName, StringComparison.OrdinalIgnoreCase));
-        if (temporaryRuleSnapshot is not null)
-        {
-            return new(
-                temporaryRuleSnapshot.Rule,
-                temporaryRuleSnapshot.Lifetime,
-                GetRemainingDuration(temporaryRuleSnapshot));
-        }
+        if (temporaryRuleSnapshot is not null) return new(temporaryRuleSnapshot.Rule, temporaryRuleSnapshot.Lifetime, GetRemainingDuration(temporaryRuleSnapshot));
 
         var persistentRule = _settingsService.Settings.ProcessDesktopPlacementSettings.Rules
             .FirstOrDefault(rule => string.Equals(rule.ProcessName, processName, StringComparison.OrdinalIgnoreCase));
-        return persistentRule is null
-            ? null
-            : new(persistentRule, ProcessDesktopPlacementRuleLifetime.Permanent, null);
+        return persistentRule is null ? null : new(persistentRule, ProcessDesktopPlacementRuleLifetime.Permanent, null);
     }
 
     private async Task ShowProcessDesktopPlacementQuickConfigurationAsync()
@@ -169,12 +140,8 @@ public sealed class ApplicationBootstrapService(
         }
 
         var existingRule = TryFindExistingProcessDesktopPlacementRule(foregroundWindowSnapshot.ProcessName);
-        var initialTargetDesktopNumber = existingRule is null
-            ? _virtualDesktopService.GetCurrentProcessDesktopPlacementTargetNumber()
-            : existingRule.Rule.TargetDesktopNumber;
-        var initialRule = existingRule is null
-            ? null
-            : new ProcessDesktopPlacementPopupInitialRule(existingRule.Lifetime, existingRule.Duration);
+        var initialTargetDesktopNumber = existingRule is null ? _virtualDesktopService.GetCurrentProcessDesktopPlacementTargetNumber() : existingRule.Rule.TargetDesktopNumber;
+        var initialRule = existingRule is null ? null : new ProcessDesktopPlacementPopupInitialRule(existingRule.Lifetime, existingRule.Duration);
         var popupResult = await ShowProcessDesktopPlacementPopupWindowAsync(initialTargetDesktopNumber, foregroundWindowSnapshot, initialRule);
         if (popupResult is null) return;
 
@@ -187,10 +154,7 @@ public sealed class ApplicationBootstrapService(
                 break;
             default:
                 await RemovePersistentProcessDesktopPlacementRuleAsync(processDesktopPlacementRule.ProcessName);
-                _processDesktopPlacementService.AddTemporaryRule(
-                    processDesktopPlacementRule,
-                    popupResult.Lifetime,
-                    popupResult.Duration);
+                _processDesktopPlacementService.AddTemporaryRule(processDesktopPlacementRule, popupResult.Lifetime, popupResult.Duration);
                 break;
         }
 
@@ -252,10 +216,7 @@ public sealed class ApplicationBootstrapService(
         var currentWorkspaceSnapshot = _virtualDesktopService.GetWorkspaceSnapshot();
         var updatedProcessDesktopPlacementRule = processDesktopPlacementRule with
         {
-            IsDisabledBecauseTargetDesktopIsMissing = ProcessDesktopPlacementRuleStateHelper.ShouldDisableBecauseTargetDesktopIsMissing(
-                currentSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing,
-                processDesktopPlacementRule.TargetDesktopNumber,
-                currentWorkspaceSnapshot.DesktopCount)
+            IsDisabledBecauseTargetDesktopIsMissing = ProcessDesktopPlacementRuleStateHelper.ShouldDisableBecauseTargetDesktopIsMissing(currentSettings.ProcessDesktopPlacementSettings.ShouldDisableRuleWhenTargetDesktopIsMissing, processDesktopPlacementRule.TargetDesktopNumber, currentWorkspaceSnapshot.DesktopCount)
         };
         var existingRules = currentSettings.ProcessDesktopPlacementSettings.Rules
             .Where(rule => !string.Equals(rule.ProcessName, processDesktopPlacementRule.ProcessName, StringComparison.OrdinalIgnoreCase));

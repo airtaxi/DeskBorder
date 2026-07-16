@@ -14,8 +14,7 @@ public sealed partial class NavigatorDesktopItemViewModel : ObservableObject
         IsCurrentDesktop = navigatorDesktopItemModel.IsCurrentDesktop;
         PreviewCanvasWidth = previewCanvasWidth;
         PreviewCanvasHeight = previewCanvasHeight;
-        foreach (var navigatorDesktopWindowItemModel in navigatorDesktopItemModel.WindowItems)
-            PreviewWindowItems.Add(new NavigatorDesktopWindowItemViewModel(navigatorDesktopWindowItemModel, previewCanvasWidth, previewCanvasHeight));
+        foreach (var navigatorDesktopWindowItemModel in navigatorDesktopItemModel.WindowItems) PreviewWindowItems.Add(new NavigatorDesktopWindowItemViewModel(navigatorDesktopWindowItemModel, previewCanvasWidth, previewCanvasHeight));
     }
 
     public Visibility CurrentDesktopBadgeVisibility => IsCurrentDesktop ? Visibility.Visible : Visibility.Collapsed;

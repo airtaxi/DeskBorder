@@ -1,4 +1,4 @@
-using DeskBorder.Helpers;
+﻿using DeskBorder.Helpers;
 using DeskBorder.Interop;
 using DeskBorder.Models;
 using System.Runtime.InteropServices;
@@ -73,19 +73,12 @@ public sealed class ForegroundWindowFullscreenService : IForegroundWindowFullscr
         var top = Math.Max(firstRectangle.Top, secondRectangle.Top);
         var right = Math.Min(firstRectangle.Right, secondRectangle.Right);
         var bottom = Math.Min(firstRectangle.Bottom, secondRectangle.Bottom);
-        return right <= left || bottom <= top
-            ? 0
-            : (right - left) * (bottom - top);
+        return right <= left || bottom <= top ? 0 : (right - left) * (bottom - top);
     }
 
     private static bool TryGetWindowBounds(nint windowHandle, out ScreenRectangle windowBounds)
     {
-        if (Win32.DwmGetWindowRectangleAttribute(
-            windowHandle,
-            Win32.DesktopWindowManagerExtendedFrameBoundsAttribute,
-            out var nativeWindowRectangle,
-            (uint)Marshal.SizeOf<Win32.NativeRectangle>()) >= 0
-            && !nativeWindowRectangle.IsEmpty)
+        if (Win32.DwmGetWindowRectangleAttribute(windowHandle, Win32.DesktopWindowManagerExtendedFrameBoundsAttribute, out var nativeWindowRectangle, (uint)Marshal.SizeOf<Win32.NativeRectangle>()) >= 0 && !nativeWindowRectangle.IsEmpty)
         {
             windowBounds = CreateScreenRectangle(nativeWindowRectangle);
             return true;

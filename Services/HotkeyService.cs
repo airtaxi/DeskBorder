@@ -40,8 +40,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
 
     public void Dispose()
     {
-        if (_isDisposed)
-            return;
+        if (_isDisposed) return;
 
         _fileLogService.WriteInformation(nameof(HotkeyService), "Disposing hotkey service.");
         _isDisposed = true;
@@ -60,8 +59,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     public void Initialize()
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
-        if (IsInitialized)
-            return;
+        if (IsInitialized) return;
 
         _fileLogService.WriteInformation(nameof(HotkeyService), "Initializing hotkey service.");
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
@@ -74,8 +72,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
         _messageLoopThread.SetApartmentState(ApartmentState.STA);
         _messageLoopThread.Start();
 
-        if (!_messageLoopReadySignal.Wait(TimeSpan.FromSeconds(5)))
-            throw new TimeoutException("The hotkey message loop did not start within the expected time.");
+        if (!_messageLoopReadySignal.Wait(TimeSpan.FromSeconds(5))) throw new TimeoutException("The hotkey message loop did not start within the expected time.");
 
         IsInitialized = true;
         RefreshRegisteredHotkeys();
@@ -85,12 +82,10 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     public void RefreshRegisteredHotkeys()
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
-        if (!IsInitialized)
-            throw new InvalidOperationException("The hotkey service has not been initialized.");
+        if (!IsInitialized) throw new InvalidOperationException("The hotkey service has not been initialized.");
 
         _fileLogService.WriteInformation(nameof(HotkeyService), "Refreshing registered hotkeys.");
-        if (TryPostControlMessage(RefreshRegisteredHotkeysMessage))
-            return;
+        if (TryPostControlMessage(RefreshRegisteredHotkeysMessage)) return;
 
         var win32Exception = CreateWin32Exception("Failed to schedule the hotkey registration refresh.");
         _fileLogService.WriteError(nameof(HotkeyService), "Failed to schedule hotkey registration refresh.", win32Exception);
@@ -101,71 +96,28 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
 
     private static void AddRegisteredHotkey(List<RegisteredKeyboardHotkey> registeredKeyboardHotkeys, List<RegisteredMouseHotkey> registeredMouseHotkeys, HotkeyActionType hotkeyActionType, int identifier, KeyboardShortcutSettings keyboardShortcutSettings)
     {
-        if (!keyboardShortcutSettings.IsEnabled || !KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutSettings))
-            return;
+        if (!keyboardShortcutSettings.IsEnabled || !KeyboardShortcutHelper.IsKeyboardShortcutSpecified(keyboardShortcutSettings)) return;
 
         if (keyboardShortcutSettings.TriggerType == InputTriggerType.VirtualKey)
         {
-            registeredKeyboardHotkeys.Add(new RegisteredKeyboardHotkey(
-                identifier,
-                hotkeyActionType,
-                ConvertToNativeModifierMask(keyboardShortcutSettings.RequiredKeyboardModifierKeys),
-                (uint)keyboardShortcutSettings.Key));
+            registeredKeyboardHotkeys.Add(new RegisteredKeyboardHotkey(identifier, hotkeyActionType, ConvertToNativeModifierMask(keyboardShortcutSettings.RequiredKeyboardModifierKeys), (uint)keyboardShortcutSettings.Key));
             return;
         }
 
-        registeredMouseHotkeys.Add(new RegisteredMouseHotkey(
-            hotkeyActionType,
-            keyboardShortcutSettings.RequiredKeyboardModifierKeys,
-            keyboardShortcutSettings.TriggerType));
+        registeredMouseHotkeys.Add(new RegisteredMouseHotkey(hotkeyActionType, keyboardShortcutSettings.RequiredKeyboardModifierKeys, keyboardShortcutSettings.TriggerType));
     }
 
     private static HotkeyRegistrationPlan BuildRegisteredHotkeys(DeskBorderSettings settings)
     {
         var registeredKeyboardHotkeys = new List<RegisteredKeyboardHotkey>(7);
         var registeredMouseHotkeys = new List<RegisteredMouseHotkey>(7);
-        AddRegisteredHotkey(
-            registeredKeyboardHotkeys,
-            registeredMouseHotkeys,
-            HotkeyActionType.ToggleDeskBorderEnabled,
-            ToggleDeskBorderEnabledHotkeyIdentifier,
-            settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey);
-        AddRegisteredHotkey(
-            registeredKeyboardHotkeys,
-            registeredMouseHotkeys,
-            HotkeyActionType.SwitchToPreviousDesktop,
-            SwitchToPreviousDesktopHotkeyIdentifier,
-            settings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey);
-        AddRegisteredHotkey(
-            registeredKeyboardHotkeys,
-            registeredMouseHotkeys,
-            HotkeyActionType.SwitchToNextDesktop,
-            SwitchToNextDesktopHotkeyIdentifier,
-            settings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey);
-        AddRegisteredHotkey(
-            registeredKeyboardHotkeys,
-            registeredMouseHotkeys,
-            HotkeyActionType.MoveFocusedWindowToPreviousDesktop,
-            MoveFocusedWindowToPreviousDesktopHotkeyIdentifier,
-            settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey);
-        AddRegisteredHotkey(
-            registeredKeyboardHotkeys,
-            registeredMouseHotkeys,
-            HotkeyActionType.MoveFocusedWindowToNextDesktop,
-            MoveFocusedWindowToNextDesktopHotkeyIdentifier,
-            settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey);
-        AddRegisteredHotkey(
-            registeredKeyboardHotkeys,
-            registeredMouseHotkeys,
-            HotkeyActionType.ToggleNavigator,
-            ToggleNavigatorHotkeyIdentifier,
-            settings.NavigatorSettings.ToggleHotkey);
-        AddRegisteredHotkey(
-            registeredKeyboardHotkeys,
-            registeredMouseHotkeys,
-            HotkeyActionType.ShowProcessDesktopPlacementQuickConfiguration,
-            ShowProcessDesktopPlacementQuickConfigurationHotkeyIdentifier,
-            settings.ProcessDesktopPlacementSettings.QuickConfigurationHotkey);
+        AddRegisteredHotkey(registeredKeyboardHotkeys, registeredMouseHotkeys, HotkeyActionType.ToggleDeskBorderEnabled, ToggleDeskBorderEnabledHotkeyIdentifier, settings.ApplicationHotkeySettings.ToggleDeskBorderEnabledHotkey);
+        AddRegisteredHotkey(registeredKeyboardHotkeys, registeredMouseHotkeys, HotkeyActionType.SwitchToPreviousDesktop, SwitchToPreviousDesktopHotkeyIdentifier, settings.DesktopSwitchHotkeySettings.SwitchToPreviousDesktopHotkey);
+        AddRegisteredHotkey(registeredKeyboardHotkeys, registeredMouseHotkeys, HotkeyActionType.SwitchToNextDesktop, SwitchToNextDesktopHotkeyIdentifier, settings.DesktopSwitchHotkeySettings.SwitchToNextDesktopHotkey);
+        AddRegisteredHotkey(registeredKeyboardHotkeys, registeredMouseHotkeys, HotkeyActionType.MoveFocusedWindowToPreviousDesktop, MoveFocusedWindowToPreviousDesktopHotkeyIdentifier, settings.FocusedWindowMoveHotkeySettings.MoveToPreviousDesktopHotkey);
+        AddRegisteredHotkey(registeredKeyboardHotkeys, registeredMouseHotkeys, HotkeyActionType.MoveFocusedWindowToNextDesktop, MoveFocusedWindowToNextDesktopHotkeyIdentifier, settings.FocusedWindowMoveHotkeySettings.MoveToNextDesktopHotkey);
+        AddRegisteredHotkey(registeredKeyboardHotkeys, registeredMouseHotkeys, HotkeyActionType.ToggleNavigator, ToggleNavigatorHotkeyIdentifier, settings.NavigatorSettings.ToggleHotkey);
+        AddRegisteredHotkey(registeredKeyboardHotkeys, registeredMouseHotkeys, HotkeyActionType.ShowProcessDesktopPlacementQuickConfiguration, ShowProcessDesktopPlacementQuickConfigurationHotkeyIdentifier, settings.ProcessDesktopPlacementSettings.QuickConfigurationHotkey);
         ValidateRegisteredHotkeyCollisions(registeredKeyboardHotkeys, registeredMouseHotkeys);
         return new HotkeyRegistrationPlan(registeredKeyboardHotkeys, registeredMouseHotkeys);
     }
@@ -173,17 +125,13 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     private static uint ConvertToNativeModifierMask(KeyboardModifierKeys keyboardModifierKeys)
     {
         var nativeModifierMask = Win32.HotkeyModifierNoRepeat;
-        if ((keyboardModifierKeys & KeyboardModifierKeys.Alternate) != 0)
-            nativeModifierMask |= Win32.HotkeyModifierAlternate;
+        if ((keyboardModifierKeys & KeyboardModifierKeys.Alternate) != 0) nativeModifierMask |= Win32.HotkeyModifierAlternate;
 
-        if ((keyboardModifierKeys & KeyboardModifierKeys.Control) != 0)
-            nativeModifierMask |= Win32.HotkeyModifierControl;
+        if ((keyboardModifierKeys & KeyboardModifierKeys.Control) != 0) nativeModifierMask |= Win32.HotkeyModifierControl;
 
-        if ((keyboardModifierKeys & KeyboardModifierKeys.Shift) != 0)
-            nativeModifierMask |= Win32.HotkeyModifierShift;
+        if ((keyboardModifierKeys & KeyboardModifierKeys.Shift) != 0) nativeModifierMask |= Win32.HotkeyModifierShift;
 
-        if ((keyboardModifierKeys & KeyboardModifierKeys.Windows) != 0)
-            nativeModifierMask |= Win32.HotkeyModifierWindows;
+        if ((keyboardModifierKeys & KeyboardModifierKeys.Windows) != 0) nativeModifierMask |= Win32.HotkeyModifierWindows;
 
         return nativeModifierMask;
     }
@@ -204,8 +152,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
         var registeredKeyboardHotkeyKeys = new HashSet<(uint NativeModifierMask, uint NativeVirtualKey)>();
         foreach (var registeredKeyboardHotkey in registeredKeyboardHotkeys)
         {
-            if (registeredKeyboardHotkeyKeys.Add((registeredKeyboardHotkey.NativeModifierMask, registeredKeyboardHotkey.NativeVirtualKey)))
-                continue;
+            if (registeredKeyboardHotkeyKeys.Add((registeredKeyboardHotkey.NativeModifierMask, registeredKeyboardHotkey.NativeVirtualKey))) continue;
 
             throw new InvalidOperationException("Duplicate hotkey registrations are not supported.");
         }
@@ -213,8 +160,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
         var registeredMouseHotkeyKeys = new HashSet<(KeyboardModifierKeys RequiredKeyboardModifierKeys, InputTriggerType TriggerType)>();
         foreach (var registeredMouseHotkey in registeredMouseHotkeys)
         {
-            if (registeredMouseHotkeyKeys.Add((registeredMouseHotkey.RequiredKeyboardModifierKeys, registeredMouseHotkey.TriggerType)))
-                continue;
+            if (registeredMouseHotkeyKeys.Add((registeredMouseHotkey.RequiredKeyboardModifierKeys, registeredMouseHotkey.TriggerType))) continue;
 
             throw new InvalidOperationException("Duplicate hotkey registrations are not supported.");
         }
@@ -261,8 +207,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
 
     private void OnSettingsServiceSettingsChanged(object? sender, EventArgs eventArguments)
     {
-        if (_isDisposed || !IsInitialized)
-            return;
+        if (_isDisposed || !IsInitialized) return;
 
         _fileLogService.WriteInformation(nameof(HotkeyService), "Scheduling hotkey refresh because settings changed.");
         _ = TryPostControlMessage(RefreshRegisteredHotkeysMessage);
@@ -272,20 +217,19 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     {
         _mouseHookCallback = OnMouseLowLevelHook;
         _mouseHookHandle = Win32.SetWindowsHookEx(Win32.LowLevelMouseHookId, _mouseHookCallback, 0, 0);
-        if (_mouseHookHandle == 0)
-            throw CreateWin32Exception("Failed to install the mouse hotkey hook.");
+        if (_mouseHookHandle == 0) throw CreateWin32Exception("Failed to install the mouse hotkey hook.");
 
         _registeredMouseHotkeys.AddRange(registeredMouseHotkeys);
     }
 
     private nint OnMouseLowLevelHook(int code, nuint wParam, nint lParam)
     {
-        if (code >= 0
-            && TryGetInputTriggerTypeFromMouseMessage(wParam, lParam, out var inputTriggerType)
-            && TryGetRegisteredMouseHotkey(_keyboardModifierAbsorptionService.GetModifierKeySnapshot().PressedKeyboardModifierKeys, inputTriggerType, out var registeredMouseHotkey))
+        if (code >= 0 && TryGetInputTriggerTypeFromMouseMessage(wParam, lParam, out var inputTriggerType) && TryGetRegisteredMouseHotkey(_keyboardModifierAbsorptionService.GetModifierKeySnapshot().PressedKeyboardModifierKeys, inputTriggerType, out var registeredMouseHotkey))
         {
             if (!TryPostHotkeyActionMessage(registeredMouseHotkey.HotkeyActionType))
+            {
                 _fileLogService.WriteWarning(nameof(HotkeyService), $"Failed to queue mouse hotkey action. Action={registeredMouseHotkey.HotkeyActionType}.");
+            }
         }
 
         return Win32.CallNextHookEx(_mouseHookHandle, code, wParam, lParam);
@@ -315,8 +259,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
                 try { InstallMouseHookCore(hotkeyRegistrationPlan.RegisteredMouseHotkeys); }
                 catch (Exception exception)
                 {
-                    foreach (var registeredMouseHotkey in hotkeyRegistrationPlan.RegisteredMouseHotkeys)
-                        registrationFailureMessages[registeredMouseHotkey.HotkeyActionType] = exception.Message;
+                    foreach (var registeredMouseHotkey in hotkeyRegistrationPlan.RegisteredMouseHotkeys) registrationFailureMessages[registeredMouseHotkey.HotkeyActionType] = exception.Message;
 
                     throw;
                 }
@@ -340,8 +283,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
         while (true)
         {
             var messageResult = Win32.GetMessage(out var nativeMessage, 0, 0, 0);
-            if (messageResult == 0)
-                return;
+            if (messageResult == 0) return;
 
             if (messageResult < 0)
             {
@@ -352,8 +294,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
 
             if (nativeMessage.Message == Win32.WindowHotkeyMessage)
             {
-                if (TryGetRegisteredKeyboardHotkey((int)nativeMessage.WParam, out var registeredKeyboardHotkey))
-                    HandleHotkeyAction(registeredKeyboardHotkey.HotkeyActionType);
+                if (TryGetRegisteredKeyboardHotkey((int)nativeMessage.WParam, out var registeredKeyboardHotkey)) HandleHotkeyAction(registeredKeyboardHotkey.HotkeyActionType);
 
                 continue;
             }
@@ -361,8 +302,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
             if (nativeMessage.Message == InvokeMouseHotkeyActionMessage)
             {
                 var hotkeyActionTypeValue = (int)nativeMessage.WParam;
-                if (Enum.IsDefined(typeof(HotkeyActionType), hotkeyActionTypeValue))
-                    HandleHotkeyAction((HotkeyActionType)hotkeyActionTypeValue);
+                if (Enum.IsDefined(typeof(HotkeyActionType), hotkeyActionTypeValue)) HandleHotkeyAction((HotkeyActionType)hotkeyActionTypeValue);
 
                 continue;
             }
@@ -373,8 +313,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
                 continue;
             }
 
-            if (nativeMessage.Message != ShutdownMessage)
-                continue;
+            if (nativeMessage.Message != ShutdownMessage) continue;
 
             UnregisterMouseHookCore();
             UnregisterHotkeysCore();
@@ -413,12 +352,9 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
 
             case Win32.MouseWheelWindowMessage:
                 var mouseWheelDelta = unchecked((short)((nativeLowLevelMouseHookData.MouseData >> 16) & 0xFFFF));
-                if (mouseWheelDelta == 0)
-                    break;
+                if (mouseWheelDelta == 0) break;
 
-                inputTriggerType = mouseWheelDelta > 0
-                    ? InputTriggerType.MouseWheelUp
-                    : InputTriggerType.MouseWheelDown;
+                inputTriggerType = mouseWheelDelta > 0 ? InputTriggerType.MouseWheelUp : InputTriggerType.MouseWheelDown;
                 return true;
         }
 
@@ -430,8 +366,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     {
         foreach (var currentRegisteredKeyboardHotkey in _registeredKeyboardHotkeys)
         {
-            if (currentRegisteredKeyboardHotkey.Identifier != identifier)
-                continue;
+            if (currentRegisteredKeyboardHotkey.Identifier != identifier) continue;
 
             registeredKeyboardHotkey = currentRegisteredKeyboardHotkey;
             return true;
@@ -445,11 +380,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
     {
         foreach (var currentRegisteredMouseHotkey in _registeredMouseHotkeys)
         {
-            if (currentRegisteredMouseHotkey.RequiredKeyboardModifierKeys != pressedKeyboardModifierKeys
-                || currentRegisteredMouseHotkey.TriggerType != inputTriggerType)
-            {
-                continue;
-            }
+            if (currentRegisteredMouseHotkey.RequiredKeyboardModifierKeys != pressedKeyboardModifierKeys || currentRegisteredMouseHotkey.TriggerType != inputTriggerType) continue;
 
             registeredMouseHotkey = currentRegisteredMouseHotkey;
             return true;
@@ -479,16 +410,14 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
 
     private void UnregisterHotkeysCore()
     {
-        foreach (var registeredKeyboardHotkey in _registeredKeyboardHotkeys)
-            _ = Win32.UnregisterHotKey(0, registeredKeyboardHotkey.Identifier);
+        foreach (var registeredKeyboardHotkey in _registeredKeyboardHotkeys) _ = Win32.UnregisterHotKey(0, registeredKeyboardHotkey.Identifier);
 
         _registeredKeyboardHotkeys.Clear();
     }
 
     private void UnregisterMouseHookCore()
     {
-        if (_mouseHookHandle != 0)
-            _ = Win32.UnhookWindowsHookEx(_mouseHookHandle);
+        if (_mouseHookHandle != 0) _ = Win32.UnhookWindowsHookEx(_mouseHookHandle);
 
         _mouseHookHandle = 0;
         _mouseHookCallback = null;
@@ -500,8 +429,7 @@ public sealed partial class HotkeyService(ISettingsService settingsService, IFil
         var hasChanged = false;
         foreach (var registrationFailureEntry in registrationFailureMessages)
         {
-            if (string.Equals(_registrationFailureMessages[registrationFailureEntry.Key], registrationFailureEntry.Value, StringComparison.Ordinal))
-                continue;
+            if (string.Equals(_registrationFailureMessages[registrationFailureEntry.Key], registrationFailureEntry.Value, StringComparison.Ordinal)) continue;
 
             _registrationFailureMessages[registrationFailureEntry.Key] = registrationFailureEntry.Value;
             hasChanged = true;

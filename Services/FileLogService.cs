@@ -17,20 +17,20 @@ public sealed class FileLogService : IFileLogService
     public bool HasLogs()
     {
         lock (_logEntriesLock)
+        {
             return _logEntries.Count > 0;
+        }
     }
 
     public async Task ExportAsync(string destinationFilePath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(destinationFilePath);
-        if (!string.Equals(Path.GetExtension(destinationFilePath), ".txt", StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("Log exports must use the .txt extension.", nameof(destinationFilePath));
+        if (!string.Equals(Path.GetExtension(destinationFilePath), ".txt", StringComparison.OrdinalIgnoreCase)) throw new ArgumentException("Log exports must use the .txt extension.", nameof(destinationFilePath));
 
         string logSnapshot;
         lock (_logEntriesLock)
         {
-            if (_logEntries.Count == 0)
-                throw new InvalidOperationException("There are no logs to export.");
+            if (_logEntries.Count == 0) throw new InvalidOperationException("There are no logs to export.");
 
             logSnapshot = CreateLogSnapshotCore();
         }
@@ -62,14 +62,12 @@ public sealed class FileLogService : IFileLogService
         var exceptionDepth = 0;
         while (currentException is not null)
         {
-            if (exceptionDepth > 0)
-                stringBuilder.AppendLine("--->");
+            if (exceptionDepth > 0) stringBuilder.AppendLine("--->");
 
             stringBuilder.Append(currentException.GetType().FullName);
             stringBuilder.Append(": ");
             stringBuilder.AppendLine(currentException.Message);
-            if (!string.IsNullOrWhiteSpace(currentException.StackTrace))
-                stringBuilder.AppendLine(currentException.StackTrace);
+            if (!string.IsNullOrWhiteSpace(currentException.StackTrace)) stringBuilder.AppendLine(currentException.StackTrace);
 
             currentException = currentException.InnerException;
             exceptionDepth++;
@@ -80,13 +78,9 @@ public sealed class FileLogService : IFileLogService
 
     private static bool IsLogEntryHeader(string line)
     {
-        if (line.Length <= 29 || line[0] != '[' || line[24] != ']')
-            return false;
+        if (line.Length <= 29 || line[0] != '[' || line[24] != ']') return false;
 
-        return DateTime.TryParseExact(line.AsSpan(1, 23), "yyyy-MM-dd HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out _)
-            && line[25] == ' '
-            && line[26] == '['
-            && line.Contains("] [", StringComparison.Ordinal);
+        return DateTime.TryParseExact(line.AsSpan(1, 23), "yyyy-MM-dd HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out _) && line[25] == ' ' && line[26] == '[' && line.Contains("] [", StringComparison.Ordinal);
     }
 
     private void LoadPersistedLog()
@@ -97,8 +91,7 @@ public sealed class FileLogService : IFileLogService
             _logEntries.AddRange(ReadPersistedLogEntriesCore());
             TrimLogEntriesToMaximumCountCore();
 
-            if (_logEntries.Count > 0)
-                TryWriteLogSnapshotToFileCore();
+            if (_logEntries.Count > 0) TryWriteLogSnapshotToFileCore();
         }
     }
 
@@ -106,12 +99,10 @@ public sealed class FileLogService : IFileLogService
     {
         try
         {
-            if (!File.Exists(_logFilePath))
-                return [];
+            if (!File.Exists(_logFilePath)) return [];
 
             var rawLogContents = File.ReadAllText(_logFilePath, Encoding.UTF8);
-            if (string.IsNullOrWhiteSpace(rawLogContents))
-                return [];
+            if (string.IsNullOrWhiteSpace(rawLogContents)) return [];
 
             var parsedLogEntries = new List<string>();
             using var stringReader = new StringReader(rawLogContents);
@@ -121,36 +112,32 @@ public sealed class FileLogService : IFileLogService
             {
                 if (IsLogEntryHeader(currentLine))
                 {
-                    if (currentLogEntryBuilder.Length > 0)
-                        parsedLogEntries.Add(currentLogEntryBuilder.ToString().TrimEnd('\r', '\n'));
+                    if (currentLogEntryBuilder.Length > 0) parsedLogEntries.Add(currentLogEntryBuilder.ToString().TrimEnd('\r', '\n'));
 
                     currentLogEntryBuilder.Clear();
                     currentLogEntryBuilder.Append(currentLine);
                     continue;
                 }
 
-                if (currentLogEntryBuilder.Length == 0)
-                    continue;
+                if (currentLogEntryBuilder.Length == 0) continue;
 
                 currentLogEntryBuilder.AppendLine();
                 currentLogEntryBuilder.Append(currentLine);
             }
 
-            if (currentLogEntryBuilder.Length > 0)
-                parsedLogEntries.Add(currentLogEntryBuilder.ToString().TrimEnd('\r', '\n'));
+            if (currentLogEntryBuilder.Length > 0) parsedLogEntries.Add(currentLogEntryBuilder.ToString().TrimEnd('\r', '\n'));
 
             return parsedLogEntries.Count > 0 ? parsedLogEntries : [rawLogContents.Trim()];
         }
-        catch
-        {
-            return [];
-        }
+        catch { return []; }
     }
 
     private void TrimLogEntriesToMaximumCountCore()
     {
         if (_logEntries.Count > MaximumLogEntryCount)
+        {
             _logEntries.RemoveRange(0, _logEntries.Count - MaximumLogEntryCount);
+        }
     }
 
     private void TryWriteLogSnapshotToFileCore()
@@ -160,9 +147,7 @@ public sealed class FileLogService : IFileLogService
             Directory.CreateDirectory(Path.GetDirectoryName(_logFilePath)!);
             File.WriteAllText(_logFilePath, CreateLogSnapshotCore(), Encoding.UTF8);
         }
-        catch
-        {
-        }
+        catch { }
     }
 
     private void WriteEntry(string level, string source, string message)

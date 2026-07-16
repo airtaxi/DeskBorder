@@ -1,4 +1,4 @@
-using DeskBorder.Helpers;
+﻿using DeskBorder.Helpers;
 using DeskBorder.Navigation;
 using DeskBorder.Services;
 using Microsoft.UI.Xaml;
@@ -74,7 +74,9 @@ public sealed partial class DashboardPage : Page
     private static void EndStorePatchNotesCheck()
     {
         lock (s_storePatchNotesStateLock)
+        {
             s_isStorePatchNotesCheckInProgress = false;
+        }
     }
 
     private static async Task<string?> FetchStorePatchNotesAsync()
@@ -85,10 +87,7 @@ public sealed partial class DashboardPage : Page
 
         await using var storePatchNotesResponseStream = await storePatchNotesResponseMessage.Content.ReadAsStreamAsync();
         using var storePatchNotesJsonDocument = await JsonDocument.ParseAsync(storePatchNotesResponseStream);
-        if (!storePatchNotesJsonDocument.RootElement.TryGetProperty("Payload", out var payloadJsonElement)
-            || !payloadJsonElement.TryGetProperty("Notes", out var notesJsonElement)
-            || notesJsonElement.ValueKind != JsonValueKind.Array)
-            return string.Empty;
+        if (!storePatchNotesJsonDocument.RootElement.TryGetProperty("Payload", out var payloadJsonElement) || !payloadJsonElement.TryGetProperty("Notes", out var notesJsonElement) || notesJsonElement.ValueKind != JsonValueKind.Array) return string.Empty;
 
         foreach (var noteJsonElement in notesJsonElement.EnumerateArray())
         {
@@ -131,9 +130,7 @@ public sealed partial class DashboardPage : Page
 
     private async void OnDashboardPageLoaded(object sender, RoutedEventArgs routedEventArgs) => await ShowStorePatchNotesIfNeededAsync();
 
-    private void OnDesktopEdgeMonitorServiceMonitoringStateChanged(
-        object? sender,
-        DesktopEdgeMonitoringStateChangedEventArgs desktopEdgeMonitoringStateChangedEventArgs)
+    private void OnDesktopEdgeMonitorServiceMonitoringStateChanged(object? sender, DesktopEdgeMonitoringStateChangedEventArgs desktopEdgeMonitoringStateChangedEventArgs)
     {
         _ = sender;
         _ = desktopEdgeMonitoringStateChangedEventArgs;
@@ -142,8 +139,7 @@ public sealed partial class DashboardPage : Page
 
     private async void OnLaunchOnStartupToggleSwitchToggled(object sender, RoutedEventArgs routedEventArgs)
     {
-        if (!_isQuickToggleStateLoaded)
-            return;
+        if (!_isQuickToggleStateLoaded) return;
 
         await ApplyQuickSettingAsync(() => _settingsService.SetLaunchOnStartupEnabledAsync(LaunchOnStartupToggleSwitch.IsOn));
     }
@@ -240,8 +236,7 @@ public sealed partial class DashboardPage : Page
 
     private async void OnStoreUpdateCheckToggleSwitchToggled(object sender, RoutedEventArgs routedEventArgs)
     {
-        if (!_isQuickToggleStateLoaded)
-            return;
+        if (!_isQuickToggleStateLoaded) return;
 
         await ApplyQuickSettingAsync(() => _settingsService.UpdateSettingsAsync(_settingsService.Settings with
         {
@@ -255,13 +250,11 @@ public sealed partial class DashboardPage : Page
         UpdatePresentation();
     }
 
-    private async void OnToggleRuntimeButtonClicked(object sender, RoutedEventArgs routedEventArgs)
-        => await ApplyQuickSettingAsync(() => _settingsService.UpdateSettingsAsync(_settingsService.Settings with { IsDeskBorderEnabled = !_settingsService.Settings.IsDeskBorderEnabled }));
+    private async void OnToggleRuntimeButtonClicked(object sender, RoutedEventArgs routedEventArgs) => await ApplyQuickSettingAsync(() => _settingsService.UpdateSettingsAsync(_settingsService.Settings with { IsDeskBorderEnabled = !_settingsService.Settings.IsDeskBorderEnabled }));
 
     private void EnqueuePresentationUpdate()
     {
-        if (DispatcherQueue.TryEnqueue(UpdatePresentation))
-            return;
+        if (DispatcherQueue.TryEnqueue(UpdatePresentation)) return;
 
         UpdatePresentation();
     }
@@ -331,9 +324,7 @@ public sealed partial class DashboardPage : Page
         var currentSettings = _settingsService.Settings;
         RuntimeStatusTextBlock.Text = _deskBorderRuntimeService.StatusMessage;
         ToggleRuntimeButton.Content = LocalizedResourceAccessor.GetString(currentSettings.IsDeskBorderEnabled ? "Dashboard.ToggleRuntime.Disable" : "Dashboard.ToggleRuntime.Enable");
-        MonitoringStatusTextBlock.Text = _desktopEdgeMonitorService.IsMonitoring
-            ? LocalizedResourceAccessor.GetString("Dashboard.Monitoring.Running")
-            : LocalizedResourceAccessor.GetString("Dashboard.Monitoring.Stopped");
+        MonitoringStatusTextBlock.Text = _desktopEdgeMonitorService.IsMonitoring ? LocalizedResourceAccessor.GetString("Dashboard.Monitoring.Running") : LocalizedResourceAccessor.GetString("Dashboard.Monitoring.Stopped");
     }
 
     private void UpdateSettingsSummaryPresentation()

@@ -1,4 +1,4 @@
-using DeskBorder.Helpers;
+﻿using DeskBorder.Helpers;
 using DeskBorder.Models;
 
 namespace DeskBorder.Services;
@@ -50,9 +50,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
             isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied);
         var pendingMouseMovementDelta = _mouseMovementTrackingService.ConsumePendingMouseMovementDelta();
         var displayMonitors = MouseHelper.GetDisplayMonitors();
-        var foregroundWindowFullscreenState = currentSettings.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen
-            ? _foregroundWindowFullscreenService.GetForegroundWindowFullscreenState(displayMonitors)
-            : new();
+        var foregroundWindowFullscreenState = currentSettings.IsDesktopSwitchingAndCreationDisabledWhenForegroundWindowIsFullscreen ? _foregroundWindowFullscreenService.GetForegroundWindowFullscreenState(displayMonitors) : new();
         var currentDisplayMonitor = FindCurrentDisplayMonitor(displayMonitors, currentCursorPosition);
         var isForegroundProcessBlacklisted = IsForegroundProcessBlacklisted(currentSettings, foregroundProcessSnapshot);
         var desktopEdgeAvailabilityStatus = GetDesktopEdgeAvailabilityStatus(
@@ -99,13 +97,11 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
 
     public void Dispose()
     {
-        if (_isDisposed)
-            return;
+        if (_isDisposed) return;
 
         _fileLogService.WriteInformation(nameof(DesktopEdgeMonitorService), "Disposing desktop edge monitor service.");
         _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
-        if (_monitoringCancellationTokenSource is not null)
-            _monitoringCancellationTokenSource.Cancel();
+        if (_monitoringCancellationTokenSource is not null) _monitoringCancellationTokenSource.Cancel();
 
         _monitoringCancellationTokenSource?.Dispose();
         _isDisposed = true;
@@ -116,8 +112,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         var previousState = CurrentState;
         var currentState = CaptureCurrentState();
         CurrentState = currentState;
-        if (!HasStateChanged(previousState, currentState))
-            return;
+        if (!HasStateChanged(previousState, currentState)) return;
 
         LogAvailabilityStatusChange(previousState, currentState);
         MonitoringStateChanged?.Invoke(this, new(previousState, currentState));
@@ -126,8 +121,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
     public Task StartAsync(CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
-        if (_monitoringTask is not null)
-            return Task.CompletedTask;
+        if (_monitoringTask is not null) return Task.CompletedTask;
 
         _fileLogService.WriteInformation(nameof(DesktopEdgeMonitorService), "Starting desktop edge monitoring.");
         _settingsService.SettingsChanged += OnSettingsServiceSettingsChanged;
@@ -140,23 +134,14 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
 
     public async Task StopAsync()
     {
-        if (_monitoringTask is null)
-            return;
+        if (_monitoringTask is null) return;
 
         _settingsService.SettingsChanged -= OnSettingsServiceSettingsChanged;
         _monitoringCancellationTokenSource?.Cancel();
 
-        try
-        {
-            await _monitoringTask;
-        }
-        catch (OperationCanceledException)
-        {
-        }
-        catch (Exception exception)
-        {
-            _fileLogService.WriteWarning(nameof(DesktopEdgeMonitorService), "Monitoring loop completed with an exception during stop.", exception);
-        }
+        try { await _monitoringTask; }
+        catch (OperationCanceledException) { }
+        catch (Exception exception) { _fileLogService.WriteWarning(nameof(DesktopEdgeMonitorService), "Monitoring loop completed with an exception during stop.", exception); }
         finally
         {
             _monitoringCancellationTokenSource?.Dispose();
@@ -166,18 +151,9 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         }
     }
 
-    private static NavigatorTriggerState CreateNavigatorTriggerState(
-        NavigatorSettings navigatorSettings,
-        bool isNavigatorTriggerAvailable,
-        DisplayMonitorInfo? currentDisplayMonitor,
-        ScreenPoint currentCursorPosition,
-        bool wasCursorInsideTriggerRectangle)
+    private static NavigatorTriggerState CreateNavigatorTriggerState(NavigatorSettings navigatorSettings, bool isNavigatorTriggerAvailable, DisplayMonitorInfo? currentDisplayMonitor, ScreenPoint currentCursorPosition, bool wasCursorInsideTriggerRectangle)
     {
-        if (!navigatorSettings.IsTriggerAreaEnabled || !isNavigatorTriggerAvailable || currentDisplayMonitor is null)
-            return new()
-            {
-                HasCursorLeftTriggerRectangle = wasCursorInsideTriggerRectangle
-            };
+        if (!navigatorSettings.IsTriggerAreaEnabled || !isNavigatorTriggerAvailable || currentDisplayMonitor is null) return new() { HasCursorLeftTriggerRectangle = wasCursorInsideTriggerRectangle };
 
         var triggerRectangle = CreateNavigatorTriggerRectangle(currentDisplayMonitor.MonitorBounds, navigatorSettings.TriggerRectangle);
         var isCursorInsideTriggerRectangle = triggerRectangle.Contains(currentCursorPosition);
@@ -193,30 +169,14 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
 
     private static ScreenRectangle CreateNavigatorTriggerRectangle(ScreenRectangle displayMonitorBounds, TriggerRectangleSettings triggerRectangleSettings)
     {
-        var width = Math.Clamp(
-            (int)Math.Round(displayMonitorBounds.Width * triggerRectangleSettings.Width, MidpointRounding.AwayFromZero),
-            1,
-            displayMonitorBounds.Width);
-        var height = Math.Clamp(
-            (int)Math.Round(displayMonitorBounds.Height * triggerRectangleSettings.Height, MidpointRounding.AwayFromZero),
-            1,
-            displayMonitorBounds.Height);
-        var right = Math.Clamp(
-            displayMonitorBounds.Left + (int)Math.Round(displayMonitorBounds.Width * (triggerRectangleSettings.Left + triggerRectangleSettings.Width), MidpointRounding.AwayFromZero),
-            displayMonitorBounds.Left + width,
-            displayMonitorBounds.Right);
-        var bottom = Math.Clamp(
-            displayMonitorBounds.Top + (int)Math.Round(displayMonitorBounds.Height * (triggerRectangleSettings.Top + triggerRectangleSettings.Height), MidpointRounding.AwayFromZero),
-            displayMonitorBounds.Top + height,
-            displayMonitorBounds.Bottom);
+        var width = Math.Clamp((int)Math.Round(displayMonitorBounds.Width * triggerRectangleSettings.Width, MidpointRounding.AwayFromZero), 1, displayMonitorBounds.Width);
+        var height = Math.Clamp((int)Math.Round(displayMonitorBounds.Height * triggerRectangleSettings.Height, MidpointRounding.AwayFromZero), 1, displayMonitorBounds.Height);
+        var right = Math.Clamp(displayMonitorBounds.Left + (int)Math.Round(displayMonitorBounds.Width * (triggerRectangleSettings.Left + triggerRectangleSettings.Width), MidpointRounding.AwayFromZero), displayMonitorBounds.Left + width, displayMonitorBounds.Right);
+        var bottom = Math.Clamp(displayMonitorBounds.Top + (int)Math.Round(displayMonitorBounds.Height * (triggerRectangleSettings.Top + triggerRectangleSettings.Height), MidpointRounding.AwayFromZero), displayMonitorBounds.Top + height, displayMonitorBounds.Bottom);
         return new(right - width, bottom - height, right, bottom);
     }
 
-    private DesktopEdgeKind GetActiveDesktopEdge(
-        DesktopEdgeKind touchedDesktopEdge,
-        DisplayMonitorInfo? currentDisplayMonitor,
-        DeskBorderSettings currentSettings,
-        MouseMovementDelta pendingMouseMovementDelta)
+    private DesktopEdgeKind GetActiveDesktopEdge(DesktopEdgeKind touchedDesktopEdge, DisplayMonitorInfo? currentDisplayMonitor, DeskBorderSettings currentSettings, MouseMovementDelta pendingMouseMovementDelta)
     {
         if (!currentSettings.IsDesktopEdgeAdditionalTriggerDistanceEnabled)
         {
@@ -238,42 +198,22 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
 
         var signedOutwardMovement = GetSignedOutwardMovement(touchedDesktopEdge, pendingMouseMovementDelta);
         _desktopEdgeAdditionalTriggerDistanceAccumulatedPixels = Math.Max(0, _desktopEdgeAdditionalTriggerDistanceAccumulatedPixels + signedOutwardMovement);
-        var requiredAdditionalTriggerDistancePixels = GetRequiredAdditionalTriggerDistancePixels(
-            GetTriggerLength(currentDisplayMonitor.MonitorBounds, touchedDesktopEdge),
-            currentSettings.DesktopEdgeAdditionalTriggerDistancePercentage);
-        return _desktopEdgeAdditionalTriggerDistanceAccumulatedPixels >= requiredAdditionalTriggerDistancePixels
-            ? touchedDesktopEdge
-            : DesktopEdgeKind.None;
+        var requiredAdditionalTriggerDistancePixels = GetRequiredAdditionalTriggerDistancePixels(GetTriggerLength(currentDisplayMonitor.MonitorBounds, touchedDesktopEdge), currentSettings.DesktopEdgeAdditionalTriggerDistancePercentage);
+        return _desktopEdgeAdditionalTriggerDistanceAccumulatedPixels >= requiredAdditionalTriggerDistancePixels ? touchedDesktopEdge : DesktopEdgeKind.None;
     }
 
-    private static DesktopEdgeKind GetTouchedDesktopEdge(
-        DisplayMonitorInfo[] displayMonitors,
-        DisplayMonitorInfo? currentDisplayMonitor,
-        ScreenPoint currentCursorPosition,
-        DeskBorderSettings currentSettings,
-        MouseMovementDelta pendingMouseMovementDelta)
+    private static DesktopEdgeKind GetTouchedDesktopEdge(DisplayMonitorInfo[] displayMonitors, DisplayMonitorInfo? currentDisplayMonitor, ScreenPoint currentCursorPosition, DeskBorderSettings currentSettings, MouseMovementDelta pendingMouseMovementDelta)
     {
-        if (currentDisplayMonitor is null || displayMonitors.Length == 0)
-            return DesktopEdgeKind.None;
+        if (currentDisplayMonitor is null || displayMonitors.Length == 0) return DesktopEdgeKind.None;
 
-        var touchedHorizontalDesktopEdge = GetTouchedHorizontalDesktopEdge(
-            displayMonitors,
-            currentDisplayMonitor,
-            currentCursorPosition,
-            currentSettings.DesktopEdgeIgnoreZoneSettings);
+        var touchedHorizontalDesktopEdge = GetTouchedHorizontalDesktopEdge(displayMonitors, currentDisplayMonitor, currentCursorPosition, currentSettings.DesktopEdgeIgnoreZoneSettings);
         var touchedVerticalDesktopEdge = GetTouchedVerticalDesktopEdge(displayMonitors, currentDisplayMonitor, currentCursorPosition, currentSettings);
         return ResolveTouchedDesktopEdge(touchedHorizontalDesktopEdge, touchedVerticalDesktopEdge, pendingMouseMovementDelta);
     }
 
-    private static int GetRequiredAdditionalTriggerDistancePixels(int triggerLength, double desktopEdgeAdditionalTriggerDistancePercentage) => Math.Clamp(
-        (int)Math.Round(triggerLength * (desktopEdgeAdditionalTriggerDistancePercentage / 100d), MidpointRounding.AwayFromZero),
-        1,
-        triggerLength);
+    private static int GetRequiredAdditionalTriggerDistancePixels(int triggerLength, double desktopEdgeAdditionalTriggerDistancePercentage) => Math.Clamp((int)Math.Round(triggerLength * (desktopEdgeAdditionalTriggerDistancePercentage / 100d), MidpointRounding.AwayFromZero), 1, triggerLength);
 
-    private static bool IsCursorWithinDesktopEdgeActiveVerticalRange(
-        ScreenRectangle monitorBounds,
-        ScreenPoint currentCursorPosition,
-        DesktopEdgeIgnoreZoneSettings desktopEdgeIgnoreZoneSettings)
+    private static bool IsCursorWithinDesktopEdgeActiveVerticalRange(ScreenRectangle monitorBounds, ScreenPoint currentCursorPosition, DesktopEdgeIgnoreZoneSettings desktopEdgeIgnoreZoneSettings)
     {
         var topIgnoreHeight = (int)Math.Round(monitorBounds.Height * (desktopEdgeIgnoreZoneSettings.TopIgnorePercentage / 100d), MidpointRounding.AwayFromZero);
         var bottomIgnoreHeight = (int)Math.Round(monitorBounds.Height * (desktopEdgeIgnoreZoneSettings.BottomIgnorePercentage / 100d), MidpointRounding.AwayFromZero);
@@ -282,10 +222,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         return currentCursorPosition.Y >= activeTopBoundary && currentCursorPosition.Y < activeBottomBoundary;
     }
 
-    private static bool IsCursorWithinDesktopEdgeActiveHorizontalRange(
-        ScreenRectangle monitorBounds,
-        ScreenPoint currentCursorPosition,
-        DesktopEdgeIgnoreZoneSettings desktopEdgeIgnoreZoneSettings)
+    private static bool IsCursorWithinDesktopEdgeActiveHorizontalRange(ScreenRectangle monitorBounds, ScreenPoint currentCursorPosition, DesktopEdgeIgnoreZoneSettings desktopEdgeIgnoreZoneSettings)
     {
         var leftIgnoreWidth = (int)Math.Round(monitorBounds.Width * (desktopEdgeIgnoreZoneSettings.LeftIgnorePercentage / 100d), MidpointRounding.AwayFromZero);
         var rightIgnoreWidth = (int)Math.Round(monitorBounds.Width * (desktopEdgeIgnoreZoneSettings.RightIgnorePercentage / 100d), MidpointRounding.AwayFromZero);
@@ -294,62 +231,37 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         return currentCursorPosition.X >= activeLeftBoundary && currentCursorPosition.X < activeRightBoundary;
     }
 
-    private static DesktopEdgeAvailabilityStatus GetDesktopEdgeAvailabilityStatus(
-        DeskBorderSettings settings,
-        int displayMonitorCount,
-        bool hasCurrentDisplayMonitor,
-        bool isCursorClipped,
-        bool isAnyMouseButtonPressed,
-        bool isDesktopSwitchAllowedWhileMouseButtonsArePressed,
-        bool isForegroundProcessBlacklisted,
-        bool isDesktopSwitchingAndCreationDisabledByFullscreenWindow)
+    private static DesktopEdgeAvailabilityStatus GetDesktopEdgeAvailabilityStatus(DeskBorderSettings settings, int displayMonitorCount, bool hasCurrentDisplayMonitor, bool isCursorClipped, bool isAnyMouseButtonPressed, bool isDesktopSwitchAllowedWhileMouseButtonsArePressed, bool isForegroundProcessBlacklisted, bool isDesktopSwitchingAndCreationDisabledByFullscreenWindow)
     {
-        if (!settings.IsDeskBorderEnabled)
-            return DesktopEdgeAvailabilityStatus.DisabledByDeskBorderSetting;
+        if (!settings.IsDeskBorderEnabled) return DesktopEdgeAvailabilityStatus.DisabledByDeskBorderSetting;
 
-        if (isCursorClipped)
-            return DesktopEdgeAvailabilityStatus.DisabledByCursorClipping;
+        if (isCursorClipped) return DesktopEdgeAvailabilityStatus.DisabledByCursorClipping;
 
-        if (isAnyMouseButtonPressed && !isDesktopSwitchAllowedWhileMouseButtonsArePressed)
-            return DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton;
+        if (isAnyMouseButtonPressed && !isDesktopSwitchAllowedWhileMouseButtonsArePressed) return DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton;
 
-        if (!hasCurrentDisplayMonitor)
-            return DesktopEdgeAvailabilityStatus.CursorOutsideDisplayEnvironment;
+        if (!hasCurrentDisplayMonitor) return DesktopEdgeAvailabilityStatus.CursorOutsideDisplayEnvironment;
 
-        if (displayMonitorCount > 1
-            && settings.MultiDisplayBehavior == MultiDisplayBehavior.DisableInMultiDisplayEnvironment
-            && !settings.IsVerticalDesktopSwitchingEnabled) return DesktopEdgeAvailabilityStatus.DisabledInMultiDisplayEnvironment;
+        if (displayMonitorCount > 1 && settings.MultiDisplayBehavior == MultiDisplayBehavior.DisableInMultiDisplayEnvironment && !settings.IsVerticalDesktopSwitchingEnabled) return DesktopEdgeAvailabilityStatus.DisabledInMultiDisplayEnvironment;
 
-        if (isForegroundProcessBlacklisted)
-            return DesktopEdgeAvailabilityStatus.DisabledByBlacklistedProcess;
+        if (isForegroundProcessBlacklisted) return DesktopEdgeAvailabilityStatus.DisabledByBlacklistedProcess;
 
         if (isDesktopSwitchingAndCreationDisabledByFullscreenWindow) return DesktopEdgeAvailabilityStatus.DisabledByFullscreenWindow;
 
         return DesktopEdgeAvailabilityStatus.Enabled;
     }
 
-    private static bool HasActiveDesktopActionMouseModifierButtonTriggers(DeskBorderSettings settings) => HasMouseModifierButtonTriggers(settings.SwitchDesktopModifierSettings)
-        || (settings.IsDesktopCreationEnabled && HasMouseModifierButtonTriggers(settings.CreateDesktopModifierSettings));
+    private static bool HasActiveDesktopActionMouseModifierButtonTriggers(DeskBorderSettings settings) => HasMouseModifierButtonTriggers(settings.SwitchDesktopModifierSettings) || (settings.IsDesktopCreationEnabled && HasMouseModifierButtonTriggers(settings.CreateDesktopModifierSettings));
 
     private static bool HasMouseModifierButtonTriggers(ModifierGateSettings modifierGateSettings) => modifierGateSettings.RequiredMouseModifierButtonTriggers.Length > 0;
 
-    private static bool IsActiveDesktopActionMouseModifierSatisfied(
-        DeskBorderSettings settings,
-        bool isSwitchDesktopModifierSatisfied,
-        bool isCreateDesktopModifierSatisfied)
+    private static bool IsActiveDesktopActionMouseModifierSatisfied(DeskBorderSettings settings, bool isSwitchDesktopModifierSatisfied, bool isCreateDesktopModifierSatisfied)
     {
         if (HasMouseModifierButtonTriggers(settings.SwitchDesktopModifierSettings) && isSwitchDesktopModifierSatisfied) return true;
 
-        return settings.IsDesktopCreationEnabled
-            && HasMouseModifierButtonTriggers(settings.CreateDesktopModifierSettings)
-            && isCreateDesktopModifierSatisfied;
+        return settings.IsDesktopCreationEnabled && HasMouseModifierButtonTriggers(settings.CreateDesktopModifierSettings) && isCreateDesktopModifierSatisfied;
     }
 
-    private static bool IsDesktopSwitchingAndCreationAllowedWhileMouseButtonsArePressed(
-        DeskBorderSettings settings,
-        bool isSwitchDesktopModifierSatisfied,
-        bool isCreateDesktopModifierSatisfied,
-        bool isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied)
+    private static bool IsDesktopSwitchingAndCreationAllowedWhileMouseButtonsArePressed(DeskBorderSettings settings, bool isSwitchDesktopModifierSatisfied, bool isCreateDesktopModifierSatisfied, bool isSwitchDesktopWhileMouseButtonsArePressedModifierSatisfied)
     {
         if (HasActiveDesktopActionMouseModifierButtonTriggers(settings)) return IsActiveDesktopActionMouseModifierSatisfied(settings, isSwitchDesktopModifierSatisfied, isCreateDesktopModifierSatisfied);
 
@@ -386,10 +298,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
     }
 
     private static bool HasDesktopEdgeRearmBoundaryStateChanged(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState)
-        => IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.LeftOuterDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.LeftOuterDisplayEdge)
-        || IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.RightOuterDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.RightOuterDisplayEdge)
-        || IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.TopDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.TopDisplayEdge)
-        || IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.BottomDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.BottomDisplayEdge);
+        => IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.LeftOuterDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.LeftOuterDisplayEdge) || IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.RightOuterDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.RightOuterDisplayEdge) || IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.TopDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.TopDisplayEdge) || IsCursorPastDesktopEdgeRearmBoundary(previousState, DesktopEdgeKind.BottomDisplayEdge) != IsCursorPastDesktopEdgeRearmBoundary(currentState, DesktopEdgeKind.BottomDisplayEdge);
 
     private static bool IsCursorPastDesktopEdgeRearmBoundary(DesktopEdgeMonitoringState state, DesktopEdgeKind desktopEdgeKind)
     {
@@ -406,9 +315,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
     }
 
     private static bool HasNavigatorTriggerStateChanged(NavigatorTriggerState previousState, NavigatorTriggerState currentState)
-        => previousState.IsEnabled != currentState.IsEnabled
-        || previousState.TriggerRectangle != currentState.TriggerRectangle
-        || previousState.IsCursorInsideTriggerRectangle != currentState.IsCursorInsideTriggerRectangle;
+        => previousState.IsEnabled != currentState.IsEnabled || previousState.TriggerRectangle != currentState.TriggerRectangle || previousState.IsCursorInsideTriggerRectangle != currentState.IsCursorInsideTriggerRectangle;
 
     private static bool HaveSameDisplayMonitors(DisplayMonitorInfo[] previousDisplayMonitors, DisplayMonitorInfo[] currentDisplayMonitors)
     {
@@ -418,7 +325,10 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
 
         for (var index = 0; index < previousDisplayMonitors.Length; index++)
         {
-            if (previousDisplayMonitors[index] != currentDisplayMonitors[index]) return false;
+            if (previousDisplayMonitors[index] != currentDisplayMonitors[index])
+            {
+                return false;
+            }
         }
 
         return true;
@@ -445,63 +355,39 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         _ => monitorBounds.Width
     };
 
-    private static DesktopEdgeKind GetTouchedHorizontalDesktopEdge(
-        DisplayMonitorInfo[] displayMonitors,
-        DisplayMonitorInfo currentDisplayMonitor,
-        ScreenPoint currentCursorPosition,
-        DesktopEdgeIgnoreZoneSettings desktopEdgeIgnoreZoneSettings)
+    private static DesktopEdgeKind GetTouchedHorizontalDesktopEdge(DisplayMonitorInfo[] displayMonitors, DisplayMonitorInfo currentDisplayMonitor, ScreenPoint currentCursorPosition, DesktopEdgeIgnoreZoneSettings desktopEdgeIgnoreZoneSettings)
     {
-        if (!IsCursorWithinDesktopEdgeActiveVerticalRange(currentDisplayMonitor.MonitorBounds, currentCursorPosition, desktopEdgeIgnoreZoneSettings))
-            return DesktopEdgeKind.None;
+        if (!IsCursorWithinDesktopEdgeActiveVerticalRange(currentDisplayMonitor.MonitorBounds, currentCursorPosition, desktopEdgeIgnoreZoneSettings)) return DesktopEdgeKind.None;
 
         var leftmostDisplayEdge = displayMonitors.Min(displayMonitorInfo => displayMonitorInfo.MonitorBounds.Left);
-        if (currentDisplayMonitor.MonitorBounds.Left == leftmostDisplayEdge && currentCursorPosition.X == leftmostDisplayEdge)
-            return DesktopEdgeKind.LeftOuterDisplayEdge;
+        if (currentDisplayMonitor.MonitorBounds.Left == leftmostDisplayEdge && currentCursorPosition.X == leftmostDisplayEdge) return DesktopEdgeKind.LeftOuterDisplayEdge;
 
         var rightmostDisplayEdge = displayMonitors.Max(displayMonitorInfo => displayMonitorInfo.MonitorBounds.Right);
-        if (currentDisplayMonitor.MonitorBounds.Right == rightmostDisplayEdge && currentCursorPosition.X == rightmostDisplayEdge - 1)
-            return DesktopEdgeKind.RightOuterDisplayEdge;
+        if (currentDisplayMonitor.MonitorBounds.Right == rightmostDisplayEdge && currentCursorPosition.X == rightmostDisplayEdge - 1) return DesktopEdgeKind.RightOuterDisplayEdge;
 
         return DesktopEdgeKind.None;
     }
 
-    private static DesktopEdgeKind GetTouchedVerticalDesktopEdge(
-        DisplayMonitorInfo[] displayMonitors,
-        DisplayMonitorInfo currentDisplayMonitor,
-        ScreenPoint currentCursorPosition,
-        DeskBorderSettings currentSettings)
+    private static DesktopEdgeKind GetTouchedVerticalDesktopEdge(DisplayMonitorInfo[] displayMonitors, DisplayMonitorInfo currentDisplayMonitor, ScreenPoint currentCursorPosition, DeskBorderSettings currentSettings)
     {
-        if (!currentSettings.IsVerticalDesktopSwitchingEnabled)
-            return DesktopEdgeKind.None;
+        if (!currentSettings.IsVerticalDesktopSwitchingEnabled) return DesktopEdgeKind.None;
 
-        if (currentSettings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment && displayMonitors.Length <= 1)
-            return DesktopEdgeKind.None;
+        if (currentSettings.IsVerticalDesktopSwitchingOnlyInMultiDisplayEnvironment && displayMonitors.Length <= 1) return DesktopEdgeKind.None;
 
-        if (!IsCursorWithinDesktopEdgeActiveHorizontalRange(currentDisplayMonitor.MonitorBounds, currentCursorPosition, currentSettings.DesktopEdgeIgnoreZoneSettings))
-            return DesktopEdgeKind.None;
+        if (!IsCursorWithinDesktopEdgeActiveHorizontalRange(currentDisplayMonitor.MonitorBounds, currentCursorPosition, currentSettings.DesktopEdgeIgnoreZoneSettings)) return DesktopEdgeKind.None;
 
-        if (currentCursorPosition.Y == currentDisplayMonitor.MonitorBounds.Top)
-            return DesktopEdgeKind.TopDisplayEdge;
+        if (currentCursorPosition.Y == currentDisplayMonitor.MonitorBounds.Top) return DesktopEdgeKind.TopDisplayEdge;
 
-        return currentCursorPosition.Y == currentDisplayMonitor.MonitorBounds.Bottom - 1
-            ? DesktopEdgeKind.BottomDisplayEdge
-            : DesktopEdgeKind.None;
+        return currentCursorPosition.Y == currentDisplayMonitor.MonitorBounds.Bottom - 1 ? DesktopEdgeKind.BottomDisplayEdge : DesktopEdgeKind.None;
     }
 
-    private static DesktopEdgeKind ResolveTouchedDesktopEdge(
-        DesktopEdgeKind touchedHorizontalDesktopEdge,
-        DesktopEdgeKind touchedVerticalDesktopEdge,
-        MouseMovementDelta pendingMouseMovementDelta)
+    private static DesktopEdgeKind ResolveTouchedDesktopEdge(DesktopEdgeKind touchedHorizontalDesktopEdge, DesktopEdgeKind touchedVerticalDesktopEdge, MouseMovementDelta pendingMouseMovementDelta)
     {
-        if (touchedHorizontalDesktopEdge == DesktopEdgeKind.None)
-            return touchedVerticalDesktopEdge;
+        if (touchedHorizontalDesktopEdge == DesktopEdgeKind.None) return touchedVerticalDesktopEdge;
 
-        if (touchedVerticalDesktopEdge == DesktopEdgeKind.None)
-            return touchedHorizontalDesktopEdge;
+        if (touchedVerticalDesktopEdge == DesktopEdgeKind.None) return touchedHorizontalDesktopEdge;
 
-        return Math.Abs(pendingMouseMovementDelta.HorizontalPixels) >= Math.Abs(pendingMouseMovementDelta.VerticalPixels)
-            ? touchedHorizontalDesktopEdge
-            : touchedVerticalDesktopEdge;
+        return Math.Abs(pendingMouseMovementDelta.HorizontalPixels) >= Math.Abs(pendingMouseMovementDelta.VerticalPixels) ? touchedHorizontalDesktopEdge : touchedVerticalDesktopEdge;
     }
 
     private static DisplayMonitorInfo? FindCurrentDisplayMonitor(DisplayMonitorInfo[] displayMonitors, ScreenPoint currentCursorPosition)
@@ -509,7 +395,9 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         foreach (var displayMonitor in displayMonitors)
         {
             if (displayMonitor.MonitorBounds.Contains(currentCursorPosition))
+            {
                 return displayMonitor;
+            }
         }
 
         return null;
@@ -537,11 +425,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
     {
         var currentTimestamp = DateTimeOffset.UtcNow;
         var exceptionSignature = $"{exception.GetType().FullName}:{exception.Message}";
-        if (string.Equals(_lastRefreshFailureSignature, exceptionSignature, StringComparison.Ordinal)
-            && currentTimestamp - _lastRefreshFailureLoggedAt < s_refreshFailureLoggingWindow)
-        {
-            return;
-        }
+        if (string.Equals(_lastRefreshFailureSignature, exceptionSignature, StringComparison.Ordinal) && currentTimestamp - _lastRefreshFailureLoggedAt < s_refreshFailureLoggingWindow) return;
 
         _lastRefreshFailureSignature = exceptionSignature;
         _lastRefreshFailureLoggedAt = currentTimestamp;
@@ -550,34 +434,24 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
 
     private void LogAvailabilityStatusChange(DesktopEdgeMonitoringState previousState, DesktopEdgeMonitoringState currentState)
     {
-        if (previousState.DesktopEdgeAvailabilityStatus == currentState.DesktopEdgeAvailabilityStatus)
-            return;
+        if (previousState.DesktopEdgeAvailabilityStatus == currentState.DesktopEdgeAvailabilityStatus) return;
 
-        if (ShouldSuppressAvailabilityStatusChangeInformationLogging(previousState.DesktopEdgeAvailabilityStatus, currentState.DesktopEdgeAvailabilityStatus))
-            return;
+        if (ShouldSuppressAvailabilityStatusChangeInformationLogging(previousState.DesktopEdgeAvailabilityStatus, currentState.DesktopEdgeAvailabilityStatus)) return;
 
-        if (currentState.DesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByBlacklistedProcess
-            && !string.IsNullOrWhiteSpace(currentState.ForegroundProcessSnapshot.ExecutablePath))
+        if (currentState.DesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByBlacklistedProcess && !string.IsNullOrWhiteSpace(currentState.ForegroundProcessSnapshot.ExecutablePath))
         {
             var wasAutoBlacklistedByGameBar = _gameBarProcessBlacklistService.IsAutoBlacklisted(currentState.ForegroundProcessSnapshot);
             if (wasAutoBlacklistedByGameBar)
             {
-                _fileLogService.WriteInformation(
-                    nameof(DesktopEdgeMonitorService),
-                    $"Desktop edge monitoring availability changed to {currentState.DesktopEdgeAvailabilityStatus}. ForegroundExecutablePath={currentState.ForegroundProcessSnapshot.ExecutablePath}.");
+                _fileLogService.WriteInformation(nameof(DesktopEdgeMonitorService), $"Desktop edge monitoring availability changed to {currentState.DesktopEdgeAvailabilityStatus}. ForegroundExecutablePath={currentState.ForegroundProcessSnapshot.ExecutablePath}.");
                 return;
             }
         }
 
-        _fileLogService.WriteInformation(
-            nameof(DesktopEdgeMonitorService),
-            $"Desktop edge monitoring availability changed from {previousState.DesktopEdgeAvailabilityStatus} to {currentState.DesktopEdgeAvailabilityStatus}.");
+        _fileLogService.WriteInformation(nameof(DesktopEdgeMonitorService), $"Desktop edge monitoring availability changed from {previousState.DesktopEdgeAvailabilityStatus} to {currentState.DesktopEdgeAvailabilityStatus}.");
     }
 
-    private static bool ShouldSuppressAvailabilityStatusChangeInformationLogging(
-        DesktopEdgeAvailabilityStatus previousDesktopEdgeAvailabilityStatus,
-        DesktopEdgeAvailabilityStatus currentDesktopEdgeAvailabilityStatus) => previousDesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton
-            || currentDesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton;
+    private static bool ShouldSuppressAvailabilityStatusChangeInformationLogging(DesktopEdgeAvailabilityStatus previousDesktopEdgeAvailabilityStatus, DesktopEdgeAvailabilityStatus currentDesktopEdgeAvailabilityStatus) => previousDesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton || currentDesktopEdgeAvailabilityStatus == DesktopEdgeAvailabilityStatus.DisabledByPressedMouseButton;
 
     private bool IsForegroundProcessBlacklisted(DeskBorderSettings currentSettings, ForegroundProcessSnapshot foregroundProcessSnapshot)
     {
@@ -585,8 +459,7 @@ public sealed class DesktopEdgeMonitorService(ISettingsService settingsService, 
         if (string.IsNullOrWhiteSpace(processName)) return false;
         if (IsProcessNameListed(currentSettings.WhitelistedProcessNames, processName)) return false;
 
-        return IsProcessNameListed(currentSettings.BlacklistedProcessNames, processName)
-            || _gameBarProcessBlacklistService.TryAutoBlacklistForegroundProcess(currentSettings, foregroundProcessSnapshot);
+        return IsProcessNameListed(currentSettings.BlacklistedProcessNames, processName) || _gameBarProcessBlacklistService.TryAutoBlacklistForegroundProcess(currentSettings, foregroundProcessSnapshot);
     }
 
     private static bool IsProcessNameListed(IReadOnlyList<string> processNames, string processName) => processNames.Contains(processName, StringComparer.OrdinalIgnoreCase);
