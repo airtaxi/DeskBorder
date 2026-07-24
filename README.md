@@ -2,7 +2,7 @@
 
 🌐 [한국어](README.ko.md)
 
-DeskBorder is a Windows utility designed for people who use virtual desktops throughout the day.
+DeskBorder is a Windows utility for people who use virtual desktops throughout the day.
 Move your mouse to the edge of the screen to switch desktops, create a new desktop when you need more space, move the focused window with hotkeys, and open a compact navigator overlay for a quick overview.
 
 [![Download from Microsoft Store](https://get.microsoft.com/images/en-US%20dark.svg)](https://apps.microsoft.com/detail/9P3PLVML3JQD)
