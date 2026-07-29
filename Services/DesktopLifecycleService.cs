@@ -10,7 +10,6 @@ public sealed class DesktopLifecycleService(IDesktopEdgeMonitorService desktopEd
     private const int DesktopEdgeTriggerRearmDistanceInPixels = 24;
     private const int DesktopSwitchMouseLocationApplyAttemptCount = 5;
     private static readonly TimeSpan s_desktopSwitchMouseLocationApplyRetryDelay = TimeSpan.FromMilliseconds(40);
-    private static readonly TimeSpan s_desktopSwitchMouseLocationVerificationDelay = TimeSpan.FromMilliseconds(40);
 
     private readonly IDesktopEdgeMonitorService _desktopEdgeMonitorService = desktopEdgeMonitorService;
     private readonly IFileLogService _fileLogService = fileLogService;
@@ -345,7 +344,7 @@ public sealed class DesktopLifecycleService(IDesktopEdgeMonitorService desktopEd
             _mouseLocationApplyRequestVersion++;
             previousMouseLocationApplyTask = _mouseLocationApplyTask;
             previousMouseLocationApplyCancellationTokenSource = _mouseLocationApplyCancellationTokenSource;
-            mouseLocationApplyRequest = new(triggerSource, desktopSwitchMouseLocationOption, targetMouseLocation.Value, _mouseLocationApplyRequestVersion);
+            mouseLocationApplyRequest = new(triggerSource, desktopSwitchMouseLocationOption, targetMouseLocation.Value, desktopSwitchMouseLocationContext!.Value.TriggeredDesktopEdge, desktopSwitchMouseLocationContext!.Value.DisplayMonitors, desktopSwitchMouseLocationContext!.Value.InputDisplayMonitor, _mouseLocationApplyRequestVersion);
             _mouseLocationApplyCancellationTokenSource = currentMouseLocationApplyCancellationTokenSource;
             _mouseLocationApplyTask = Task.Run(() => ApplyMouseLocationAfterDesktopSwitchAsync(mouseLocationApplyRequest, currentMouseLocationApplyCancellationTokenSource.Token, currentMouseLocationApplyCancellationTokenSource));
         }
@@ -364,7 +363,7 @@ public sealed class DesktopLifecycleService(IDesktopEdgeMonitorService desktopEd
             var elapsedMilliseconds = Stopwatch.GetElapsedTime(startedTimestamp).TotalMilliseconds;
             if (mouseLocationApplyResult.IsSuccessful)
             {
-                _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Applied mouse location after desktop switch. TriggerSource={mouseLocationApplyRequest.TriggerSource}, Option={mouseLocationApplyRequest.Option}, RequestedX={mouseLocationApplyRequest.TargetMouseLocation.X}, RequestedY={mouseLocationApplyRequest.TargetMouseLocation.Y}, ActualX={mouseLocationApplyResult.ActualMouseLocation!.Value.X}, ActualY={mouseLocationApplyResult.ActualMouseLocation!.Value.Y}, AttemptNumber={mouseLocationApplyResult.AttemptNumber}, ElapsedMilliseconds={elapsedMilliseconds:F1}.");
+                _fileLogService.WriteInformation(nameof(DesktopLifecycleService), $"Applied mouse location after desktop switch. TriggerSource={mouseLocationApplyRequest.TriggerSource}, Option={mouseLocationApplyRequest.Option}, TriggeredDesktopEdge={mouseLocationApplyRequest.TriggeredDesktopEdge}, RequestedX={mouseLocationApplyRequest.TargetMouseLocation.X}, RequestedY={mouseLocationApplyRequest.TargetMouseLocation.Y}, ActualX={mouseLocationApplyResult.ActualMouseLocation!.Value.X}, ActualY={mouseLocationApplyResult.ActualMouseLocation!.Value.Y}, AttemptNumber={mouseLocationApplyResult.AttemptNumber}, ElapsedMilliseconds={elapsedMilliseconds:F1}.");
                 return;
             }
 
@@ -380,7 +379,7 @@ public sealed class DesktopLifecycleService(IDesktopEdgeMonitorService desktopEd
                 return;
             }
 
-            _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Mouse location after desktop switch was constrained or changed after SetCursorPos. TriggerSource={mouseLocationApplyRequest.TriggerSource}, Option={mouseLocationApplyRequest.Option}, RequestedX={mouseLocationApplyRequest.TargetMouseLocation.X}, RequestedY={mouseLocationApplyRequest.TargetMouseLocation.Y}, ActualX={mouseLocationApplyResult.ActualMouseLocation!.Value.X}, ActualY={mouseLocationApplyResult.ActualMouseLocation!.Value.Y}, AttemptNumber={mouseLocationApplyResult.AttemptNumber}, ElapsedMilliseconds={elapsedMilliseconds:F1}, {FormatCursorClippingDetails()}.");
+            _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Mouse location after desktop switch was constrained or changed after SetCursorPos. TriggerSource={mouseLocationApplyRequest.TriggerSource}, Option={mouseLocationApplyRequest.Option}, TriggeredDesktopEdge={mouseLocationApplyRequest.TriggeredDesktopEdge}, RequestedX={mouseLocationApplyRequest.TargetMouseLocation.X}, RequestedY={mouseLocationApplyRequest.TargetMouseLocation.Y}, ActualX={mouseLocationApplyResult.ActualMouseLocation!.Value.X}, ActualY={mouseLocationApplyResult.ActualMouseLocation!.Value.Y}, AttemptNumber={mouseLocationApplyResult.AttemptNumber}, ElapsedMilliseconds={elapsedMilliseconds:F1}, {FormatCursorClippingDetails()}.");
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested || !IsLatestMouseLocationApplyRequest(mouseLocationApplyRequest.RequestVersion)) { }
         catch (Exception exception) { _fileLogService.WriteWarning(nameof(DesktopLifecycleService), $"Unexpected mouse location apply failure after desktop switch. TriggerSource={mouseLocationApplyRequest.TriggerSource}, Option={mouseLocationApplyRequest.Option}.", exception); }
@@ -407,17 +406,15 @@ public sealed class DesktopLifecycleService(IDesktopEdgeMonitorService desktopEd
         for (var attemptNumber = 1; attemptNumber <= DesktopSwitchMouseLocationApplyAttemptCount; attemptNumber++)
         {
             ThrowIfMouseLocationApplyRequestIsStale(mouseLocationApplyRequest.RequestVersion, cancellationToken);
-            if (!MouseHelper.TrySetCursorPosition(mouseLocationApplyRequest.TargetMouseLocation, out var setCursorPositionLastWindowsErrorCode))
-                lastMouseLocationApplyResult = new(attemptNumber, false, false, null, setCursorPositionLastWindowsErrorCode, 0);
+            if (!MouseHelper.TrySetCursorPosition(mouseLocationApplyRequest.TargetMouseLocation, out var setCursorPositionLastWindowsErrorCode)) lastMouseLocationApplyResult = new(attemptNumber, false, false, false, null, setCursorPositionLastWindowsErrorCode, 0);
             else
             {
-                await Task.Delay(s_desktopSwitchMouseLocationVerificationDelay, cancellationToken);
                 ThrowIfMouseLocationApplyRequestIsStale(mouseLocationApplyRequest.RequestVersion, cancellationToken);
-                if (!MouseHelper.TryGetCurrentCursorPosition(out var actualMouseLocation, out var getCursorPositionLastWindowsErrorCode))
-                    lastMouseLocationApplyResult = new(attemptNumber, true, false, null, 0, getCursorPositionLastWindowsErrorCode);
+                if (!MouseHelper.TryGetCurrentCursorPosition(out var actualMouseLocation, out var getCursorPositionLastWindowsErrorCode)) lastMouseLocationApplyResult = new(attemptNumber, true, false, false, null, 0, getCursorPositionLastWindowsErrorCode);
                 else
                 {
-                    lastMouseLocationApplyResult = new(attemptNumber, true, true, actualMouseLocation, 0, 0);
+                    var didPositionMatch = !IsCursorStillOnTriggeredEdge(actualMouseLocation, mouseLocationApplyRequest.TriggeredDesktopEdge, mouseLocationApplyRequest.DisplayMonitors, mouseLocationApplyRequest.InputDisplayMonitor);
+                    lastMouseLocationApplyResult = new(attemptNumber, true, true, didPositionMatch, actualMouseLocation, 0, 0);
                     if (lastMouseLocationApplyResult.IsSuccessful) return lastMouseLocationApplyResult;
                 }
             }
@@ -426,6 +423,20 @@ public sealed class DesktopLifecycleService(IDesktopEdgeMonitorService desktopEd
         }
 
         return lastMouseLocationApplyResult;
+    }
+
+    private static bool IsCursorStillOnTriggeredEdge(ScreenPoint cursorPosition, DesktopEdgeKind triggeredDesktopEdge, DisplayMonitorInfo[] displayMonitors, DisplayMonitorInfo? inputDisplayMonitor)
+    {
+        if (displayMonitors.Length == 0 || triggeredDesktopEdge == DesktopEdgeKind.None) return false;
+
+        return triggeredDesktopEdge switch
+        {
+            DesktopEdgeKind.LeftOuterDisplayEdge => cursorPosition.X < displayMonitors.Min(displayMonitor => displayMonitor.MonitorBounds.Left) + DesktopEdgeTriggerRearmDistanceInPixels,
+            DesktopEdgeKind.RightOuterDisplayEdge => cursorPosition.X > displayMonitors.Max(displayMonitor => displayMonitor.MonitorBounds.Right) - DesktopEdgeTriggerRearmDistanceInPixels - 1,
+            DesktopEdgeKind.TopDisplayEdge => inputDisplayMonitor is null || cursorPosition.Y < inputDisplayMonitor.MonitorBounds.Top + DesktopEdgeTriggerRearmDistanceInPixels,
+            DesktopEdgeKind.BottomDisplayEdge => inputDisplayMonitor is null || cursorPosition.Y > inputDisplayMonitor.MonitorBounds.Bottom - DesktopEdgeTriggerRearmDistanceInPixels - 1,
+            _ => false
+        };
     }
 
     private bool IsLatestMouseLocationApplyRequest(int requestVersion)
@@ -834,11 +845,11 @@ public sealed class DesktopLifecycleService(IDesktopEdgeMonitorService desktopEd
 
     private readonly record struct DesktopSwitchMouseLocationContext(DisplayMonitorInfo[] DisplayMonitors, DisplayMonitorInfo? InputDisplayMonitor, ScreenPoint InputCursorPosition, DesktopSwitchDirection DesktopSwitchDirection, DesktopEdgeKind TriggeredDesktopEdge);
 
-    private readonly record struct DesktopSwitchMouseLocationApplyRequest(string TriggerSource, DesktopSwitchMouseLocationOption Option, ScreenPoint TargetMouseLocation, int RequestVersion);
+    private readonly record struct DesktopSwitchMouseLocationApplyRequest(string TriggerSource, DesktopSwitchMouseLocationOption Option, ScreenPoint TargetMouseLocation, DesktopEdgeKind TriggeredDesktopEdge, DisplayMonitorInfo[] DisplayMonitors, DisplayMonitorInfo? InputDisplayMonitor, int RequestVersion);
 
-    private readonly record struct DesktopSwitchMouseLocationApplyResult(int AttemptNumber, bool DidSetCursorPosition, bool DidReadActualMouseLocation, ScreenPoint? ActualMouseLocation, int SetCursorPositionLastWindowsErrorCode, int GetCursorPositionLastWindowsErrorCode)
+    private readonly record struct DesktopSwitchMouseLocationApplyResult(int AttemptNumber, bool DidSetCursorPosition, bool DidReadActualMouseLocation, bool DidPositionMatch, ScreenPoint? ActualMouseLocation, int SetCursorPositionLastWindowsErrorCode, int GetCursorPositionLastWindowsErrorCode)
     {
-        public bool IsSuccessful => DidSetCursorPosition && DidReadActualMouseLocation;
+        public bool IsSuccessful => DidSetCursorPosition && DidReadActualMouseLocation && DidPositionMatch;
     }
 
     private readonly record struct DesktopEdgeActivationEvaluation(bool ShouldAttemptActivation, bool CanCreateDesktop, DesktopNavigationResult NoOperationNavigationResult, DesktopSwitchDirection DesktopSwitchDirection);
