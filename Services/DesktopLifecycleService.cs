@@ -10,6 +10,7 @@ public sealed class DesktopLifecycleService(IDesktopEdgeMonitorService desktopEd
     private const int DesktopEdgeTriggerRearmDistanceInPixels = 24;
     private const int DesktopSwitchMouseLocationApplyAttemptCount = 5;
     private static readonly TimeSpan s_desktopSwitchMouseLocationApplyRetryDelay = TimeSpan.FromMilliseconds(40);
+    private static readonly TimeSpan s_desktopSwitchMouseLocationVerificationDelay = TimeSpan.FromMilliseconds(40);
 
     private readonly IDesktopEdgeMonitorService _desktopEdgeMonitorService = desktopEdgeMonitorService;
     private readonly IFileLogService _fileLogService = fileLogService;
@@ -409,6 +410,7 @@ public sealed class DesktopLifecycleService(IDesktopEdgeMonitorService desktopEd
             if (!MouseHelper.TrySetCursorPosition(mouseLocationApplyRequest.TargetMouseLocation, out var setCursorPositionLastWindowsErrorCode)) lastMouseLocationApplyResult = new(attemptNumber, false, false, false, null, setCursorPositionLastWindowsErrorCode, 0);
             else
             {
+                await Task.Delay(s_desktopSwitchMouseLocationVerificationDelay, cancellationToken);
                 ThrowIfMouseLocationApplyRequestIsStale(mouseLocationApplyRequest.RequestVersion, cancellationToken);
                 if (!MouseHelper.TryGetCurrentCursorPosition(out var actualMouseLocation, out var getCursorPositionLastWindowsErrorCode)) lastMouseLocationApplyResult = new(attemptNumber, true, false, false, null, 0, getCursorPositionLastWindowsErrorCode);
                 else
